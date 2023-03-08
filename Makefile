@@ -2,7 +2,6 @@ default: build
 
 U_SPI_HOME=.
 include $(U_SPI_HOME)/makefiles/config/config.mk
-include $(U_SPI_HOME)/makefiles/config/config-build/$(SARTORIAL_CONFIG).mk
 
 RUNTIME_BUILD_DIRS=\
 spi_boost/lib\
