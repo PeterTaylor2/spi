@@ -1,0 +1,268 @@
+\section{High level user guide}
+
+In general the user guide will describe the product \emph{as is}. 
+Potential future developments will be described in separate paragraphs using italics as for example in the following paragraph.
+
+\subsection{What does SPI provide?}
+
+The SPI configuration language is used to define data structures and functions.
+The core data structures that are described are classes (as in C++) with
+attributes, methods and inheritance. 
+In addition we can describe stand-alone functions. 
+Enumerated data types and other simple objects are also supported by SPI. 
+The detailed user guide section will describe the syntax of this language. 
+
+\subsubsection{Inner and outer libraries}
+
+When wrapping a C++ library, we will refer to the underlying C++ library as the inner library (or inner layer).
+We will be generating code for the outer library (or outer layer).
+
+The SPI configuration language defines the mapping between the inner layer and the outer layer.
+
+The other target platforms (such as Excel and Python) will access the outer layer only.
+You can safely release the outer C++ library to your clients without releasing any header files for the inner library (or libraries).
+Data types from the inner library will be partially visible in the header files for the outer C++ library - but only via the technique of pre-declaration.
+
+Thus for example suppose the inner library has a class MyClass.
+Then in the outer library header files we will probably have the line of code:
+\begin{verbatim}
+class MyClass;
+\end{verbatim}
+and refer to instances of MyClass either by pointer or shared pointer.
+The internals of class MyClass will not be visible - but the name of the class MyClass will be visible - this is what I mean by `partially visible'.
+
+Some of the data types used by the inner library will pass through directly from the outer library, for example fundamental types like \texttt{int} and \texttt{double}.
+However in the main if you have a user-defined type in the inner library that you want to expose at the outer library layer, then there will be an equivalent wrapped type in the outer library.
+
+
+
+\subsubsection{Data types in SPI}
+This section described the different categories of data types supported via SPI.
+
+\subsubsection*{Fundamental data types}
+
+There are a number of fundamental data types in SPI: \texttt{double}, \texttt{int},
+\texttt{long}, \texttt{size\_t}, \texttt{bool}, \texttt{char}, \texttt{string}, \texttt{date}.
+
+These are built into the parser. 
+  
+Note that SPI provides a Date class, but it is expected that the underlying C++ library will have its own representation of Date.
+As part of SPI you need to provide the translation between the spi::Date class and your own Date class (or type).
+
+\subsubsection*{Enumerated data types}
+
+An enumerated data type is a list of integer-type values with string equivalent representation at the user interface.
+You can have multiple string representations for each value.
+  
+There will be an inner type and an outer type for enumerated types.
+The inner type will be an integer type (e.g. int, long, char) or an enumerated type of the inner library.
+The outer type will be represented as a simple class with one data field which is an enumerated type defined within the class.
+This representation will allow the user to construct the class via coercion from either a string or an enumerated type.
+  
+At the Excel and Python levels, the string constructor is used.
+However at the outer C++ level, it is quite likely that you want to use the enumerated type instead.
+By placing the enumerated type within the class, the enumerated type values will use the class name in their definition.
+
+\subsubsection*{Simple data types}
+
+A simple type has minimal internal structure for which you do not want to create a full-blown object. 
+  
+At the user interface this is will be represented by one of the fundamental types.
+Internally there will be a C++ type from the inner library.
+As part of the definition of a simple data type you need to provide functions for converting from the inner type to the outer (fundamental) type and back again.
+  
+In general Dates are represented as a simple data type.
+
+\subsubsection*{Classes}
+
+Classes are fully object-oriented classes with methods, inheritance and serialization supported. 
+Typically you will have an existing inner class which is to be wrapped by an outer class defined in the SPI configuration files.
+If the inner library supports a class hierarchy, then you can use the same hierarchy in the outer classes (although we only support single inheritance).
+	
+The outer class contains an instance of the inner class, and often you will implement methods in the outer class simply by calling the corresponding method from the inner class.
+	
+Serialization of classes is a very important feature.
+In general to serialize a class, you need to be able to serialize the attributes that you use to construct the class, so that when you de-serialize the class you can re-create it by calling its constructor.
+	
+Sometimes the inner class will give sufficient access to the state data within the class that you can serialize the outer class via the pointer to the inner class.
+In this case we say that the inner class is an `open' class.
+	
+At other times the state of the inner class is hidden.
+In this case you need to remember the values that you used to construct the inner class.
+In this case we say that the inner class is a `closed' class.
+	
+For a closed class, we need to keep track of the constructor inputs within our wrapper class.
+This increases the amount of data carried around by an instance of the outer class, thus using up on average twice as much memory.
+However we need to be able to handle closed classes in order to achieve the goal of a non-intrusive wrapper technology.
+	
+An open class has reduced memory overhead since we only store the pointer to the inner class within our wrapper class.
+However we cannot be sure that all classes defined in the existing C++ analytics library will be open classes.
+	
+The wrapping of classes is a complex subject and we will discuss it in further detail later.
+
+\subsubsection{Callables in SPI}
+
+This section gives the different categories of `callable' things defined in SPI.
+
+\subsubsection*{Stand alone functions}
+
+Stand alone functions are supported by SPI (as a counter-example stand-alone functions are not supported directly in .NET).
+Functions can return value by return type, or by reference parameters.
+Errors involved throwing an exception rather than using error codes.
+	
+You will always need to specify the actual call to the inner library when defining a stand-alone function by writing a small fragment of C++.
+	
+\subsubsection*{Class constructors}
+	
+Classes will usually have constructors although you can specify that a class does not expose its constructor.
+	
+If the constructor of the outer class exactly matches by type and order the constructor of the inner class, then you may be able to avoid specifying the actual constructor.
+However often you will need to specify the actual constructor call, e.g. to add some extra validation, or because there needs to be some further translation of the inputs.
+
+\subsubsection*{Class methods}
+		
+Class methods are similar in many respects to stand alone functions in their specification within SPI.
+	
+However like class constructors you can sometimes avoid specifying the actual method call if the method of the outer class exactly matches the method of the inner class.
+	
+\subsubsection*{Note on function logging}
+
+When logging a session, only the functions and class methods are logged.
+The class constructors are not logged - although when the instance of the class first appears in the log stream you will see its serialized form.
+Thus if you create a lot of objects via construction but never use them, then these objects will actually not appear in the serialized stream.
+
+\subsection{What do the code generation executables provide?}
+
+There are five executables.
+The executable that parses the configuration files is called \texttt{spcl} and it needs to be run first.
+Subsequently the other executables for different platforms can be run independently of each other, but they use the output created by \texttt{spcl}.
+
+\subsubsection{What does \texttt{spcl} provide?}
+
+We group a number of configuration files into a single service file.
+The program \texttt{spcl} runs with the service file name as input and performs the following tasks:
+\begin{itemize}
+ \item Parses the service file and its exported configuration files.
+ \item Generates the C++ code which defines the outer library.
+ \item Also generates a single file which describes all the data types and functions available in the outer library. This file is actually a serialized object of type \texttt{spdoc::Service}.
+\end{itemize}
+If all goes well then you should be able to compile the generated code and link it with your inner libraries to produce a shared library which is the outer C++ library.
+
+Note that the callables defined by the configuration files will often need small fragments of C++ code.
+These code fragments will be translated verbatim to the generated code, and in addition we will use \texttt{\#line} directives to ensure that compilation errors point at the configuration file and if you debug the code you will be stepping through the configuration file instead of the generated code file.
+
+You will be able to see the generated code - so a brief explanation is in order.
+
+For each function, we define a corresponding Functor.
+A Functor is an object which contains all the inputs to the function, and you can then call the Functor without any arguments at all to invoke the function.
+
+When the function is called, then a functor is created and invoked.
+Invoking the functor involves first testing to see whether logging is required - this check is done in a single location for all functions.
+If logging is required, then the functor (which is a serializeable object) is serialized and written to the log file.
+After logging (or not), then the functor is invoked.
+At this point the arguments to the function and attributes of the functor are all outer types.
+
+Invoking the functor involves functor-specific data translation - the outer types are converted (where necessary) to the corresponding inner types.
+This code is implemented within the code generated for the Functor.
+
+Having converted the inputs, we call a helper function which has inputs which match the outer function but which have now been converted to the corresponding inner types where necessary.
+
+This helper function is implemented by the code fragment that was written in the SPI configuration file.
+
+For class methods, we follow a very similar procedure, except instead of a helper function we have a helper class instead.
+Also the implementation of a class method might not be needed to be supplied, since the default implementation (calling the method of the same name with the inputs in the correct sequence) might be sufficient.
+
+The outputs returned from the helper function (or helper class method) are in the inner type format.
+Sometimes you need to convert them back to the corresponding outer type before the output is returned to the user of the outer library.
+
+All this complexity is handled by \texttt{spcl} - it is the most complex of the code generators involved.
+
+\subsubsection{What does \texttt{sptex} provide?}
+
+The documentation for the service is generated by \texttt{sptex}.
+It will read the serialised service object produced by \texttt{spcl}, and use that information to create a number of files corresponding to each construct defined within the service.
+
+These are put into a separate directory, and the developer will then have to create a master file that uses the tex \texttt{\textbackslash{}input} command to bring together all the files into a single master document.
+
+We actually already group together all the types, classes, functions and methods into separate collections of files, so that the master document does not have to input every file directly.
+
+However you can produce sub-documents from the generated files if you want to produce a limited user guide for a small bit of new functionality for review purposes.
+
+\subsubsection{What does \texttt{spxl} provide?}
+
+The Excel add-in library is generated by \texttt{spxl}.
+It will read the serialised service object produced by \texttt{spcl}, and use that information to generate the code required to create an Excel add-in.
+
+The add-in will consist of an XLL file (Excel DLL).
+
+\textit{Note that we also plan to create the Excel add-in macro (XLAM file) which loads the XLL and provides a number of menu items.
+Currently in the sample project, the XLAM file is provided as part of the project.
+However we should really generate this file to add a consistent set of features for each Excel add-in.}
+
+\textit{Menu items to be provided would allow you to manage logging, view objects, choose how to handle errors etc.}
+
+When a function (or class constructor which has the same name as the class in the Excel add-in) returns an instance of a class (i.e. an object), then this will be converted by the SPI Excel code into a string known as the object handle.
+
+Internally within the library the string seen on the user spreadsheet will map to the real object.
+
+Functions in the outer library have the same name in the Excel add-in.
+
+We cannot use the normal class method invocation within Excel as we might within naturally object-oriented languages such as C++ and Python.
+So class methods will have an Excel function with the name consisting of the class name followed by `.' followed by the method name.
+The first parameter of this Excel function will be the object handle.
+
+\subsubsection{What does \texttt{sppy} provide?}
+
+The Python extension library is generated by \texttt{sppy}.
+It will read the serialised service object produced by \texttt{spcl}, and use that information to generate the code required to create a Python extension library.
+
+The extension library consists of a PYD file (Python DLL) on Windows, or regular .so file on Linux, plus a very simple Python file which simply imports all the functions from the Python DLL into the namespace of the service.
+
+The Python DLL will for example have a name like \texttt{py\_serviceNamespace.pyd} and the Python file will have a name like \texttt{serviceNamespace.py}.
+
+All the class and function implementation is provided within the DLL - there is no proxy file as you might expect with other technologies.
+
+To view the functionality available in the Python extension, you can use standard Python functions such as \texttt{help}.
+We provide enough information so that \texttt{help} will display the inputs to functions and constructors, plus pick up some of the description provided in the original SPI configuration file.
+
+One particularly interesting feature of the Python implementation is that in certain cases you can specify that an interface class (i.e. a class which only provides virtual methods and has no data) and implement sub-classes of this interface in Python itself.
+
+Then if you have an algorithm that uses objects of this interface class, then inside the C++ code there will be calls out to the Python implementation.
+This could be very useful for developing prototypes within Python, and subsequently implementing them for greater performance in C++.
+
+This functionality is only available because Python is a dynamic language - you cannot do something similar in an environment such as Excel.
+
+
+
+
+
+
+
+
+
+
+
+
+\subsubsection{What does \texttt{spcli} provide?}
+
+The .NET assembly is generated by \texttt{spcli}.
+It will read the serialised service object produced by \texttt{spcl}, and use that information to generate the code required to create a .NET assembly.
+The language chosen is C++/CLI which is Microsoft's .NET equivalent of C++ which is a langauge which has C++ as the base but various language extensions for CLI (Common Language Interface).
+
+The extension library consists of a DLL with the extension .net.dll on Windows.
+This build is not available on Linux.
+
+The .NET DLL will for example have a name like \texttt{serviceNamespace.net.dll}.
+ 
+Typically .NET development will be done using C\#, but note that the .NET assembly will work with any of the Microsoft .NET languages (e.g. Visual Basic, Iron Python etc.).
+The object browser in Visual Studio for C\# will show the classes and functions available, as well as brief documentation for each function.
+
+Note that as standard .NET supports namespaces and classes, but not stand-alone functions.
+You can have static functions in a class which are the equivalent of stand-alone functions in C++.
+
+To support this behaviour, \texttt{spcli} creates code in a global namespace - this should in general represent your company name.
+Inside this global namespace, the main namespace for your service is represented as a class.
+This enables us to define the stand-alone functions as static methods of this class.
+Classes for your service are inner classes of the top-level class.
+Module-level namespaces for your service are also inner classes of the top-level class.
+

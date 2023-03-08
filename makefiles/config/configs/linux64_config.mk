@@ -1,0 +1,12 @@
+# linux64_config.mk
+
+G_BASE_CONFIG:=linux64_gcc
+
+ifdef COMPILER
+G_BASE_CONFIG:=linux64_$(COMPILER)
+endif
+
+G_CONFIG_COMPILER?=gcc
+G_CONFIG_COMPILER_BITS?=64
+G_CONFIG_COMPILER_ABI?=Release-linux64
+

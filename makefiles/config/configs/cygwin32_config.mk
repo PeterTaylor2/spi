@@ -1,0 +1,12 @@
+# cygwin32_config.mk
+
+G_BASE_CONFIG:=cygwin32_gcc
+
+ifdef COMPILER
+G_BASE_CONFIG:=cygwin32_$(COMPILER)
+endif
+
+G_CONFIG_COMPILER?=gcc
+G_CONFIG_COMPILER_BITS?=32
+G_CONFIG_COMPILER_ABI?=Release-cygwin32
+

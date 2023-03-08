@@ -1,0 +1,23 @@
+code:
+
+U_SPI_HOME=../../..
+include $(U_SPI_HOME)/makefiles/config/config.mk
+
+U_VCXPROJ_OPTIONS=-t copy
+U_SERVICE=types
+U_TARGET_DIR=.
+#U_SOURCES=$(wildcard config/*.cfg)
+
+U_SPCL_OPTIONS=--noVerbatimLine --noHeaderSplit --licenseFile=../../GPL.h
+ifeq ($(DEBUG),1)
+U_SPCL_OPTIONS+=-w
+endif
+U_VCXPROJ_OPTIONS=-tcopy
+
+include $(U_SPI_HOME)/makefiles/spi/spcl.mk
+
+copy: code
+	cp -pf types*.h ../src
+	cp -pf types*.hpp ../src
+	cp -pf src/types*.[ch]pp ../src
+

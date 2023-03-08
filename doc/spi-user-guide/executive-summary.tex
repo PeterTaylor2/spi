@@ -1,0 +1,50 @@
+\section{Executive summary}
+You should read this section if you want to get a flavour of the SPI product set.
+
+\subsection{Standard use case}
+
+Your group develops and uses a number of libraries written in C or C++ which will then be used in application development.
+In general C++ is not the language of choice for application development.
+In addition you wish to separate the development of the calculation libraries (hereafter named as analytics libraries) from the application development.
+
+The analytics libraries exist - either developed in-house or externally.
+The idea is that you wrap these libraries with an extra layer in order to satisfy a variety of different user interface requirements.
+
+SPI provides interface-neutral text-based configuration file format that will describe the low-level libraries you are trying to wrap, and from this information generate the code required by the different interface technologies.
+
+The interface code is generated automatically from the configuration files.
+Not only do we generate code, but we also generate a user guide for the product which can be produced before any code is fully compiled.
+Thus you can provide a specification for discussion with your clients at an early stage in any project.
+
+\subsection{Features provided by use of SPI}
+
+Using SPI you can provide Excel, Python and .NET wrappers of your analytics library.
+The interface via Excel is recognisably the same as the interface via Python or .NET.
+There is also a special C++ wrapper of your analytics library if you need to release a C++ version of your library.
+
+The C++ wrapper supports the concepts of object orientation (via classes and inheritance), serialization, logging and replay.
+The same features are then reflected in the Excel, Python and .NET wrappers.
+The Excel and Python wrappers also support the concept of array functions by which we mean that if you pass in an array of inputs to a function which expects a scalar and returns a scalar, then the function will accept the array and return an array of outputs one for each input provided.
+
+Serialization means that classes are can be converted to and from text formats.
+Logging and replay means that you can record a log of all function calls to the library and subsequently replay that log of function calls independently of the application that created the log file.
+
+\subsection{Future developments}
+
+This a list of possible future enhancements to the SPI product set.
+\begin{itemize}
+	\item Binary serialization.
+	\item Remote function calls.
+	\item Support for other languages, e.g. Java, Perl etc.
+\end{itemize}
+
+\subsection{Current examples of use}
+
+The SPI package comes with some sample code which demonstrates the product in action.
+These are real analytics (using open source code) but the goal is not to provide an analytics library that you could use in production.
+Rather the goal is to show the language features of SPI in action.
+Thus the sample code will provide some very basic credit and rates analytics functionality - build a discount curve, compute market rates and fair value for some simple products.
+
+In addition I have developed some software for the analysis of bridge hands (bridge is a card game).
+The low-level analysis software is an open source library written in C++.
+Using SPI this software is available via Excel and Python which you can use to build applications which use the low-level analysis tools.

@@ -1,0 +1,3 @@
+completely random file
+but it needs to replace $(name)
+and it needs to preserve $$(name)

@@ -1,0 +1,5 @@
+# linux binary files
+
+config/bin-linux64/spcl config/bin-linux64
+config/bin-linux64/sppy config/bin-linux64
+

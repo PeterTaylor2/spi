@@ -1,0 +1,102 @@
+\section{SPI reference}
+
+In this section we describe in detail the SPI configuration language.
+
+There are two types of files - namely service files and module files.
+Service files consist of a list of the module files used, plus extra information at the service level.
+Module files describe the actual C++ library for which we are defining the interface.
+
+First of all we will describe some of the common syntax rules for the SPI configuration files, then describe the typographic conventions, then describe the service files, and finally describe the module files in detail.
+
+\subsection*{Common syntax rules of SPI configuration files}
+
+In general, SPI configuration files have a syntax that is close to C++.
+The configuration files can be thought of as a combination of a C++ header file and source file.
+In this manner we are replicating languages such as Python and Java which do not have a separation between header files and implementation files.
+
+The main motivation for matching C++ is that we are actually describing a C++ library, and some of the contents of the configuration file is actually C++ code that is added verbatim to the generated code.
+
+A lot of keywords are in common with C++, although sometimes they are used in a slightly different context. 
+There are also some keywords that are not in the C++ language. 
+These will be denoted by using \% symbol. 
+
+The secondary motivation for making the syntax match that of C++ is that you can use existing syntax highlighters to show the keywords in colour.
+Thus for use with emacs, the first line of the configuration files could be:
+\begin{verbatim}
+/* -*-c++-*- */
+\end{verbatim}
+which indicates that the file will be edited in C++ mode when you open the file in emacs.
+
+Similarly you can use the syntax highlighting of Microsoft Visual Studio .NET by creating an entry in your registry for the file prefix \texttt{.cfg} to match the file prefix \texttt{.cpp}.
+
+In many cases we are defining `wrapper classes' and `wrapper functions'. 
+When we wrap something we use something akin to the template notation of C++. 
+The thing that is being wrapped is enclosed in $<...>$. 
+
+There are three types of comments - which should be familiar to C++ developers. 
+We have regular C-comments and C++-comments, e.g. \texttt{/* ... */} for C-comments and \texttt{//} for C++ comments. 
+Such comments are stripped out of the file when it is parsed.
+
+In addition we have Doxygen style comments, e.g. \texttt{/** ... */}. 
+Note the extra *.
+Doxygen style comments are preserved, and are treated as description of the next item encountered in the file.
+
+The syntax of SPI has been chosen to make it easier to parse. 
+In particular the type of the object being parsed is determined at the beginning of the object. 
+This is in contrast with C/C++ where often the type of an object in the code is only determined later. 
+A particular example is of a function or method definition. 
+When you start a function or method definition in C/C++, then at the beginning it looks like a data definition. 
+
+For example in C++:
+\begin{verbatim}
+int MyFunction(double anInput);
+\end{verbatim}
+When the parser detects \texttt{int MyFunction} it is beginning to look like the declaration of a variable of type int.
+Subsequently the argument list in \texttt{(double anInput)} indicates that this is actually a function prototype instead.
+
+In SPI, this would be indicated as follows:
+\begin{verbatim}
+extern int MyFunction(double anInput)
+{
+// implementation of MyFunction including return statement
+}
+\end{verbatim}
+We add the keyword argument \texttt{extern} before the function declaration, and then implement the function directly in the same SPI configuration file.
+When the parser encounters the extern keyword, it will switch into function parsing mode.
+
+We will describe the \texttt{extern} keyword in more detail below.
+
+\subsubsection*{Typographical conventions}
+The following conventions are used in this section:
+\begin{itemize}
+  \item When describing the syntax of a command (after printing \textbf{SYNTAX:}) we use a \texttt{fixed width} typeface with user provided values shown in \texttt{\emph{fixed width italics}}. 
+  The user provided value is given by its name rather than an example value.
+  For example, if you need to enter the name of a file then we will use \texttt{\emph{filename}} rather than \texttt{\emph{dates.cfg}} (an example filename).
+
+  In the subsequent description, the value of this user provided item is shown in a \texttt{fixed width} typeface preceded by a \$, e.g. \texttt{\$filename}.
+
+  \item A \texttt{fixed width} typeface is used in all code listings. 
+  Within such code listings, an ellipsis (...) indicates a block of code which has been omitted in this documentation.
+
+  \item \emph{Italics} are used to introduce new terms.
+
+  \item Optional SPI language features are indicated inside [...]. 
+  For example if you have a keyword which may or may not be followed by
+  another construct, then this particular construct is enclosed
+  inside square brackets.
+  
+  \item Note that some commands support description as defined above.
+  If a command supports description, then \texttt{/** \textit{description} */}
+  will be shown in the line above the syntax for the command.
+
+  \item We will use \texttt{|} to indicate `or', i.e. you must provide one
+  of the possibilities, e.g. \texttt{a|b|c} indicates you must provide
+  \texttt{a} or \texttt{b} or \texttt{c}.
+
+\end{itemize}
+
+
+
+\input{spi-user-guide/parser-autodoc.tex}
+
+

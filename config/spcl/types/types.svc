@@ -1,0 +1,46 @@
+/* -*-c++-*- */
+
+/*
+
+    Sartorial Programming Interface (SPI) code generators
+    Copyright (C) 2012-2023 Sartorial Programming Ltd.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+
+/**
+ * Defines the information required to extend an existing service without
+ * having to re-parse the service definition for that services.
+ *
+ * This needs different information than is required to write phase two
+ * code generation - for example we really don't care about functions,
+ * non-virtual methods and classes which cannot be used as base classes.
+ *
+ * We only need to know how to about the types that we can re-use and the
+ * classes that we can sub-class.
+ *
+ * We will be wrapping the classes defined within spcl - hence the code
+ * generated is only of use when building the spcl executable.
+ */
+
+%service types
+ version="0.0.0.1"
+ namespace=types
+ declSpec=SPI
+ sharedPtrInclude=""
+ sharedPtr="spi_boost::intrusive_ptr";
+// spDynamicCast="spi_boost::dynamic_pointer_cast";
+
+%export "types.cfg";

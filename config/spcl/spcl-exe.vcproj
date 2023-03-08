@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioProject
+    ProjectType="Visual C++"
+    Version="9.00"
+    Name="spcl-exe"
+    ProjectGUID="{E15810F0-8A2E-11E2-B67A-C485083D28D0}"
+    RootNamespace="spcl-exe"
+    Keyword="MakeFileProj"
+    TargetFrameworkVersion="196613"
+    >
+    <Platforms>
+        <Platform Name="Win32"/>
+    </Platforms>
+    <Configurations>
+        <Configuration
+            Name="Debug|Win32"
+            OutputDirectory="win32_msvc9_debug"
+            IntermediateDirectory="win32_msvc9_debug"
+            ConfigurationType="0"
+            >
+            <Tool
+                Name="VCNMakeTool"
+                BuildCommandLine="make -j2 target COMPILER=msvc9 DEBUG=1"
+                ReBuildCommandLine="make vs-clean COMPILER=msvc9 DEBUG=1 &amp;&amp; make -j2 target COMPILER=msvc9 DEBUG=1"
+                CleanCommandLine="make vs-clean COMPILER=msvc9 DEBUG=1"
+                Output="$(ProjectDir)win32_msvc9_debug\spcl.exe"
+            />
+        </Configuration>
+        <Configuration
+            Name="Release|Win32"
+            OutputDirectory="win32_msvc9_release"
+            IntermediateDirectory="win32_msvc9_release"
+            ConfigurationType="0"
+            >
+            <Tool
+                Name="VCNMakeTool"
+                BuildCommandLine="make -j2 target COMPILER=msvc9"
+                ReBuildCommandLine="make vs-clean COMPILER=msvc9 &amp;&amp; make -j2 target COMPILER=msvc9"
+                CleanCommandLine="make vs-clean COMPILER=msvc9"
+                Output="$(ProjectDir)win32_msvc9_release\spcl.exe"
+            />
+        </Configuration>
+    </Configurations>
+    <Files>
+        <Filter Name="Source Files">
+            <File RelativePath="src\attribute.cpp"/>
+            <File RelativePath="src\classMethod.cpp"/>
+            <File RelativePath="src\coerceFrom.cpp"/>
+            <File RelativePath="src\coerceTo.cpp"/>
+            <File RelativePath="src\constant.cpp"/>
+            <File RelativePath="src\construct.cpp"/>
+            <File RelativePath="src\cppGenerator.cpp"/>
+            <File RelativePath="src\cppType.cpp"/>
+            <File RelativePath="src\dataType.cpp"/>
+            <File RelativePath="src\enum.cpp"/>
+            <File RelativePath="src\function.cpp"/>
+            <File RelativePath="src\generatorTools.cpp"/>
+            <File RelativePath="src\innerClass.cpp"/>
+            <File RelativePath="src\main.cpp"/>
+            <File RelativePath="src\mapClass.cpp"/>
+            <File RelativePath="src\moduleDefinition.cpp"/>
+            <File RelativePath="src\serviceDefinition.cpp"/>
+            <File RelativePath="src\simpleType.cpp"/>
+            <File RelativePath="src\struct.cpp"/>
+            <File RelativePath="src\verbatim.cpp"/>
+            <File RelativePath="src\verbatimConstruct.cpp"/>
+            <File RelativePath="src\wrapperClass.cpp"/>
+            <File RelativePath="Makefile"/>
+        </Filter>
+        <Filter Name="Header Files">
+            <File RelativePath="src\cppGenerator.hpp"/>
+            <File RelativePath="src\generatorTools.hpp"/>
+        </Filter>
+    </Files>
+</VisualStudioProject>

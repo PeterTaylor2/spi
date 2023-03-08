@@ -1,0 +1,184 @@
+\documentclass[a4paper] {article}
+
+\addtolength{\hoffset}{-1.27cm} 
+\addtolength{\textwidth}{2.54cm}
+
+\pagestyle{headings}
+
+\usepackage{amsmath}
+\usepackage{verbatim}
+\usepackage{longtable}
+\usepackage{calc}
+\usepackage{graphicx}
+\usepackage{fancyvrb}
+
+% always load hyperref last since it redefines many LaTeX commands
+% also you need to have hyperref turned off if you are using YAP to view .dvi files
+\usepackage[colorlinks=true,bookmarks=true]{hyperref}
+\setlongtables
+
+%\setlength{\topmargin}{-20mm}
+%\setlength{\oddsidemargin}{-2.4mm}
+%\setlength{\evensidemargin}{-2.4mm}
+%\setlength{\textwidth}{164mm}
+%\setlength{\textheight}{256mm}
+%\setlength{\columnsep}{8mm}
+%\setlength{\columnseprule}{0.4pt}
+
+\parindent0mm
+\parskip2ex plus1ex minus1ex
+
+
+
+\author{Peter Taylor}
+\date{6 February 2015}
+\sloppy
+
+% define various commands for the standard constructs we will use in this document
+
+\title{SPI White Paper (DRAFT)}
+\begin{document}
+\maketitle
+\begin{abstract}
+This document describes the purpose and motivation for using the Sartorial Programming Interface (SPI).
+We also give you some background of the history of this product.
+\end{abstract}
+\tableofcontents
+
+\section{Standard use case}
+
+Your group develops and uses a number of libraries written in C or C++ which will then be used in application development.
+Typically these libraries will be calculation libraries which need a low-level language like C or C++ for high performance.
+However in general C++ is not the language of choice for application development.
+Hence you need to make these libraries available to users (either direct end users or other programming groups) in programming languages other than C++.
+
+In addition you may wish to separate the development of the calculation libraries (hereafter named as analytics libraries) from the application development with a clear dividing line between the two types of software development.
+
+We will assume (for the sake of argument) that the analytics libraries exist - either developed in-house or externally.
+
+The idea of the Sartorial Programming Interface (SPI) is that you will wrap these libraries with an extra layer in order to satisfy different user interface requirements.
+At present we support the following target applications:
+
+\begin{itemize}
+	\item Microsoft Excel
+	\item Python
+	\item .NET, e.g. C\# etc.
+	\item C++ - a controlled interface to the underlying C++.
+\end{itemize}
+
+When using SPI you will need to write a collection of interface-neutral text-based configuration file format that will describe the low-level libraries you are trying to wrap.
+Subsequently the SPI code generators are invoked to generate the interface code automatically from the configuration files.
+Not only do we generate code, but we also generate a user guide for the product which can be produced before any code is fully compiled.
+Thus you can provide a specification for discussion with your clients at an early stage in any project, and also as the product is developed further the user guide is maintained in step with the software released.
+
+One of the key features of SPI is the support for logging and replay.
+What this means is that you can turn logging on (at run-time) and create a log file of all the function calls which use the standard interface.
+Subsequently you can replay the log file using a debugger, or create a visualisation of the log file using Excel.
+The benefit of this feature is that after you have released your product library, you can support it easily.
+The users have a question about why some function fails or gives a particular answer.
+You can give simple instructions on how to create a log file, and your development group can then examine the log file to provide explanations and (if necessary) fixes to the software.
+
+\subsection{Contents of a typical product release}
+
+The typical product release for Windows will contain the following files:
+
+\begin{itemize}
+	\item SPI run-time libraries. These are the same for any product that you have developed yourself and are provided by the SPI development kit.
+	\item User-guide in PDF format describing all the functions and classes in your product.
+	\item Product dynamic link library (.DLL file) which contains the generated interface layer code linked with your own analytics library. You can choose whether to statically bind your analytics library to this .DLL or provide it as a separate DLL.
+	\item Excel dynamic link library (.XLL file). This will call into the product DLL and the SPI run-time DLL.
+	\item Excel add-in file (.XLA file) which is used to load the .XLL file and provide a number of menu items in the Excel menu.
+	\item Python extension libary (.PYD file). This will call into the product DLL and the SPI run-time DLL.
+	\item .NET assembly (.DLL file) which can be used in any .NET supported language. In practice this will usually be C\#. The .NET assembly calls into the product DLL and the SPI run-time DLL.
+	\item .NET XML file - this helps to describe the .NET assembly and provides intellisense support inside Microsoft Visual Studio for C\# development.
+\end{itemize}
+
+Note that the Excel, Python and .NET interfaces all call into the common product library.
+This means that you have various options for interoperability between these environments.
+For Linux we don't support .NET and Excel - so the release package would exclude those components.
+
+The logging facility is available from any of the interfaces provided - the product DLL, the Excel DLL, the Python extension library or the .NET assembly.
+If the application is developed in C++ then the product DLL is sufficient.
+
+\subsection{What is defined by the SPI configuration files}
+
+As standard SPI has a number of built-in data types - strings, integers, real numbers, dates, one-dimensional arrays, rectangular arrays.
+SPI configuration files enable you to define your own data types, plus stand-alone functions and member functions of classes.
+
+Within the configuration files you can define the following:
+
+\begin{itemize}
+	\item Simple data types - these are simple mappings from the standard built-in type to a type internal to your analytics library.
+	The classic case is the Date type - SPI has its own representation of dates, but your analytics library will also probably have its own date representation.
+	The simple data type mechanism allows you to map between the SPI outer type and the analytics library inner type.
+	\item Enumerated data types - a valid list of integer values for a particular purpose.
+	From Excel and Python these are represented as strings, but within the product DLL and the .NET assembly these use the standard enumerated types for those languages.
+	\item Classes with single inheritance.
+	In general we represent classes by using the pointer to implementation mechanism (PIMPL) also known as wrapping.
+	Hence we tend to use the term `wrapper classes'.
+	Again we can distinguish between the outer type visible to the users (the wrapper class) and the inner type from your analytics library.
+	SPI wrapper classes support inheritance, and this should mirror the inheritance structure of your inner library.
+	\item Stand-alone functions as well as class member functions.
+\end{itemize}
+You can define one interface file for a group of functionality, and then link them together by a list of interface files in a master service file.
+Service files can also refer to other service files, which enables you to split your software into different products for bigger systems.
+
+\section{History}
+
+The developer of SPI has a lot of experience of software development both within and without the financial sector.
+He worked for a long time at a large US investment bank in various quantitative groups, often as the architect for the library produced by those groups.
+Of course when you work for an investment bank all your work belongs to the bank - so he made the decision to leave the bank and start a new career as a consultant working part time for a hedge fund.
+Using his many years of experience with similar technology, he wrote SPI from scratch over a period of almost three years since leaving the investment bank.
+
+Note that the similar product at the investment bank was used by all the four target applications mentioned above.
+We had risk management systems working in C++ developed by a different group from the pure quant group.
+We had much use of Excel spreadsheets for trade and research users.
+Another risk management system used Python extensively.
+Tactical software development groups used the library from C\# and also provided some interoperability between the Excel and .NET builds where .NET code was used to access various databases, and the resulting objects from the database were then made available directly to be used within Excel.
+
+For these use cases the logging and replay facility was absolutely essential and enabled rapid diagnosis for many of the problems that arise in real-world analytics library development.
+
+SPI at present is working but not complete.
+What do we mean by that?
+
+The similar product developed at the investment bank was working after about one man year of development, but subsequently as it was used extensively lots of extra little requirements came to light.
+These are the features that still need to be provided for SPI - extra requirements specific to a particular use case.
+Since the code was written from scratch without reference to the original code, not all these extra requirements can be remembered - the expectation is that as the product begins to be used a new set of similar requirements will come to light!
+Note that SPI has improvements in design and implementation over the similar product developed at the investment bank.
+
+Note that the interface technology developed at the investment bank was the latest iteration of a process that began in the 90s when the bank was mostly using `C' and languages such as Python were not being used and .NET certainly didn't exist.
+The design of SPI is tailored specifically to the use of C++ for your analytics with a fully object-oriented approach.
+
+\subsection{Usage}
+
+The SPI package comes with some sample code which demonstrates the product in action.
+These are real analytics (using open source code) but the goal is not to provide an analytics library that you could use in production.
+Rather the goal is to show the language features of SPI in action.
+Thus the sample code will provide some very basic credit and rates analytics functionality - build a discount curve, compute market rates and fair value for some simple products.
+
+In addition we have developed some software for the analysis of bridge hands (bridge is a card game).
+The low-level analysis software is an open source library written in C++.
+Using SPI this software is available via Excel and Python which you can use to build applications which use the low-level analysis tools.
+
+Finally the first fully commercial use of SPI is currently underway with the use of SPI to provide the interface technology for a new library development at a hedge fund.
+This process is helping provide a number of micro improvements to the SPI product set.
+
+\section{Availability}
+
+Windows binaries for 32-bit or 64-bit development are available from the web-site.
+The Windows package includes the SPI run-time libraries in binary format, plus the code generators, plus the sample code.
+In addition we provide the full developed package for the analysis of bridge hands plus some practical examples of how you could use it from Excel and Python.
+
+The code generators available for free from the web-site will have a time-out feature, and the run-time libraries will have a pop-up window at start-up when loaded from Excel, Python or .NET.
+
+For sites where there is a significant consultation project, the intention is to provide the SPI run-time libraries with source code (so that you can build for any compiler set-up of your choice) plus the code generators in executable format.
+The code generators will be tied to that client site, but there will be no time-out.
+
+For other commercial users of the software, the code generators will have an annual time-out and the user will need to pay an annual fee for renewal of the license for the code generators.
+The run-time libraries are provided with source code in this case and without any annoying pop-up windows.
+Training and set-up is available at consultancy rates (typically two weeks in total), and this also pays for the first annual license fee.
+What this means is that if you have finished the product development then you can use the product you have developed in perpetuity.
+However if you want to continue to develop additional functions then you will need to pay an annual license for the code generators, at which point you will also benefit from any new developments in SPI in that year.
+On request you can enter into an escrow agreement so that if support is no longer available, then you will be able to obtain the source code from escrow.
+
+\end{document}

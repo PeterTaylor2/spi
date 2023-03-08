@@ -1,0 +1,12 @@
+# macos64_config.mk
+
+G_BASE_CONFIG:=macos64_gcc
+
+ifdef COMPILER
+G_BASE_CONFIG:=macos64_$(COMPILER)
+endif
+
+G_CONFIG_COMPILER?=gcc
+G_CONFIG_COMPILER_BITS?=64
+G_CONFIG_COMPILER_ABI?=Release-macos64
+

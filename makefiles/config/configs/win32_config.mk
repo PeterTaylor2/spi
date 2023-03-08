@@ -1,0 +1,41 @@
+# win32_config.mk
+#
+# parameters for building 32-bit libraries and applications on a 32-bit machine
+# using VC16 as the default compiler
+#
+# the main issue is how to define the directory which contains the compiler
+# which on a 32-bit machine will be installed in Program Files
+#
+
+ifdef WIN32_COMPILER
+COMPILER?=$(WIN32_COMPILER)
+else
+COMPILER?=msvc16
+endif
+
+G_WIN32_PROGRAM_FILES:=/cygdrive/c/Program Files
+G_BASE_CONFIG:=win32_$(COMPILER)
+
+# this is the compiler that we use to build the binaries that are only
+# used during the build system rather than for release
+# site.mk can be used to define the Windows specific compiler used
+# the ancient default is to use MSVC9 - an attempt to avoid runtime library problems
+
+ifdef G_WIN32_CONFIG_COMPILER
+G_CONFIG_COMPILER?=$(G_WIN32_CONFIG_COMPILER)
+else
+G_CONFIG_COMPILER?=msvc9
+endif
+
+ifdef G_WIN32_CONFIG_COMPILER_BITS
+G_CONFIG_COMPILER_BITS?=$(G_WIN32_CONFIG_COMPILER_BITS)
+else
+G_CONFIG_COMPILER_BITS?=32
+endif
+
+ifdef G_WIN32_CONFIG_COMPILER_ABI
+G_CONFIG_COMPILER_ABI?=$(G_WIN32_CONFIG_COMPILER_ABI)
+else
+G_CONFIG_COMPILER_ABI?=Release-vc9
+endif
+

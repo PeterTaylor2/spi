@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioProject
+    ProjectType="Visual C++"
+    Version="9.00"
+    Name="spgtools"
+    ProjectGUID="{CC73238F-8A2F-11E2-A403-C485083D28D0}"
+    RootNamespace="spgtools"
+    Keyword="MakeFileProj"
+    TargetFrameworkVersion="196613"
+    >
+    <Platforms>
+        <Platform Name="Win32"/>
+    </Platforms>
+    <Configurations>
+        <Configuration
+            Name="Debug|Win32"
+            OutputDirectory="win32_msvc9_debug"
+            IntermediateDirectory="win32_msvc9_debug"
+            ConfigurationType="0"
+            >
+            <Tool
+                Name="VCNMakeTool"
+                BuildCommandLine="make -j2 target COMPILER=msvc9 DEBUG=1"
+                ReBuildCommandLine="make vs-clean COMPILER=msvc9 DEBUG=1 &amp;&amp; make -j2 target COMPILER=msvc9 DEBUG=1"
+                CleanCommandLine="make vs-clean COMPILER=msvc9 DEBUG=1"
+                Output="$(ProjectDir)win32_msvc9_debug\spgtools.lib"
+            />
+        </Configuration>
+        <Configuration
+            Name="Release|Win32"
+            OutputDirectory="win32_msvc9_release"
+            IntermediateDirectory="win32_msvc9_release"
+            ConfigurationType="0"
+            >
+            <Tool
+                Name="VCNMakeTool"
+                BuildCommandLine="make -j2 target COMPILER=msvc9"
+                ReBuildCommandLine="make vs-clean COMPILER=msvc9 &amp;&amp; make -j2 target COMPILER=msvc9"
+                CleanCommandLine="make vs-clean COMPILER=msvc9"
+                Output="$(ProjectDir)win32_msvc9_release\spgtools.lib"
+            />
+        </Configuration>
+    </Configurations>
+    <Files>
+        <Filter Name="Source Files">
+            <File RelativePath="src\commonTools.cpp"/>
+            <File RelativePath="src\generatedOutput.cpp"/>
+            <File RelativePath="src\namespaceManager.cpp"/>
+            <File RelativePath="src\pl.cpp"/>
+            <File RelativePath="src\templateLexer.cpp"/>
+            <File RelativePath="src\texUtils.cpp"/>
+            <File RelativePath="Makefile"/>
+        </Filter>
+        <Filter Name="Header Files">
+            <File RelativePath="commonTools.hpp"/>
+            <File RelativePath="generatedOutput.hpp"/>
+            <File RelativePath="namespaceManager.hpp"/>
+            <File RelativePath="pl.hpp"/>
+            <File RelativePath="texUtils.hpp"/>
+            <File RelativePath="src\templateLexer.hpp"/>
+            <File RelativePath="src\FlexLexer.h"/>
+        </Filter>
+    </Files>
+</VisualStudioProject>

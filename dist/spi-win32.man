@@ -1,0 +1,89 @@
+# win32 specific files
+# not config-build target should put these in config/bin directory
+
+config/bin-win32/spcl.exe config/bin-win32
+config/bin-win32/spxl.exe config/bin-win32
+config/bin-win32/sppy.exe config/bin-win32
+config/bin-win32/sptex.exe config/bin-win32
+config/bin-win32/spc.exe config/bin-win32
+config/bin-win32/spcs.exe config/bin-win32
+
+python/x86/lib/python27.lib
+python/x86/lib/python37.lib
+python/x86/lib/python38.lib
+python/x86/lib/python39.lib
+python/x86/lib/python310.lib
+python/x64/lib/python27.lib
+python/x64/lib/python37.lib
+python/x64/lib/python38.lib
+python/x64/lib/python39.lib
+python/x64/lib/python310.lib
+python/include/py27/*.h
+python/include/py37/*.h
+python/include/py38/*.h
+python/include/py38/cpython/*.h
+python/include/py39/*.h
+python/include/py39/cpython/*.h
+python/include/py310/*.h
+python/include/py310/cpython/*.h
+excel/win32/xl4/xlcall32.lib
+excel/win32/xl12/xlcall32.lib
+excel/win32/xl15/xlcall32.lib
+excel/win64/xl15/xlcall32.lib
+excel/vba/*.bas
+excel/vba/*.frm
+excel/vba/*.frx
+
+# files for the windows build system
+
+makefiles/cygwin32/bin/cmp.exe
+makefiles/cygwin32/bin/cp.exe
+makefiles/cygwin32/bin/echo.exe
+makefiles/cygwin32/bin/ln.exe
+makefiles/cygwin32/bin/make.exe
+makefiles/cygwin32/bin/mkdir.exe
+makefiles/cygwin32/bin/rm.exe
+makefiles/cygwin32/bin/sh.exe
+makefiles/cygwin32/bin/which.exe
+makefiles/cygwin32/bin/grep.exe
+makefiles/cygwin32/bin/cut.exe
+makefiles/cygwin32/bin/pwd.exe
+makefiles/cygwin32/bin/tar.exe
+makefiles/cygwin32/bin/cyg*.dll
+makefiles/cygwin32/bin/README.txt
+makefiles/cygwin32/tmp/README.txt
+
+# source files for gendep.exe
+# no need for gendep.exe since we have the source code
+makefiles/gendep/src/*.[ch]
+makefiles/gendep/src/*.[ch]pp
+makefiles/gendep/Makefile
+
+# needed in case we need to use an earlier version of Excel for makeXLAddin.exe
+# hence we don't package makeXLAddin.exe
+makeXLAddin/makeXLAddin/App.config
+makeXLAddin/makeXLAddin/main.cs
+makeXLAddin/makeXLAddin/makeXLAddin.csproj
+makeXLAddin/makeXLAddin/Properties/AssemblyInfo.cs
+makeXLAddin/makeXLAddin.sln
+
+# project files for runtime library builds
+
+spi-vs1[67].sln
+spi-vs1[67]-python.sln
+spi-vs1[67]-cs.sln
+spi.guid
+dll/spi-dll.guid
+c/spi-c-dll.guid
+excel/spxl-dll.guid
+python/sppy-dll.guid
+svo/spdoc/spdoc.guid
+spi_new_delete/spi-new-delete.guid
+spi_util/spi-util.guid
+spi_boost/lib/spi-boost-lib.guid
+spi_curl/spi_curl.guid
+xlcall32/xlcall32.guid
+xltest/xltest.guid
+replay/dll/replay-dll.guid
+replay/python/replay-python.guid
+replay/python/replay-python-install.guid

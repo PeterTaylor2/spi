@@ -1,0 +1,54 @@
+/*
+
+    Sartorial Programming Interface (SPI) runtime libraries
+    Copyright (C) 2012-2023 Sartorial Programming Ltd.
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+    USA
+
+*/
+#ifndef SPI_LEXER_READER_HPP
+#define SPI_LEXER_READER_HPP
+
+/*
+***************************************************************************
+** LexerReader.hpp
+***************************************************************************
+** Functions for reading various standard types from a Lexer.
+***************************************************************************
+*/
+
+#include "Value.hpp"
+#include "Array.hpp"
+
+namespace spi_util
+{
+    class Lexer;
+}
+
+SPI_BEGIN_NAMESPACE
+
+SPI_DECLARE_RC_CLASS(Map);
+SPI_DECLARE_RC_CLASS(ValueArray);
+SPI_DECLARE_RC_CLASS(ObjectReader);
+
+Value ReadValue(spi_util::Lexer* lexer);
+MapSP ReadMap(spi_util::Lexer* lexer);
+ValueArraySP ReadArray(spi_util::Lexer* lexer);
+
+SPI_END_NAMESPACE
+
+#endif
+

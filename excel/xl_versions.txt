@@ -1,0 +1,19 @@
+Excel 2.0 (1987)
+Excel 3.0 (1990)
+Excel 4.0 (1992)
+Excel 5.0 (1993)
+Excel 95 (v7.0)
+Excel 97 (v8.0)
+Excel 2000 (v9.0)
+Excel 2002 (v10.0)
+Excel 2003 (v11.0)
+Excel 2007 (v12.0)
+Excel 2010 (v14.0)
+Excel 2013 (v15.0)
+Excel 2016 (v16.0)
+Excel 2019, Office 365 and subsequent (v16.0)
+
+Initial Excel development kit was published for Excel 4.0 - hence xl4
+Second version published approximately 2009 (that is the copyright date on the documentation) - hence xl12
+Latest copy is named Excel2013XLLSDK - hence xl15
+

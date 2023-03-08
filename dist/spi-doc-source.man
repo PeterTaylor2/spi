@@ -1,0 +1,9 @@
+# user-guide (including source)
+
+spi-user-guide.pdf
+spi-user-guide.tex
+spi-user-guide/executive-summary.tex
+spi-user-guide/high-level.tex
+spi-user-guide/reference.tex
+spi-user-guide/parser-autodoc.tex
+

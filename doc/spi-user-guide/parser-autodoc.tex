@@ -1,0 +1,955 @@
+\newpage
+\subsection{SPI service file reference}
+
+\subsubsection{Service Definition} \label{service}
+
+The service command defines the overall characteristics of the service. The service is a collection of modules which each contain data types, function definitions etc. In total, the service is represented by a shared library for the outer C++ layer, plus higher level shared libraries for the different target platforms, e.g. Excel, Python, .NET.
+
+\textbf{SYNTAX:}
+\nopagebreak
+\begin{Verbatim}[commandchars=\\\{\}]
+    \emph{/** description */}
+    %service \emph{serviceName} ...;
+\end{Verbatim}
+
+with the following optional arguments:
+
+
+\small
+
+\begin{longtable}{|p{80pt}|p{150pt}|p{140pt}|l}
+
+\cline{1-3} \textbf{Name} & \textbf{Default} & \textbf{Range} & 
+\endfirsthead
+
+\cline{1-3} \textbf{Name} & \textbf{Default} & \textbf{Range} & 
+\endhead
+
+\cline{1-3} \multicolumn{3}{r}{{Continued on next page}}
+\endfoot
+
+\cline{1-3}
+\endlastfoot
+
+\cline{1-3} \texttt{namespace} & \texttt{\$serviceName} & Valid C++ identifier \\ 
+
+\cline{1-3} \texttt{dllName} & \texttt{\$serviceName} &  \\ 
+
+\cline{1-3} \texttt{longName} & \texttt{\$serviceName} &  \\ 
+
+\cline{1-3} \texttt{version} & 1.0.0.0 &  \\ 
+
+\cline{1-3} \texttt{declSpec} & \texttt{\$serviceName} converted to upper case & Valid C++ macro definition \\ 
+
+\cline{1-3} \texttt{sharedPtr} & boost::shared\_ptr & Valid C++ class name \\ 
+
+\cline{1-3} \texttt{sharedPtrInclude} & $<$boost/shared\_ptr.hpp$>$ & Valid C++ header file name \\ 
+
+\cline{1-3} \texttt{baseService} &  &  \\ 
+
+\cline{1-3} \texttt{noLog} & False & True or False \\ 
+
+\cline{1-3} \texttt{useVersionedNamespace} & False & True or False \\ 
+\cline{1-3}
+
+\end{longtable}
+\normalsize
+With the exception of the service description, the \%service command should be the first command in a service file.
+
+The \texttt{serviceName} defines the name of the generated file names for the C++ interface.
+
+The \texttt{dllName} defines the name of the actual DLL and will be defined in the properties.mk generated file.
+The name excludes extensions such as .dll and .so which will be added by the standard makefiles.
+
+The \texttt{namespace} defines the name of functions seen by the end-user, and also the name of some of the DLLs created for the high level interfaces (e.g. Excel, Python).
+
+The parameters regarding shared pointer implementation indicate how shared pointers are implemented in the inner library.
+If the inner library does not implemented shared pointers, or if it uses boost, then you can leave these options undefined.
+
+The \texttt{baseName} indicates that this service relies upon another service, and that objects created in the base service can be used in this service.
+
+Setting \texttt{noLog} to true will turn off the possibility of logging for this service.
+The code required to support logging is quite considerable, so you may wish to reduce the size of your library if you have no need for the logging feature.
+
+
+\subsubsection{Import Types Library} \label{import}
+
+The \%import command is used to import the types defined by another service.
+Whenever you generate the C++ source code for a service using \texttt{spcl} then a file containing information about the data types provided by that service is also written.
+The \%import command will refer to that file, and as a result in this new service you can re-use any types defined in the previous service.
+In particular you can use these types for inputs and outputs, and you can sub-class any base classes.
+
+
+\textbf{SYNTAX:}
+\nopagebreak
+\begin{Verbatim}[commandchars=\\\{\}]
+    \emph{/** description */}
+    %import "\emph{importFileName}" ...;
+\end{Verbatim}
+The \%import command must follow the \%service command in the service file.
+The \%import command must be before any \%export commands.
+You can only have one \%import command in the service file.
+
+In addition, the namespace of the types library that is loaded 
+via the \%import command must be different from the namespace 
+for this service.
+If you want the namespace to be the same, then you should be 
+using the \texttt{\$baseName} concept instead.
+
+Note that the generated type library file names have the extension \texttt{.svt}.
+
+\subsubsection{Export Module} \label{export}
+
+The \%export command is used to define the name of a file which contains module definitions. Typically we will have a list of \%export commands in a service file. The rules on dependency is that a subsequent module can use data types defined by previous modules (or earlier in the same module. Hence the order of \%export commands is significant. 
+In addition (as we shall discover in more detail later), modules can have their own namespaces. For technical reasons it is essential that module namespaces must be contiguous. This means that two (or more) modules can share the same namespace only if they are exported one after another.
+
+\textbf{SYNTAX:}
+\nopagebreak
+\begin{Verbatim}[commandchars=\\\{\}]
+    \emph{/** description */}
+    %export "\emph{exportFileName}" ...;
+\end{Verbatim}
+
+with the following optional argument:
+
+
+\small
+
+\begin{longtable}{|p{80pt}|p{150pt}|p{140pt}|l}
+
+\cline{1-3} \textbf{Name} & \textbf{Default} & \textbf{Range} & 
+\endfirsthead
+
+\cline{1-3} \textbf{Name} & \textbf{Default} & \textbf{Range} & 
+\endhead
+
+\cline{1-3} \multicolumn{3}{r}{{Continued on next page}}
+\endfoot
+
+\cline{1-3}
+\endlastfoot
+
+\cline{1-3} \texttt{header} & False & True or False \\ 
+\cline{1-3}
+
+\end{longtable}
+\normalsize
+The \%export commands must follow the \%service command in the service file.
+
+The \texttt{exportFileName} is the name of a file expressed in relative terms to the service file name which contains the module definitions.
+
+The header option should not be used at this time.
+
+
+\subsubsection{Startup function} \label{startup}
+
+\textbf{SYNTAX:}
+\nopagebreak
+\begin{Verbatim}[commandchars=\\\{\}]
+    void startup(\emph{dirname}) \{ verbatim \}
+\end{Verbatim}
+
+The void keyword indicates that we are defining either a startup or shutdown function.
+If defined, then the startup function is called (with one parameter which is a string giving the directory name of the DLL) when the service DLL is loaded.
+
+The purpose is to provide extra initialisation functionality in addition to that provided as standard by SPI.
+
+For example, you may wish to read some initialisation files.
+This is why the input parameter of the DLL is provided, so that as part of your package you can bundle initialisation files in the same directory as the DLLs.
+
+
+\subsubsection{Shutdown function} \label{shutdown}
+
+\textbf{SYNTAX:}
+\nopagebreak
+\begin{Verbatim}[commandchars=\\\{\}]
+    void shutdown() \{ verbatim \}
+\end{Verbatim}
+
+The void keyword indicates that we are defining either a startup or shutdown function.
+If defined, then the shutdown function is called (without parameters) when the service is deleted.
+
+The purpose is to provide extra termination functionality in addition to that provided as standard by SPI.
+
+For example, you may wish to release memory creating by various caches defined by the application software.
+
+
+\newpage
+\subsection{SPI module file reference}
+
+\subsubsection{Module} \label{module}
+
+A module defines a collection of constructs (functions, classes, other data types etc.). The module corresponds to a set of C++ file names to be generated for each module.
+
+
+\textbf{SYNTAX:}
+\nopagebreak
+\begin{Verbatim}[commandchars=\\\{\}]
+    \emph{/** description */}
+    \%module \emph{\$moduleName} ...;
+\end{Verbatim}
+
+with the following optional arguments:
+
+
+\small
+
+\begin{longtable}{|p{80pt}|p{150pt}|p{140pt}|l}
+
+\cline{1-3} \textbf{Name} & \textbf{Default} & \textbf{Range} & 
+\endfirsthead
+
+\cline{1-3} \textbf{Name} & \textbf{Default} & \textbf{Range} & 
+\endhead
+
+\cline{1-3} \multicolumn{3}{r}{{Continued on next page}}
+\endfoot
+
+\cline{1-3}
+\endlastfoot
+
+\cline{1-3} \texttt{namespace} &  & Valid C++ identifier \\ 
+\cline{1-3}
+
+\end{longtable}
+\normalsize
+Note that the module definition must come before any other definitions within the file.
+
+The optional module namespace provides a namespace for all the definitions within the file. Two or more modules can share the same namespace, but the namespace definitions using the same namespace must be contiguous in the list of modules exported from the service file.
+
+The reason for this constraint is that not all target platforms support the concept of a namespace in the same manner as C++. In particular, for the .NET interface we implement a namespace by creating a class instead. Since we cannot split the definition of a class, it is therefore becomes a requirement that the namespace definitions are contiguous.
+
+
+\subsubsection{DataType} \label{dataType}
+
+A data type is defined by a sequence of tokens separated by \texttt{`.'} where we use the \texttt{`.'} to separate the namespace elements of the data type.
+
+Data types can be user defined or built-in data types. The following data types are built into the SPI language:
+
+
+\small
+
+\begin{longtable}{|p{80pt}|p{300pt}|l}
+
+\cline{1-2} \textbf{Typename} & \textbf{Description} & 
+\endfirsthead
+
+\cline{1-2} \textbf{Typename} & \textbf{Description} & \\
+\cline{1-2} \endhead
+
+\cline{1-2} \multicolumn{2}{r}{{Continued on next page}}
+\endfoot
+
+\cline{1-2}
+\endlastfoot
+
+\cline{1-2} int & int in C++ \\ 
+
+\cline{1-2} long & long in C++ - represented as int in the public interface - but converted automatically to/from int \\ 
+
+\cline{1-2} double & double in C++ \\ 
+
+\cline{1-2} char & char in C++ \\ 
+
+\cline{1-2} bool & bool in C++ \\ 
+
+\cline{1-2} size\_t & size\_t in C++ - represented as int in the public interface - but converted (and validated) automatically to/from int \\ 
+
+\cline{1-2} string & std::string in C++ \\ 
+
+\cline{1-2} date & spi::Date in C++ \\ 
+
+\cline{1-2} Variant & spi::Variant in C++ - this is a type that can represent any type and generally the interface code will resolve this to one or more concrete types as required \\ 
+
+\cline{1-2} void & For return types only - indicates no value is returned from the function or class method. \\ 
+\cline{1-2}
+
+\end{longtable}
+\normalsize
+User defined data types can be defined using the \texttt{enum} keyword (see page \pageref{enum}), the \texttt{typedef} keyword (see page \pageref{simpleType}), the \texttt{struct} keyword (see page \pageref{struct}) or the \texttt{class} keyword (see page \pageref{class}).
+
+\subsubsection{ArrayDim} \label{arrayDim}
+
+Array dimensions can be used following a data type to indicate that the attribute (or return type) is in factor an array of some sort.
+The simplest use is \texttt{[]} to indicate a vector.
+
+The sequence \texttt{[][]} indicates a vector of vectors.
+Each vector can be a different size - in other words this is a ragged 2-dimensional array.
+
+The sequence \texttt{[,]} indicates a rectangular matrix.
+
+\textit{Actually the last two paragraphs are aspirational - at present we only support rectangular matrix using the \texttt{[][]} syntax.}
+
+We only support arrays of either one or two-dimensions.
+\subsubsection{Function Parameter} \label{functionParam}
+
+A function parameter consists of a data type followed by an optional array indicator followed by an identifier. The parameter can be an input parameter or an output parameter (to be returned by reference) for a function or class method.
+
+Parameters are comma separated and enclosed in parantheses.
+
+
+\textbf{SYNTAX:}
+\nopagebreak
+\begin{Verbatim}[commandchars=\\\{\}]
+    \emph{/** description */}
+    \emph{dataType}[[]] [&] \emph{name} [?|=\emph{default}]
+\end{Verbatim}
+
+Use of an array definition starting with \texttt{[} indicates that the attribute is an array.
+See ArrayDim (page \pageref{arrayDim}) for further details.
+
+Use of \& after the \texttt{\$dataType} indicates that this is an output parameter to a function or class method. This is an unusual requirement. In general outputs are returned by value via the return type, but if you want to return more than one value then via C++ the simplest way is to use output parameters passed by reference. In the higher level interfaces, output parameters might well returned from the function in some sort of array format. For example, in Excel you have no other choice. In Python, we return multiple outputs via a tuple.
+
+Use of = followed by a valid value indicates that the parameter is optional and the value following the equal sign is the default value to be used in case the user has not provided a value.
+
+Use of ? indicates that the parameter is optional and the default value is unspecified.
+For attributes of type Object the default value would be a NULL Object and therefore not need to be specified.
+For date attributes, the default value would be date zero.
+
+\subsubsection{Function} \label{extern}
+
+Wrapper functions are defined by the \texttt{extern} keyword. The function definition has a return type, function name, input and output parameters, plus the implementation code.
+
+The definition of the return type and function parameters are in terms of the outer data types. The implementation code should be written in terms of the inner data types. The conversion between outer and inner types (and vice versa) is handled by the middle layer generated by the SPCL code generator.
+
+\textbf{SYNTAX:}
+\nopagebreak
+\begin{Verbatim}[commandchars=\\\{\}]
+    \emph{/** description */}
+    extern \emph{returnType} [ [] ] \emph{functionName} (\emph{params}) ...
+    \{ implementation \}
+\end{Verbatim}
+with the following optional arguments:
+
+
+\small
+
+\begin{longtable}{|p{80pt}|p{150pt}|p{140pt}|l}
+
+\cline{1-3} \textbf{Name} & \textbf{Default} & \textbf{Range} & 
+\endfirsthead
+
+\cline{1-3} \textbf{Name} & \textbf{Default} & \textbf{Range} & 
+\endhead
+
+\cline{1-3} \multicolumn{3}{r}{{Continued on next page}}
+\endfoot
+
+\cline{1-3}
+\endlastfoot
+
+\cline{1-3} \texttt{noLog} & False & True or False \\ 
+
+\cline{1-3} \texttt{noConvert} & False & True or False \\ 
+
+\cline{1-3} \texttt{excelOptions} &  & Comma separated options specifically for excel, namely volatile or hidden. \\ 
+\cline{1-3}
+
+\end{longtable}
+\normalsize
+The \emph{extern} keyword defines a stand-alone function call.
+Note that if \texttt{extern} is used inside a class then it defines a method of the class (also known as member function).
+
+\texttt{\$returnType} is the data type (see page \pageref{dataType}), returned by the function although it can also be \texttt{void}.
+Use of \texttt{[]} after the \texttt{\$returnType} indicates that the function returns an array, typically represented by \texttt{std::vector} within the C++ code.
+
+\texttt{\$functionName} is the function name visible at the outer C++ layer and higher level interfaces. At the outer C++ layer it will be within the top level namespace of the service, and also within the (optional) namespace defined at the module level. By choosing the service namespace wisely you can avoid any symbol name clashes between the outer library symbol names and the inner library symbol names. As a result you will often be able to use the same name for the function in the outer library as in the inner library.
+
+\texttt{\$params} defines a comma separated list of function parameters (see page \pageref{functionParam}). The function parameters are enclosed in $(...)$.
+
+Options for the function appear after the function parameters and before the function implementation.
+
+Normally logging is available by default for all functions.
+However for certain simple functions it is better in practice to turn logging off at all times - this can avoid clogging up log files with trivial functions.
+This feature is controlled by the \texttt{\$noLog} option.
+
+Normally the function call uses values of the corresponding inner type for each of the inputs.
+The generated code in such cases is responsible for converting the input value from the outer type to the inner type.
+However sometimes you do not wish to convert the parameters.
+One typical case is when you have a function calling the constructor of a wrapper class.
+In such cases you can set the \texttt{\$noConvert} option to True.
+
+For Excel usage we can also mark a function as \texttt{volatile}.
+This means that whenever the sheet is re-calculated this particular function is calculated even it has no dependencies which have changed.
+We can also mark a function as \texttt{hidden} in Excel.
+This means that it will not appear in the Excel function wizard.
+These features are controilled by the \texttt{\$excelOptions} option.
+
+Finally you must provide an implementation for the function. The implementation code should be surrounded by braces just like a standard function implementation in C++.
+
+The code generator will have converted all the inputs from the outer data type to the corresponding inner data type before invoking your implementation code. The names of the inputs will be the same as the names defined in the list of parameters. All you need to do is write the code fragment that calls the corresponding function within the inner library, and return the output (unless the function is defined as \texttt{void}).
+
+Errors should be handled by throwing an exception. Ideally the exception should be a sub-class of \texttt{std::exception} since in that case the text of the exception will be propagated outwards and be visible to the user of the outer library.
+
+
+\subsubsection{Enumerand} \label{enumerand}
+
+Enumerated types consist of enumerands. Each enumerand has a code, plus optional string representation, and usually the equivalent value in the inner library.
+
+\textbf{SYNTAX:}
+\nopagebreak
+\begin{Verbatim}[commandchars=\\\{\}]
+    \emph{/** description */}
+    \emph{outerValue} [ = \emph{innerValue} ] [ "\emph{alternate}" ... ] 
+\end{Verbatim}
+
+\texttt{\$outerValue} is a valid C++ identifier that represents the enumerand that will be available in the outer library. It will be defined within the namespace of the enumerated type, so you only need to make it unique within the list of enumerands and not globally unique.
+
+\texttt{\$innerValue} is the equivalent value within the inner library. This will be needed if the enumerated type being defined involves wrapping an enumerated type from the inner library (this is the expected use case).
+
+\texttt{\$alternate} defines one or more alternative strings for the enumerand. If you do not provide these, then the string corresponding to the \texttt{\$outerValue} will be the string representation for this value. Within higher level interfaces such as Excel and Python, you will be using the string representation to provide the input values for enumerated types. Serialization also uses the string representation. From the outer C++ layer you can use the symbolic type or the string values.
+
+
+\subsubsection{Enumerated Type} \label{enum}
+
+An enumerated type consists of a number of pre-defined constant values and is represented by an \texttt{enum} in the outer C++ library. The \texttt{enum} is enclosed within a \texttt{class} in the outer C++ library. This approach provides a namespace for the enumerands, plus the ability to allow automatic type conversion via the C++ class constructor from strings or the enumerands.
+
+The expected use case is that it will be used to wrap an equivalent type from the inner C++ library. Note that the inner type can be an enumerated type or any integer type. For example, in some cases the inner library might be using \texttt{int} or \texttt{long} for the equivalent data representation, with a bunch of \texttt{\#define} statements to define the possible values.
+
+
+\textbf{SYNTAX:}
+\nopagebreak
+\begin{Verbatim}[commandchars=\\\{\}]
+    \emph{/** description */}
+    enum \emph{outerTypename} [ <\emph{innerTypeDefinition}> ]
+    \{ enumerands...\}; 
+\end{Verbatim}
+
+\texttt{\$outerTypename} is a valid C++ identifier which defines the typename visible to the outer C++ library. It is contained within the service namespace (and optional module namespace) so it can be the same as the core name of the inner typename if you wish.
+
+\texttt{\$innerTypeDefinition} is optionally enclosed in $<..>$ and is a valid C++ typename understood by the inner C++ library. It can be an integer type (such as \texttt{int} or \texttt{long}) or some user defined type visibale to the inner C++ library. We do not expose this type at all to the outer C++ library user via its header files.
+
+\texttt{\$enumerands} is a comma separated list of enumerands (see page \pageref{enumerand}) defining the possible values for the enumerated type. At least one enumerand must be provided.
+
+
+\subsubsection{Simple Type} \label{simpleType}
+
+A simple type consists of the name of an inner type from the inner C++ library plus one of the built-in types from SPI. In practice, the user of the outer C++ library uses the built-in type and this gets converted to an instance of the inner type before the implementation of a particular function or class method.
+
+Since the conversion happens everytime a variable of a simple type is used you should only use the simple type mechanism for basic scalar types.The classic use case is for converting from the Date format provided as standard by SPI, and the Date format used within the inner C++ library which is unlikely to be exactly the same. Dates are very often represented as an offset from date zero. This indeed is how they are represented within SPI. Hence converting between Date formats would often be a matter of re-basing the integer offset from the zero date.
+
+\textbf{SYNTAX:}
+\nopagebreak
+\begin{Verbatim}[commandchars=\\\{\}]
+    \emph{/** description */}
+    typedef \emph{outerTypename} \emph{name} [ <\emph{innerTypename}> ]
+    \{ conversionRoutines \}; 
+\end{Verbatim}
+
+\texttt{\$outerTypename} is the name of one of the built-in types provided by SPI (see page \pageref{dataType} for a list of the built-in data types).
+
+\texttt{\$name} is the data type name defined here.
+It should be unique at the service level - hence cannot be the same as the name of the built-in types.
+
+\texttt{\$innerTypename} is the name of a C++ type defined by the inner C++ library.
+Note that it can be omitted - in which case the inner type name is the same as output type name.
+That might seem fairly pointless, but it would enable you to possibly provide some consistent validation rules throughout your project. For example, if you were describing a correlation parameter then there is a range of possible values for correlation from -1 to 1. In this case your \emph{convertIn} routine (see below) could simply provide validation of the value, and then return the input value as the converted value.
+
+Within braces you would then need to provide two conversion routines. If the \texttt{\$innerTypename} is missing, then the output conversion are optional, and you would probably only provide the input conversion routine (which would perform some validation as suggested above). The general use case is that you would need to provide both conversion routines.
+
+\subsubsection*{Simple Type Input Conversion Routine}
+
+\textbf{SYNTAX:}
+\nopagebreak
+\begin{Verbatim}[commandchars=\\\{\}]
+    convert\_in(\emph{outerVarName}) \{ implementation \}
+\end{Verbatim}
+
+\texttt{\$outerVarname} is the input to the input conversion function and is a variable of C++ type given by \texttt{\$outerTypename}.
+
+The function implementation should return a variable of C++ type given by \texttt{\$innerTypename}. If an error is detected, then the routine should throw an exception derived from \texttt{std::exception} in order to enable the exception to be correctly propagated to the end user.
+
+The \texttt{\$convert\_in} routine will be called before any variable for this data type is passed into code to be used within the context of the inner library.
+
+\subsubsection*{Simple Type Output Conversion Routine}
+
+\textbf{SYNTAX:}
+\nopagebreak
+\begin{Verbatim}[commandchars=\\\{\}]
+{convert\_out(\emph{innerVarName})\{ implementation \}}
+\end{Verbatim}
+
+\texttt{\$innerVarname} is the input to the output conversion function and is a variable of C++ type \texttt{\$innerTypename}.
+
+The function implementation should return a variable of C++ type corresponding to \texttt{\$outerTypename}. If an error is detected, then the routine should throw an exception derived from \texttt{std::exception} in order to enable the exception to be correctly propagated to the end user.
+
+
+\subsubsection{Typename} \label{typename}
+
+When we define wrapper classes we usually wrap a class and we can rely on the usual class operations for construction and deletion. In such cases we do not need the \texttt{typename} command. However in other cases we are wrapping a struct or some sort of instantiated class template, then we may need to define the type before we try to wrap it.
+
+In these circumstances we use the \texttt{typename} command.
+
+Note that we are defining an existing inner type by use of the \texttt{typename} keyword. However if we do not subsequently wrap the defined type then the definition of the inner type is without purpose.
+
+\textbf{SYNTAX:}
+\nopagebreak
+\begin{Verbatim}[commandchars=\\\{\}]
+    typename \emph{typeDefinition} \emph{name} [ (...) ];
+\end{Verbatim}
+
+with the following optional arguments (which should be enclosed in parantheses before the final semi-colon):
+
+
+\small
+
+\begin{longtable}{|p{80pt}|p{150pt}|p{140pt}|l}
+
+\cline{1-3} \textbf{Name} & \textbf{Default} & \textbf{Range} & 
+\endfirsthead
+
+\cline{1-3} \textbf{Name} & \textbf{Default} & \textbf{Range} & 
+\endhead
+
+\cline{1-3} \multicolumn{3}{r}{{Continued on next page}}
+\endfoot
+
+\cline{1-3}
+\endlastfoot
+
+\cline{1-3} \texttt{freeFunc} &  & Valid C++ identifier \\ 
+
+\cline{1-3} \texttt{copyFunc} &  & Valid C++ identifier \\ 
+
+\cline{1-3} \texttt{isOpen} & false & true or false \\ 
+
+\cline{1-3} \texttt{isShared} & false & true or false \\ 
+
+\cline{1-3} \texttt{isConst} & false & true or false \\ 
+\cline{1-3}
+
+\end{longtable}
+\normalsize
+\texttt{\$typeDefinition} is a sequence of tokens which define the type in terms of the inner library.
+
+\texttt{\$name} is the name of the inner type that you can subsequently use when wrapping this type in a class.
+
+Note that the code generated in the public header files is to replace typename with typedef, and ignore the optional arguments.
+
+An example perhaps will make things a bit clearer:
+\begin{verbatim}
+typename struct _TCurve TCurve(isOpen=true freeFunc=GtoFreeCurve
+                               copyFunc=GtoCopyCurve);
+\end{verbatim}
+
+In the public header file the following would be defined:\begin{verbatim}
+typedef struct _TCurve TCurve;
+\end{verbatim}
+
+and in the generated code we would use the freeFunc to know how to free the memory associated with data of type \texttt{TCurve*}.
+
+The copyFunc is used on occasion to copy the memory associated with data of type \texttt{TCurve*}.
+
+We would be able to declare values of type \texttt{TCurve*} (or perhaps \texttt{boost::shared\_ptr$<$TCurve$>$}) without needing to expose the internals of the \texttt{struct \_TCurve} to the users of the outer library.
+
+To re-iterate - if you are wrapping a class then you will not need to use the \texttt{typename} command. Hence it is quite plausible that you would never use this feature of SPI. The main use case is when you are wrapping a C-library rather than a C++-library.
+
+
+\subsubsection{Template} \label{template}
+
+When we define wrapper classes we usually wrap a class and we can use a simple pre-declaration statement to declare the class in the generated public header file.
+However if we wish to wrap a class defined using a class template then the pre-declaration requires two parts.
+First we need to pre-declare the class template, and then we need to pre-declare the actual class based on that template.
+
+In order to resolve this conundrum you need to define the class template using the \texttt{template} keyword.
+
+
+\textbf{SYNTAX:}
+\nopagebreak
+\begin{Verbatim}[commandchars=\\\{\}]
+    template<class|typename T> class|struct \emph{templateName};
+\end{Verbatim}
+Note that we are defining an existing inner class template by use of the \texttt{typename} keyword.
+However if we do not subsequently wrap something that uses this class template, then the definition of the inner class template is without purpose.
+
+In the generated code the class template will be pre-declared exactly as defined - unless you have pre-declared a class template from the \texttt{std} namespace.
+The reason that we don't pre-declare types such as \texttt{std::vector} is that these templates tend to have more complex definitions with optional second (or more) arguments, and we don't support that syntax here.
+
+Subsequently when defining a wrapper class, you will be able to use the \texttt{\$templateName} as the inner class with the relevant typename as template argument.
+
+An example perhaps will make things a bit clearer:
+\begin{verbatim}
+template<typename T> class CubicSpline;
+\end{verbatim}
+
+In the public header file we wouldn't simply replicate this definition, and now the \texttt{\$templateName} equal to CubicSpline is available as an inner type.
+Suppose we were only interested in a CubicSpline of doubles (in practice the typename is the x-argument for the spline whereas the y-argument of the spline will always be double).
+
+In that case we could use \verb|CubicSpline<double>| as the inner type within a wrapper class definition (see page \pageref{class}).
+
+\newpage
+\subsubsection{Wrapper class} \label{class}
+
+Wrapper classes can be defined for the outer library.
+These are classes that wrap an equivalent class or type from the inner library.
+In general we implement functionality by delegation using the pointer to implementation pattern.
+
+Classes have data and functions - so when we define a wrapper class we must define the attributes of the class, and implement any methods of the class in the SPI configuration file.
+
+In the context of a wrapper class there are two classes involved.
+We will call these the inner class and the outer class.
+Sometimes the inner class will not be a class and instead will be a pre-defined type (via the \texttt{typename} keyword (see page \pageref{typename})).
+Nevertheless we will still refer to the inner type generally as the inner class.
+
+\textbf{SYNTAX:}
+\nopagebreak
+\begin{Verbatim}[commandchars=\\\{\}]
+    \emph{/** description */}
+    class [virtual [delegate]] \emph{className} [ : \emph{baseClassName} ]
+    < [open] [shared] [const] [struct] \emph{innerClassName} |
+      typename \emph{typeName} >
+    ...
+    \{
+        // attributes and properties
+        \emph{/** description */}
+        public|private|property \emph{dataType} [\emph{arrayDim}] \emph{attrName}
+        \{ \emph{accessorCode} \} | ;
+        ...
+        // member functions
+        \emph{/** description */}
+        extern|static|virtual \emph{returnType} [\emph{arrayDim}] \emph{methodName}
+        \{ \emph{implementation} \} | ;
+        ...
+        delegate \emph{innerMethodDeclaration} 
+        \{ \emph{implementation} \}
+        ...
+        // coerce from other types
+        \emph{/** description */}
+        $className (\emph{dataType} \emph{varName})
+        \{ \emph{implementation} \}
+        ...
+        // verbatim code
+    private|public|protected:
+        \emph{verbatim}
+    \}
+    \{ \emph{innerClassConstructorCode} \} | ;
+\end{Verbatim}
+
+with the following optional parameters (defined before the opening \{ which defines the internal details of the class):
+
+\small
+
+\begin{longtable}{|p{80pt}|p{150pt}|p{140pt}|l}
+
+\cline{1-3} \textbf{Name} & \textbf{Default} & \textbf{Range} & 
+\endfirsthead
+
+\cline{1-3} \textbf{Name} & \textbf{Default} & \textbf{Range} & 
+\endhead
+
+\cline{1-3} \multicolumn{3}{r}{{Continued on next page}}
+\endfoot
+
+\cline{1-3}
+\endlastfoot
+
+\cline{1-3} \texttt{noMake} & False & True or False \\ 
+
+\cline{1-3} \texttt{objectName} &  & Alternative string used in object serialization \\ 
+\cline{1-3}
+
+\end{longtable}
+\normalsize
+
+The \texttt{class} definition has many components which we will describe in detail.
+\begin{itemize}
+\item \texttt{\$className}
+\item \texttt{\$baseClassName} (optional)
+\item \texttt{\$innerClass}
+\item \texttt{\$attributes} (any number)
+\item \texttt{\$methods} (any number)
+\item \texttt{\$delegateMethods} (any number)
+\item \texttt{\$coerceFrom} (any number)
+\item \texttt{\$verbatim} (optional)
+\item \texttt{\$innerClassConstructorCode} (optional)
+\end{itemize}
+
+The \texttt{class} keyword defines a C++ class in the outer library with the name \texttt{\$className}.
+The class will be implemented by wrapper an inner class and we will call it the `outer class'.
+
+Before the \texttt{\$className} there are two optional keywords:
+\begin{description}
+\item[virtual:] This means that we are defining a base class and that in practice we expect to define sub-classes of this class which will provide the actual implementation.
+We will be wrapping the base class of the equivalent class hierarchy from the inner library.
+\item[delegate:] We can only define a class to be a delegate class if it also defined as virtual.
+Delegate classes are an advanced feature that allow you to sub-class the outer class and create a sub-class of the inner class via delegation. See page \pageref{delegateClass} for more details about delegate classes.
+\end{description}
+
+The name \texttt{\$className} must be unique and also defines a new data type.
+
+The class can be a sub-class of another previously defined class via the definition of \texttt{\$baseClassName}.
+In this case the \texttt{\$baseClassName} must also be a wrapper class, i.e. defined using the \texttt{class} keyword.
+We define inheritance using the C++ syntax by the use of `:'.
+All inheritance in SPI is \texttt{public} so we don't need to specify it in the configuration file.
+
+\subsubsection*{Inner class definition} \label{innerClass}
+
+After the optional base class definition, we define the inner class with $<..>$ notation - i.e. similar to the template notation of C++.
+
+There are two options for the inner class definition.
+
+Normally you define the inner class name, and then by the use of four optional keywords you define various properties of the inner class as follows:
+\begin{description}
+\item[open:] This is an extremely important part of the definition.
+Declaring the inner class as \texttt{open} means that given an instance of the inner class you can access the data from that class in such a way that you have enough data to be able to reconstruct the class by calling one of its constructors.
+In other words, you can see the `state' of the class.
+Not all classes are implemented in this manner.
+In the traditional C++ paradigm, a class is a black box and you cannot necessarily see its state - it contains functions and data together behind the encapsulation layer.
+If a class is not marked as \texttt{open} then it is treated as a \texttt{closed} class - and by default we assume that classes are \texttt{closed}.
+
+Whether a class is open or closed will greatly affect how we serialize the class.
+For an \texttt{open} class, we do not need to remember how the object was created - we can look inside the inner class and determine its state and serialize it accordingly.
+However for a \texttt{closed} class, we must remember how the object was created and serialize the attributes that were used to construct the class.
+
+As far as SPI is concerned it is probably better if the inner class is \texttt{open}, but one of the guiding principles of SPI is that we can cope with the library we are wrapping as it is without needing it to be modified.
+Hence we support both \texttt{open} and \texttt{closed} inner classes.
+The one thing we do not allow is a mixture of \texttt{open} and \texttt{closed} in the same class hierarchy (this may change).
+
+\item[shared:] The pointer to implementation used in the outer class to point to the inner class is always a shared pointer.
+However the inner library might not in general expect the value to be provided as a shared pointer.
+If the inner library does use shared pointers, then specify the inner class to be \texttt{shared}.
+Otherwise you will receive the inner class as a raw pointer.
+
+Note that by default we assume that shared pointers for the inner library are defined by \verb|boost::shared_ptr|.
+However this can be overridden at the service level when the \texttt{\%service} keyword (see page \pageref{service}) was defined.
+What we do not allow is more than one type of shared pointer class in the inner library.
+
+\item[const:] The pointer to implementation can either be const or not-const.
+If the inner library uses this type as const, then indicate this by using the \texttt{const keyword}.
+
+\item[struct:] The inner class is pre-declared in the header files of the generated code.
+Usually the pre-declaration is done using the \texttt{class} keyword.
+However if the class is declared in the inner library as \texttt{struct} then you need to declare the inner class as such by using the \texttt{struct} keyword at this point.
+
+\end{description}
+
+The alternative way to define the inner type is by using the \texttt{typename} keyword to use a type that was previously defined using \texttt{typename}.
+In this case you simply using the notation \verb|<typename inner_type>| where \texttt{\$inner\_type} was defined earlier (see page \pageref{typename} for the syntax).
+Note that the \texttt{typename} command has options for defining the equivalent of \texttt{open}, \texttt{shared} and \texttt{const}.
+
+Note that in the generated code we \texttt{typedef inner\_type} to be the type that is actually returned by the outer class when we requested the corresponding inner class.
+Sometimes the typename \texttt{\$className::inner\_type} will be easier to use than the full shared pointer declaration.
+
+\subsubsection*{Wrapper class options}
+
+The optional \texttt{\$noMake} parameter indicates that the class cannot be constructed in directly in Excel, Python and .NET implementations.
+
+Note that in all cases we generate in the C++ a public static Make function that creates a shared pointer to the class.
+The actual constructor of the class is always protected rather than public to prevent direct use of the constructor for creating raw pointers.
+
+However even if we set \texttt{\$noMake} to \texttt{True}, we still provide the public static function Make in the C++ interface.
+The reason is that sometimes we define a class to use \texttt{noMake=True}, but we want another function to be able to create the class, in which case that function might well be defined with \texttt{noConvert=True} and call the Make function directly.
+
+\subsubsection*{Wrapper class attributes and properties}
+
+The class can have any number of \texttt{\$attributes} and \texttt{\$properties}.
+An attribute or property is defined using one of the keywords \texttt{public}, \texttt{private} or \texttt{property} followed by a data type (with optional array indicator) and the name of the attribute (or property).
+In many cases, the definition is followed by a code fragment which describes how to get the data item from the class, but if this is not necessary then the definition is terminatd by `;'.
+
+The three possible keywords have the following meanings:
+
+\begin{description}
+\item[public:] Defines an attribute of the class which will be available to be fetched from the class and is used in the construction of the class.
+It will appear in the serialization to file of the class.
+\item[private:] Defines an attribute of the class which will not be available to be fetched from the class and is used in the construction of the class.
+Despite not being available to be fetched from the class, it will appear in the serialization to file of the class.
+\item[property:] Defines a property of the class which will be available to be fetched from the class, but is not used in the construction of the class.
+It will not appear in the serialization to file of the class.
+\end{description}
+
+The list of attributes defines the constructor of the class as well as the serialization of the class.
+
+Each attribute or property has an optional code fragment.
+Sometimes you won't need to provide a code fragment, in which case the code generated will be equivalent to:
+\verb|{ return self->name; }| for an attribute called \texttt{name}.
+The variable \texttt{self} corresponds to the instance of the inner type.
+We use \texttt{self} since it is the traditional name of the class variable in Python code (the equivalent is called \texttt{this} in C++ code), and hence we would not expect any class attributes to be actually called \texttt{self}.
+
+So using \texttt{self} you can write any code fragment to return the value of the attribute (or property).
+The value returned should be of the inner type, and the code generator will write the code which translates this value (as required) into the corresponding outer type.
+
+\subsubsection*{Wrapper class constructor}
+
+The generated constructor takes as input the parameters corresponding to the attributes of the class (in the order that the attributes are defined).
+The constructor is declared in the protected section of the class in the generated code, and in the public section of the class there is a static method called Make which returns a shared pointer to the class and simply calls the constructor.
+
+If the attributes of the class (once converted to the inner types) correspond to an existing public constructor of the inner class, then you don't need to provide the constructor for the wrapper class.
+However if this is not the case then you will need to provide some constructor code.
+This is defined after the end of the class definition.
+Normally the class definition ends with `;' as it would in C++ header files, but if you need special constructor code then you will need to provide it in a verbatim code block enclosed with \{...\} at the end of the class definition (in place of the trailing `;'.
+
+\newpage
+\subsubsection{Delegate class} \label{delegateClass}
+
+Delegate classes are a special type of wrapper class where we can also create an inner type given an outer type.
+The assumption is that the inner type has a narrow public interface, and by implementing all of the functions required for that interface we can create a sub-class of the inner type which is implemented by delegation to a sub-class of the outer type.
+
+Why might we want to allow this?
+
+The purpose is for a dynamic language such as Python to allow the Python developer to sub-class one of the types provided by the SPI-built Python extension and use this sub-class (which is written purely in Python) to be used within an algorithm which uses the inner type.
+
+For example, suppose we have a DiscountCurve class which is used in finance to provide discount factors for a particular date in the future.
+We will have many algorithms that use a DiscountCurve as one of its parameters.
+The main body of the existing algorithm is written in the inner library using C++ via the methods of the inner DiscountCurve class.
+
+If we have declared the DiscountCurve to be a delegate class, then we can sub-class the Python DiscountCurve and pass this object into the SPI-built Python function calls.
+These calls will then attempt to extract an instance of the inner class from the Python object.
+When this happens, we construct a sub-class of the inner class for which all the methods needed by the inner class interface will be implemented by calling back into Python to use the implementation of the Python class we have written.
+
+The downside of the approach is that we will lose the logging capability for such functions, and the Python implementation will generally be an order of magnitude slower than the equivalent C++ code.
+
+However the upside is that this approach enables the Python developer to develop prototype algorithms very rapidly and test them out with real pricing algorithms.
+Subsequently if the prototype is a success the code can be re-written for speed in C++.
+
+\newpage
+\subsubsection{Standalone class} \label{struct}
+
+Standalone classes can be defined for the outer library.
+These are classes that do not wrap an equivalent class from the inner library, and hence all functionality must be implemented in the outer library.
+
+Classes have data and functions - so when we define a standalone class we must define the attributes of the class, and implement any methods of the class in the SPI configuration file.
+
+In order to distinguish a standalone class from a wrapper class (see page \pageref{class}), we use the keyword \texttt{struct} to indicate a standalone class, as opposed to the keyword \texttt{class} that we will be using for wrapper classes.
+
+\textbf{SYNTAX:}
+\nopagebreak
+\begin{Verbatim}[commandchars=\\\{\}]
+    \emph{/** description */}
+    struct [virtual] \emph{className} [ : \emph{baseClassName} ] ...
+    \{
+        // attributes
+        \emph{/** description */}
+        \emph{dataType} [\emph{arrayDim}] \emph{attrName};
+        ...
+        // member functions
+        \emph{/** description */}
+        extern|static|virtual \emph{returnType} [\emph{arrayDim}] \emph{methodName}
+        \{ \emph{implementation} \}
+        ...
+        // coerce from other types
+        \emph{/** description */}
+        $className (\emph{dataType} \emph{varName})
+        \{ \emph{implementation} \}
+        ...
+        // verbatim code
+    private|public|protected:
+        \emph{verbatim}
+    \}
+    \{ \emph{constructorValidationCode} \} | ;
+\end{Verbatim}
+
+with the following optional parameters (defined before the opening \{ which defines the internal details of the class):
+
+\small
+
+\begin{longtable}{|p{80pt}|p{150pt}|p{140pt}|l}
+
+\cline{1-3} \textbf{Name} & \textbf{Default} & \textbf{Range} & 
+\endfirsthead
+
+\cline{1-3} \textbf{Name} & \textbf{Default} & \textbf{Range} & 
+\endhead
+
+\cline{1-3} \multicolumn{3}{r}{{Continued on next page}}
+\endfoot
+
+\cline{1-3}
+\endlastfoot
+
+\cline{1-3} \texttt{noMake} & False & True or False \\ 
+
+\cline{1-3} \texttt{objectName} &  & Alternative string used in object serialization \\ 
+\cline{1-3}
+
+\end{longtable}
+\normalsize
+
+The \texttt{struct} definition has many components which wewill describe in detail.
+\begin{itemize}
+\item \texttt{\$className}
+\item \texttt{\$baseClassName} (optional)
+\item \texttt{\$attributes} (any number)
+\item \texttt{\$methods} (any number)
+\item \texttt{\$coerceFrom} (any number)
+\item \texttt{\$verbatim} (optional)
+\item \texttt{\$constructorValidation} (optional)
+\end{itemize}
+
+The \texttt{struct} keyword defines a C++ class in the outer library with the name \texttt{\$className}.
+This name must be unique and also defines a new data type.
+The class can be a sub-class of another previously defined class via the definition of \texttt{\$baseClassName}.
+We define inheritance using the C++ syntax by the use of `:'.
+All inheritance in SPI is \texttt{public} so we don't need to specify it in the configuration file.
+
+Before the \texttt{\$className} there is one optional keyword:
+\begin{description}
+\item[virtual:] This means that we are defining a base class and that in practice we expect to define sub-classes of this class which will provide the actual implementation.
+\end{description}
+
+In this context we will use \texttt{struct} to refer to the definition within SPI and \texttt{class} to refer to the generated code.
+
+The optional \texttt{\$noMake} parameter indicates that the class cannot be constructed in directly in Excel, Python and .NET implementations.
+
+Note that in all cases we generate in the C++ a public static Make function that creates a shared pointer to the class.
+The actual constructor of the class is always protected rather than public to prevent direct use of the constructor for creating raw pointers.
+
+However even if we set \texttt{\$noMake} to \texttt{True}, we still provide the public static function Make in the C++ interface.
+The reason is that sometimes we define a struct to use \texttt{noMake=True}, but we want another function to be able to create the class, in which case that function might well be defined with \texttt{noConvert=True} and call the Make function directly.
+
+The struct can have any number of \texttt{\$attributes}.
+An attribute consists of a data type followed by an optional array indicator followed by the name of the attribute.
+The attribute definition is terminated by `;'.
+
+The list of attributes defines the constructor of the class as well as the serialization of the class.
+
+The generated constructor takes as input the parameters corresponding to the attributes of the class (in the order that the attributes are defined).
+As mentioned above the constructor is actually in the protected section of the class, and in the public section of the class there is a static method called Make which returns a shared pointer to the class and simply calls the constructor.
+See below for discussion of validation of the inputs.
+
+The struct can have any number of \texttt{\$methods}.
+To indicate a method you start with one of the keywords \texttt{extern} or \texttt{static} or \texttt{virtual} which have the following meanings:
+\begin{description}
+\item[extern:] Defines a normal member function.
+We need the \texttt{extern} keyword to distinguish an attribute from a member function in the way discussed when we introduced the common SPI syntax rules.
+\item[static:] Defines a static function of the class.
+Similar to a stand-alone function except that we have access
+to private functions and private global data of the class.
+\item[virtual:] Defines a virtual member function.
+This is a function that we expect to be implemented by 
+sub-classes of this class.
+\end{description}
+The remainder of the definition of a method is the same as the definition of a standalone function (see page \pageref{extern}) with returnType, name, function parameters, options and implementation.
+For \texttt{struct} the implementation is required unless the method has been marked as \texttt{virtual} in which we expect the method to be implemented in a derived class.
+
+The major difference between a method and a function is that (unless the method has been marked as \texttt{static}) is that we have instance variables available.
+
+These will have the same names as the attributes defined in the \texttt{struct} definition.
+Note that for a \texttt{struct} there is no concept of wrapping and hence there is no inner type.
+
+The \texttt{struct} type also supports the concept of coercion from other types.
+If the \texttt{struct} type is simple or standard, then you might be able to coerce it from (for example) a number or a string.
+This is indicated in SPI by defining what looks like a constructor to the struct which takes a single parameter.
+Then you provide the code which converts that parameter into an instance of the class.
+In your implementation code you are expected to return a shared pointer to the class.
+Typically you will actually call the Make method based on the value provided.
+
+One example of coercion in a financial context would be if you have a type which groups together some market parameters.
+You might provide some default instances of the type based on a string representing some market characteristic, e.g. currency, contract type etc.
+
+Finally within the \{..\} of the struct definition you can also define some verbatim code.
+This is code that is simply placed within the generated code without any modifications.
+To indicate verbatim code, start with \texttt{protected}, \texttt{private} or \texttt{public} followed immediately by `:'.
+The verbatim block ends when the configuration parser detects the closing \} for the class definition.
+
+If you need to validate the inputs when constructing the class then you must provide \texttt{\$constructorValidationCode} at the end of the struct definition.
+This is verbatim code which appears within \{\}.
+For example, you may wish to check that certain array inputs have the same size, or that particular values are in range.
+
+If there is no need for validation code, then you will need to end the class with `;'
+
+As a final point - it is quite possible that if you are wrapping a C/C++ library that you can do without the use of the \texttt{struct} keyword entirely.
+For your information, we do use it in some of the implementation of the code generation mechanism.
+SPCL creates an output file which defines the interface for the subsequent code generators (e.g. SPPY, SPXL etc).
+This output file consists of standard SPI-text serialization of a set of classes defined by using an SPI-configuration file which uses \texttt{struct} to define all the types.
+
+

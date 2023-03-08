@@ -1,0 +1,37 @@
+/* -*-c++-*- */
+
+/*
+
+    Sartorial Programming Interface (SPI) code generators
+    Copyright (C) 2012-2023 Sartorial Programming Ltd.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+/**
+ * Defines the simplified types arising from the first phase of the
+ * code generation process.
+ *
+ * This is designed to provide enough information for all phase two
+ * code generation.
+ *
+ * You no longer need to know anything about the inner library or how
+ * data is translated into the inner library.
+ */
+
+%service spdoc namespace=spdoc declSpec=SPI sharedPtrInclude="" sharedPtr="spi_boost::shared_ptr" noLog=True;
+
+%export "publicType.cfg";
+%export "constant.cfg";
+%export "configTypes.cfg";

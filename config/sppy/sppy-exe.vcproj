@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioProject
+    ProjectType="Visual C++"
+    Version="9.00"
+    Name="sppy-exe"
+    ProjectGUID="{B9C24480-B3C2-11E2-B87C-C485083D28D0}"
+    RootNamespace="sppy-exe"
+    Keyword="MakeFileProj"
+    TargetFrameworkVersion="196613"
+    >
+    <Platforms>
+        <Platform Name="Win32"/>
+    </Platforms>
+    <Configurations>
+        <Configuration
+            Name="Debug|Win32"
+            OutputDirectory="win32_msvc9_debug"
+            IntermediateDirectory="win32_msvc9_debug"
+            ConfigurationType="0"
+            >
+            <Tool
+                Name="VCNMakeTool"
+                BuildCommandLine="make -j2 target COMPILER=msvc9 DEBUG=1"
+                ReBuildCommandLine="make vs-clean COMPILER=msvc9 DEBUG=1 &amp;&amp; make -j2 target COMPILER=msvc9 DEBUG=1"
+                CleanCommandLine="make vs-clean COMPILER=msvc9 DEBUG=1"
+                Output="$(ProjectDir)win32_msvc9_debug\sppy.exe"
+            />
+        </Configuration>
+        <Configuration
+            Name="Release|Win32"
+            OutputDirectory="win32_msvc9_release"
+            IntermediateDirectory="win32_msvc9_release"
+            ConfigurationType="0"
+            >
+            <Tool
+                Name="VCNMakeTool"
+                BuildCommandLine="make -j2 target COMPILER=msvc9"
+                ReBuildCommandLine="make vs-clean COMPILER=msvc9 &amp;&amp; make -j2 target COMPILER=msvc9"
+                CleanCommandLine="make vs-clean COMPILER=msvc9"
+                Output="$(ProjectDir)win32_msvc9_release\sppy.exe"
+            />
+        </Configuration>
+    </Configurations>
+    <Files>
+        <Filter Name="Source Files">
+            <File RelativePath="src\main.cpp"/>
+            <File RelativePath="src\pyWriter.cpp"/>
+            <File RelativePath="Makefile"/>
+        </Filter>
+        <Filter Name="Header Files">
+            <File RelativePath="src\pyWriter.hpp"/>
+        </Filter>
+    </Files>
+</VisualStudioProject>

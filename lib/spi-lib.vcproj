@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioProject
+    ProjectType="Visual C++"
+    Version="9.00"
+    Name="spi-lib"
+    ProjectGUID="{52E15740-9B1E-11E2-AE40-C485083D28D0}"
+    RootNamespace="spi-lib"
+    Keyword="MakeFileProj"
+    TargetFrameworkVersion="196613"
+    >
+    <Platforms>
+        <Platform Name="Win32"/>
+    </Platforms>
+    <Configurations>
+        <Configuration
+            Name="Debug|Win32"
+            OutputDirectory="win32_msvc9_debug"
+            IntermediateDirectory="win32_msvc9_debug"
+            ConfigurationType="0"
+            >
+            <Tool
+                Name="VCNMakeTool"
+                BuildCommandLine="make -j2 target COMPILER=msvc9 DEBUG=1"
+                ReBuildCommandLine="make vs-clean COMPILER=msvc9 DEBUG=1 &amp;&amp; make -j2 target COMPILER=msvc9 DEBUG=1"
+                CleanCommandLine="make vs-clean COMPILER=msvc9 DEBUG=1"
+                Output="$(ProjectDir)win32_msvc9_debug\spi.lib"
+            />
+        </Configuration>
+        <Configuration
+            Name="Release|Win32"
+            OutputDirectory="win32_msvc9_release"
+            IntermediateDirectory="win32_msvc9_release"
+            ConfigurationType="0"
+            >
+            <Tool
+                Name="VCNMakeTool"
+                BuildCommandLine="make -j2 target COMPILER=msvc9"
+                ReBuildCommandLine="make vs-clean COMPILER=msvc9 &amp;&amp; make -j2 target COMPILER=msvc9"
+                CleanCommandLine="make vs-clean COMPILER=msvc9"
+                Output="$(ProjectDir)win32_msvc9_release\spi.lib"
+            />
+        </Configuration>
+    </Configurations>
+    <Files>
+        <Filter Name="Source Files">
+            <File RelativePath="..\spi\src\Array.cpp"/>
+            <File RelativePath="..\spi\src\Date.cpp"/>
+            <File RelativePath="..\spi\src\DateTime.cpp"/>
+            <File RelativePath="..\spi\src\EnumHelper.cpp"/>
+            <File RelativePath="..\spi\src\ExcelInputContext.cpp"/>
+            <File RelativePath="..\spi\src\Function.cpp"/>
+            <File RelativePath="..\spi\src\InputContext.cpp"/>
+            <File RelativePath="..\spi\src\InputValues.cpp"/>
+            <File RelativePath="..\spi\src\IObjectStreamer.cpp"/>
+            <File RelativePath="..\spi\src\LexerReader.cpp"/>
+            <File RelativePath="..\spi\src\Map.cpp"/>
+            <File RelativePath="..\spi\src\MapObject.cpp"/>
+            <File RelativePath="..\spi\src\MapReader.cpp"/>
+            <File RelativePath="..\spi\src\Object.cpp"/>
+            <File RelativePath="..\spi\src\ObjectHandle.cpp"/>
+            <File RelativePath="..\spi\src\ObjectJSONStreamer.cpp"/>
+            <File RelativePath="..\spi\src\ObjectMap.cpp"/>
+            <File RelativePath="..\spi\src\ObjectPut.cpp"/>
+            <File RelativePath="..\spi\src\ObjectRef.cpp"/>
+            <File RelativePath="..\spi\src\ObjectTextStreamer.cpp"/>
+            <File RelativePath="..\spi\src\ObjectURL.cpp"/>
+            <File RelativePath="..\spi\src\OptionsParser.cpp"/>
+            <File RelativePath="..\spi\src\PythonInputContext.cpp"/>
+            <File RelativePath="..\spi\src\Replay.cpp"/>
+            <File RelativePath="..\spi\src\RuntimeError.cpp"/>
+            <File RelativePath="..\spi\src\Service.cpp"/>
+            <File RelativePath="..\spi\src\spdoc_configTypes.cpp"/>
+            <File RelativePath="..\spi\src\spdoc_configTypes_helper.cpp"/>
+            <File RelativePath="..\spi\src\spdoc_constant.cpp"/>
+            <File RelativePath="..\spi\src\spdoc_constant_helper.cpp"/>
+            <File RelativePath="..\spi\src\spdoc_publicType.cpp"/>
+            <File RelativePath="..\spi\src\spdoc_publicType_helper.cpp"/>
+            <File RelativePath="..\spi\src\spdoc_spdoc_service_manager.cpp"/>
+            <File RelativePath="..\spi\src\Value.cpp"/>
+            <File RelativePath="..\spi\src\ValueToObject.cpp"/>
+            <File RelativePath="..\spi\src\Variant.cpp"/>
+            <File RelativePath="..\spi\src\Version.cpp"/>
+            <File RelativePath="..\spi\src\dg_strtod.c"/>
+            <File RelativePath="Makefile"/>
+        </Filter>
+        <Filter Name="Header Files">
+            <File RelativePath="..\spi\Array.hpp"/>
+            <File RelativePath="..\spi\Date.hpp"/>
+            <File RelativePath="..\spi\DateTime.hpp"/>
+            <File RelativePath="..\spi\Declare.hpp"/>
+            <File RelativePath="..\spi\EnumHelper.hpp"/>
+            <File RelativePath="..\spi\Function.hpp"/>
+            <File RelativePath="..\spi\FunctionCaller.hpp"/>
+            <File RelativePath="..\spi\InputContext.hpp"/>
+            <File RelativePath="..\spi\InputValues.hpp"/>
+            <File RelativePath="..\spi\IObjectMap.hpp"/>
+            <File RelativePath="..\spi\IObjectStreamer.hpp"/>
+            <File RelativePath="..\spi\LexerReader.hpp"/>
+            <File RelativePath="..\spi\Map.hpp"/>
+            <File RelativePath="..\spi\MapObject.hpp"/>
+            <File RelativePath="..\spi\MapReader.hpp"/>
+            <File RelativePath="..\spi\MatrixData.hpp"/>
+            <File RelativePath="..\spi\Namespace.hpp"/>
+            <File RelativePath="..\spi\Object.hpp"/>
+            <File RelativePath="..\spi\ObjectHandle.hpp"/>
+            <File RelativePath="..\spi\ObjectHelper.hpp"/>
+            <File RelativePath="..\spi\ObjectJSONStreamer.hpp"/>
+            <File RelativePath="..\spi\ObjectMap.hpp"/>
+            <File RelativePath="..\spi\ObjectPut.hpp"/>
+            <File RelativePath="..\spi\ObjectRef.hpp"/>
+            <File RelativePath="..\spi\ObjectTextStreamer.hpp"/>
+            <File RelativePath="..\spi\ObjectURL.hpp"/>
+            <File RelativePath="..\spi\OptionsParser.hpp"/>
+            <File RelativePath="..\spi\RefCounter.hpp"/>
+            <File RelativePath="..\spi\Replay.hpp"/>
+            <File RelativePath="..\spi\RuntimeError.hpp"/>
+            <File RelativePath="..\spi\Service.hpp"/>
+            <File RelativePath="..\spi\spdoc_configTypes.hpp"/>
+            <File RelativePath="..\spi\spdoc_constant.hpp"/>
+            <File RelativePath="..\spi\spdoc_namespace.hpp"/>
+            <File RelativePath="..\spi\spdoc_publicType.hpp"/>
+            <File RelativePath="..\spi\spdoc_spdoc_service.hpp"/>
+            <File RelativePath="..\spi\spi.hpp"/>
+            <File RelativePath="..\spi\StreamUtil.hpp"/>
+            <File RelativePath="..\spi\StringUtil.hpp"/>
+            <File RelativePath="..\spi\TestRunner.hpp"/>
+            <File RelativePath="..\spi\Value.hpp"/>
+            <File RelativePath="..\spi\ValueToObject.hpp"/>
+            <File RelativePath="..\spi\Variant.hpp"/>
+            <File RelativePath="..\spi\Version.hpp"/>
+            <File RelativePath="..\spi\src\ExcelInputContext.hpp"/>
+            <File RelativePath="..\spi\src\PythonInputContext.hpp"/>
+            <File RelativePath="..\spi\src\spdoc_configTypes_helper.hpp"/>
+            <File RelativePath="..\spi\src\spdoc_constant_helper.hpp"/>
+            <File RelativePath="..\spi\src\spdoc_publicType_helper.hpp"/>
+            <File RelativePath="..\spi\src\spdoc_spdoc_service_manager.hpp"/>
+            <File RelativePath="..\spi\src\spdoc_spdoc_time_out.hpp"/>
+            <File RelativePath="..\spi\src\spdoc_spdoc_type_converters.hpp"/>
+            <File RelativePath="..\spi\src\Timeout.hpp"/>
+            <File RelativePath="..\spi\DeclSpec.h"/>
+            <File RelativePath="..\spi\platform.h"/>
+            <File RelativePath="..\spi\spdoc_spdoc_decl_spec.h"/>
+            <File RelativePath="..\spi\src\dg_strtod.h"/>
+        </Filter>
+    </Files>
+</VisualStudioProject>

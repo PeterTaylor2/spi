@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="9.00"
+	Name="spdoc-config"
+	ProjectGUID="{7C1444CF-BEE9-11E7-A1AA-AC2B6E11458A}"
+	RootNamespace="spdoc-config"
+	Keyword="MakeFileProj"
+	TargetFrameworkVersion="196613"
+	>
+	<Platforms>
+		<Platform
+			Name="Win32"
+		/>
+	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
+	<Configurations>
+		<Configuration
+			Name="Debug|Win32"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="0"
+			>
+			<Tool
+				Name="VCNMakeTool"
+				BuildCommandLine="make vcproj all DEBUG=1"
+				ReBuildCommandLine="make clean &amp;&amp; make vcproj all DEBUG=1"
+				CleanCommandLine="make clean"
+				Output="$(ProjectDir)spdoc.svo"
+				PreprocessorDefinitions=""
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="0"
+			>
+			<Tool
+				Name="VCNMakeTool"
+				BuildCommandLine="make vcproj all"
+				ReBuildCommandLine="make clean &amp;&amp; make vcproj all"
+				CleanCommandLine="make clean"
+				Output="$(ProjectDir)spdoc.svo"
+				PreprocessorDefinitions=""
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
+		</Configuration>
+	</Configurations>
+	<References>
+	</References>
+	<Files>
+		<Filter
+			Name="Service Files"
+			>
+			<File
+				RelativePath="spdoc.svc"
+				>
+			</File>
+			<File
+				RelativePath="Makefile"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Configuration Files"
+			>
+			<File
+				RelativePath="configTypes.cfg"
+				>
+			</File>
+			<File
+				RelativePath="constant.cfg"
+				>
+			</File>
+			<File
+				RelativePath="publicType.cfg"
+				>
+			</File>
+		</Filter>
+	</Files>
+	<Globals>
+	</Globals>
+</VisualStudioProject>

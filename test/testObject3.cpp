@@ -1,0 +1,214 @@
+#include <spi/Map.hpp>
+#include <spi/Date.hpp>
+#include <spi/Service.hpp>
+#include <spi/IObjectMap.hpp>
+
+#include <string>
+#include <sstream>
+#include <vector>
+#include <stdio.h>
+
+#include <spi_util/TestRunner.hpp>
+
+SPI_DECLARE_RC_CLASS(Data);
+SPI_DECLARE_RC_CLASS(SubData);
+
+class SubData : public spi::Object
+{
+public:
+    static SubDataConstSP Make(const std::string& aString)
+    {
+        return SubDataConstSP(new SubData(aString));
+    }
+
+    static SubDataSP Coerce(const spi::ObjectSP& o)
+    {
+        return spi::CoerceFromObject<SubData>(o);
+    }
+
+    static SubDataConstSP Coerce(const spi::ObjectConstSP& o)
+    {
+        return spi::CoerceFromObject<SubData>(o);
+    }
+
+private:
+    SubData(const std::string& aString)
+        :
+        aString(aString)
+    {}
+
+public:
+    spi::Object::Type* get_object_type() const
+    {
+        return &object_type;
+    }
+
+    void to_map(spi::IObjectMap* m, bool publicOnly) const
+    {
+        m->SetString("aString", aString);
+    }
+
+    static spi::ObjectSP object_from_map(spi::IObjectMap* m)
+    {
+        return new SubData(m->GetString("aString"));
+    }
+
+    static spi::Object::Type object_type;
+
+private:
+    std::string aString;
+};
+
+spi::Object::Type SubData::object_type(
+    "SubData",
+    SubData::object_from_map,
+    spi::IsInstance<SubData>);
+
+class Data : public spi::Object
+{
+public:
+    static DataConstSP Make(bool aBool, int anInt, double aDouble,
+                            spi::Date aDate, const SubDataConstSP& anInstance,
+                            const SubDataConstSP& anotherInstance,
+                            const std::vector<int>& intVec)
+    {
+        return DataConstSP(
+            new Data(aBool, anInt, aDouble, aDate,
+                     anInstance, anotherInstance, intVec));
+    }
+
+    static DataSP Coerce(const spi::ObjectSP& o)
+    {
+        return spi::CoerceFromObject<Data>(o);
+    }
+
+    static DataConstSP Coerce(const spi::ObjectConstSP& o)
+    {
+        return spi::CoerceFromObject<Data>(o);
+    }
+
+private:
+    Data(bool aBool,
+         int anInt,
+         double aDouble,
+         spi::Date aDate,
+         const SubDataConstSP& anInstance,
+         const SubDataConstSP& anotherInstance,
+         const std::vector<int>& intVec)
+        :
+        aBool(aBool),
+        anInt(anInt),
+        aDouble(aDouble),
+        aDate(aDate),
+        anInstance(anInstance),
+        anotherInstance(anotherInstance),
+        intVec(intVec)
+    {}
+
+public:
+    spi::Object::Type* get_object_type() const
+    {
+        return &object_type;
+    }
+
+    void to_map(spi::IObjectMap* m, bool publicOnly) const
+    {
+        m->SetBool("aBool", aBool);
+        m->SetInt("anInt", anInt);
+        m->SetDouble("aDouble", aDouble);
+        m->SetDate("aDate", aDate);
+        m->SetObject("anInstance", anInstance);
+        m->SetObject("anotherInstance", anotherInstance);
+        m->SetIntVector("intVec", intVec);
+    }
+
+    static spi::ObjectSP object_from_map(spi::IObjectMap* m)
+    {
+        // there is order dependency
+        // if you use inline commands inside the constructor call then
+        // the order that they are called is usually in reverse
+        // hence we must declare the inputs and extract them in sequence
+        bool aBool
+            = m->GetBool("aBool");
+        int anInt
+            = m->GetInt("anInt");
+        double aDouble
+            = m->GetDouble("aDouble");
+        spi::Date aDate
+            = m->GetDate("aDate");
+        SubDataConstSP anInstance
+            = m->GetInstance<SubData>("anInstance");
+        SubDataConstSP anotherInstance
+            = m->GetInstance<SubData>("anotherInstance");
+        const std::vector<int>& intVec
+            = m->GetIntVector("intVec");
+
+        return new Data(aBool, anInt, aDouble, aDate, anInstance,
+                        anotherInstance, intVec);
+    }
+
+    static spi::Object::Type object_type;
+
+private:
+    bool aBool;
+    int anInt;
+    double aDouble;
+    spi::Date aDate;
+    SubDataConstSP anInstance;
+    SubDataConstSP anotherInstance;
+    std::vector<int> intVec;
+};
+
+spi::Object::Type Data::object_type(
+    "Data",
+    Data::object_from_map,
+    spi::IsInstance<Data>);
+
+bool isLogging = false;
+
+static spi::ServiceSP MakeService()
+{
+    spi::ServiceSP svc = spi::Service::Make(
+        "testObject","testObject",&isLogging);
+    svc->add_object_type(&SubData::object_type);
+    svc->add_object_type(&Data::object_type);
+    return svc;
+}
+
+static void testCompoundObjectStream(void)
+{
+    spi::ServiceSP svc = MakeService();
+
+    std::vector<int> intVector;
+    intVector.push_back(1);
+    intVector.push_back(2);
+    SubDataConstSP subItem = SubData::Make("Hello world");
+    DataConstSP item = Data::Make(
+        true, 42, 3.1415926, spi::Date(2012,9,20),
+        subItem, subItem,
+        intVector);
+
+    std::ostringstream oss;
+
+    std::cout << "Writing object of type Data to stream" << std::endl;
+    item->to_stream(oss);
+
+    std::string str = oss.str();
+    std::cout << str << std::endl;
+
+    std::istringstream iss(str);
+
+    std::cout << "Reading object of type Data from stream" << std::endl;
+    spi::ObjectSP o = svc->object_from_stream(iss);
+    DataSP d2 = Data::Coerce(o);
+    std::ostringstream oss2;
+    d2->to_stream(oss2);
+    std::cout << oss2.str() << std::endl;
+}
+
+int main(int argc, char* argv[])
+{
+    return spi_util::TestRunner(argc, argv,
+                      "CompoundObjectStream", testCompoundObjectStream,
+                      0);
+}

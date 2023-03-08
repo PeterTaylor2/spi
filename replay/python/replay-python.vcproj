@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioProject
+    ProjectType="Visual C++"
+    Version="9.00"
+    Name="replay-python"
+    ProjectGUID="{F43C190F-E90F-11E7-A963-C4850839C16D}"
+    RootNamespace="replay-python"
+    Keyword="MakeFileProj"
+    TargetFrameworkVersion="196613"
+    >
+    <Platforms>
+        <Platform Name="Win32"/>
+    </Platforms>
+    <Configurations>
+        <Configuration
+            Name="Debug|Win32"
+            OutputDirectory="win32_msvc9_debug"
+            IntermediateDirectory="win32_msvc9_debug"
+            ConfigurationType="0"
+            >
+            <Tool
+                Name="VCNMakeTool"
+                BuildCommandLine="make -j2 pyd COMPILER=msvc9 DEBUG=1"
+                ReBuildCommandLine="make vs-clean COMPILER=msvc9 DEBUG=1 &amp;&amp; make -j2 pyd COMPILER=msvc9 DEBUG=1"
+                CleanCommandLine="make vs-clean COMPILER=msvc9 DEBUG=1"
+                Output="$(ProjectDir)win32_msvc9_debug\py_spi_replay.pyd"
+            />
+        </Configuration>
+        <Configuration
+            Name="Release|Win32"
+            OutputDirectory="win32_msvc9_release"
+            IntermediateDirectory="win32_msvc9_release"
+            ConfigurationType="0"
+            >
+            <Tool
+                Name="VCNMakeTool"
+                BuildCommandLine="make -j2 pyd COMPILER=msvc9"
+                ReBuildCommandLine="make vs-clean COMPILER=msvc9 &amp;&amp; make -j2 pyd COMPILER=msvc9"
+                CleanCommandLine="make vs-clean COMPILER=msvc9"
+                Output="$(ProjectDir)win32_msvc9_release\py_spi_replay.pyd"
+            />
+        </Configuration>
+    </Configurations>
+    <Files>
+        <Filter Name="Source Files">
+            <File RelativePath="src\pyd_spi_replay_replay.cpp"/>
+            <File RelativePath="src\py_spi_replay_map.cpp"/>
+            <File RelativePath="src\py_spi_replay_replay.cpp"/>
+            <File RelativePath="src\spi_replay.py"/>
+            <File RelativePath="Makefile"/>
+        </Filter>
+        <Filter Name="Header Files">
+            <File RelativePath="src\pyd_spi_replay_replay.hpp"/>
+            <File RelativePath="src\py_spi_replay_map.hpp"/>
+            <File RelativePath="src\py_spi_replay_replay.hpp"/>
+            <File RelativePath="src\pyd_spi_replay_replay_decl_spec.h"/>
+        </Filter>
+    </Files>
+</VisualStudioProject>

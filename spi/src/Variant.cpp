@@ -1,0 +1,344 @@
+/*
+
+    Sartorial Programming Interface (SPI) runtime libraries
+    Copyright (C) 2012-2023 Sartorial Programming Ltd.
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+    USA
+
+*/
+
+/*
+***************************************************************************
+** Variant.cpp
+***************************************************************************
+** Polymorphic class with value semantics, arbitrary type and late binding.
+**
+** Value semantics means that Variant can be assigned by value and will
+** correctly handle all memory issues.
+**
+** Arbitrary type means any of the built-in types.
+**
+** Late binding means that sometimes you only discover the type in the
+** context of the interface. For example, when using Excel you don't
+** know whether a number should be treated as an int, a double or a date.
+** Variant class won't know, but in context the correct type will be
+** requested.
+***************************************************************************
+*/
+
+#include "Variant.hpp"
+
+#include "InputValues.hpp"
+#include "RuntimeError.hpp"
+#include "StringUtil.hpp"
+
+SPI_BEGIN_NAMESPACE
+
+
+/*
+***************************************************************************
+** Implementation of Variant class
+***************************************************************************
+*/
+Variant::Variant(const Value& value, const InputContext* context)
+:
+m_value(value),
+m_context(context)
+{
+    if (!context)
+        throw RuntimeError("No input context provided for Variant constructor");
+}
+
+Variant::Variant(const Value& value)
+:
+m_value(value),
+m_context(InputContext::NoContext())
+{}
+
+Variant::~Variant()
+{}
+
+Variant::Variant(const Variant& variant)
+:
+m_value(variant.m_value),
+m_context(variant.m_context)
+{}
+
+Variant& Variant::operator=(const Variant& variant)
+{
+    m_value = variant.m_value;
+    m_context = variant.m_context;
+    return *this;
+}
+
+MapConstSP Variant::ToMap() const
+{
+    MapSP m(new Map(Map::VARIANT));
+
+    m->SetValue("context", GetContext());
+
+    const Value value = GetValue();
+    if (!value.isUndefined())
+        m->SetValue("value", value);
+
+    return m;
+}
+
+Variant::Variant(const MapConstSP& m)
+:
+m_value(),
+m_context(0)
+{
+    std::string contextName = m->GetValue("context").getString();
+    Value value = m->GetValue("value");
+
+    m_context = InputContext::Find(contextName);
+    m_value.swap(value);
+}
+
+Value::Type Variant::ValueType() const
+{
+    return m_value.getType();
+}
+
+/* data access methods */
+bool Variant::IsUndefined() const
+{
+    return m_value.isUndefined();
+}
+
+char Variant::ToChar() const
+{
+    return m_context->ValueToChar(m_value);
+}
+
+std::string Variant::ToString() const
+{
+    return m_context->ValueToString(m_value);
+}
+
+int Variant::ToInt() const
+{
+    return m_context->ValueToInt(m_value);
+}
+
+bool Variant::ToBool() const
+{
+    return m_context->ValueToBool(m_value);
+}
+
+double Variant::ToDouble() const
+{
+    return m_context->ValueToDouble(m_value);
+}
+
+Date Variant::ToDate() const
+{
+    return m_context->ValueToDate(m_value);
+}
+
+DateTime Variant::ToDateTime() const
+{
+    return m_context->ValueToDateTime(m_value);
+}
+
+ObjectConstSP Variant::ToConstObject() const
+{
+    return m_context->ValueToObject(m_value);
+}
+
+Variant::operator char() const
+{
+    return ToChar();
+}
+
+Variant::operator std::string() const
+{
+    return ToString();
+}
+
+Variant::operator int() const
+{
+    return ToInt();
+}
+
+Variant::operator bool() const
+{
+    return ToBool();
+}
+
+Variant::operator double() const
+{
+    return ToDouble();
+}
+
+Variant::operator Date() const
+{
+    return ToDate();
+}
+
+Variant::operator ObjectConstSP() const
+{
+    return ToConstObject();
+}
+
+std::vector<std::string> Variant::ToStringVector() const
+{
+    return m_context->ValueToStringVector(m_value);
+}
+
+std::vector<double> Variant::ToDoubleVector() const
+{
+    return m_context->ValueToDoubleVector(m_value);
+}
+
+std::vector<int> Variant::ToIntVector() const
+{
+    return m_context->ValueToIntVector(m_value);
+}
+
+std::vector<bool> Variant::ToBoolVector() const
+{
+    return m_context->ValueToBoolVector(m_value);
+}
+
+std::vector<Date> Variant::ToDateVector() const
+{
+    return m_context->ValueToDateVector(m_value);
+}
+
+std::vector<DateTime> Variant::ToDateTimeVector() const
+{
+    return m_context->ValueToDateTimeVector(m_value);
+}
+
+std::vector<ObjectConstSP> Variant::ToConstObjectVector() const
+{
+    return m_context->ValueToObjectVector(m_value);
+}
+
+Variant Variant::ToScalar() const
+{
+    if (m_value.getType() == Value::ARRAY)
+    {
+        Value scalar = m_value.convertArrayToScalar();
+        return Variant(scalar, m_context);
+    }
+    return Variant(m_value, m_context);
+}
+
+/*
+***************************************************************************
+** Constructors for Variant
+***************************************************************************
+*/
+Variant::Variant ()
+:
+m_value(Value()),
+m_context(InputContext::NoContext())
+{}
+
+Variant::Variant (char value)
+:
+m_value(value),
+m_context(InputContext::NoContext())
+{}
+
+Variant::Variant (const char* value)
+:
+m_value(value),
+m_context(InputContext::NoContext())
+{}
+
+Variant::Variant (const std::string& value)
+:
+m_value(value),
+m_context(InputContext::NoContext())
+{}
+
+Variant::Variant (int value)
+:
+m_value(value),
+m_context(InputContext::NoContext())
+{}
+
+Variant::Variant (double value)
+:
+m_value(value),
+m_context(InputContext::NoContext())
+{}
+
+Variant::Variant (bool value)
+:
+m_value(value),
+m_context(InputContext::NoContext())
+{}
+
+Variant::Variant (const Date& value)
+:
+m_value(value),
+m_context(InputContext::NoContext())
+{}
+
+Variant::Variant (const ObjectConstSP& value)
+:
+m_value(value),
+m_context(InputContext::NoContext())
+{}
+
+Variant::operator Value() const
+{
+    if (m_context != InputContext::NoContext())
+        throw RuntimeError("Cannot cast to Value for input Variant");
+
+    return m_value;
+}
+
+const Value& Variant::GetValue() const
+{
+    return m_value;
+}
+
+const char* Variant::GetContext() const
+{
+    return m_context->Context();
+}
+
+const InputContext* Variant::GetInputContext() const
+{
+    return m_context;
+}
+
+Value Variant::VectorToValue(const std::vector<spi::Variant>& in)
+{
+    // this only works if all the inputs are scalars
+    size_t N = in.size();
+    std::vector<Value> values;
+
+    for (size_t i = 0; i < N; ++i)
+    {
+        const Value& value = in[i].GetValue();
+        if (value.getType() == Value::ARRAY)
+            SPI_THROW_RUNTIME_ERROR("Cannot convert array elements to scalars");
+
+        values.push_back(value);
+    }
+
+    return Value(values);
+}
+
+SPI_END_NAMESPACE
+
