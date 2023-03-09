@@ -44,6 +44,7 @@ struct Options
         nameAtEnd(false),
         upperCase(false),
         noObjectFuncs(false),
+        errIsNA(false),
         license(),
         helpFunc("help_func"),
         helpFuncList(""),
@@ -75,6 +76,7 @@ struct Options
     bool nameAtEnd;
     bool upperCase;
     bool noObjectFuncs;
+    bool errIsNA;
     std::string license;
     std::string helpFunc;
     std::string helpFuncList;

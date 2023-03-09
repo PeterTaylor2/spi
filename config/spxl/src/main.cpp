@@ -141,7 +141,7 @@ int main(int argc, char* argv[])
     Options options;
 
     const char* longOptions = "nameAtEnd noGeneratedCodeNotice upperCase funcNameSep= noObjectFuncs"
-        " optionsFile= license licenseFile=";
+        " optionsFile= license licenseFile= errIsNA";
 
     try
     {
@@ -175,6 +175,10 @@ int main(int argc, char* argv[])
             else if (opt == "--funcNameSep")
             {
                 options.funcNameSep = val;
+            }
+            else if (opt == "--errIsNA")
+            {
+                options.errIsNA = true;
             }
             else if (opt == "--optionsFile")
             {

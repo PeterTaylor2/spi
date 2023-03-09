@@ -237,7 +237,7 @@ ExcelService::writeXllSourceFile(const std::string& dirname) const
         << "::" << m_service->name << "_exported_service(), xllName, \""
         << funcNameSep() << "\", false, "
         << (m_options.upperCase ? "true" : "false")
-        << ", false, false);\n";
+        << ", false, " << (m_options.errIsNA ? "true" : "false") << ");\n";
 
     ostr << "\n"
         << "    /* function registration */\n";
@@ -1779,6 +1779,7 @@ void Options::update(const std::string& fn)
     JSONMapUpdateBool(nameAtEnd, jm, "nameAtEnd");
     JSONMapUpdateBool(upperCase, jm, "upperCase");
     JSONMapUpdateBool(noObjectFuncs, jm, "noObjectFuncs");
+    JSONMapUpdateBool(errIsNA, jm, "errIsNA");
 
     JSONMapUpdateString(helpFunc, jm, "helpFunc");
     JSONMapUpdateString(helpFuncList, jm, "helpFuncList");
