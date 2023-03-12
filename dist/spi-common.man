@@ -33,6 +33,7 @@ makefiles/python/makeVcproj1[67]*.py
 makefiles/python/makeVcxproj*.py
 makefiles/python/vstools.py
 makefiles/python/guidUtils.py
+makefiles/python/translateVS.py
 makefiles/regression-test/common.mk
 makefiles/regression-test/TestLib.py
 makefiles/regression-test/compareResults.py
