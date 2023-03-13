@@ -95,23 +95,40 @@ private:
 
 struct Data
 {
-    Data() : oss()
+    Data() : responseCode(-1), oss(), headers()
     {}
 
+    long responseCode;
     std::stringstream oss;
+    std::map<std::string, std::string> headers;
 
     void add_data(char* ptr, size_t size)
     {
         oss.write(ptr, size);
     }
 
-    std::string str()
+    void add_header_data(char* ptr, size_t size)
+    {
+        std::stringstream ss;
+        ss.write(ptr, size);
+        std::string s = ss.str();
+        std::size_t pos = s.find(':');
+        if (pos != std::string::npos)
+        {
+            std::string name = StringStrip(s.substr(0, pos));
+            std::string value = StringStrip(s.substr(pos + 1, s.size() - pos));
+            headers[StringLower(name)] = value;
+        }
+    }
+
+    std::string contents()
     {
         // we might need to put a null terminator on the end of the stream
         // however current observation is that this is unnecessary
 
         return oss.str();
     }
+
 };
 
 static size_t write_callback(char* ptr, size_t size, size_t n, void* user)
@@ -122,6 +139,23 @@ static size_t write_callback(char* ptr, size_t size, size_t n, void* user)
         try
         {
             ((Data*)user)->add_data(ptr, consume);
+        }
+        catch (...)
+        {
+            return 0;
+        }
+    }
+    return consume;
+}
+
+static size_t header_callback(char* ptr, size_t size, size_t n, void* user)
+{
+    size_t consume = size * n;
+    if (consume > 0)
+    {
+        try
+        {
+            ((Data*)user)->add_header_data(ptr, consume);
         }
         catch (...)
         {
@@ -215,9 +249,15 @@ void URLReadContentsData(
 
     errorHandler(curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, write_callback));
     errorHandler(curl_easy_setopt(handle, CURLOPT_WRITEDATA, &data));
+
+    errorHandler(curl_easy_setopt(handle, CURLOPT_HEADERFUNCTION, header_callback));
+    errorHandler(curl_easy_setopt(handle, CURLOPT_HEADERDATA, &data));
+
     if (timeout > 0)
         errorHandler(curl_easy_setopt(handle, CURLOPT_TIMEOUT, timeout));
     errorHandler(curl_easy_perform(handle));
+
+    errorHandler(curl_easy_getinfo(handle, CURLINFO_RESPONSE_CODE, &data.responseCode));
 }
 
 END_ANONYMOUS_NAMESPACE
@@ -236,7 +276,38 @@ std::string URLReadContents(
 
     URLReadContentsData(data, url, noProxy, timeout, post, headers);
 
-    return data.str();
+    return data.contents();
+}
+
+
+void URLReadDetails(
+    // outputs
+    std::string& contents,
+    long& responseCode,
+    std::map<std::string, std::string>& responseHeaders,
+    // inputs
+    const std::string& url,
+    bool noProxy,
+    int timeout,
+    const std::string& post,
+    const std::vector<std::string>& headers)
+{
+    contents.clear();
+    responseHeaders.clear();
+    responseCode = -1; // until proved otherwise
+    if (timeout == 0)
+    {
+        return;
+    }
+
+    Data data;
+
+    URLReadContentsData(data, url, noProxy, timeout, post, headers);
+
+    contents = data.contents();
+    responseCode = data.responseCode;
+    data.headers.swap(responseHeaders);
+
 }
 
 JSONMapConstSP URLReadContentsJSON(
@@ -261,6 +332,42 @@ JSONMapConstSP URLReadContentsJSON(
 
     JSONValue jv = JSONParseValue(data.oss);
     return jv.GetMap();
+}
+
+void URLReadDetailsJSON(
+    // outputs
+    JSONMapConstSP& contents,
+    long& responseCode,
+    std::map<std::string, std::string>& responseHeaders,
+    // inputs
+    const std::string& url,
+    bool noProxy,
+    int timeout,
+    const JSONMapConstSP& jsonPost,
+    const std::vector<std::string>& headers)
+{
+    contents.reset();
+    responseHeaders.clear();
+    responseCode = -1; // until proved otherwise
+    if (timeout == 0)
+    {
+        return;
+    }
+
+    Data data;
+
+    std::string post;
+    if (jsonPost)
+    {
+        post = JSONValueToString(JSONValue(jsonPost));
+    }
+
+    URLReadContentsData(data, url, noProxy, timeout, post, headers);
+
+    JSONValue jv = JSONParseValue(data.oss);
+    contents = jv.GetMap();
+    responseCode = data.responseCode;
+    data.headers.swap(responseHeaders);
 }
 
 

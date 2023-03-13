@@ -66,6 +66,36 @@ std::string URLReadContents(
     const std::string& post = std::string(),
     const std::vector<std::string>& headers = std::vector<std::string>());
 
+
+/**
+ * Reads the entire contents for the given URL.
+ * Including reposonse code and response headers
+ *
+ * No caching is performed by this function.
+ *
+ * @param url
+ * @param noProxy
+ *    If this is defined then we will not attempt to use the proxy server
+ *    for reading the URL.
+ * @param timeout
+ *    If this is positive then it is a timeout in seconds.
+ *    If this is zero then the function always fails by returning an empty string.
+ *    If this is negative then there is no timeout.
+ */
+SPI_UTIL_IMPORT
+void URLReadDetails(
+    // outputs
+    std::string& contents,
+    long& responseCode,
+    std::map<std::string, std::string>& responseHeaders,
+    // inputs
+    const std::string& url,
+    bool noProxy,
+    int timeout,
+    const std::string& post = std::string(),
+    const std::vector<std::string>& headers = std::vector<std::string>()
+    );
+
 /**
  * Reads the entire contents for the given URL.
  *
@@ -88,6 +118,32 @@ JSONMapConstSP URLReadContentsJSON(
     const JSONMapConstSP& post = JSONMapConstSP(),
     const std::vector<std::string>& headers = std::vector<std::string>());
 
+/**
+ * Reads the entire contents for the given URL.
+ *
+ * No caching is performed by this function.
+ *
+ * @param url
+ * @param noProxy
+ *    If this is defined then we will not attempt to use the proxy server
+ *    for reading the URL.
+ * @param timeout
+ *    If this is positive then it is a timeout in seconds.
+ *    If this is zero then the function always fails by returning an empty string.
+ *    If this is negative then there is no timeout.
+ */
+SPI_UTIL_IMPORT
+void URLReadDetailsJSON(
+    // outputs
+    JSONMapConstSP& contents,
+    long& responseCode,
+    std::map<std::string, std::string>& responseHeaders,
+    // inputs
+    const std::string& url,
+    bool noProxy,
+    int timeout,
+    const JSONMapConstSP& post = JSONMapConstSP(),
+    const std::vector<std::string>& headers = std::vector<std::string>());
 
 SPI_UTIL_END_NAMESPACE
 
