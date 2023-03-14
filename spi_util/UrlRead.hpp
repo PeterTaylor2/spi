@@ -41,8 +41,40 @@
 #include "JSONValue.hpp"
 #include <string>
 #include <vector>
+#include <map>
 
 SPI_UTIL_NAMESPACE
+
+SPI_UTIL_DECLARE_RC_CLASS(URLInfo);
+
+class SPI_UTIL_IMPORT URLInfo : public RefCounter
+{
+public:
+
+    // note that contents and responseHeaders are consumed by this constructor
+    // hence not defined as const references
+    // this is to save space in case these inputs consume a lot of memory
+    URLInfo(
+        long responseCode,
+        std::string& contents = std::string(),
+        std::map<std::string, std::string>& responseHeaders = std::map<std::string, std::string>());
+
+private:
+    long m_responseCode;
+    std::string m_contents;
+    std::map<std::string, std::string> m_responseHeaders;
+
+public:
+    long responseCode() const { return m_responseCode; }
+    const std::string& contents() const { return m_contents; }
+    const std::map<std::string, std::string>& responseHeaders() const { return m_responseHeaders; }
+
+    // converts the responseCode to a responseMessage
+    // you should really only use this if the response failed in order to form an exception
+    std::string responseMessage() const;
+
+    bool failed() const;
+};
 
 /**
  * Reads the entire contents for the given URL.
@@ -83,12 +115,7 @@ std::string URLReadContents(
  *    If this is negative then there is no timeout.
  */
 SPI_UTIL_IMPORT
-void URLReadDetails(
-    // outputs
-    std::string& contents,
-    long& responseCode,
-    std::map<std::string, std::string>& responseHeaders,
-    // inputs
+URLInfoConstSP URLReadInfo(
     const std::string& url,
     bool noProxy,
     int timeout,
@@ -112,33 +139,6 @@ void URLReadDetails(
  */
 SPI_UTIL_IMPORT
 JSONMapConstSP URLReadContentsJSON(
-    const std::string& url,
-    bool noProxy,
-    int timeout,
-    const JSONMapConstSP& post = JSONMapConstSP(),
-    const std::vector<std::string>& headers = std::vector<std::string>());
-
-/**
- * Reads the entire contents for the given URL.
- *
- * No caching is performed by this function.
- *
- * @param url
- * @param noProxy
- *    If this is defined then we will not attempt to use the proxy server
- *    for reading the URL.
- * @param timeout
- *    If this is positive then it is a timeout in seconds.
- *    If this is zero then the function always fails by returning an empty string.
- *    If this is negative then there is no timeout.
- */
-SPI_UTIL_IMPORT
-void URLReadDetailsJSON(
-    // outputs
-    JSONMapConstSP& contents,
-    long& responseCode,
-    std::map<std::string, std::string>& responseHeaders,
-    // inputs
     const std::string& url,
     bool noProxy,
     int timeout,
