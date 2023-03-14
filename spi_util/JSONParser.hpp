@@ -56,11 +56,11 @@ JSONValue JSONParseValue(
     std::istream& istr,
     const std::string& streamName=std::string());
 
-//SPI_UTIL_IMPORT
+SPI_UTIL_IMPORT
 JSONValue JSONValueFromString(
-    std::string& str);
+    const std::string& str);
 
-//SPI_UTIL_IMPORT
+SPI_UTIL_IMPORT
 std::string JSONValueToString(const JSONValue& value);
 
 SPI_UTIL_END_NAMESPACE

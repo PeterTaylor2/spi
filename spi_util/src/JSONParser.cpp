@@ -233,7 +233,7 @@ JSONValue JSONParseValue(
 }
 
 JSONValue JSONValueFromString(
-    std::string& str)
+    const std::string& str)
 {
     std::istringstream iss(str);
     return JSONParseValue(iss);
