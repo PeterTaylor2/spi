@@ -410,15 +410,7 @@ std::string URLInfo::responseMessage() const
 
 bool URLInfo::failed() const
 {
-    switch (m_responseCode)
-    {
-    case 200:
-    case 201:
-    case 203:
-    case 204:
-        return false;
-    }
-    return true;
+    return m_responseCode < 200 || m_responseCode >= 400;
 }
 
 
