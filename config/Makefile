@@ -58,6 +58,10 @@ config-build::
 	cp $(U_SPI_HOME)/config/bin/$(G_CONFIG_COMPILER_ABI)/*$(G_EXE) $(U_SPI_HOME)/config/bin-$(G_PLATFORM)
 	rm -fr $(U_SPI_HOME)/config/bin
 
+config-clean::
+	@$(MAKE) clean DEBUG=0 COMPILER=$(G_CONFIG_COMPILER) BITS=$(G_CONFIG_COMPILER_BITS)
+	rm -fr $(U_SPI_HOME)/config/bin
+
 rebuild: clean build
 
 code:
