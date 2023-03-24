@@ -325,15 +325,13 @@ JSONMapConstSP URLReadContentsJSON(
 
 URLInfo::URLInfo(
     long responseCode,
-    std::string& contents,
-    std::map<std::string, std::string>& responseHeaders)
+    const std::string& contents,
+    const std::map<std::string, std::string>& responseHeaders)
     :
     m_responseCode(responseCode),
-    m_contents(),
-    m_responseHeaders()
+    m_contents(contents),
+    m_responseHeaders(responseHeaders)
 {
-    m_contents.swap(contents);
-    m_responseHeaders.swap(responseHeaders);
 }
 
 std::string URLInfo::responseMessage() const

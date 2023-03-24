@@ -51,13 +51,10 @@ class SPI_UTIL_IMPORT URLInfo : public RefCounter
 {
 public:
 
-    // note that contents and responseHeaders are consumed by this constructor
-    // hence not defined as const references
-    // this is to save space in case these inputs consume a lot of memory
     URLInfo(
         long responseCode,
-        std::string& contents = std::string(),
-        std::map<std::string, std::string>& responseHeaders = std::map<std::string, std::string>());
+        const std::string& contents = std::string(),
+        const std::map<std::string, std::string>& responseHeaders = std::map<std::string,std::string>());
 
 private:
     long m_responseCode;
