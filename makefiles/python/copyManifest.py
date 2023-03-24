@@ -66,7 +66,7 @@ def readManifest(fn):
         manifest.append((source,target))
     return manifest
 
-def copyDirectory(dn, odn, overwrite):
+def copyDirectory(dn, odn, overwrite, text_patterns):
     filesCopied = 0
     odn = posixpath.join(odn, posixpath.basename(dn))
     for sdn,dns,fns in os.walk(dn):
@@ -74,22 +74,42 @@ def copyDirectory(dn, odn, overwrite):
         tdn = odn + sdn[len(dn):]
         for fn in fns:
             ffn = posixpath.join(sdn, fn)
-            filesCopied += copyFile(ffn, tdn, overwrite)
+            filesCopied += copyFile(ffn, tdn, overwrite, text_patterns)
     return filesCopied
 
-def copyFile(fn, odn, overwrite):
+def isTextFile(fn, text_patterns):
+    if text_patterns is None: return False
+    for pattern in text_patterns:
+        if fn.endswith(pattern): return True
+    return False
+
+def copyFile(fn, odn, overwrite, text_patterns):
     if not posixpath.isdir(odn):
         print("creating %s" % odn)
         os.makedirs(odn)
     ofn = posixpath.join(odn, posixpath.basename(fn))
-    if not posixpath.isfile(ofn) or overwrite or not filecmp.cmp(fn,ofn):
+    copy = not posixpath.isfile(ofn) or overwrite
+    if not copy:
+        copy = not filecmp.cmp(fn,ofn)
+        if copy and isTextFile(fn, text_patterns):
+            # read both files in text mode
+            # if they are the same then don't copy
+            with open(fn) as fp: txt = fp.read()
+            with open(ofn) as ofp: otxt = ofp.read()
+            copy = txt != otxt
+            if not copy:
+                print("not copying %s (equal as text)" % ofn)
+
+    if copy:
         print("copying %s" % ofn)
         shutil.copy2(fn, ofn)
         return 1
+
     return 0
 
 def main(manifestFile, source, target, replacements,
-         overwrite=False, clean=False):
+         overwrite=False, clean=False, text_patterns=None):
+
     source = source.replace("\\", "/")
     target = target.replace("\\", "/")
     if source == target:
@@ -123,8 +143,8 @@ def main(manifestFile, source, target, replacements,
                 odn = posixpath.dirname(fn).replace(source,target,1)
             else: odn = posixpath.join(target, dn)
             if posixpath.isdir(fn):
-                filesCopied += copyDirectory(fn, odn, overwrite)
-            else: filesCopied += copyFile(fn, odn, overwrite)
+                filesCopied += copyDirectory(fn, odn, overwrite, text_patterns)
+            else: filesCopied += copyFile(fn, odn, overwrite, text_patterns)
     print("%d files copied" % filesCopied)
 
 if __name__ == "__main__":
@@ -132,7 +152,7 @@ if __name__ == "__main__":
 
     kwargs = {}
 
-    opts,args = getopt.getopt(sys.argv[1:], "oc")
+    opts,args = getopt.getopt(sys.argv[1:], "oct:")
 
     if len(args) == 0:
         input("testing *.man files in current directory:")
@@ -149,10 +169,16 @@ if __name__ == "__main__":
 
     replacements = args[3:]
 
+    text_patterns = []
+
     for opt in opts:
         if opt[0] == "-o": kwargs["overwrite"] = True
         elif opt[0] == "-c": kwargs["clean"] = True
+        elif opt[0] == "-t": text_patterns.append(opt[1])
         else: raise Exception("Unknown option %s" % opt[0])
+
+    if len(text_patterns):
+        kwargs["text_patterns"] = text_patterns
 
     main(args[0], args[1], args[2], replacements, **kwargs)
 
