@@ -382,6 +382,8 @@ void Service::set_logging(bool logging)
     m_isLogging = logging;
 }
 
+// this function is called by the start_service function for a specific service
+// it is not required to call start_service and stop_service
 void Service::start_up()
 {
     if (m_connections == 0)
@@ -391,6 +393,8 @@ void Service::start_up()
     ++m_connections;
 }
 
+// this function is called by the stop_service function for a specific service
+// it is not required to call start_service and stop_service
 void Service::shut_down()
 {
     if (m_connections <= 0)
@@ -415,6 +419,12 @@ Service::~Service()
     {
         m_connections = 1; // to force a shut-down
         shut_down();
+    }
+    else if (m_connections == 0)
+    {
+        // this means that start_up / shut_down have not been used
+        // however we still need to remove the service from the common runtime
+        m_commonRuntime->remove_service(this);
     }
 }
 
