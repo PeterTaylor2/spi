@@ -146,6 +146,7 @@ public:
     const InputContext* GetInputContext() const;
 
     static Value VectorToValue(const std::vector<Variant>& in);
+    static Value MatrixToValue(const spi::MatrixData<Variant>& in);
 
 private:
 

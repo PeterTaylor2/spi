@@ -877,7 +877,7 @@ std::string DataType::toValueCode(
         else if (arrayDim == 1)
             oss << "spi::Variant::VectorToValue(" << data << ")";
         else
-            throw spi::RuntimeError("%s: VARIANT array not supported", __FUNCTION__);
+            oss << "spi::Variant::MatrixToValue(" << data << ")";
         return oss.str();
     case spdoc::PublicType::OBJECT:
         return data;
@@ -950,7 +950,7 @@ std::string DataType::castOuterTypeToValue(
         else if (arrayDim == 1)
             oss << "spi::Variant::VectorToValue(" << data << ")";
         else
-            throw spi::RuntimeError("%s: VARIANT matrix not supported", __FUNCTION__);
+            oss << "spi::Variant::MatrixToValue(" << data << ")";
         break;
     default:
         throw spi::RuntimeError("%s: unknown enum value %d", __FUNCTION__, (int)m_publicType);

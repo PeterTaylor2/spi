@@ -340,5 +340,10 @@ Value Variant::VectorToValue(const std::vector<spi::Variant>& in)
     return Value(values);
 }
 
+Value Variant::MatrixToValue(const spi::MatrixData<Variant>& in)
+{
+    return Value(in.ToArray());
+}
+
 SPI_END_NAMESPACE
 
