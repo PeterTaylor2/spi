@@ -94,9 +94,22 @@ PyObject* pyoFromValue(const Value& value)
     case Value::OBJECT_REF:
         return pyoFromInt(value.getObjectRef());
     case Value::ARRAY:
-        return pyoMakeArray(
-            value.getArray()->getVector(),
-            pyoFromValue);
+    {
+        IArrayConstSP a = value.getArray();
+        std::vector<size_t> dims = a->dimensions();
+        if (dims.size() == 1)
+        {
+            return pyoMakeArray(a->getVector(), pyoFromValue);
+        }
+        else if (dims.size() == 2)
+        {
+            return pyoMakeMatrix(dims[0], dims[1], a->getVector(), pyoFromValue);
+        }
+        else
+        {
+            SPI_THROW_RUNTIME_ERROR("Dimensions of array must be 1 or 2");
+        }
+    }
     case Value::ERROR:
         PyErr_SetString(PyExc_Exception, value.getError().c_str());
         throw PyException();

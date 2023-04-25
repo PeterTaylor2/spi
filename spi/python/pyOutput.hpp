@@ -197,6 +197,64 @@ PyObject* pyoMakeArray(
     return pyoRelease(pyo);
 }
 
+/**
+ * Given a function that converts a scalar instance of T to PyObject*, this
+ * template will implement the matrix equivalent where the scalar function
+ * takes inputs by value rather than by reference.
+ */
+template<typename T>
+PyObject* pyoMakeMatrix(
+    size_t nr,
+    size_t nc,
+    const std::vector<T>& values,
+    PyObject* (*MakeScalar)(T))
+{
+    PyObjectSP pyo = pyoShare(PyList_New((int)nr));
+    if (!pyo)
+        throw PyException();
+    size_t i = 0;
+    for (size_t r = 0; r < nr; ++r)
+    {
+        PyObjectSP pyr = pyoShare(PyList_New((int)nc));
+        for (size_t c = 0; c < nc; ++c)
+        {
+            PyList_SET_ITEM(pyr.get(), c, MakeScalar(values[i]));
+            ++i;
+        }
+        PyList_SET_ITEM(pyo.get(), r, pyoRelease(pyr));
+    }
+    return pyoRelease(pyo);
+}
+
+/**
+ * Given a function that converts a scalar instance of T to PyObject*, this
+ * template will implement the matrix equivalent where the scalar function
+ * takes inputs by reference rather than by value.
+ */
+template<typename T>
+PyObject* pyoMakeMatrix(
+    size_t nr,
+    size_t nc,
+    const std::vector<T>& values,
+    PyObject* (*MakeScalar)(const T&))
+{
+    PyObjectSP pyo = pyoShare(PyList_New((int)nr));
+    if (!pyo)
+        throw PyException();
+    size_t i = 0;
+    for (size_t r = 0; r < nr; ++r)
+    {
+        PyObjectSP pyr = pyoShare(PyList_New((int)nc));
+        for (size_t c = 0; c < nc; ++c)
+        {
+            PyList_SET_ITEM(pyr.get(), c, MakeScalar(values[i]));
+            ++i;
+        }
+        PyList_SET_ITEM(pyo.get(), r, pyoRelease(pyr));
+    }
+    return pyoRelease(pyo);
+}
+
 template<class T>
 PyObject* pyoFromInstanceVector(
     const std::vector< spi_boost::intrusive_ptr<T> >& values)
