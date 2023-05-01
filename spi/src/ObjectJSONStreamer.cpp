@@ -250,11 +250,8 @@ ObjectConstSP ObjectJSONStreamer::from_stream(
     const MapConstSP& metaData)
 {
     spi_util::JSONValue value = spi_util::JSONParseValue(istr, streamName);
-    MapConstSP m = ToMap(value);
 
-    ObjectMap om(m);
-
-    return m_service->object_from_map(&om, ObjectRefCacheSP(), metaData);
+    return object_from_json(value, m_service, metaData);
 }
 
 void ObjectJSONStreamer::to_stream(
@@ -358,4 +355,17 @@ ObjectJSONStreamer::ObjectJSONStreamer(
     }
 }
 
+ObjectConstSP object_from_json(
+    const spi_util::JSONValue& jv,
+    const ServiceConstSP& svc,
+    const MapConstSP& metaData)
+{
+    MapConstSP m = ToMap(jv);
+
+    ObjectMap om(m);
+
+    return svc->object_from_map(&om, ObjectRefCacheSP(), metaData);
+}
+
 SPI_END_NAMESPACE
+

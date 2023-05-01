@@ -35,6 +35,13 @@
 */
 
 #include "IObjectStreamer.hpp"
+#include <spi_util/Namespace.hpp>
+
+SPI_UTIL_NAMESPACE
+
+class JSONValue;
+
+SPI_UTIL_END_NAMESPACE
 
 SPI_BEGIN_NAMESPACE
 
@@ -91,6 +98,12 @@ private:
     bool m_noObjectId;
 
 };
+
+SPI_IMPORT
+ObjectConstSP object_from_json(
+    const spi_util::JSONValue& jv,
+    const ServiceConstSP& svc,
+    const MapConstSP& metaData = MapConstSP());
 
 SPI_END_NAMESPACE
 
