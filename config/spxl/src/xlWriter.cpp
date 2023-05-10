@@ -102,6 +102,37 @@ ExcelService::writeDeclSpecHeaderFile(const std::string& dirname) const
     return filename;
 }
 
+std::string ExcelService::writeXllServiceHeaderFile(const std::string& dirname) const
+{
+    std::string basename = spi::StringFormat("xll_%s_service.hpp", m_service->name.c_str());
+    std::string filename = spi_util::path::join(
+        dirname.c_str(), basename.c_str(), 0);
+
+    GeneratedOutput ostr(filename, spi_util::path::dirname(filename));
+    writeLicense(ostr, license());
+    startHeaderFile(ostr, filename);
+
+    writeStartCommentBlock(ostr, false);
+    ostr << "** " << basename << "\n"
+         << "**\n"
+         << "** XLL service object definition for " << m_service->name << "\n";
+    writeEndCommentBlock(ostr);
+    if (!noGeneratedCodeNotice())
+        writeGeneratedCodeNotice(ostr, filename);
+
+    ostr << "\n"
+        << "#include \"xll_" << m_service->name << "_decl_spec.h\"\n"
+        << "#include <spi/Namespace.hpp>\n"
+        << "\n"
+        << m_import << "\n"
+        << "spi::ExcelService* " << m_service->name << "_exported_excel_service();\n"
+        << "\n";
+
+    endHeaderFile(ostr, filename);
+    ostr.close();
+    return filename;
+}
+
 std::string
 ExcelService::writeXllHeaderFile(const std::string& dirname) const
 {
@@ -189,8 +220,14 @@ ExcelService::writeXllSourceFile(const std::string& dirname) const
         writeGeneratedCodeNotice(ostr, filename);
 
     ostr << "\n"
-         << "#include \"xll_" << m_service->name << ".hpp\"\n"
-         << "\n";
+        << "#include \"xll_" << m_service->name << ".hpp\"\n"
+        << "#include \"xll_" << m_service->name << "_service.hpp\"\n";
+
+    if (!m_options.parent.empty())
+    {
+        ostr << "#include <xll_" << m_options.parent << "_service.hpp>\n";
+    }
+    ostr << "\n";
 
     for (size_t i = 0; i < m_service->modules.size(); ++i)
     {
@@ -209,6 +246,11 @@ ExcelService::writeXllSourceFile(const std::string& dirname) const
         << "#include \"" << m_service->name << "_dll_service.hpp\"\n"
         << "\n"
         << "spi::ExcelService* " << xlServiceName << " = NULL;\n"
+        << "\n"
+        << "spi::ExcelService* " << m_service->name << "_exported_excel_service()\n"
+        << "{\n"
+        << "    return " << xlServiceName << ";\n"
+        << "}\n"
         << "\n"
         << "spi::FunctionCaller* get_function_caller(const char* name)\n"
         << "{\n"
@@ -234,8 +276,18 @@ ExcelService::writeXllSourceFile(const std::string& dirname) const
         << "\n"
         << "    /* add-in registration */\n"
         << "    " << xlServiceName << " = new spi::ExcelService(" << m_service->ns
-        << "::" << m_service->name << "_exported_service(), xllName, \""
-        << funcNameSep() << "\", false, "
+        << "::" << m_service->name << "_exported_service(),\n";
+
+    if (m_options.parent.empty())
+    {
+        ostr << "        nullptr, ";
+    }
+    else
+    {
+        ostr << "        " << m_options.parent << "_exported_excel_service(), ";
+    }
+
+    ostr << "xllName, \"" << funcNameSep() << "\", false, "
         << (m_options.upperCase ? "true" : "false")
         << ", false, " << (m_options.errIsNA ? "true" : "false") << ");\n";
 

@@ -87,8 +87,8 @@ U_SPI_BUILD_DIR?=$(G_BUILD_DIR)
 include $(U_SPI_HOME)/makefiles/version.mk
 
 U_SRC_DIR:=src
-U_INC_DIR:=src
-U_INCLUDES+=-I$(U_SPI_HOME) -I$(U_DLL_DIR)
+U_INC_DIR:=.
+U_INCLUDES+=-Isrc -I$(U_SPI_HOME) -I$(U_DLL_DIR)
 ifndef U_XLADDIN_TARGET
 U_XLADDIN_TARGET:=$(U_TARGET).xlam
 endif
@@ -107,12 +107,18 @@ include $(U_SPI_HOME)/makefiles/spi/runtime.mk
 #
 # probably no need for any extra DEP_LIBS to be user defined
 ###########################################################################
+G_XL_ABI=$(G_ABI)/xl$(G_XL_VERSION)
+
 U_DEP_LIBS:=\
 $(U_DLL_DIR)/$(G_BUILD_DIR)/$(U_SERVICE_DLL).lib\
 $(U_DEP_LIBS)\
 $(I_SPI_RUNTIME_BIN_DIR)/xl$(G_XL_VERSION)/$(SPI_DLL)-xl$(G_XL_VERSION).lib\
 $(I_SPI_RUNTIME_BIN_DIR)/$(SPI_DLL).lib\
 $(I_SPI_RUNTIME_BIN_DIR)/$(SPI_UTIL_DLL).lib
+
+ifneq ($(U_XLL_PARENT),)
+U_DEP_LIBS+=$(U_OUTPUT_DIR)/$(G_XL_ABI)/$(U_XLL_PARENT).lib
+endif
 
 U_LIBS=$(U_DEP_LIBS) $(U_SPI_HOME)/excel/win32/xl$(G_XL_VERSION)/xlcall32.lib
 
@@ -163,7 +169,6 @@ endif
 G_EXCEL_MAKE_XLADDIN=$(U_SPI_HOME)/makefiles/win32/makeXLAddin.exe
 G_EXCEL_INSTALLER=$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/installExcel.py
 G_EXCEL_ADDINS_DIR?=$(abspath $(APPDATA))/Microsoft/AddIns
-G_XL_ABI=$(G_ABI)/xl$(G_XL_VERSION)
 
 dll: $(U_OUTPUT_DIR)/$(G_XL_ABI)/$(U_TARGET).xll
 dll: $(U_OUTPUT_DIR)/$(G_XL_ABI)/$(SPI_DLL)-xl$(G_XL_VERSION).dll
@@ -173,9 +178,10 @@ $(U_OUTPUT_DIR)/$(G_XL_ABI)/$(SPI_DLL)-xl$(G_XL_VERSION).dll: $(I_SPI_RUNTIME_BI
 	cp -f $< $(U_OUTPUT_DIR)/$(G_XL_ABI)
 	@if [ -f $(basename $<).pdb ]; then cp -f $(basename $<).pdb $(U_OUTPUT_DIR)/$(G_XL_ABI); fi
 
-$(U_OUTPUT_DIR)/$(G_XL_ABI)/$(U_TARGET)$(G_DLL_EXT): $(G_BUILD_DIR)-xl$(G_XL_VERSION)/$(U_TARGET)$(G_DLL_EXT)
+$(U_OUTPUT_DIR)/$(G_XL_ABI)/$(U_TARGET).xll: $(G_BUILD_DIR)-xl$(G_XL_VERSION)/$(U_TARGET).xll
 	@mkdir -p $(U_OUTPUT_DIR)/$(G_XL_ABI)
 	cp -f $< $(U_OUTPUT_DIR)/$(G_XL_ABI)
+	cp -f $(basename $<).lib $(U_OUTPUT_DIR)/$(G_XL_ABI)
 	@if [ -f $(basename $<).pdb ]; then cp -f $(basename $<).pdb $(U_OUTPUT_DIR)/$(G_XL_ABI); fi
 
 # this rule => only have to define the extra files to be copied in Makefile

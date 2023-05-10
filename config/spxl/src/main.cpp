@@ -58,14 +58,31 @@ static void tidyup(
     for (iter = d.fns.begin(); iter != d.fns.end(); ++iter)
     {
         if (spi::StringEndsWith(*iter, ".h") ||
-             spi::StringEndsWith(*iter, ".hpp") ||
-             spi::StringEndsWith(*iter, ".cpp") ||
+            spi::StringEndsWith(*iter, ".hpp") ||
+            spi::StringEndsWith(*iter, ".cpp") ||
             spi::StringEndsWith(*iter, ".bas") ||
             spi::StringEndsWith(*iter, ".frm") ||
             spi::StringEndsWith(*iter, ".frx"))
         {
             std::string ffn = spi_util::path::join(
                 dn.c_str(), iter->c_str(), NULL);
+            if (!fns.count(ffn))
+            {
+                std::cout << "Removing " << ffn << std::endl;
+                remove(ffn.c_str());
+            }
+        }
+    }
+
+    std::string hdn = spi_util::path::dirname(dn);
+    spi_util::Directory hd(hdn);
+    for (iter = hd.fns.begin(); iter != hd.fns.end(); ++iter)
+    {
+        if (spi::StringEndsWith(*iter, ".h") ||
+            spi::StringEndsWith(*iter, ".hpp"))
+        {
+            std::string ffn = spi_util::path::join(
+                hdn.c_str(), iter->c_str(), NULL);
             if (!fns.count(ffn))
             {
                 std::cout << "Removing " << ffn << std::endl;
@@ -106,9 +123,11 @@ static int run(
         fns.insert(module->writeSourceFile(outdir));
     }
 
-    fns.insert(service->writeDeclSpecHeaderFile(outdir));
+    std::string headerdir = spi_util::path::dirname(outdir);
+    fns.insert(service->writeDeclSpecHeaderFile(headerdir));
     fns.insert(service->writeXllHeaderFile(outdir));
     fns.insert(service->writeXllSourceFile(outdir));
+    fns.insert(service->writeXllServiceHeaderFile(headerdir));
     fns.insert(service->writeVbaFile(outdir));
 
     std::vector<std::string> vbaFns = service->translateVbaFiles(
@@ -140,7 +159,7 @@ int main(int argc, char* argv[])
 
     Options options;
 
-    const char* longOptions = "nameAtEnd noGeneratedCodeNotice upperCase funcNameSep= noObjectFuncs"
+    const char* longOptions = "nameAtEnd noGeneratedCodeNotice upperCase funcNameSep= noObjectFuncs parent="
         " optionsFile= license licenseFile= errIsNA";
 
     try
@@ -159,6 +178,10 @@ int main(int argc, char* argv[])
             else if (opt == "-v")
             {
                 verbose = true;
+            }
+            else if (opt == "--parent")
+            {
+                options.parent = val;
             }
             else if (opt == "--nameAtEnd")
             {

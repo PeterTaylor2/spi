@@ -64,6 +64,7 @@ std::string PrefixUpper(const std::string& name, const char* sep)
 
 ExcelService::ExcelService(
     const ServiceSP& service,
+    ExcelService* parent,
     const std::string& xllName,
     const char* sep,
     bool errorPopups,
@@ -72,6 +73,7 @@ ExcelService::ExcelService(
     bool errNA)
     :
     m_service(service),
+    m_parent(parent),
     m_registeredFunctions(),
     m_errorPopups(errorPopups),
     m_dirname(spi_util::path::dirname(xllName)),
@@ -920,7 +922,7 @@ XLOPER* ExcelService::ErrorHandler(const char* err)
     //
     // 1. not called from Visual Basic (cellName != "None")
     // 2. the user recalcs the offending cell
-    if (m_errorPopups && cellName != "None" && cellName == lastCellName)
+    if (errorPopups() && cellName != "None" && cellName == lastCellName)
     {
         // we definitely don't want error pop-ups while we are in
         // the function wizard - that way lies madness
@@ -1872,6 +1874,14 @@ bool ExcelService::mandatoryBaseName() const
 const std::string& ExcelService::getNamespace() const
 {
     return m_service->get_namespace();
+}
+
+bool ExcelService::errorPopups() const
+{
+    if (m_parent)
+        return m_parent->errorPopups();
+
+    return m_errorPopups;
 }
 
 void ExcelService::logMessage(const std::string& msg)
