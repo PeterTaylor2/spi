@@ -31,7 +31,7 @@ static void generateService(
     const ServiceDefinitionSP& svc,
     const std::string& dn,
     std::set<std::string>& fns,
-    const std::string& license,
+    const Options& options,
     bool types=false);
 
 static void generateModule(
@@ -65,7 +65,7 @@ void generateCpp(
     const Options& options)
 {
     std::set<std::string> fns;
-    generateService(svc, dn, fns, options.license);
+    generateService(svc, dn, fns, options);
     if (options.allHeader)
     {
         std::string fn = spi_util::path::posix(spi::StringFormat("%s/%s_dll_all.hpp",
@@ -83,7 +83,7 @@ void generateCpp(
 void generateTypes(const ServiceDefinitionSP& svc, const std::string& dn, const Options& options)
 {
     std::set<std::string> fns;
-    generateService(svc, dn, fns, options.license, true);
+    generateService(svc, dn, fns, options, true);
     const std::vector<ModuleDefinitionSP>& modules = svc->getModules();
     for (size_t i = 0; i < modules.size(); ++i)
         generateModule(svc, modules[i], dn, fns, true, options.license, true);
@@ -176,7 +176,7 @@ void generateService(
     const ServiceDefinitionSP& svc,
     const std::string& dn,
     std::set<std::string>& fns,
-    const std::string& license,
+    const Options& options,
     bool types)
 {
     const std::string& name = svc->getName();
@@ -191,7 +191,7 @@ void generateService(
     */
     std::string fn = spi_util::path::posix(
         spi::StringFormat("%s/properties.mk", dn.c_str()));
-    svc->writeMakefileProperties(fn, dn);
+    svc->writeMakefileProperties(fn, dn, options.outputDir);
     fns.insert(fn);
 
     // remove the ns_version.mk file - the problem with having the namespace
@@ -212,7 +212,7 @@ void generateService(
     */
     fn = spi_util::path::posix(
         spi::StringFormat("%s/%s_dll_decl_spec.h", dn.c_str(), name.c_str()));
-    svc->writeDeclSpecHeader(fn, dn, license);
+    svc->writeDeclSpecHeader(fn, dn, options.license);
     fns.insert(fn);
 
     /*
@@ -222,7 +222,7 @@ void generateService(
     */
     fn = spi_util::path::posix(
         spi::StringFormat("%s/%s_namespace.hpp", dn.c_str(), name.c_str()));
-    svc->writeServiceNamespace(fn, dn, license, types);
+    svc->writeServiceNamespace(fn, dn, options.license, types);
     fns.insert(fn);
 
     /*
@@ -234,7 +234,7 @@ void generateService(
         spi::StringFormat("%s/%s_dll_service.hpp", dn.c_str(), name.c_str()));
     std::string fn2 = spi_util::path::posix(
         spi::StringFormat("%s/src/%s_dll_service_manager.hpp", dn.c_str(), name.c_str()));
-    svc->writeServiceHeaders(fn1, fn2, dn, license, types);
+    svc->writeServiceHeaders(fn1, fn2, dn, options.license, types);
     fns.insert(fn1);
     fns.insert(fn2);
 
@@ -245,7 +245,7 @@ void generateService(
     */
     fn = spi_util::path::posix(
         spi::StringFormat("%s/src/%s_dll_time_out.hpp", dn.c_str(), name.c_str()));
-    svc->writeTimeoutHeader(fn, dn, license);
+    svc->writeTimeoutHeader(fn, dn, options.license);
     fns.insert(fn);
 
     /*
@@ -255,7 +255,7 @@ void generateService(
     */
     fn = spi_util::path::posix(
         spi::StringFormat("%s/src/%s_dll_service_manager.cpp", dn.c_str(), name.c_str()));
-    svc->writeServiceSource(fn, dn, license, types);
+    svc->writeServiceSource(fn, dn, options.license, types);
     fns.insert(fn);
 
     /*
@@ -265,7 +265,7 @@ void generateService(
     */
     fn = spi_util::path::posix(
         spi::StringFormat("%s/src/%s_dll_type_converters.hpp", dn.c_str(), name.c_str()));
-    svc->writeTypeConvertersHeader(fn, dn, license);
+    svc->writeTypeConvertersHeader(fn, dn, options.license);
     fns.insert(fn);
 }
 

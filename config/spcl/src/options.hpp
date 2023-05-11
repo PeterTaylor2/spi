@@ -34,6 +34,7 @@ struct Options
     bool noTidyup;
     bool sessionLogging;
     std::string license;
+    std::string outputDir;
 };
 
 #endif

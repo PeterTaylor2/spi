@@ -120,7 +120,6 @@ public:
         const std::string& version,
         const std::string& declSpec,
         const std::string& sharedPtr,
-        //const std::string& spDynamicCast,
         const std::string& sharedPtrInclude,
         bool noLog,
         bool useVersionedNamespace,
@@ -172,7 +171,8 @@ public:
 
     std::string fullNamespace(const std::string& ns, const char* sep = "::") const;
 
-    void writeMakefileProperties(const std::string& fn, const std::string& cwd);
+    void writeMakefileProperties(const std::string& fn, const std::string& cwd,
+        const std::string& outputDir);
     void writeDeclSpecHeader(
         const std::string& fn, 
         const std::string& cwd,

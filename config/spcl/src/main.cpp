@@ -117,7 +117,7 @@ int main(int argc, char* argv[])
 
     std::string exe("SPCL");
     const char* longOptions = "allHeader noVerbatimLine noHeaderSplit noTidyup"
-        " noGeneratedCodeNotice sortSummary version= optionalArgs license"
+        " noGeneratedCodeNotice sortSummary version= optionalArgs license outputDir="
         " sessionLogging licenseFile=";
 
     try
@@ -204,6 +204,10 @@ int main(int argc, char* argv[])
             {
                 std::string fn = val;
                 options.license = readLicenseFile(val);
+            }
+            else if (opt == "--outputDir")
+            {
+                options.outputDir = val;
             }
             else
             {

@@ -809,7 +809,8 @@ spdoc::ServiceConstSP ServiceDefinition::getDoc() const
 
 void ServiceDefinition::writeMakefileProperties(
     const std::string& fn,
-    const std::string& cwd)
+    const std::string& cwd,
+    const std::string& outputDir)
 {
     GeneratedOutput ostr(fn, cwd);
 
@@ -818,6 +819,12 @@ void ServiceDefinition::writeMakefileProperties(
          << "U_SERVICE_DEBUG?=" << spi::StringUpper(m_namespace) << "_DEBUG\n"
          << "U_SERVICE_NAMESPACE=" << m_namespace << "\n"
          << "U_DECLSPEC=" << m_declSpec << "\n";
+
+    if (!outputDir.empty())
+    {
+        ostr << "U_OUTPUT_DIR=" << outputDir << "\n";
+    }
+
 }
 
 void ServiceDefinition::writeDeclSpecHeader(
