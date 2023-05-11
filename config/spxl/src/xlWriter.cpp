@@ -153,7 +153,7 @@ ExcelService::writeXllHeaderFile(const std::string& dirname) const
         writeGeneratedCodeNotice(ostr, filename);
 
     ostr << "\n"
-         << "#include \"xll_" << m_service->name << "_decl_spec.h\"\n"
+         << "#include <xll_" << m_service->name << "_decl_spec.h>\n"
          << "#include <spi/Namespace.hpp>\n"
          << "\n"
          << "typedef struct xloper XLOPER;\n"
@@ -221,7 +221,7 @@ ExcelService::writeXllSourceFile(const std::string& dirname) const
 
     ostr << "\n"
         << "#include \"xll_" << m_service->name << ".hpp\"\n"
-        << "#include \"xll_" << m_service->name << "_service.hpp\"\n";
+        << "#include <xll_" << m_service->name << "_service.hpp>\n";
 
     if (!m_options.parent.empty())
     {
@@ -243,7 +243,7 @@ ExcelService::writeXllSourceFile(const std::string& dirname) const
         << "#include <spi/excel/xlService.hpp>\n"
         << "#include <spi/excel/xlUtil.hpp>\n"
         << "\n"
-        << "#include \"" << m_service->name << "_dll_service.hpp\"\n"
+        << "#include <" << m_service->name << "_dll_service.hpp>\n"
         << "\n"
         << "spi::ExcelService* " << xlServiceName << " = NULL;\n"
         << "\n"
@@ -871,7 +871,7 @@ std::string ExcelModule::writeHeaderFile(const std::string& dirname) const
     startHeaderFile(ostr, filename);
 
     ostr << "\n"
-         << "#include \"xll_" << service->name() << "_decl_spec.h\"\n"
+         << "#include <xll_" << service->name() << "_decl_spec.h>\n"
          << "#include <spi/Namespace.hpp>\n"
          << "#include <string>\n";
 
@@ -942,12 +942,10 @@ std::string ExcelModule::writeSourceFile(const std::string& dirname) const
         writeGeneratedCodeNotice(ostr, filename);
 
     ostr << "\n"
-         << "#include \"xl_" << service->ns() << "_" << module->name
-         << ".hpp\"\n"
+         << "#include \"xl_" << service->ns() << "_" << module->name << ".hpp\"\n"
          << "#include \"xll_" << service->name() << ".hpp\"\n"
          << "\n"
-         << "#include \"" << service->ns() << "_" << module->name
-         << ".hpp\"\n"
+         << "#include \"" << service->ns() << "_" << module->name << ".hpp\"\n"
          << "\n"
          << "#include <spi/excel/xlInput.hpp>\n"
          << "#include <spi/excel/xlOutput.hpp>\n"

@@ -28,7 +28,6 @@
 
 .PHONY: code-excel clean-code-excel
 
-I_EXCEL_SRC:=$(U_EXCEL_DIR)/src
 I_EXCEL_TARGET:=$(U_EXCEL_DIR)/$(U_SERVICE).svo
 I_EXCEL_SOURCE:=$(U_CONFIG_DIR)/$(U_SERVICE).svo
 
@@ -55,8 +54,8 @@ $(U_SPI_HOME)/excel/vba/ObjectViewer.frx
 ifeq ($(G_PLATFORM),win32)
 
 $(I_EXCEL_TARGET): $(I_EXCEL_SOURCE) $(I_SPXL) $(I_VBA_SOURCE)
-	@mkdir -p $(I_EXCEL_SRC)
-	$(I_SPXL) $(G_SPXL_OPTIONS) $(U_SPXL_OPTIONS) $(I_EXCEL_SOURCE) $(I_EXCEL_TARGET) $(I_EXCEL_SRC) $(U_SPI_HOME)/excel/vba
+	@mkdir -p $(U_EXCEL_DIR)/src
+	$(I_SPXL) $(G_SPXL_OPTIONS) $(U_SPXL_OPTIONS) $(I_EXCEL_SOURCE) $(I_EXCEL_TARGET) $(U_EXCEL_DIR) $(U_SPI_HOME)/excel/vba
 
 else
 
