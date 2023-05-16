@@ -45,7 +45,6 @@ struct Options
         upperCase(false),
         noObjectFuncs(false),
         errIsNA(false),
-        parent(),
         license(),
         helpFunc("help_func"),
         helpFuncList(""),
@@ -78,7 +77,6 @@ struct Options
     bool upperCase;
     bool noObjectFuncs;
     bool errIsNA;
-    std::string parent;
     std::string license;
     std::string helpFunc;
     std::string helpFuncList;
@@ -124,7 +122,6 @@ public:
         const Options& options);
 
     std::string writeDeclSpecHeaderFile(const std::string& dirname) const;
-    std::string writeXllServiceHeaderFile(const std::string& dirname) const;
     std::string writeXllHeaderFile(const std::string& dirname) const;
     std::string writeXllSourceFile(const std::string& dirname) const;
     std::string writeVbaFile(const std::string& dirname) const;

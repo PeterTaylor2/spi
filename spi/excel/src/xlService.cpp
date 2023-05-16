@@ -60,22 +60,20 @@ std::string PrefixUpper(const std::string& name, const char* sep)
     return StringJoin(sep, parts);
 }
 
+bool g_errorPopups = false;
+
 }
 
 ExcelService::ExcelService(
     const ServiceSP& service,
-    ExcelService* parent,
     const std::string& xllName,
     const char* sep,
-    bool errorPopups,
     bool upperCase,
     bool optionalBaseName,
     bool errNA)
     :
     m_service(service),
-    m_parent(parent),
     m_registeredFunctions(),
-    m_errorPopups(errorPopups),
     m_dirname(spi_util::path::dirname(xllName)),
     m_doc(),
     m_inputContext(InputContext::ExcelContext()),
@@ -1063,7 +1061,7 @@ XLOPER* ExcelService::SetErrorPopups(XLOPER* xl_errorPopups)
     try
     {
         bool errorPopups = xloperToBool(xl_errorPopups, "errorPopups");
-        m_errorPopups = errorPopups;
+        g_errorPopups = errorPopups;
         xlo = xloperFromBool(errorPopups);
     }
     catch (ExcelInputError&)
@@ -1878,10 +1876,7 @@ const std::string& ExcelService::getNamespace() const
 
 bool ExcelService::errorPopups() const
 {
-    if (m_parent)
-        return m_parent->errorPopups();
-
-    return m_errorPopups;
+    return g_errorPopups;
 }
 
 void ExcelService::logMessage(const std::string& msg)

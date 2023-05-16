@@ -66,9 +66,8 @@ struct ExcelTimings
 class SPI_XL_IMPORT ExcelService
 {
 public:
-    ExcelService(const ServiceSP& service, ExcelService* parent, const std::string& xllName,
+    ExcelService(const ServiceSP& service, const std::string& xllName,
         const char* sep = ".",
-        bool errorPopups = false,
         bool upperCase = false,
         bool optionalBaseName = false,
         bool errNA = false);
@@ -223,9 +222,7 @@ public:
 
 private:
     ServiceSP m_service;
-    ExcelService* m_parent;
     std::vector<std::string> m_registeredFunctions;
-    bool m_errorPopups;
     std::string m_dirname;
     spdoc::ServiceConstSP m_doc;
     InputContext* m_inputContext;

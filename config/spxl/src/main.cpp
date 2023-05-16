@@ -50,12 +50,11 @@ static void print_usage(std::ostream& ostr, const std::string& exe, const char* 
 static void tidyup(
     const spdoc::ServiceConstSP& svc,
     const std::string& dn,
-    const std::string& sdn,
     const std::set<std::string>& fns)
 {
     std::set<std::string>::const_iterator iter;
 
-    spi_util::Directory d(sdn);
+    spi_util::Directory d(dn);
     for (iter = d.fns.begin(); iter != d.fns.end(); ++iter)
     {
         if (spi::StringEndsWith(*iter, ".h") ||
@@ -65,21 +64,6 @@ static void tidyup(
             spi::StringEndsWith(*iter, ".frm") ||
             spi::StringEndsWith(*iter, ".frx"))
         {
-            std::string ffn = spi_util::path::join(sdn.c_str(), iter->c_str(), 0);
-            if (!fns.count(ffn))
-            {
-                std::cout << "Removing " << ffn << std::endl;
-                remove(ffn.c_str());
-            }
-        }
-    }
-
-    d = spi_util::Directory(dn);
-    for (iter = d.fns.begin(); iter != d.fns.end(); ++iter)
-    {
-        if (spi::StringEndsWith(*iter, ".h") ||
-            spi::StringEndsWith(*iter, ".hpp"))
-        {
             std::string ffn = spi_util::path::join(dn.c_str(), iter->c_str(), 0);
             if (!fns.count(ffn))
             {
@@ -88,6 +72,28 @@ static void tidyup(
             }
         }
     }
+
+    // repeat for parent directory since at one point we also wrote files there
+    std::string dnParent = spi_util::path::dirname(dn);
+    spi_util::Directory dParent(dnParent);
+    for (iter = dParent.fns.begin(); iter != dParent.fns.end(); ++iter)
+    {
+        if (spi::StringEndsWith(*iter, ".h") ||
+            spi::StringEndsWith(*iter, ".hpp") ||
+            spi::StringEndsWith(*iter, ".cpp") ||
+            spi::StringEndsWith(*iter, ".bas") ||
+            spi::StringEndsWith(*iter, ".frm") ||
+            spi::StringEndsWith(*iter, ".frx"))
+        {
+            std::string ffn = spi_util::path::join(dnParent.c_str(), iter->c_str(), 0);
+            if (!fns.count(ffn))
+            {
+                std::cout << "Removing " << ffn << std::endl;
+                remove(ffn.c_str());
+            }
+        }
+    }
+
 }
 
 
@@ -112,30 +118,27 @@ static int run(
         modules.push_back(ExcelModule::Make(service, moduleDoc));
     }
 
-    std::string outsrcdir = spi_util::path::join(outdir.c_str(), "src", 0);
-
     std::set<std::string> fns;
     for (size_t i = 0; i < nbModules; ++i)
     {
         const ExcelModuleConstSP& module = modules[i];
 
-        fns.insert(module->writeHeaderFile(outsrcdir));
-        fns.insert(module->writeSourceFile(outsrcdir));
+        fns.insert(module->writeHeaderFile(outdir));
+        fns.insert(module->writeSourceFile(outdir));
     }
 
     fns.insert(service->writeDeclSpecHeaderFile(outdir));
-    fns.insert(service->writeXllHeaderFile(outsrcdir));
-    fns.insert(service->writeXllSourceFile(outsrcdir));
-    fns.insert(service->writeXllServiceHeaderFile(outdir));
-    fns.insert(service->writeVbaFile(outsrcdir));
+    fns.insert(service->writeXllHeaderFile(outdir));
+    fns.insert(service->writeXllSourceFile(outdir));
+    fns.insert(service->writeVbaFile(outdir));
 
     std::vector<std::string> vbaFns = service->translateVbaFiles(
-        outsrcdir, indirvba);
+        outdir, indirvba);
 
     for (size_t i = 0; i < vbaFns.size(); ++i)
         fns.insert(vbaFns[i]);
 
-    tidyup(serviceDoc, outdir, outsrcdir, fns);
+    tidyup(serviceDoc, outdir, fns);
 
     serviceDoc->to_file(outfilename.c_str());
 
@@ -180,7 +183,7 @@ int main(int argc, char* argv[])
             }
             else if (opt == "--parent")
             {
-                options.parent = val;
+                std::cerr << "ignoring deprecated parameter --parent" << std::endl;
             }
             else if (opt == "--nameAtEnd")
             {

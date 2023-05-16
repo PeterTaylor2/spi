@@ -116,10 +116,6 @@ $(I_SPI_RUNTIME_BIN_DIR)/xl$(G_XL_VERSION)/$(SPI_DLL)-xl$(G_XL_VERSION).lib\
 $(I_SPI_RUNTIME_BIN_DIR)/$(SPI_DLL).lib\
 $(I_SPI_RUNTIME_BIN_DIR)/$(SPI_UTIL_DLL).lib
 
-ifneq ($(U_XLL_PARENT),)
-U_DEP_LIBS+=$(U_OUTPUT_DIR)/$(G_XL_ABI)/$(U_XLL_PARENT).lib
-endif
-
 U_LIBS=$(U_DEP_LIBS) $(U_SPI_HOME)/excel/win32/xl$(G_XL_VERSION)/xlcall32.lib
 
 ###########################################################################
@@ -181,7 +177,6 @@ $(U_OUTPUT_DIR)/$(G_XL_ABI)/$(SPI_DLL)-xl$(G_XL_VERSION).dll: $(I_SPI_RUNTIME_BI
 $(U_OUTPUT_DIR)/$(G_XL_ABI)/$(U_TARGET).xll: $(G_BUILD_DIR)-xl$(G_XL_VERSION)/$(U_TARGET).xll
 	@mkdir -p $(U_OUTPUT_DIR)/$(G_XL_ABI)
 	cp -f $< $(U_OUTPUT_DIR)/$(G_XL_ABI)
-	cp -f $(basename $<).lib $(U_OUTPUT_DIR)/$(G_XL_ABI)
 	@if [ -f $(basename $<).pdb ]; then cp -f $(basename $<).pdb $(U_OUTPUT_DIR)/$(G_XL_ABI); fi
 
 # this rule => only have to define the extra files to be copied in Makefile
