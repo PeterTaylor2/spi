@@ -73,17 +73,13 @@ static void tidyup(
         }
     }
 
-    // repeat for parent directory since at one point we also wrote files there
+    // repeat for parent directory since at one point we also wrote header files there
     std::string dnParent = spi_util::path::dirname(dn);
     spi_util::Directory dParent(dnParent);
     for (iter = dParent.fns.begin(); iter != dParent.fns.end(); ++iter)
     {
         if (spi::StringEndsWith(*iter, ".h") ||
-            spi::StringEndsWith(*iter, ".hpp") ||
-            spi::StringEndsWith(*iter, ".cpp") ||
-            spi::StringEndsWith(*iter, ".bas") ||
-            spi::StringEndsWith(*iter, ".frm") ||
-            spi::StringEndsWith(*iter, ".frx"))
+            spi::StringEndsWith(*iter, ".hpp"))
         {
             std::string ffn = spi_util::path::join(dnParent.c_str(), iter->c_str(), 0);
             if (!fns.count(ffn))
