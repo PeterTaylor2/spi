@@ -58,8 +58,9 @@ namespace
 
 namespace csv
 {
-    std::vector<std::string> ParseLine(const char* line)
+    std::vector<std::string> ParseLine(const char* line, bool& blankLine)
     {
+        blankLine = true;
         SPI_UTIL_PRE_CONDITION(line);
 
         std::vector<std::string> out;
@@ -110,6 +111,8 @@ namespace csv
 
                 if (*work == '\0' || *work == sep)
                 {
+                    if (blankLine && !str.empty())
+                        blankLine = false;
                     out.push_back(str);
                     if (*work == sep)
                         ++work;
@@ -126,6 +129,8 @@ namespace csv
                 if (!ptr)
                 {
                     std::string str = std::string(work);
+                    if (blankLine && !str.empty())
+                        blankLine = false;
                     out.push_back(str);
                     work += str.length();
                 }
@@ -133,6 +138,8 @@ namespace csv
                 {
                     // more to come
                     std::string str = std::string(work, ptr - work);
+                    if (blankLine && !str.empty())
+                        blankLine = false;
                     out.push_back(str);
                     work = ptr + 1;
                     if (!*work) // trailing comma
@@ -225,16 +232,16 @@ namespace csv
         return row[j];
     }
 
-    DataSP Data::Read(const std::string& filename)
+    DataSP Data::Read(const std::string& filename, bool stopOnBlankLine)
     {
         std::ifstream istr(filename.c_str());
         if (!istr)
             SPI_UTIL_THROW_RUNTIME_ERROR("Could not open file " << filename);
 
-        return Read(filename, istr);
+        return Read(filename, istr, stopOnBlankLine);
     }
 
-    DataSP Data::Read(const std::string& name, std::istream& istr)
+    DataSP Data::Read(const std::string& name, std::istream& istr, bool stopOnBlankLine)
     {
         std::vector<std::string> lines = StreamReadLines(istr);
 
@@ -247,7 +254,11 @@ namespace csv
 
         for (size_t i = 0; i < NL; ++i)
         {
-            std::vector<std::string> row = ParseLine(lines[i].c_str());
+            bool blankLine;
+            std::vector<std::string> row = ParseLine(lines[i].c_str(), blankLine);
+
+            if (stopOnBlankLine && blankLine)
+                break;
 
             if (row.size() > 0)
                 out->addRow(row);

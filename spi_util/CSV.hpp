@@ -67,8 +67,8 @@ namespace csv
 
         const std::vector<std::vector<std::string>>& rows() const { return m_rows; }
 
-        static DataSP Read(const std::string& filename);
-        static DataSP Read(const std::string& name, std::istream& istr);
+        static DataSP Read(const std::string& filename, bool stopOnBlankLine=false);
+        static DataSP Read(const std::string& name, std::istream& istr, bool stopOnBlankLine=false);
 
     private:
         std::vector<std::vector<std::string>> m_rows;
