@@ -116,6 +116,7 @@ dll/Makefile
 c/Makefile
 cs/Makefile
 excel/Makefile
+excel/xl_versions.txt
 python/Makefile
 svo/spdoc/src/*.cpp
 svo/spdoc/src/*.h
