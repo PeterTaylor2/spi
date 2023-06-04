@@ -25,7 +25,7 @@ endif
 # we don't want to support SSL
 # we are really only using this for simple local web servers
 
-vpath %.c src/vtls src/vauth
+vpath %.c $(U_SRC_DIR)/vtls $(U_SRC_DIR)/vauth
 
 VTLS_OBJS=\
 vtls.$(G_OBJ)
@@ -38,21 +38,7 @@ ntlm.$(G_OBJ)\
 oauth2.$(G_OBJ)\
 vauth.$(G_OBJ)
 
-
 U_EXTRA_OBJS=$(VTLS_OBJS) $(VAUTH_OBJS)
 
 include $(U_SPI_HOME)/makefiles/build/lib.mk
-
-post_build: bin
-
-bin: ../bin/$(G_ABI)/$(notdir $(I_TARGET))
-
-../bin/$(G_ABI)/$(notdir $(I_TARGET)): $(I_TARGET)
-	@mkdir -p ../bin/$(G_ABI)
-	cp -f $(I_TARGET) ../bin/$(G_ABI)
-ifeq ($(G_PLATFORM),win32) 
-ifeq ($(DEBUG),1)
-	cp -f $(G_BUILD_DIR)/spi_curl.pdb ../bin/$(G_ABI)
-endif
-endif
 
