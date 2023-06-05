@@ -135,6 +135,7 @@ xltest/src/*.cpp
 xltest/Makefile
 zlib/Makefile
 spi_curl/Makefile
+spi_curl/dll/Makefile
 svo/*.py
 svo/lib/*.py
 replay/dll/Makefile

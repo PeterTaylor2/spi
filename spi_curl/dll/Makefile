@@ -21,7 +21,7 @@ U_CFLAGS+=-DWIN32
 endif
 
 # if we wanted to include ZLIB support we could do it as follows:
-# U_CFLAGS+=-DHAVE_ZLIB_H -DHAVE_ZLIB -DHAVE_LIBZ -I../../zlib
+# U_CFLAGS+=-DHAVE_ZLIB_H -DHAVE_ZLIB -DHAVE_LIBZ -I$(U_SPI_HOME)/zlib
 
 vpath %.c $(U_SRC_DIR)/vtls $(U_SRC_DIR)/vauth
 
@@ -37,13 +37,13 @@ include $(U_SPI_HOME)/makefiles/build/dll.mk
 
 post_build: bin
 
-bin: ../bin/$(G_ABI)/$(notdir $(I_TARGET))
+bin: $(U_SPI_HOME)/bin/$(G_ABI)/$(notdir $(I_TARGET))
 
-../bin/$(G_ABI)/$(notdir $(I_TARGET)): $(I_TARGET)
-	@mkdir -p ../bin/$(G_ABI)
-	cp -f $(I_TARGET) ../bin/$(G_ABI)
+$(U_SPI_HOME)/bin/$(G_ABI)/$(notdir $(I_TARGET)): $(I_TARGET)
+	@mkdir -p $(U_SPI_HOME)/bin/$(G_ABI)
+	cp -f $(I_TARGET) $(U_SPI_HOME)/bin/$(G_ABI)
 ifeq ($(G_PLATFORM),win32) 
-	cp -f $(G_BUILD_DIR)/$(U_TARGET).lib ../bin/$(G_ABI)
-	@if [ -f $(basename $<).pdb ]; then cp -f $(basename $<).pdb ../bin/$(G_ABI); fi
+	cp -f $(G_BUILD_DIR)/$(U_TARGET).lib $(U_SPI_HOME)/bin/$(G_ABI)
+	@if [ -f $(basename $<).pdb ]; then cp -f $(basename $<).pdb $(U_SPI_HOME)/bin/$(G_ABI); fi
 endif
 
