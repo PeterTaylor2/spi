@@ -52,13 +52,14 @@ U_DEP_LIBS=\
 $(I_SPI_RUNTIME_BIN_DIR)/py$(G_PY_VERSION)/$(SPI_DLL)-py$(G_PY_VERSION).lib\
 $(I_SPI_RUNTIME_BIN_DIR)/$(SPI_DLL).lib\
 $(I_SPI_RUNTIME_BIN_DIR)/$(SPI_UTIL_DLL).lib\
+$(I_SPI_RUNTIME_BIN_DIR)/$(SPI_CURL_DLL).lib\
 $(I_SPI_RUNTIME_BIN_DIR)/spi_boost.lib
 
 U_LIBS=$(U_DEP_LIBS) $(G_PYTHON_LIBS)
 
 G_DLL_EXT:=$(G_DEBUG_EXT).pyd
 
-G_SPI_DLLS=$(SPI_DLL).dll $(SPI_UTIL_DLL).dll $(SPI_DLL)-py$(G_PY_VERSION).dll
+G_SPI_DLLS=$(SPI_DLL).dll $(SPI_UTIL_DLL).dll $(SPI_CURL_DLL).dll $(SPI_DLL)-py$(G_PY_VERSION).dll
 G_INSTALL_DLL_EXT:=.dll
 G_INSTALL_PYD_EXT:=.pyd
 G_INSTALL_DLL_PFX:=
@@ -131,6 +132,7 @@ ifeq ($(G_PLATFORM),win32)
 
 bin: $(U_BIN_DIR)/$(SPI_DLL).dll
 bin: $(U_BIN_DIR)/$(SPI_UTIL_DLL).dll
+bin: $(U_BIN_DIR)/$(SPI_CURL_DLL).dll
 bin: $(U_BIN_DIR)/$(U_TARGET)$(G_DLL_EXT)
 bin: $(U_BIN_DIR)/$(SPI_DLL)-py$(G_PY_VERSION).dll
 

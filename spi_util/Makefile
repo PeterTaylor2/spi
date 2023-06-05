@@ -27,7 +27,7 @@ include extra_objects.mk
 ifeq ($(G_PLATFORM),win32)
 
 U_DEP_LIBS=\
-$(U_SPI_HOME)/spi_curl/$(G_BUILD_DIR)/$(G_LIB_PFX)spi_curl$(G_LIB_EXT)
+$(U_SPI_HOME)/bin/$(G_ABI)/$(G_DLL_PFX)$(SPI_CURL_DLL)$(G_DLL_LIB_EXT)
 
 U_LIBS=$(U_DEP_LIBS)
 

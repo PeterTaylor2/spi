@@ -114,7 +114,8 @@ $(U_DLL_DIR)/$(G_BUILD_DIR)/$(U_SERVICE_DLL).lib\
 $(U_DEP_LIBS)\
 $(I_SPI_RUNTIME_BIN_DIR)/xl$(G_XL_VERSION)/$(SPI_DLL)-xl$(G_XL_VERSION).lib\
 $(I_SPI_RUNTIME_BIN_DIR)/$(SPI_DLL).lib\
-$(I_SPI_RUNTIME_BIN_DIR)/$(SPI_UTIL_DLL).lib
+$(I_SPI_RUNTIME_BIN_DIR)/$(SPI_UTIL_DLL).lib\
+$(I_SPI_RUNTIME_BIN_DIR)/$(SPI_CURL_DLL).lib
 
 U_LIBS=$(U_DEP_LIBS) $(U_SPI_HOME)/excel/win32/xl$(G_XL_VERSION)/xlcall32.lib
 
@@ -199,6 +200,7 @@ $(U_OUTPUT_DIR)/$(G_XL_ABI)/$(SPI_DLL)-xl$(G_XL_VERSION).dll\
 $(U_OUTPUT_DIR)/$(G_ABI)/$(U_SERVICE_DLL).dll\
 $(U_OUTPUT_DIR)/$(G_ABI)/$(SPI_DLL).dll\
 $(U_OUTPUT_DIR)/$(G_ABI)/$(SPI_UTIL_DLL).dll\
+$(U_OUTPUT_DIR)/$(G_ABI)/$(SPI_CURL_DLL).dll\
 $(addprefix $(U_OUTPUT_DIR)/$(G_ABI)/,$(notdir $(U_DLLS)))
 
 ifeq ($(U_NO_XLADDIN),0)

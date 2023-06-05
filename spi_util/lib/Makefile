@@ -21,6 +21,8 @@ else
 U_EXCLUDE_OBJS=uuid4.$(G_OBJ)
 endif
 
+U_EXCLUDE_OBJS+=UrlRead.$(G_OBJ)
+
 include ../extra_objects.mk
 
 G_OVERRIDE_NEW_DEFAULT?=0

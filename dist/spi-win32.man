@@ -82,7 +82,6 @@ spi_new_delete/spi-new-delete.guid
 spi_util/spi-util.guid
 spi_boost/lib/spi-boost-lib.guid
 spi_curl/spi_curl.guid
-spi_curl/dll/spi_curl_dll.guid
 xlcall32/xlcall32.guid
 xltest/xltest.guid
 replay/dll/replay-dll.guid

@@ -39,11 +39,13 @@ ifeq ($(G_PLATFORM),win32)
 U_DEP_LIBS+=\
 $(I_SPI_RUNTIME_BIN_DIR)/$(G_LIB_PFX)$(SPI_DLL)$(G_LIB_EXT)\
 $(I_SPI_RUNTIME_BIN_DIR)/$(G_LIB_PFX)$(SPI_UTIL_DLL)$(G_LIB_EXT)\
+$(I_SPI_RUNTIME_BIN_DIR)/$(G_LIB_PFX)$(SPI_CURL_DLL)$(G_LIB_EXT)\
 $(I_SPI_RUNTIME_BIN_DIR)/$(G_LIB_PFX)spi_boost$(G_LIB_EXT)
 
 U_LIBS+=\
 $(I_SPI_RUNTIME_BIN_DIR)/$(G_LIB_PFX)$(SPI_DLL)$(G_LIB_EXT)\
 $(I_SPI_RUNTIME_BIN_DIR)/$(G_LIB_PFX)$(SPI_UTIL_DLL)$(G_LIB_EXT)\
+$(I_SPI_RUNTIME_BIN_DIR)/$(G_LIB_PFX)$(SPI_CURL_DLL)$(G_LIB_EXT)\
 $(I_SPI_RUNTIME_BIN_DIR)/$(G_LIB_PFX)spi_boost$(G_LIB_EXT)
 
 else
@@ -90,17 +92,11 @@ extras::
 
 dll: $(U_OUTPUT_DIR)/$(G_ABI)/$(G_DLL_PFX)$(SPI_DLL)$(G_DLL_EXT)
 dll: $(U_OUTPUT_DIR)/$(G_ABI)/$(G_DLL_PFX)$(SPI_UTIL_DLL)$(G_DLL_EXT)
+dll: $(U_OUTPUT_DIR)/$(G_ABI)/$(G_DLL_PFX)$(SPI_CURL_DLL)$(G_DLL_EXT)
 dll: $(U_OUTPUT_DIR)/$(G_ABI)/$(G_DLL_PFX)$(U_TARGET)$(G_DLL_EXT)
 dll: $(addprefix $(U_OUTPUT_DIR)/$(G_ABI)/,$(notdir $(U_DLLS)))
 
-$(U_OUTPUT_DIR)/$(G_ABI)/$(G_DLL_PFX)$(SPI_DLL)$(G_DLL_EXT): $(I_SPI_RUNTIME_BIN_DIR)/$(G_DLL_PFX)$(SPI_DLL)$(G_DLL_EXT)
-	@mkdir -p $(U_OUTPUT_DIR)/$(G_ABI)
-	cp -f $< $(U_OUTPUT_DIR)/$(G_ABI)
-ifeq ($(G_PLATFORM),win32)
-	@if [ -f $(basename $<).pdb ]; then cp -f $(basename $<).pdb $(U_OUTPUT_DIR)/$(G_ABI); fi
-endif
-
-$(U_OUTPUT_DIR)/$(G_ABI)/$(G_DLL_PFX)$(SPI_UTIL_DLL)$(G_DLL_EXT): $(I_SPI_RUNTIME_BIN_DIR)/$(G_DLL_PFX)$(SPI_UTIL_DLL)$(G_DLL_EXT)
+$(U_OUTPUT_DIR)/$(G_ABI)/%$(G_DLL_EXT): $(I_SPI_RUNTIME_BIN_DIR)/%$(G_DLL_EXT)
 	@mkdir -p $(U_OUTPUT_DIR)/$(G_ABI)
 	cp -f $< $(U_OUTPUT_DIR)/$(G_ABI)
 ifeq ($(G_PLATFORM),win32)
