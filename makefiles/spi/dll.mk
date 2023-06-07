@@ -92,9 +92,14 @@ extras::
 
 dll: $(U_OUTPUT_DIR)/$(G_ABI)/$(G_DLL_PFX)$(SPI_DLL)$(G_DLL_EXT)
 dll: $(U_OUTPUT_DIR)/$(G_ABI)/$(G_DLL_PFX)$(SPI_UTIL_DLL)$(G_DLL_EXT)
-dll: $(U_OUTPUT_DIR)/$(G_ABI)/$(G_DLL_PFX)$(SPI_CURL_DLL)$(G_DLL_EXT)
 dll: $(U_OUTPUT_DIR)/$(G_ABI)/$(G_DLL_PFX)$(U_TARGET)$(G_DLL_EXT)
 dll: $(addprefix $(U_OUTPUT_DIR)/$(G_ABI)/,$(notdir $(U_DLLS)))
+
+ifeq ($(G_PLATFORM),win32)
+
+dll: $(U_OUTPUT_DIR)/$(G_ABI)/$(G_DLL_PFX)$(SPI_CURL_DLL)$(G_DLL_EXT)
+
+endif
 
 $(U_OUTPUT_DIR)/$(G_ABI)/%$(G_DLL_EXT): $(I_SPI_RUNTIME_BIN_DIR)/%$(G_DLL_EXT)
 	@mkdir -p $(U_OUTPUT_DIR)/$(G_ABI)

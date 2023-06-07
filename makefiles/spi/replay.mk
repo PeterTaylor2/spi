@@ -60,8 +60,13 @@ post_build: dll copy_exe
 
 dll: $(U_OUTPUT_DIR)/$(G_ABI)/$(G_DLL_PFX)$(SPI_DLL)$(G_DLL_EXT)
 dll: $(U_OUTPUT_DIR)/$(G_ABI)/$(G_DLL_PFX)$(SPI_UTIL_DLL)$(G_DLL_EXT)
-dll: $(U_OUTPUT_DIR)/$(G_ABI)/$(G_DLL_PFX)$(SPI_CURL_DLL)$(G_DLL_EXT)
 dll: $(U_OUTPUT_DIR)/$(G_ABI)/$(G_DLL_PFX)$(U_SERVICE_DLL)$(G_DLL_EXT)
+
+ifeq ($(G_PLATFORM),win32)
+
+dll: $(U_OUTPUT_DIR)/$(G_ABI)/$(G_DLL_PFX)$(SPI_CURL_DLL)$(G_DLL_EXT)
+
+endif
 
 copy_exe: $(U_OUTPUT_DIR)/$(G_ABI)/$(U_TARGET)$(G_EXE)
 

@@ -7,7 +7,7 @@ include $(U_SPI_HOME)/makefiles/version.mk
 
 U_VCPROJ=spi_curl
 
-U_SRC_DIR=./src
+U_SRC_DIR=src
 U_INC_DIR=.
 U_INCLUDES=-I$(U_SRC_DIR)
 U_TARGET=$(SPI_CURL_DLL)
