@@ -57,6 +57,7 @@ config-build::
 	mkdir -p $(U_SPI_HOME)/config/bin-$(G_PLATFORM)
 	cp $(U_SPI_HOME)/config/bin/$(G_CONFIG_COMPILER_ABI)/*$(G_EXE) $(U_SPI_HOME)/config/bin-$(G_PLATFORM)
 	rm -fr $(U_SPI_HOME)/config/bin
+	$(MAKE) -C spcl doc DEBUG=0 COMPILER=$(G_CONFIG_COMPILER) BITS=$(G_CONFIG_COMPILER_BITS)
 
 config-clean::
 	@$(MAKE) clean DEBUG=0 COMPILER=$(G_CONFIG_COMPILER) BITS=$(G_CONFIG_COMPILER_BITS)
