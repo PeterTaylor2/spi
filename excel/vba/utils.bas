@@ -2,6 +2,28 @@ Attribute VB_Name = "$(name)Utils"
 Option Explicit
 Option Base 0
 
+#If VBA7 Then
+
+Private Declare PtrSafe Function SetDllDirectory Lib "kernel32.dll" Alias "SetDllDirectoryA" ( _
+    ByVal lpPathName As String) As Boolean
+
+Private Declare PtrSafe Function GetDesktopWindow _
+Lib "user32" () _
+As LongPtr
+ 
+Private Declare PtrSafe Function ShellExecute _
+Lib "shell32.dll" _
+Alias "ShellExecuteA" ( _
+ByVal hwnd As LongPtr, _
+ByVal lpOperation As String, _
+ByVal lpFile As String, _
+ByVal lpParameters As String, _
+ByVal lpDirectory As String, _
+ByVal nShowCmd As Long) _
+As LongPtr
+ 
+#Else
+
 Private Declare Function SetDllDirectory Lib "kernel32.dll" Alias "SetDllDirectoryA" ( _
     ByVal lpPathName As String) As Boolean
 
@@ -19,7 +41,9 @@ ByVal lpParameters As String, _
 ByVal lpDirectory As String, _
 ByVal nShowCmd As Long) _
 As Long
- 
+
+#End If
+
 Private Const SW_HIDE As Long = 0
 Private Const SW_NORMAL As Long = 1
 Private Const SW_MAXIMIZE As Long = 3
