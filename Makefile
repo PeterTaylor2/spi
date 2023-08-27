@@ -23,6 +23,7 @@ xltest
 CONFIG_BUILD_DIRS=\
 spi_util/lib\
 lib\
+makeXLAddin\
 config/spgtools\
 config/spcl\
 config/spc\

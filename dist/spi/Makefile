@@ -11,6 +11,7 @@ spi_curl/dll\
 spi_util\
 dll\
 c\
+makeXLAddin\
 excel\
 python\
 svo/spdoc\

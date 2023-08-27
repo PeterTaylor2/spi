@@ -66,6 +66,7 @@ makeXLAddin/makeXLAddin/main.cs
 makeXLAddin/makeXLAddin/makeXLAddin.csproj
 makeXLAddin/makeXLAddin/Properties/AssemblyInfo.cs
 makeXLAddin/makeXLAddin.sln
+makeXLAddin/Makefile
 
 # project files for runtime library builds
 
