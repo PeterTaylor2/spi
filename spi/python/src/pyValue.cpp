@@ -236,9 +236,86 @@ InputValues pyGetInputValues(
     InputValues iv(func->name);
 
     std::vector<PyObject*> vargs = pyTupleToVector(args);
+
     if (kwargs)
     {
-        throw RuntimeError("keyword arguments not supported at this time");
+        // use of kwargs is for the convenience of the Python developer
+        // this section of code is not really particularly efficient
+
+        PyObject* key, * value;
+        Py_ssize_t pos = 0;
+
+        // PyObject* in this dict are borrowed from kwargs
+        std::map<std::string, PyObject*> dict;
+
+        // this code would be more efficient if FunctionCaller had an index
+        // however always having the index is not very efficient
+        // creating the index temporarily might not be efficient if there
+        // aren't many keyword arguments
+        //
+        // unfortunately we need to check that the keys provided are valid
+        // it won't be a syntax error to have an unknown key since Python
+        // doesn't know what parameters are valid
+
+        while (PyDict_Next(kwargs, &pos, &key, &value))
+        {
+            // key and value are borrowed
+            // but we need std::string for the key for our own dictionary
+
+            std::string name = pyoToString(key);
+            const char* cname = name.c_str();
+
+            bool matched = false;
+            for (size_t i = 0; i < func->nbArgs; ++i)
+            {
+                if (strcmp(func->args[i].name, cname) == 0)
+                {
+                    // its a match
+                    if (dict.count(name))
+                    {
+                        // this should never happen since it is a Python syntax error
+                        // and reports SyntaxError: keyword argument repeated 
+                        throw RuntimeError("Duplicate kwarg %s", cname);
+                    }
+                    dict.insert({ name, value });
+                    matched = true;
+                    break;
+                }
+            }
+
+            if (!matched)
+                throw RuntimeError("Undefined argument %s for function %s",
+                    cname, func->name);
+        }
+
+        // we only allow named arguments which are not already defined in the vargs
+        size_t numArgs = vargs.size();
+        size_t offset = self ? 1 : 0;
+        for (size_t i = offset; i < func->nbArgs; ++i)
+        {
+            size_t j = i - offset;
+            std::string sname(func->args[i].name);
+
+            if (!dict.count(sname))
+                continue;
+
+            if (j < numArgs)
+                throw RuntimeError("Argument %s for function %s is already defined",
+                    func->args[i].name, func->name);
+
+            // we are looping through the FunctionCaller arguments
+            // we extend vargs to include the keyword parameter we have found
+            // so we need to put Py_None in place for missing parameters
+            while (numArgs < j)
+            {
+                vargs.push_back(Py_None); // no need to increment Py_None since vargs are borrowed
+                ++numArgs;
+            }
+
+            SPI_POST_CONDITION(numArgs == j);
+            vargs.push_back(dict[sname]);
+            ++numArgs;
+        }
     }
 
     if (self)
