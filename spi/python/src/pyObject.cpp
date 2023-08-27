@@ -589,12 +589,13 @@ SPI_BEGIN_NAMESPACE
 
 const Object* pyInitConstObject(
     PyObject* args,
+    PyObject* kwargs,
     FunctionCaller* func,
     ObjectType* type)
 {
     static InputContext* context = InputContext::PythonContext();
 
-    const InputValues& iv = pyGetInputValues(func, args);
+    const InputValues& iv = pyGetInputValues(func, args, kwargs);
     Value              ov = CallInContext(func, iv, context);
     ObjectConstSP      output;
 

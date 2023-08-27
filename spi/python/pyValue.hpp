@@ -61,7 +61,8 @@ SPI_PY_IMPORT
 InputValues pyGetInputValues(
     FunctionCaller* func,
     PyObject* args,
-    PyObject* self=0);
+    PyObject* kwargs=0, // needed for functions which can take named arguments
+    PyObject* self=0); // needed for class methods
 
 SPI_PY_IMPORT
 std::vector<Value> pyTupleToValueVector(

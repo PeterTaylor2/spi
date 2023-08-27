@@ -713,7 +713,7 @@ void PythonModule::declareFunction(
     ostr << "\n"
          << "PyObject* py_" << service->ns() << "_"
          << makeNamespaceSep(module->ns, "_")
-         << func->name << "(PyObject* self, PyObject* args);\n";
+         << func->name << "(PyObject* self, PyObject* args, PyObject* kwargs);\n";
 
 }
 
@@ -724,7 +724,7 @@ void PythonModule::implementFunction(
     ostr << "\n"
          << "PyObject* py_" << service->ns() << "_"
          << makeNamespaceSep(module->ns, "_")
-         << func->name << "(PyObject* self, PyObject* args)\n";
+         << func->name << "(PyObject* self, PyObject* args, PyObject* kwargs)\n";
 
     ostr << "{\n"
          << "    static spi::FunctionCaller* func = 0;\n"
@@ -736,7 +736,7 @@ void PythonModule::implementFunction(
          << "\n";
 
     ostr << "        const spi::InputValues& iv = "
-         << "spi::pyGetInputValues(func, args);\n";
+         << "spi::pyGetInputValues(func, args, kwargs);\n";
 
     ostr << "        spi::Value output = spi::CallInContext(func, iv,"
          << " get_input_context());\n";
@@ -797,9 +797,10 @@ void PythonModule::registerFunction(
     docString = spi::StringStrip(spi::StringJoin("\n", docStrings));
 
     ostr << "    svc->AddFunction(\"" << regName << "\",\n"
-         << "        py_" << service->ns() << "_"
+         << "        (PyCFunction)py_" << service->ns() << "_"
          << makeNamespaceSep(module->ns, "_") << func->name << ",\n"
-         << "        \"" << spi::StringEscape(docString.c_str()) << "\");\n";
+         << "        \"" << spi::StringEscape(docString.c_str()) << "\",\n"
+         << "        METH_VARARGS | METH_KEYWORDS); \n";
 }
 
 /*
@@ -826,7 +827,7 @@ void PythonModule::declareClass(
              << "PyObject* py_" << service->ns() << "_"
              << makeNamespaceSep(module->ns, "_") << cls->name
              << "_" << method->function->name
-             << "(PyObject* self, PyObject* args);\n";
+             << "(PyObject* self, PyObject* args, PyObject* kwargs);\n";
     }
 }
 
@@ -1064,7 +1065,7 @@ void PythonModule::implementClass(
         // to provide tp_init and make it throw an exception
         ostr << "\n"
              << "static int py_" << cTypenameFull << "_init"
-             << "(SpiPyObject* self, PyObject* args, PyObject* kwds)\n";
+             << "(SpiPyObject* self, PyObject* args, PyObject* kwargs)\n";
         ostr << "{\n"
              << "    try\n"
              << "    {\n"
@@ -1078,7 +1079,7 @@ void PythonModule::implementClass(
     {
         ostr << "\n"
              << "static int py_" << cTypenameFull << "_init"
-             << "(SpiPyObject* self, PyObject* args, PyObject* kwds)\n";
+             << "(SpiPyObject* self, PyObject* args, PyObject* kwargs)\n";
         ostr << "{\n"
              << "    static spi::FunctionCaller* func = 0;\n"
              << "    try\n"
@@ -1088,7 +1089,7 @@ void PythonModule::implementClass(
              << "\");\n"
              << "\n"
              << "        self->obj = spi::pyInitConstObject("
-             << "args, func, &" << cppTypename << "::object_type);\n"
+             << "args, kwargs, func, &" << cppTypename << "::object_type);\n"
              << "        return 0;\n";
 
         writeExceptionHandling(ostr, service, true);
@@ -1207,7 +1208,7 @@ void PythonModule::implementClass(
 
         ostr << "\n"
              << "PyObject* " << funcName
-             << "(PyObject* self, PyObject* args)\n"
+             << "(PyObject* self, PyObject* args, PyObject* kwargs)\n"
              << "{\n"
              << "    static spi::FunctionCaller* func = 0;\n"
              << "    try\n"
@@ -1218,7 +1219,7 @@ void PythonModule::implementClass(
              << "." << method->function->name << "\");\n"
              << "\n";
         ostr << "        const spi::InputValues& iv = "
-             << "spi::pyGetInputValues(func, args, self);\n";
+             << "spi::pyGetInputValues(func, args, kwargs, self);\n";
         ostr << "        spi::Value output = spi::CallInContext(func, iv, "
              << "get_input_context());\n";
 
@@ -1289,7 +1290,7 @@ void PythonModule::implementClass(
 
         docString = spi::StringStrip(spi::StringJoin("\n", docStrings));
         ostr << "    {\"" << methodName << "\", (PyCFunction)"
-             << funcName << ", METH_VARARGS";
+             << funcName << ", METH_VARARGS | METH_KEYWORDS";
         if (method->isStatic)
             ostr << " | METH_STATIC";
         ostr << ",\n        \"" << spi::StringEscape(docString.c_str())

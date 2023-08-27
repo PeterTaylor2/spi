@@ -39,7 +39,7 @@
 
 #include "spi_replay_map.hpp"
 
-PyObject* py_spi_replay_MapClassName(PyObject* self, PyObject* args)
+PyObject* py_spi_replay_MapClassName(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -47,7 +47,7 @@ PyObject* py_spi_replay_MapClassName(PyObject* self, PyObject* args)
         if (!func)
             func = get_function_caller("MapClassName");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args);
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -65,7 +65,7 @@ PyObject* py_spi_replay_MapClassName(PyObject* self, PyObject* args)
     }
 }
 
-PyObject* py_spi_replay_MapFieldNames(PyObject* self, PyObject* args)
+PyObject* py_spi_replay_MapFieldNames(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -73,7 +73,7 @@ PyObject* py_spi_replay_MapFieldNames(PyObject* self, PyObject* args)
         if (!func)
             func = get_function_caller("MapFieldNames");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args);
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -91,7 +91,7 @@ PyObject* py_spi_replay_MapFieldNames(PyObject* self, PyObject* args)
     }
 }
 
-PyObject* py_spi_replay_MapRef(PyObject* self, PyObject* args)
+PyObject* py_spi_replay_MapRef(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -99,7 +99,7 @@ PyObject* py_spi_replay_MapRef(PyObject* self, PyObject* args)
         if (!func)
             func = get_function_caller("MapRef");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args);
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -117,7 +117,7 @@ PyObject* py_spi_replay_MapRef(PyObject* self, PyObject* args)
     }
 }
 
-PyObject* py_spi_replay_MapGetValue(PyObject* self, PyObject* args)
+PyObject* py_spi_replay_MapGetValue(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -125,7 +125,7 @@ PyObject* py_spi_replay_MapGetValue(PyObject* self, PyObject* args)
         if (!func)
             func = get_function_caller("MapGetValue");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args);
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromMultiValue(output, 2);
     }
@@ -149,22 +149,26 @@ void py_spi_replay_map_update_functions(spi::PythonService* svc)
 
     /* MapClassName */
     svc->AddFunction("MapClassName",
-        py_spi_replay_MapClassName,
-        "MapClassName(m)");
+        (PyCFunction)py_spi_replay_MapClassName,
+        "MapClassName(m)",
+        METH_VARARGS | METH_KEYWORDS); 
 
     /* MapFieldNames */
     svc->AddFunction("MapFieldNames",
-        py_spi_replay_MapFieldNames,
-        "MapFieldNames(m)");
+        (PyCFunction)py_spi_replay_MapFieldNames,
+        "MapFieldNames(m)",
+        METH_VARARGS | METH_KEYWORDS); 
 
     /* MapRef */
     svc->AddFunction("MapRef",
-        py_spi_replay_MapRef,
-        "MapRef(m)");
+        (PyCFunction)py_spi_replay_MapRef,
+        "MapRef(m)",
+        METH_VARARGS | METH_KEYWORDS); 
 
     /* MapGetValue */
     svc->AddFunction("MapGetValue",
-        py_spi_replay_MapGetValue,
-        "MapGetValue(m,name)\n\nReturns the value and the value type for a name in a Map.");
+        (PyCFunction)py_spi_replay_MapGetValue,
+        "MapGetValue(m,name)\n\nReturns the value and the value type for a name in a Map.",
+        METH_VARARGS | METH_KEYWORDS); 
 }
 

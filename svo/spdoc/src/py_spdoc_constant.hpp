@@ -46,23 +46,23 @@ extern "C"
 
 PyObject* py_spdoc_Constant_Coerce(PyObject* self, PyObject* args);
 
-PyObject* py_spdoc_Constant_typeName(PyObject* self, PyObject* args);
+PyObject* py_spdoc_Constant_typeName(PyObject* self, PyObject* args, PyObject* kwargs);
 
-PyObject* py_spdoc_Constant_docString(PyObject* self, PyObject* args);
+PyObject* py_spdoc_Constant_docString(PyObject* self, PyObject* args, PyObject* kwargs);
 
-PyObject* py_spdoc_Constant_getInt(PyObject* self, PyObject* args);
+PyObject* py_spdoc_Constant_getInt(PyObject* self, PyObject* args, PyObject* kwargs);
 
-PyObject* py_spdoc_Constant_getDate(PyObject* self, PyObject* args);
+PyObject* py_spdoc_Constant_getDate(PyObject* self, PyObject* args, PyObject* kwargs);
 
-PyObject* py_spdoc_Constant_getDateTime(PyObject* self, PyObject* args);
+PyObject* py_spdoc_Constant_getDateTime(PyObject* self, PyObject* args, PyObject* kwargs);
 
-PyObject* py_spdoc_Constant_getDouble(PyObject* self, PyObject* args);
+PyObject* py_spdoc_Constant_getDouble(PyObject* self, PyObject* args, PyObject* kwargs);
 
-PyObject* py_spdoc_Constant_getChar(PyObject* self, PyObject* args);
+PyObject* py_spdoc_Constant_getChar(PyObject* self, PyObject* args, PyObject* kwargs);
 
-PyObject* py_spdoc_Constant_getString(PyObject* self, PyObject* args);
+PyObject* py_spdoc_Constant_getString(PyObject* self, PyObject* args, PyObject* kwargs);
 
-PyObject* py_spdoc_Constant_getBool(PyObject* self, PyObject* args);
+PyObject* py_spdoc_Constant_getBool(PyObject* self, PyObject* args, PyObject* kwargs);
 
 PyObject* py_spdoc_IntConstant_Coerce(PyObject* self, PyObject* args);
 

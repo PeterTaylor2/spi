@@ -230,11 +230,17 @@ Value pyoToValue(PyObject* pyo)
 InputValues pyGetInputValues(
     FunctionCaller* func,
     PyObject* args,
+    PyObject* kwargs,
     PyObject* self)
 {
     InputValues iv(func->name);
 
     std::vector<PyObject*> vargs = pyTupleToVector(args);
+    if (kwargs)
+    {
+        throw RuntimeError("keyword arguments not supported at this time");
+    }
+
     if (self)
     {
         std::vector<PyObject*> vargsWithSelf;

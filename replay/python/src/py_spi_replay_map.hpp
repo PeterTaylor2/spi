@@ -44,13 +44,13 @@ void py_spi_replay_map_update_functions(spi::PythonService* svc);
 extern "C"
 {
 
-PyObject* py_spi_replay_MapClassName(PyObject* self, PyObject* args);
+PyObject* py_spi_replay_MapClassName(PyObject* self, PyObject* args, PyObject* kwargs);
 
-PyObject* py_spi_replay_MapFieldNames(PyObject* self, PyObject* args);
+PyObject* py_spi_replay_MapFieldNames(PyObject* self, PyObject* args, PyObject* kwargs);
 
-PyObject* py_spi_replay_MapRef(PyObject* self, PyObject* args);
+PyObject* py_spi_replay_MapRef(PyObject* self, PyObject* args, PyObject* kwargs);
 
-PyObject* py_spi_replay_MapGetValue(PyObject* self, PyObject* args);
+PyObject* py_spi_replay_MapGetValue(PyObject* self, PyObject* args, PyObject* kwargs);
 
 } /* end of extern "C" */
 
