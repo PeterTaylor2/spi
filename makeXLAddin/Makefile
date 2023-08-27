@@ -29,3 +29,15 @@ info::
 	@echo I_SOURCES=$(I_SOURCES)
 	@echo I_CONFIG=$(I_CONFIG)
 
+install: $(U_SPI_HOME)/makefiles/win32/makeXLAddin.exe release-build
+
+release-build:
+	@$(MAKE) -s all DEBUG=0
+
+$(U_SPI_HOME)/makefiles/win32/makeXLAddin.exe: Release/makeXLAddin.exe
+	cp $< $@
+
+
+
+
+
