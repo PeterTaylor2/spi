@@ -620,6 +620,11 @@ const Object* pyInitConstObject(
     return spi::incRefCount(output.get());
 }
 
+const Object* pyInitConstObject(PyObject* args, FunctionCaller* func, ObjectType* type)
+{
+    return pyInitConstObject(args, 0, func, type);
+}
+
 ObjectConstSP spiPyObjectGetObject(SpiPyObject* pyo)
 {
     // usual case is that pyo->obj is defined

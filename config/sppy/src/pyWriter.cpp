@@ -713,7 +713,10 @@ void PythonModule::declareFunction(
     ostr << "\n"
          << "PyObject* py_" << service->ns() << "_"
          << makeNamespaceSep(module->ns, "_")
-         << func->name << "(PyObject* self, PyObject* args, PyObject* kwargs);\n";
+        << func->name << "(PyObject* self, PyObject* args";
+    if (service->options.keywords)
+        ostr << ", PyObject* kwargs";
+    ostr << ");\n";
 
 }
 
@@ -724,11 +727,17 @@ void PythonModule::implementFunction(
     ostr << "\n"
          << "PyObject* py_" << service->ns() << "_"
          << makeNamespaceSep(module->ns, "_")
-         << func->name << "(PyObject* self, PyObject* args, PyObject* kwargs)\n";
+        << func->name << "(PyObject* self, PyObject* args";
+
+    if (service->options.keywords)
+        ostr << ", PyObject* kwargs";
+
+    ostr << ")\n";
 
     ostr << "{\n"
-         << "    static spi::FunctionCaller* func = 0;\n"
-         << "    try\n"
+        << "    static spi::FunctionCaller* func = 0;\n";
+
+    ostr << "    try\n"
          << "    {\n"
          << "        if (!func)\n"
          << "            func = get_function_caller(\""
@@ -736,7 +745,12 @@ void PythonModule::implementFunction(
          << "\n";
 
     ostr << "        const spi::InputValues& iv = "
-         << "spi::pyGetInputValues(func, args, kwargs);\n";
+        << "spi::pyGetInputValues(func, args";
+    
+    if (service->options.keywords)
+        ostr << ", kwargs";
+    
+    ostr << ");\n";
 
     ostr << "        spi::Value output = spi::CallInContext(func, iv,"
          << " get_input_context());\n";
@@ -796,11 +810,15 @@ void PythonModule::registerFunction(
 
     docString = spi::StringStrip(spi::StringJoin("\n", docStrings));
 
+    const char* functionCast = service->options.keywords ? "(PyCFunction)" : "";
+
     ostr << "    svc->AddFunction(\"" << regName << "\",\n"
-         << "        (PyCFunction)py_" << service->ns() << "_"
-         << makeNamespaceSep(module->ns, "_") << func->name << ",\n"
-         << "        \"" << spi::StringEscape(docString.c_str()) << "\",\n"
-         << "        METH_VARARGS | METH_KEYWORDS); \n";
+        << "        " << functionCast << "py_" << service->ns() << "_"
+        << makeNamespaceSep(module->ns, "_") << func->name << ",\n"
+        << "        \"" << spi::StringEscape(docString.c_str()) << "\"";
+    if (service->options.keywords)
+        ostr << ",\n        METH_VARARGS | METH_KEYWORDS";
+    ostr << ");\n";
 }
 
 /*
@@ -827,7 +845,10 @@ void PythonModule::declareClass(
              << "PyObject* py_" << service->ns() << "_"
              << makeNamespaceSep(module->ns, "_") << cls->name
              << "_" << method->function->name
-             << "(PyObject* self, PyObject* args, PyObject* kwargs);\n";
+            << "(PyObject* self, PyObject* args";
+        if (service->options.keywords)
+            ostr << ", PyObject* kwargs";
+        ostr << ");\n";
     }
 }
 
@@ -1065,7 +1086,12 @@ void PythonModule::implementClass(
         // to provide tp_init and make it throw an exception
         ostr << "\n"
              << "static int py_" << cTypenameFull << "_init"
-             << "(SpiPyObject* self, PyObject* args, PyObject* kwargs)\n";
+            << "(SpiPyObject* self, PyObject* args";
+        if (service->options.keywords)
+            ostr << ", PyObject* kwargs";
+        else
+            ostr << ", PyObject* kwds"; // but these are ignored
+        ostr << ")\n";
         ostr << "{\n"
              << "    try\n"
              << "    {\n"
@@ -1078,18 +1104,27 @@ void PythonModule::implementClass(
     else
     {
         ostr << "\n"
-             << "static int py_" << cTypenameFull << "_init"
-             << "(SpiPyObject* self, PyObject* args, PyObject* kwargs)\n";
+            << "static int py_" << cTypenameFull << "_init"
+            << "(SpiPyObject* self, PyObject* args";
+        if (service->options.keywords)
+            ostr << ", PyObject* kwargs";
+        else
+            ostr << ", PyObject* kwds"; // but these are ignored
+        ostr << ")\n";
         ostr << "{\n"
-             << "    static spi::FunctionCaller* func = 0;\n"
-             << "    try\n"
-             << "    {\n"
-             << "        if (!func)\n"
-             << "            func = get_function_caller(\"" << classname
-             << "\");\n"
-             << "\n"
-             << "        self->obj = spi::pyInitConstObject("
-             << "args, kwargs, func, &" << cppTypename << "::object_type);\n"
+            << "    static spi::FunctionCaller* func = 0;\n"
+            << "    try\n"
+            << "    {\n"
+            << "        if (!func)\n"
+            << "            func = get_function_caller(\"" << classname
+            << "\");\n"
+            << "\n"
+            << "        self->obj = spi::pyInitConstObject(args";
+
+        if (service->options.keywords)
+            ostr << ", kwargs";
+
+        ostr << ", func, &" << cppTypename << "::object_type);\n"
              << "        return 0;\n";
 
         writeExceptionHandling(ostr, service, true);
@@ -1208,7 +1243,10 @@ void PythonModule::implementClass(
 
         ostr << "\n"
              << "PyObject* " << funcName
-             << "(PyObject* self, PyObject* args, PyObject* kwargs)\n"
+            << "(PyObject* self, PyObject* args";
+        if (service->options.keywords)
+            ostr << ", PyObject* kwargs";
+        ostr << ")\n"
              << "{\n"
              << "    static spi::FunctionCaller* func = 0;\n"
              << "    try\n"
@@ -1219,7 +1257,15 @@ void PythonModule::implementClass(
              << "." << method->function->name << "\");\n"
              << "\n";
         ostr << "        const spi::InputValues& iv = "
-             << "spi::pyGetInputValues(func, args, kwargs, self);\n";
+             << "spi::pyGetInputValues(func, args";
+
+        if (service->options.keywords)
+            ostr << ", kwargs";
+        else
+            ostr << ", 0";
+
+        ostr << ", self);\n";
+
         ostr << "        spi::Value output = spi::CallInContext(func, iv, "
              << "get_input_context());\n";
 
@@ -1289,8 +1335,9 @@ void PythonModule::implementClass(
             methodName = spi_util::StringLower(methodName);
 
         docString = spi::StringStrip(spi::StringJoin("\n", docStrings));
-        ostr << "    {\"" << methodName << "\", (PyCFunction)"
-             << funcName << ", METH_VARARGS | METH_KEYWORDS";
+        ostr << "    {\"" << methodName << "\", (PyCFunction)" << funcName << ", METH_VARARGS";
+        if (service->options.keywords)
+            ostr << " | METH_KEYWORDS";
         if (method->isStatic)
             ostr << " | METH_STATIC";
         ostr << ",\n        \"" << spi::StringEscape(docString.c_str())

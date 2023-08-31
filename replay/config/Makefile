@@ -10,7 +10,7 @@ U_EXCEL_DIR=../excel
 U_DOTNET_DIR=../dotnet
 U_COMPANY_NAMESPACE=sartorial
 U_COMPANY_NAME=Sartorial Programming Ltd.
-U_SPPY_OPTIONS+=--noImporter
+U_SPPY_OPTIONS+=--noImporter --keywords
 #U_SPCL_OPTIONS=--noHeaderSplit
 #U_SPCL_OPTIONS+=--noVerbatimLine
 U_SPPY_OPTIONS+=--noGeneratedCodeNotice --licenseFile=../../LGPL.h

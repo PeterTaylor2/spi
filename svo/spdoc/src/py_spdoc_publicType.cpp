@@ -73,6 +73,6 @@ void py_spdoc_publicType_update_functions(spi::PythonService* svc)
     svc->AddFunction("verifyPrimitiveTypeName",
         (PyCFunction)py_spdoc_verifyPrimitiveTypeName,
         "verifyPrimitiveTypeName(typeName)\n\nGiven a c++ typename, this function will verify that this is a valid primitive type, and return the corresponding PublicType value.",
-        METH_VARARGS | METH_KEYWORDS); 
+        METH_VARARGS | METH_KEYWORDS);
 }
 

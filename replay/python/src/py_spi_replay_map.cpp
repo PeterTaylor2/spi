@@ -151,24 +151,24 @@ void py_spi_replay_map_update_functions(spi::PythonService* svc)
     svc->AddFunction("MapClassName",
         (PyCFunction)py_spi_replay_MapClassName,
         "MapClassName(m)",
-        METH_VARARGS | METH_KEYWORDS); 
+        METH_VARARGS | METH_KEYWORDS);
 
     /* MapFieldNames */
     svc->AddFunction("MapFieldNames",
         (PyCFunction)py_spi_replay_MapFieldNames,
         "MapFieldNames(m)",
-        METH_VARARGS | METH_KEYWORDS); 
+        METH_VARARGS | METH_KEYWORDS);
 
     /* MapRef */
     svc->AddFunction("MapRef",
         (PyCFunction)py_spi_replay_MapRef,
         "MapRef(m)",
-        METH_VARARGS | METH_KEYWORDS); 
+        METH_VARARGS | METH_KEYWORDS);
 
     /* MapGetValue */
     svc->AddFunction("MapGetValue",
         (PyCFunction)py_spi_replay_MapGetValue,
         "MapGetValue(m,name)\n\nReturns the value and the value type for a name in a Map.",
-        METH_VARARGS | METH_KEYWORDS); 
+        METH_VARARGS | METH_KEYWORDS);
 }
 
