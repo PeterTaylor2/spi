@@ -45,6 +45,10 @@ SPI_PY_IMPORT
 const Object* pyInitConstObject(
     PyObject* args, PyObject* kwargs, FunctionCaller* func, ObjectType* type);
 
+SPI_PY_IMPORT
+const Object* pyInitConstObject(
+    PyObject* args, FunctionCaller* func, ObjectType* type);
+
 ObjectConstSP spiPyObjectGetObject(SpiPyObject* pyo);
 
 SPI_END_NAMESPACE

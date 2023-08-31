@@ -739,8 +739,9 @@ void PythonModule::implementFunction(
         << "#endif\n";
 
     ostr << "{\n"
-         << "    static spi::FunctionCaller* func = 0;\n"
-         << "    try\n"
+        << "    static spi::FunctionCaller* func = 0;\n";
+
+    ostr << "    try\n"
          << "    {\n"
          << "        if (!func)\n"
          << "            func = get_function_caller(\""
@@ -813,8 +814,10 @@ void PythonModule::registerFunction(
 
     docString = spi::StringStrip(spi::StringJoin("\n", docStrings));
 
+    const char* functionCast = service->options.keywords ? "(PyCFunction)" : "";
+
     ostr << "    svc->AddFunction(\"" << regName << "\",\n"
-        << "        (PyCFunction)py_" << service->ns() << "_"
+        << "        " << functionCast << "py_" << service->ns() << "_"
         << makeNamespaceSep(module->ns, "_") << func->name << ",\n"
         << "        \"" << spi::StringEscape(docString.c_str()) << "\",\n"
         << "#ifdef PYTHON_HAS_FASTCALL\n"
@@ -1094,7 +1097,12 @@ void PythonModule::implementClass(
         // to provide tp_init and make it throw an exception
         ostr << "\n"
              << "static int py_" << cTypenameFull << "_init"
-             << "(SpiPyObject* self, PyObject* args, PyObject* kwargs)\n";
+            << "(SpiPyObject* self, PyObject* args";
+        if (service->options.keywords)
+            ostr << ", PyObject* kwargs";
+        else
+            ostr << ", PyObject* kwds"; // but these are ignored
+        ostr << ")\n";
         ostr << "{\n"
              << "    try\n"
              << "    {\n"
@@ -1107,18 +1115,27 @@ void PythonModule::implementClass(
     else
     {
         ostr << "\n"
-             << "static int py_" << cTypenameFull << "_init"
-             << "(SpiPyObject* self, PyObject* args, PyObject* kwargs)\n";
+            << "static int py_" << cTypenameFull << "_init"
+            << "(SpiPyObject* self, PyObject* args";
+        if (service->options.keywords)
+            ostr << ", PyObject* kwargs";
+        else
+            ostr << ", PyObject* kwds"; // but these are ignored
+        ostr << ")\n";
         ostr << "{\n"
-             << "    static spi::FunctionCaller* func = 0;\n"
-             << "    try\n"
-             << "    {\n"
-             << "        if (!func)\n"
-             << "            func = get_function_caller(\"" << classname
-             << "\");\n"
-             << "\n"
-             << "        self->obj = spi::pyInitConstObject("
-             << "args, kwargs, func, &" << cppTypename << "::object_type);\n"
+            << "    static spi::FunctionCaller* func = 0;\n"
+            << "    try\n"
+            << "    {\n"
+            << "        if (!func)\n"
+            << "            func = get_function_caller(\"" << classname
+            << "\");\n"
+            << "\n"
+            << "        self->obj = spi::pyInitConstObject(args";
+
+        if (service->options.keywords)
+            ostr << ", kwargs";
+
+        ostr << ", func, &" << cppTypename << "::object_type);\n"
              << "        return 0;\n";
 
         writeExceptionHandling(ostr, service, true);
@@ -1243,6 +1260,8 @@ void PythonModule::implementClass(
             << "PyObject* " << funcName
             << "(PyObject* self, PyObject* args, PyObject* kwargs)\n"
             << "#endif\n"
+            ostr << ", PyObject* kwargs";
+        ostr << ")\n"
             << "{\n"
             << "    static spi::FunctionCaller* func = 0;\n"
             << "    try\n"
@@ -1259,6 +1278,9 @@ void PythonModule::implementClass(
             << "        const spi::InputValues & iv = "
             << "spi::pyGetInputValues(func, args, kwargs, self);\n"
             << "#endif\n";
+
+        ostr << ", self);\n";
+
         ostr << "        spi::Value output = spi::CallInContext(func, iv, "
              << "get_input_context());\n";
 
