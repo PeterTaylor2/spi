@@ -39,7 +39,11 @@
 
 #include "spdoc_publicType.hpp"
 
+#ifdef PYTHON_HAS_FASTCALL
+PyObject* py_spdoc_verifyPrimitiveTypeName(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
+#else
 PyObject* py_spdoc_verifyPrimitiveTypeName(PyObject* self, PyObject* args, PyObject* kwargs)
+#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -47,7 +51,11 @@ PyObject* py_spdoc_verifyPrimitiveTypeName(PyObject* self, PyObject* args, PyObj
         if (!func)
             func = get_function_caller("verifyPrimitiveTypeName");
 
+#ifdef PYTHON_HAS_FASTCALL
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, nargs, kwargs);
+#else
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs);
+#endif
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -73,6 +81,10 @@ void py_spdoc_publicType_update_functions(spi::PythonService* svc)
     svc->AddFunction("verifyPrimitiveTypeName",
         (PyCFunction)py_spdoc_verifyPrimitiveTypeName,
         "verifyPrimitiveTypeName(typeName)\n\nGiven a c++ typename, this function will verify that this is a valid primitive type, and return the corresponding PublicType value.",
+#ifdef PYTHON_HAS_FASTCALL
+        METH_FASTCALL | METH_KEYWORDS); 
+#else
         METH_VARARGS | METH_KEYWORDS); 
+#endif
 }
 

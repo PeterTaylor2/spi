@@ -155,6 +155,14 @@ class PyException
 std::vector<PyObject*> pyTupleToVector(PyObject* in);
 
 /**
+ * Converts a C-style array of args to a vector of objects.
+ *
+ * The outputs remain owned by the input array, and hence you should not increment
+ * or decrement the reference count of the outputs.
+ */
+std::vector<PyObject*> pyArrayToVector(PyObject* const* in, Py_ssize_t nargs);
+
+/**
  * Class which obtains the interpreter lock and releases it when you go out of
  * scope.
  *

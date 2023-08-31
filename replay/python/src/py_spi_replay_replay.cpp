@@ -399,7 +399,11 @@ PyObject* py_spi_replay_ReplayCodeGenerator_Coerce(PyObject* self, PyObject* arg
     return pyo;
 }
 
+#ifdef PYTHON_HAS_FASTCALL
+PyObject* py_spi_replay_ReplayCodeGenerator_GenerateFunction(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
+#else
 PyObject* py_spi_replay_ReplayCodeGenerator_GenerateFunction(PyObject* self, PyObject* args, PyObject* kwargs)
+#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -407,7 +411,11 @@ PyObject* py_spi_replay_ReplayCodeGenerator_GenerateFunction(PyObject* self, PyO
         if (!func)
             func = get_function_caller("ReplayCodeGenerator.GenerateFunction");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
+#ifdef PYTHON_HAS_FASTCALL
+        const spi::InputValues & iv = spi::pyGetInputValues(func, args, nargs, kwargs, self);
+#else
+        const spi::InputValues & iv = spi::pyGetInputValues(func, args, kwargs, self);
+#endif
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         Py_RETURN_NONE;
     }
@@ -425,7 +433,11 @@ PyObject* py_spi_replay_ReplayCodeGenerator_GenerateFunction(PyObject* self, PyO
     }
 }
 
+#ifdef PYTHON_HAS_FASTCALL
+PyObject* py_spi_replay_ReplayCodeGenerator_GenerateObject(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
+#else
 PyObject* py_spi_replay_ReplayCodeGenerator_GenerateObject(PyObject* self, PyObject* args, PyObject* kwargs)
+#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -433,7 +445,11 @@ PyObject* py_spi_replay_ReplayCodeGenerator_GenerateObject(PyObject* self, PyObj
         if (!func)
             func = get_function_caller("ReplayCodeGenerator.GenerateObject");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
+#ifdef PYTHON_HAS_FASTCALL
+        const spi::InputValues & iv = spi::pyGetInputValues(func, args, nargs, kwargs, self);
+#else
+        const spi::InputValues & iv = spi::pyGetInputValues(func, args, kwargs, self);
+#endif
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         Py_RETURN_NONE;
     }
@@ -453,9 +469,19 @@ PyObject* py_spi_replay_ReplayCodeGenerator_GenerateObject(PyObject* self, PyObj
 static PyMethodDef ReplayCodeGenerator_methods[] = {
     {"Coerce", (PyCFunction)py_spi_replay_ReplayCodeGenerator_Coerce, METH_VARARGS | METH_STATIC,
         "Coerce ReplayCodeGenerator from arbitrary value"},
-    {"GenerateFunction", (PyCFunction)py_spi_replay_ReplayCodeGenerator_GenerateFunction, METH_VARARGS | METH_KEYWORDS,
+    {"GenerateFunction", (PyCFunction)py_spi_replay_ReplayCodeGenerator_GenerateFunction,
+#ifdef PYTHON_HAS_FASTCALL
+        METH_FASTCALL | METH_KEYWORDS,
+#else
+        METH_VARARGS | METH_KEYWORDS,
+#endif
         "GenerateFunction(self, action)"},
-    {"GenerateObject", (PyCFunction)py_spi_replay_ReplayCodeGenerator_GenerateObject, METH_VARARGS | METH_KEYWORDS,
+    {"GenerateObject", (PyCFunction)py_spi_replay_ReplayCodeGenerator_GenerateObject,
+#ifdef PYTHON_HAS_FASTCALL
+        METH_FASTCALL | METH_KEYWORDS,
+#else
+        METH_VARARGS | METH_KEYWORDS,
+#endif
         "GenerateObject(self, action)"},
     {NULL, NULL, 0, NULL} // sentinel
 };
@@ -535,7 +561,11 @@ PyObject* py_spi_replay_ReplayLog_Coerce(PyObject* self, PyObject* args)
     return pyo;
 }
 
+#ifdef PYTHON_HAS_FASTCALL
+PyObject* py_spi_replay_ReplayLog_generateCode(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
+#else
 PyObject* py_spi_replay_ReplayLog_generateCode(PyObject* self, PyObject* args, PyObject* kwargs)
+#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -543,7 +573,11 @@ PyObject* py_spi_replay_ReplayLog_generateCode(PyObject* self, PyObject* args, P
         if (!func)
             func = get_function_caller("ReplayLog.generateCode");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
+#ifdef PYTHON_HAS_FASTCALL
+        const spi::InputValues & iv = spi::pyGetInputValues(func, args, nargs, kwargs, self);
+#else
+        const spi::InputValues & iv = spi::pyGetInputValues(func, args, kwargs, self);
+#endif
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         Py_RETURN_NONE;
     }
@@ -561,7 +595,11 @@ PyObject* py_spi_replay_ReplayLog_generateCode(PyObject* self, PyObject* args, P
     }
 }
 
+#ifdef PYTHON_HAS_FASTCALL
+PyObject* py_spi_replay_ReplayLog_Read(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
+#else
 PyObject* py_spi_replay_ReplayLog_Read(PyObject* self, PyObject* args, PyObject* kwargs)
+#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -569,7 +607,11 @@ PyObject* py_spi_replay_ReplayLog_Read(PyObject* self, PyObject* args, PyObject*
         if (!func)
             func = get_function_caller("ReplayLog.Read");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
+#ifdef PYTHON_HAS_FASTCALL
+        const spi::InputValues & iv = spi::pyGetInputValues(func, args, nargs, kwargs, self);
+#else
+        const spi::InputValues & iv = spi::pyGetInputValues(func, args, kwargs, self);
+#endif
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -589,9 +631,19 @@ PyObject* py_spi_replay_ReplayLog_Read(PyObject* self, PyObject* args, PyObject*
 static PyMethodDef ReplayLog_methods[] = {
     {"Coerce", (PyCFunction)py_spi_replay_ReplayLog_Coerce, METH_VARARGS | METH_STATIC,
         "Coerce ReplayLog from arbitrary value"},
-    {"generateCode", (PyCFunction)py_spi_replay_ReplayLog_generateCode, METH_VARARGS | METH_KEYWORDS,
+    {"generateCode", (PyCFunction)py_spi_replay_ReplayLog_generateCode,
+#ifdef PYTHON_HAS_FASTCALL
+        METH_FASTCALL | METH_KEYWORDS,
+#else
+        METH_VARARGS | METH_KEYWORDS,
+#endif
         "generateCode(self, generator)"},
-    {"Read", (PyCFunction)py_spi_replay_ReplayLog_Read, METH_VARARGS | METH_KEYWORDS | METH_STATIC,
+    {"Read", (PyCFunction)py_spi_replay_ReplayLog_Read,
+#ifdef PYTHON_HAS_FASTCALL
+        METH_FASTCALL | METH_KEYWORDS | METH_STATIC,
+#else
+        METH_VARARGS | METH_KEYWORDS | METH_STATIC,
+#endif
         "Read(infilename)"},
     {NULL, NULL, 0, NULL} // sentinel
 };

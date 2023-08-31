@@ -32,7 +32,7 @@
 #include "pyd_replay_decl_spec.h"
 #include <spi/Namespace.hpp>
 
-#include "Python.h"
+#include <spi/python/include_python.h>
 #include <vector>
 
 SPI_BEGIN_NAMESPACE
@@ -52,15 +52,31 @@ PyObject* py_spi_replay_ReplayObjectAction_Coerce(PyObject* self, PyObject* args
 
 PyObject* py_spi_replay_ReplayCodeGenerator_Coerce(PyObject* self, PyObject* args);
 
+#ifdef PYTHON_HAS_FASTCALL
+PyObject* py_spi_replay_ReplayCodeGenerator_GenerateFunction(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
+#else
 PyObject* py_spi_replay_ReplayCodeGenerator_GenerateFunction(PyObject* self, PyObject* args, PyObject* kwargs);
+#endif
 
+#ifdef PYTHON_HAS_FASTCALL
+PyObject* py_spi_replay_ReplayCodeGenerator_GenerateObject(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
+#else
 PyObject* py_spi_replay_ReplayCodeGenerator_GenerateObject(PyObject* self, PyObject* args, PyObject* kwargs);
+#endif
 
 PyObject* py_spi_replay_ReplayLog_Coerce(PyObject* self, PyObject* args);
 
+#ifdef PYTHON_HAS_FASTCALL
+PyObject* py_spi_replay_ReplayLog_generateCode(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
+#else
 PyObject* py_spi_replay_ReplayLog_generateCode(PyObject* self, PyObject* args, PyObject* kwargs);
+#endif
 
+#ifdef PYTHON_HAS_FASTCALL
+PyObject* py_spi_replay_ReplayLog_Read(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
+#else
 PyObject* py_spi_replay_ReplayLog_Read(PyObject* self, PyObject* args, PyObject* kwargs);
+#endif
 
 } /* end of extern "C" */
 

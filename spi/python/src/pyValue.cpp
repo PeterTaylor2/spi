@@ -227,124 +227,148 @@ Value pyoToValue(PyObject* pyo)
     }
 }
 
+namespace
+{
+    InputValues getInputValues(
+        FunctionCaller* func,
+        std::vector<PyObject*> vargs,
+        PyObject* kwargs,
+        PyObject* self)
+    {
+        InputValues iv(func->name);
+
+        if (kwargs)
+        {
+            // use of kwargs is for the convenience of the Python developer
+            // this section of code is not really particularly efficient
+
+            PyObject* key, * value;
+            Py_ssize_t pos = 0;
+
+            // PyObject* in this dict are borrowed from kwargs
+            std::map<std::string, PyObject*> dict;
+
+            // this code would be more efficient if FunctionCaller had an index
+            // however always having the index is not very efficient
+            // creating the index temporarily might not be efficient if there
+            // aren't many keyword arguments
+            //
+            // unfortunately we need to check that the keys provided are valid
+            // it won't be a syntax error to have an unknown key since Python
+            // doesn't know what parameters are valid
+
+            while (PyDict_Next(kwargs, &pos, &key, &value))
+            {
+                // key and value are borrowed
+                // but we need std::string for the key for our own dictionary
+
+                std::string name = pyoToString(key);
+                const char* cname = name.c_str();
+
+                bool matched = false;
+                for (size_t i = 0; i < func->nbArgs; ++i)
+                {
+                    if (strcmp(func->args[i].name, cname) == 0)
+                    {
+                        // its a match
+                        if (dict.count(name))
+                        {
+                            // this should never happen since it is a Python syntax error
+                            // and reports SyntaxError: keyword argument repeated 
+                            throw RuntimeError("Duplicate kwarg %s", cname);
+                        }
+                        dict.insert({ name, value });
+                        matched = true;
+                        break;
+                    }
+                }
+
+                if (!matched)
+                    throw RuntimeError("Undefined argument %s for function %s",
+                        cname, func->name);
+            }
+
+            // we only allow named arguments which are not already defined in the vargs
+            size_t numArgs = vargs.size();
+            size_t offset = self ? 1 : 0;
+            for (size_t i = offset; i < func->nbArgs; ++i)
+            {
+                size_t j = i - offset;
+                std::string sname(func->args[i].name);
+
+                if (!dict.count(sname))
+                    continue;
+
+                if (j < numArgs)
+                    throw RuntimeError("Argument %s for function %s is already defined",
+                        func->args[i].name, func->name);
+
+                // we are looping through the FunctionCaller arguments
+                // we extend vargs to include the keyword parameter we have found
+                // so we need to put Py_None in place for missing parameters
+                while (numArgs < j)
+                {
+                    vargs.push_back(Py_None); // no need to increment Py_None since vargs are borrowed
+                    ++numArgs;
+                }
+
+                SPI_POST_CONDITION(numArgs == j);
+                vargs.push_back(dict[sname]);
+                ++numArgs;
+            }
+        }
+
+        if (self)
+        {
+            std::vector<PyObject*> vargsWithSelf;
+            vargsWithSelf.push_back(self);
+            vargsWithSelf.insert(vargsWithSelf.end(), vargs.begin(), vargs.end());
+            vargs.swap(vargsWithSelf);
+        }
+
+        if (vargs.size() > func->nbArgs)
+        {
+            throw RuntimeError("Too many parameters provided for function %s",
+                func->name);
+        }
+
+        for (size_t i = 0; i < func->nbArgs; ++i)
+        {
+            if (i < vargs.size())
+            {
+                iv.AddValue(func->args[i], pyoToValue(vargs[i]));
+            }
+            else
+            {
+                iv.AddValue(func->args[i], Value());
+            }
+        }
+
+        return iv;
+    }
+}
+
 InputValues pyGetInputValues(
     FunctionCaller* func,
     PyObject* args,
     PyObject* kwargs,
     PyObject* self)
 {
-    InputValues iv(func->name);
+    const std::vector<PyObject*>& vargs = pyTupleToVector(args);
 
-    std::vector<PyObject*> vargs = pyTupleToVector(args);
+    return getInputValues(func, vargs, kwargs, self);
+}
 
-    if (kwargs)
-    {
-        // use of kwargs is for the convenience of the Python developer
-        // this section of code is not really particularly efficient
+InputValues pyGetInputValues(
+    FunctionCaller* func,
+    PyObject* const* args,
+    Py_ssize_t nargs,
+    PyObject* kwargs, // needed for functions which can take named arguments
+    PyObject* self) // needed for class methods
+{
+    const std::vector<PyObject*>& vargs = pyArrayToVector(args, nargs);
 
-        PyObject* key, * value;
-        Py_ssize_t pos = 0;
-
-        // PyObject* in this dict are borrowed from kwargs
-        std::map<std::string, PyObject*> dict;
-
-        // this code would be more efficient if FunctionCaller had an index
-        // however always having the index is not very efficient
-        // creating the index temporarily might not be efficient if there
-        // aren't many keyword arguments
-        //
-        // unfortunately we need to check that the keys provided are valid
-        // it won't be a syntax error to have an unknown key since Python
-        // doesn't know what parameters are valid
-
-        while (PyDict_Next(kwargs, &pos, &key, &value))
-        {
-            // key and value are borrowed
-            // but we need std::string for the key for our own dictionary
-
-            std::string name = pyoToString(key);
-            const char* cname = name.c_str();
-
-            bool matched = false;
-            for (size_t i = 0; i < func->nbArgs; ++i)
-            {
-                if (strcmp(func->args[i].name, cname) == 0)
-                {
-                    // its a match
-                    if (dict.count(name))
-                    {
-                        // this should never happen since it is a Python syntax error
-                        // and reports SyntaxError: keyword argument repeated 
-                        throw RuntimeError("Duplicate kwarg %s", cname);
-                    }
-                    dict.insert({ name, value });
-                    matched = true;
-                    break;
-                }
-            }
-
-            if (!matched)
-                throw RuntimeError("Undefined argument %s for function %s",
-                    cname, func->name);
-        }
-
-        // we only allow named arguments which are not already defined in the vargs
-        size_t numArgs = vargs.size();
-        size_t offset = self ? 1 : 0;
-        for (size_t i = offset; i < func->nbArgs; ++i)
-        {
-            size_t j = i - offset;
-            std::string sname(func->args[i].name);
-
-            if (!dict.count(sname))
-                continue;
-
-            if (j < numArgs)
-                throw RuntimeError("Argument %s for function %s is already defined",
-                    func->args[i].name, func->name);
-
-            // we are looping through the FunctionCaller arguments
-            // we extend vargs to include the keyword parameter we have found
-            // so we need to put Py_None in place for missing parameters
-            while (numArgs < j)
-            {
-                vargs.push_back(Py_None); // no need to increment Py_None since vargs are borrowed
-                ++numArgs;
-            }
-
-            SPI_POST_CONDITION(numArgs == j);
-            vargs.push_back(dict[sname]);
-            ++numArgs;
-        }
-    }
-
-    if (self)
-    {
-        std::vector<PyObject*> vargsWithSelf;
-        vargsWithSelf.push_back(self);
-        vargsWithSelf.insert(vargsWithSelf.end(), vargs.begin(), vargs.end());
-        vargs.swap(vargsWithSelf);
-    }
-
-    if (vargs.size() > func->nbArgs)
-    {
-        throw RuntimeError("Too many parameters provided for function %s",
-            func->name);
-    }
-
-    for (size_t i = 0; i < func->nbArgs; ++i)
-    {
-        if (i < vargs.size())
-        {
-            iv.AddValue(func->args[i], pyoToValue(vargs[i]));
-        }
-        else
-        {
-            iv.AddValue(func->args[i], Value());
-        }
-    }
-
-    return iv;
+    return getInputValues(func, vargs, kwargs, self);
 }
 
 std::vector<Value> pyTupleToValueVector(
@@ -375,6 +399,41 @@ std::vector<Value> pyTupleToValueVector(
 
     return values;
 }
+
+#ifdef PYTHON_HAS_FASTCALL
+
+std::vector<Value> pyArrayToValueVector(
+    const char* name, 
+    size_t nbArgs, 
+    PyObject* const* args,
+    Py_ssize_t nargs)
+{
+    // Py_ssize_t is actually signed and can take negative values
+    size_t numInputs = spi_util::IntegerCast<size_t>(nargs);
+
+    if (numInputs > nbArgs)
+    {
+        throw RuntimeError("Too many parameters provided for function %s",
+            name);
+    }
+
+    std::vector<Value> values;
+    for (size_t i = 0; i < nbArgs; ++i)
+    {
+        if (i < numInputs)
+        {
+            values.push_back(pyoToValue(args[i]));
+        }
+        else
+        {
+            values.push_back(Value());
+        }
+    }
+
+    return values;
+}
+
+#endif
 
 PyObjectSP pyTupleFromValueVector(
     const std::vector<Value>& values)

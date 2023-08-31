@@ -39,7 +39,11 @@
 
 #include "spi_replay_map.hpp"
 
+#ifdef PYTHON_HAS_FASTCALL
+PyObject* py_spi_replay_MapClassName(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
+#else
 PyObject* py_spi_replay_MapClassName(PyObject* self, PyObject* args, PyObject* kwargs)
+#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -47,7 +51,11 @@ PyObject* py_spi_replay_MapClassName(PyObject* self, PyObject* args, PyObject* k
         if (!func)
             func = get_function_caller("MapClassName");
 
+#ifdef PYTHON_HAS_FASTCALL
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, nargs, kwargs);
+#else
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs);
+#endif
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -65,7 +73,11 @@ PyObject* py_spi_replay_MapClassName(PyObject* self, PyObject* args, PyObject* k
     }
 }
 
+#ifdef PYTHON_HAS_FASTCALL
+PyObject* py_spi_replay_MapFieldNames(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
+#else
 PyObject* py_spi_replay_MapFieldNames(PyObject* self, PyObject* args, PyObject* kwargs)
+#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -73,7 +85,11 @@ PyObject* py_spi_replay_MapFieldNames(PyObject* self, PyObject* args, PyObject* 
         if (!func)
             func = get_function_caller("MapFieldNames");
 
+#ifdef PYTHON_HAS_FASTCALL
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, nargs, kwargs);
+#else
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs);
+#endif
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -91,7 +107,11 @@ PyObject* py_spi_replay_MapFieldNames(PyObject* self, PyObject* args, PyObject* 
     }
 }
 
+#ifdef PYTHON_HAS_FASTCALL
+PyObject* py_spi_replay_MapRef(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
+#else
 PyObject* py_spi_replay_MapRef(PyObject* self, PyObject* args, PyObject* kwargs)
+#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -99,7 +119,11 @@ PyObject* py_spi_replay_MapRef(PyObject* self, PyObject* args, PyObject* kwargs)
         if (!func)
             func = get_function_caller("MapRef");
 
+#ifdef PYTHON_HAS_FASTCALL
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, nargs, kwargs);
+#else
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs);
+#endif
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -117,7 +141,11 @@ PyObject* py_spi_replay_MapRef(PyObject* self, PyObject* args, PyObject* kwargs)
     }
 }
 
+#ifdef PYTHON_HAS_FASTCALL
+PyObject* py_spi_replay_MapGetValue(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
+#else
 PyObject* py_spi_replay_MapGetValue(PyObject* self, PyObject* args, PyObject* kwargs)
+#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -125,7 +153,11 @@ PyObject* py_spi_replay_MapGetValue(PyObject* self, PyObject* args, PyObject* kw
         if (!func)
             func = get_function_caller("MapGetValue");
 
+#ifdef PYTHON_HAS_FASTCALL
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, nargs, kwargs);
+#else
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs);
+#endif
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromMultiValue(output, 2);
     }
@@ -151,24 +183,40 @@ void py_spi_replay_map_update_functions(spi::PythonService* svc)
     svc->AddFunction("MapClassName",
         (PyCFunction)py_spi_replay_MapClassName,
         "MapClassName(m)",
+#ifdef PYTHON_HAS_FASTCALL
+        METH_FASTCALL | METH_KEYWORDS); 
+#else
         METH_VARARGS | METH_KEYWORDS); 
+#endif
 
     /* MapFieldNames */
     svc->AddFunction("MapFieldNames",
         (PyCFunction)py_spi_replay_MapFieldNames,
         "MapFieldNames(m)",
+#ifdef PYTHON_HAS_FASTCALL
+        METH_FASTCALL | METH_KEYWORDS); 
+#else
         METH_VARARGS | METH_KEYWORDS); 
+#endif
 
     /* MapRef */
     svc->AddFunction("MapRef",
         (PyCFunction)py_spi_replay_MapRef,
         "MapRef(m)",
+#ifdef PYTHON_HAS_FASTCALL
+        METH_FASTCALL | METH_KEYWORDS); 
+#else
         METH_VARARGS | METH_KEYWORDS); 
+#endif
 
     /* MapGetValue */
     svc->AddFunction("MapGetValue",
         (PyCFunction)py_spi_replay_MapGetValue,
         "MapGetValue(m,name)\n\nReturns the value and the value type for a name in a Map.",
+#ifdef PYTHON_HAS_FASTCALL
+        METH_FASTCALL | METH_KEYWORDS); 
+#else
         METH_VARARGS | METH_KEYWORDS); 
+#endif
 }
 

@@ -40,7 +40,7 @@
 #include "pyd_spdoc_decl_spec.h"
 #include <spi/Namespace.hpp>
 
-#include "Python.h"
+#include <spi/python/include_python.h>
 
 SPI_BEGIN_NAMESPACE
 class PythonService;

@@ -64,11 +64,32 @@ InputValues pyGetInputValues(
     PyObject* kwargs=0, // needed for functions which can take named arguments
     PyObject* self=0); // needed for class methods
 
+#ifdef PYTHON_HAS_FASTCALL
+SPI_PY_IMPORT
+InputValues pyGetInputValues(
+    FunctionCaller* func,
+    PyObject* const* args,
+    Py_ssize_t nargs,
+    PyObject* kwargs = 0, // needed for functions which can take named arguments
+    PyObject* self = 0); // needed for class methods
+#endif
+
 SPI_PY_IMPORT
 std::vector<Value> pyTupleToValueVector(
     const char* name,
     size_t nbArgs,
     PyObject* args);
+
+#ifdef PYTHON_HAS_FASTCALL
+
+SPI_PY_IMPORT
+std::vector<Value> pyArrayToValueVector(
+    const char* name,
+    size_t nbArgs,
+    PyObject* const* args,
+    Py_ssize_t nargs);
+
+#endif
 
 // to be used as part of the grand scheme of allowing Python to sub-class
 // certain object types
