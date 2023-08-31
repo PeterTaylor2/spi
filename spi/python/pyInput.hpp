@@ -43,7 +43,7 @@
 #ifndef SPI_PYINPUT_HPP
 #define SPI_PYINPUT_HPP
 
-#include "Python.h"
+#include "include_python.h"
 
 #include "pyUtil.hpp"
 

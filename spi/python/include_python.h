@@ -21,32 +21,38 @@
 */
 /*
 ***************************************************************************
-** pyDate.hpp
+** include_python.h
 **
-** Primitive Python date conversion routines.
-**
-** Only this module accesses the Python DateTime module.
+** In case we need some common definitions before including the python
+** header file we isolate the include of Python.h via this single header
 ***************************************************************************
 */
 
-#ifndef SPI_PYDATE_HPP
-#define SPI_PYDATE_HPP
+#ifndef SPI_INCLUDE_PYTHON_H
+#define SPI_INCLUDE_PYTHON_H
 
-#include "include_python.h"
+#include "Python.h"
 
-#include <spi/Date.hpp>
-#include <spi/DateTime.hpp>
 
-SPI_BEGIN_NAMESPACE
+#if PY_MAJOR_VERSION < 3
 
-bool pyIsDate(PyObject* pyo);
-bool pyIsDateTime(PyObject* pyo);
-PyObject* pyMakeDate(int year, int month, int day);
-PyObject* pyMakeDateTime(int year, int month, int day,
-    int hours, int minutes, int seconds);
-Date pyToDate(PyObject* pyo);
-DateTime pyToDateTime(PyObject* pyo);
+#undef PYTHON_HAS_FASTCALL
 
-SPI_END_NAMESPACE
+#elif PY_MAJOR_VERSION > 3
+
+#define PYTHON_HAS_FASTCALL
+
+#else
+
+/* this will be major version 3 */
+
+#if PY_MINOR_VERSION >= 7
+#define PYTHON_HAS_FASTCALL
+#else
+#undef PYTHON_HAS_FASTCALL
+#endif
 
 #endif
+
+#endif /* SPI_INCLUDE_PYTHON_H */
+
