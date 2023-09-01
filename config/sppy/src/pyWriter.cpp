@@ -118,7 +118,7 @@ std::string PythonService::writePydHeaderFile(const std::string& dirname) const
          << "#include \"pyd_" << m_service->name << "_decl_spec.h\"\n"
          << "#include <spi/Namespace.hpp>\n"
          << "\n"
-         << "#include <spi/python/include_python.h>\n"
+         << "#include \"Python.h\"\n"
          << "\n"
          << "SPI_BEGIN_NAMESPACE\n"
          << "class PythonService;\n"
@@ -513,7 +513,7 @@ std::string PythonModule::writeHeaderFile(const std::string& dirname) const
          << "#include <spi/Namespace.hpp>\n";
 
     ostr << "\n"
-         << "#include <spi/python/include_python.h>\n"
+         << "#include \"Python.h\"\n"
          << "#include <vector>\n"
          << "\n"
          << "SPI_BEGIN_NAMESPACE\n"
@@ -711,15 +711,19 @@ void PythonModule::declareFunction(
     const spdoc::Function* func) const
 {
     ostr << "\n"
-        << "#ifdef PYTHON_HAS_FASTCALL\n"
-        << "PyObject* py_" << service->ns() << "_"
-        << makeNamespaceSep(module->ns, "_")
-        << func->name << "(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);\n"
-        << "#else\n"
-        << "PyObject* py_" << service->ns() << "_"
-        << makeNamespaceSep(module->ns, "_")
-        << func->name << "(PyObject* self, PyObject* args, PyObject* kwargs);\n"
-        << "#endif\n";
+         << "PyObject* py_" << service->ns() << "_"
+         << makeNamespaceSep(module->ns, "_")
+         << func->name << "(PyObject* self";
+
+    if (service->options.fastCall)
+        ostr << ", PyObject* const* args, Py_ssize_t nargs";
+    else
+        ostr << ", PyObject* args";
+
+    if (service->options.keywords)
+        ostr << ", PyObject* kwargs";
+
+    ostr << ");\n";
 
 }
 
@@ -728,15 +732,19 @@ void PythonModule::implementFunction(
     const spdoc::Function* func) const
 {
     ostr << "\n"
-        << "#ifdef PYTHON_HAS_FASTCALL\n"
-        << "PyObject* py_" << service->ns() << "_"
-        << makeNamespaceSep(module->ns, "_")
-        << func->name << "(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)\n"
-        << "#else\n"
-        << "PyObject* py_" << service->ns() << "_"
-        << makeNamespaceSep(module->ns, "_")
-        << func->name << "(PyObject* self, PyObject* args, PyObject* kwargs)\n"
-        << "#endif\n";
+         << "PyObject* py_" << service->ns() << "_"
+         << makeNamespaceSep(module->ns, "_")
+         << func->name << "(PyObject* self";
+
+    if (service->options.fastCall)
+        ostr << ", PyObject* const* args, Py_ssize_t nargs";
+    else
+        ostr << ", PyObject* args";
+
+    if (service->options.keywords)
+        ostr << ", PyObject* kwargs";
+
+    ostr << ")\n";
 
     ostr << "{\n"
         << "    static spi::FunctionCaller* func = 0;\n";
@@ -748,13 +756,17 @@ void PythonModule::implementFunction(
          << makeNamespaceSep(module->ns, ".") << func->name << "\");\n"
          << "\n";
 
-    ostr << "#ifdef PYTHON_HAS_FASTCALL\n"
-        << "        const spi::InputValues& iv = "
-        << "spi::pyGetInputValues(func, args, nargs, kwargs);\n"
-        << "#else\n"
-        << "        const spi::InputValues& iv = "
-        << "spi::pyGetInputValues(func, args, kwargs);\n"
-        << "#endif\n";
+    ostr << "        const spi::InputValues& iv = spi::pyGetInputValues(func";
+
+    if (service->options.fastCall)
+        ostr << ", args, nargs";
+    else
+        ostr << ", args";
+
+    if (service->options.keywords)
+        ostr << ", kwargs";
+
+    ostr << ");\n";
 
     ostr << "        spi::Value output = spi::CallInContext(func, iv,"
          << " get_input_context());\n";
@@ -814,17 +826,24 @@ void PythonModule::registerFunction(
 
     docString = spi::StringStrip(spi::StringJoin("\n", docStrings));
 
-    const char* functionCast = service->options.keywords ? "(PyCFunction)" : "";
+    const char* functionCast = service->options.keywords || service->options.fastCall ?
+        "(PyCFunction)" :
+        "";
 
     ostr << "    svc->AddFunction(\"" << regName << "\",\n"
         << "        " << functionCast << "py_" << service->ns() << "_"
         << makeNamespaceSep(module->ns, "_") << func->name << ",\n"
-        << "        \"" << spi::StringEscape(docString.c_str()) << "\",\n"
-        << "#ifdef PYTHON_HAS_FASTCALL\n"
-        << "        METH_FASTCALL | METH_KEYWORDS); \n"
-        << "#else\n"
-        << "        METH_VARARGS | METH_KEYWORDS); \n"
-        << "#endif\n";
+        << "        \"" << spi::StringEscape(docString.c_str()) << "\",\n";
+
+    if (service->options.fastCall)
+        ostr << "        METH_FASTCALL";
+    else
+        ostr << "        METH_VARARGS";
+
+    if (service->options.keywords)
+        ostr << " | METH_KEYWORDS";
+
+    ostr << ");\n";
 }
 
 /*
@@ -848,17 +867,20 @@ void PythonModule::declareClass(
             continue;
 
         ostr << "\n"
-            << "#ifdef PYTHON_HAS_FASTCALL\n"
-            << "PyObject* py_" << service->ns() << "_"
-            << makeNamespaceSep(module->ns, "_") << cls->name
-            << "_" << method->function->name
-            << "(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);\n"
-            << "#else\n"
-            << "PyObject* py_" << service->ns() << "_"
-            << makeNamespaceSep(module->ns, "_") << cls->name
-            << "_" << method->function->name
-            << "(PyObject* self, PyObject* args, PyObject* kwargs);\n"
-            << "#endif\n";
+             << "PyObject* py_" << service->ns() << "_"
+             << makeNamespaceSep(module->ns, "_") << cls->name
+             << "_" << method->function->name
+             << "(PyObject* self";
+
+        if (service->options.fastCall)
+            ostr << ", PyObject* const* args, Py_ssize_t nargs";
+        else
+            ostr << ", PyObject* args";
+
+        if (service->options.keywords)
+            ostr << ", PyObject* kwargs";
+
+        ostr << ");\n";
     }
 }
 
@@ -1253,31 +1275,37 @@ void PythonModule::implementClass(
         classMethods[method->function->name] = funcName;
 
         ostr << "\n"
-            << "#ifdef PYTHON_HAS_FASTCALL\n"
-            << "PyObject* " << funcName
-            << "(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)\n"
-            << "#else\n"
-            << "PyObject* " << funcName
-            << "(PyObject* self, PyObject* args, PyObject* kwargs)\n"
-            << "#endif\n"
+             << "PyObject* " << funcName << "(PyObject* self";
+
+        if (service->options.fastCall)
+            ostr << ", PyObject* const* args, Py_ssize_t nargs";
+        else
+            ostr << ", PyObject* args";
+
+        if (service->options.keywords)
             ostr << ", PyObject* kwargs";
+
         ostr << ")\n"
-            << "{\n"
-            << "    static spi::FunctionCaller* func = 0;\n"
-            << "    try\n"
-            << "    {\n"
-            << "        if (!func)\n"
-            << "            func = get_function_caller(\""
-            << makeNamespaceSep(module->ns, ".") << cls->name
-            << "." << method->function->name << "\");\n"
-            << "\n";
-        ostr << "#ifdef PYTHON_HAS_FASTCALL\n"
-            << "        const spi::InputValues & iv = "
-            << "spi::pyGetInputValues(func, args, nargs, kwargs, self);\n"
-            << "#else\n"
-            << "        const spi::InputValues & iv = "
-            << "spi::pyGetInputValues(func, args, kwargs, self);\n"
-            << "#endif\n";
+             << "{\n"
+             << "    static spi::FunctionCaller* func = 0;\n"
+             << "    try\n"
+             << "    {\n"
+             << "        if (!func)\n"
+             << "            func = get_function_caller(\""
+             << makeNamespaceSep(module->ns, ".") << cls->name
+             << "." << method->function->name << "\");\n"
+             << "\n";
+        ostr << "        const spi::InputValues& iv = spi::pyGetInputValues(func";
+
+        if (service->options.fastCall)
+            ostr << ", args, nargs";
+        else
+            ostr << ", args";
+
+        if (service->options.keywords)
+            ostr << ", kwargs";
+        else
+            ostr << ", 0";
 
         ostr << ", self);\n";
 
@@ -1350,19 +1378,20 @@ void PythonModule::implementClass(
             methodName = spi_util::StringLower(methodName);
 
         docString = spi::StringStrip(spi::StringJoin("\n", docStrings));
-        ostr << "    {\"" << methodName << "\", (PyCFunction)" << funcName << ",\n";
+        ostr << "    {\"" << methodName << "\", (PyCFunction)" << funcName << ", ";
 
-        ostr << "#ifdef PYTHON_HAS_FASTCALL\n"
-            << "        METH_FASTCALL | METH_KEYWORDS";
+        if (service->options.fastCall)
+            ostr << "METH_FASTCALL";
+        else
+            ostr << "METH_VARARGS";
+
+        if (service->options.keywords)
+            ostr << " | METH_KEYWORDS";
+
         if (method->isStatic)
             ostr << " | METH_STATIC";
-        ostr << ",\n#else\n"
-            << "        METH_VARARGS | METH_KEYWORDS";
-        if (method->isStatic)
-            ostr << " | METH_STATIC";
-        ostr << ",\n#endif\n";
 
-        ostr << "        \"" << spi::StringEscape(docString.c_str())
+        ostr << ",\n        \"" << spi::StringEscape(docString.c_str())
              << "\"},\n";
     }
     ostr << "    {NULL, NULL, 0, NULL} // sentinel\n"

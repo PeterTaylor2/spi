@@ -32,7 +32,7 @@
 #ifndef SPI_PYDATE_HPP
 #define SPI_PYDATE_HPP
 
-#include "include_python.h"
+#include "Python.h"
 
 #include <spi/Date.hpp>
 #include <spi/DateTime.hpp>

@@ -67,11 +67,7 @@ PyObject* py_spdoc_Constant_Coerce(PyObject* self, PyObject* args)
     return pyo;
 }
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Constant_typeName(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
-#else
 PyObject* py_spdoc_Constant_typeName(PyObject* self, PyObject* args, PyObject* kwargs)
-#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -79,11 +75,7 @@ PyObject* py_spdoc_Constant_typeName(PyObject* self, PyObject* args, PyObject* k
         if (!func)
             func = get_function_caller("Constant.typeName");
 
-#ifdef PYTHON_HAS_FASTCALL
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, nargs, kwargs, self);
-#else
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, kwargs, self);
-#endif
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -101,11 +93,7 @@ PyObject* py_spdoc_Constant_typeName(PyObject* self, PyObject* args, PyObject* k
     }
 }
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Constant_docString(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
-#else
 PyObject* py_spdoc_Constant_docString(PyObject* self, PyObject* args, PyObject* kwargs)
-#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -113,11 +101,7 @@ PyObject* py_spdoc_Constant_docString(PyObject* self, PyObject* args, PyObject* 
         if (!func)
             func = get_function_caller("Constant.docString");
 
-#ifdef PYTHON_HAS_FASTCALL
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, nargs, kwargs, self);
-#else
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, kwargs, self);
-#endif
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -135,11 +119,7 @@ PyObject* py_spdoc_Constant_docString(PyObject* self, PyObject* args, PyObject* 
     }
 }
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Constant_getInt(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
-#else
 PyObject* py_spdoc_Constant_getInt(PyObject* self, PyObject* args, PyObject* kwargs)
-#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -147,11 +127,7 @@ PyObject* py_spdoc_Constant_getInt(PyObject* self, PyObject* args, PyObject* kwa
         if (!func)
             func = get_function_caller("Constant.getInt");
 
-#ifdef PYTHON_HAS_FASTCALL
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, nargs, kwargs, self);
-#else
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, kwargs, self);
-#endif
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -169,11 +145,7 @@ PyObject* py_spdoc_Constant_getInt(PyObject* self, PyObject* args, PyObject* kwa
     }
 }
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Constant_getDate(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
-#else
 PyObject* py_spdoc_Constant_getDate(PyObject* self, PyObject* args, PyObject* kwargs)
-#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -181,11 +153,7 @@ PyObject* py_spdoc_Constant_getDate(PyObject* self, PyObject* args, PyObject* kw
         if (!func)
             func = get_function_caller("Constant.getDate");
 
-#ifdef PYTHON_HAS_FASTCALL
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, nargs, kwargs, self);
-#else
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, kwargs, self);
-#endif
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -203,11 +171,7 @@ PyObject* py_spdoc_Constant_getDate(PyObject* self, PyObject* args, PyObject* kw
     }
 }
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Constant_getDateTime(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
-#else
 PyObject* py_spdoc_Constant_getDateTime(PyObject* self, PyObject* args, PyObject* kwargs)
-#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -215,11 +179,7 @@ PyObject* py_spdoc_Constant_getDateTime(PyObject* self, PyObject* args, PyObject
         if (!func)
             func = get_function_caller("Constant.getDateTime");
 
-#ifdef PYTHON_HAS_FASTCALL
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, nargs, kwargs, self);
-#else
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, kwargs, self);
-#endif
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -237,11 +197,7 @@ PyObject* py_spdoc_Constant_getDateTime(PyObject* self, PyObject* args, PyObject
     }
 }
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Constant_getDouble(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
-#else
 PyObject* py_spdoc_Constant_getDouble(PyObject* self, PyObject* args, PyObject* kwargs)
-#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -249,11 +205,7 @@ PyObject* py_spdoc_Constant_getDouble(PyObject* self, PyObject* args, PyObject* 
         if (!func)
             func = get_function_caller("Constant.getDouble");
 
-#ifdef PYTHON_HAS_FASTCALL
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, nargs, kwargs, self);
-#else
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, kwargs, self);
-#endif
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -271,11 +223,7 @@ PyObject* py_spdoc_Constant_getDouble(PyObject* self, PyObject* args, PyObject* 
     }
 }
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Constant_getChar(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
-#else
 PyObject* py_spdoc_Constant_getChar(PyObject* self, PyObject* args, PyObject* kwargs)
-#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -283,11 +231,7 @@ PyObject* py_spdoc_Constant_getChar(PyObject* self, PyObject* args, PyObject* kw
         if (!func)
             func = get_function_caller("Constant.getChar");
 
-#ifdef PYTHON_HAS_FASTCALL
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, nargs, kwargs, self);
-#else
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, kwargs, self);
-#endif
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -305,11 +249,7 @@ PyObject* py_spdoc_Constant_getChar(PyObject* self, PyObject* args, PyObject* kw
     }
 }
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Constant_getString(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
-#else
 PyObject* py_spdoc_Constant_getString(PyObject* self, PyObject* args, PyObject* kwargs)
-#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -317,11 +257,7 @@ PyObject* py_spdoc_Constant_getString(PyObject* self, PyObject* args, PyObject* 
         if (!func)
             func = get_function_caller("Constant.getString");
 
-#ifdef PYTHON_HAS_FASTCALL
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, nargs, kwargs, self);
-#else
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, kwargs, self);
-#endif
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -339,11 +275,7 @@ PyObject* py_spdoc_Constant_getString(PyObject* self, PyObject* args, PyObject* 
     }
 }
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Constant_getBool(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
-#else
 PyObject* py_spdoc_Constant_getBool(PyObject* self, PyObject* args, PyObject* kwargs)
-#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -351,11 +283,7 @@ PyObject* py_spdoc_Constant_getBool(PyObject* self, PyObject* args, PyObject* kw
         if (!func)
             func = get_function_caller("Constant.getBool");
 
-#ifdef PYTHON_HAS_FASTCALL
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, nargs, kwargs, self);
-#else
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, kwargs, self);
-#endif
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -375,68 +303,23 @@ PyObject* py_spdoc_Constant_getBool(PyObject* self, PyObject* args, PyObject* kw
 static PyMethodDef Constant_methods[] = {
     {"Coerce", (PyCFunction)py_spdoc_Constant_Coerce, METH_VARARGS | METH_STATIC,
         "Coerce Constant from arbitrary value"},
-    {"typeName", (PyCFunction)py_spdoc_Constant_typeName,
-#ifdef PYTHON_HAS_FASTCALL
-        METH_FASTCALL | METH_KEYWORDS,
-#else
-        METH_VARARGS | METH_KEYWORDS,
-#endif
+    {"typeName", (PyCFunction)py_spdoc_Constant_typeName, METH_VARARGS | METH_KEYWORDS,
         "typeName(self)\n\nreturns the data type name for the scalar"},
-    {"docString", (PyCFunction)py_spdoc_Constant_docString,
-#ifdef PYTHON_HAS_FASTCALL
-        METH_FASTCALL | METH_KEYWORDS,
-#else
-        METH_VARARGS | METH_KEYWORDS,
-#endif
+    {"docString", (PyCFunction)py_spdoc_Constant_docString, METH_VARARGS | METH_KEYWORDS,
         "docString(self)\n\nreturns the string which should appear in documentation"},
-    {"getInt", (PyCFunction)py_spdoc_Constant_getInt,
-#ifdef PYTHON_HAS_FASTCALL
-        METH_FASTCALL | METH_KEYWORDS,
-#else
-        METH_VARARGS | METH_KEYWORDS,
-#endif
+    {"getInt", (PyCFunction)py_spdoc_Constant_getInt, METH_VARARGS | METH_KEYWORDS,
         "getInt(self)\n\nreturns the integer value (where applicable) for the scalar"},
-    {"getDate", (PyCFunction)py_spdoc_Constant_getDate,
-#ifdef PYTHON_HAS_FASTCALL
-        METH_FASTCALL | METH_KEYWORDS,
-#else
-        METH_VARARGS | METH_KEYWORDS,
-#endif
+    {"getDate", (PyCFunction)py_spdoc_Constant_getDate, METH_VARARGS | METH_KEYWORDS,
         "getDate(self)\n\nreturns the date value (where applicable) for the scalar"},
-    {"getDateTime", (PyCFunction)py_spdoc_Constant_getDateTime,
-#ifdef PYTHON_HAS_FASTCALL
-        METH_FASTCALL | METH_KEYWORDS,
-#else
-        METH_VARARGS | METH_KEYWORDS,
-#endif
+    {"getDateTime", (PyCFunction)py_spdoc_Constant_getDateTime, METH_VARARGS | METH_KEYWORDS,
         "getDateTime(self)\n\nreturns the date time value (where applicable) for the scalar"},
-    {"getDouble", (PyCFunction)py_spdoc_Constant_getDouble,
-#ifdef PYTHON_HAS_FASTCALL
-        METH_FASTCALL | METH_KEYWORDS,
-#else
-        METH_VARARGS | METH_KEYWORDS,
-#endif
+    {"getDouble", (PyCFunction)py_spdoc_Constant_getDouble, METH_VARARGS | METH_KEYWORDS,
         "getDouble(self)\n\nreturns the double value (where applicable) for the scalar"},
-    {"getChar", (PyCFunction)py_spdoc_Constant_getChar,
-#ifdef PYTHON_HAS_FASTCALL
-        METH_FASTCALL | METH_KEYWORDS,
-#else
-        METH_VARARGS | METH_KEYWORDS,
-#endif
+    {"getChar", (PyCFunction)py_spdoc_Constant_getChar, METH_VARARGS | METH_KEYWORDS,
         "getChar(self)\n\nreturns the char value (where applicable) for the scalar"},
-    {"getString", (PyCFunction)py_spdoc_Constant_getString,
-#ifdef PYTHON_HAS_FASTCALL
-        METH_FASTCALL | METH_KEYWORDS,
-#else
-        METH_VARARGS | METH_KEYWORDS,
-#endif
+    {"getString", (PyCFunction)py_spdoc_Constant_getString, METH_VARARGS | METH_KEYWORDS,
         "getString(self)\n\nreturns the string value (where applicable) for the scalar"},
-    {"getBool", (PyCFunction)py_spdoc_Constant_getBool,
-#ifdef PYTHON_HAS_FASTCALL
-        METH_FASTCALL | METH_KEYWORDS,
-#else
-        METH_VARARGS | METH_KEYWORDS,
-#endif
+    {"getBool", (PyCFunction)py_spdoc_Constant_getBool, METH_VARARGS | METH_KEYWORDS,
         "getBool(self)\n\nreturns the bool value (where applicable) for the scalar"},
     {NULL, NULL, 0, NULL} // sentinel
 };

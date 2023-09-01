@@ -58,6 +58,7 @@ struct Options
     bool objectCoerce;
     bool helpFuncList;
     bool keywords;
+    bool fastCall;
     std::string license;
 };
 

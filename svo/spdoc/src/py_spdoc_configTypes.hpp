@@ -32,7 +32,7 @@
 #include "pyd_spdoc_decl_spec.h"
 #include <spi/Namespace.hpp>
 
-#include <spi/python/include_python.h>
+#include "Python.h"
 #include <vector>
 
 SPI_BEGIN_NAMESPACE
@@ -46,57 +46,29 @@ extern "C"
 
 PyObject* py_spdoc_DataType_Coerce(PyObject* self, PyObject* args);
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_DataType_ValueType(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
-#else
 PyObject* py_spdoc_DataType_ValueType(PyObject* self, PyObject* args, PyObject* kwargs);
-#endif
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_DataType_RefType(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
-#else
 PyObject* py_spdoc_DataType_RefType(PyObject* self, PyObject* args, PyObject* kwargs);
-#endif
 
 PyObject* py_spdoc_Attribute_Coerce(PyObject* self, PyObject* args);
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Attribute_encoding(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
-#else
 PyObject* py_spdoc_Attribute_encoding(PyObject* self, PyObject* args, PyObject* kwargs);
-#endif
 
 PyObject* py_spdoc_ClassAttribute_Coerce(PyObject* self, PyObject* args);
 
 PyObject* py_spdoc_Construct_Coerce(PyObject* self, PyObject* args);
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Construct_getType(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
-#else
 PyObject* py_spdoc_Construct_getType(PyObject* self, PyObject* args, PyObject* kwargs);
-#endif
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Construct_Summary(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
-#else
 PyObject* py_spdoc_Construct_Summary(PyObject* self, PyObject* args, PyObject* kwargs);
-#endif
 
 PyObject* py_spdoc_SimpleType_Coerce(PyObject* self, PyObject* args);
 
 PyObject* py_spdoc_Function_Coerce(PyObject* self, PyObject* args);
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Function_returnsObject(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
-#else
 PyObject* py_spdoc_Function_returnsObject(PyObject* self, PyObject* args, PyObject* kwargs);
-#endif
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Function_objectCount(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
-#else
 PyObject* py_spdoc_Function_objectCount(PyObject* self, PyObject* args, PyObject* kwargs);
-#endif
 
 PyObject* py_spdoc_Enumerand_Coerce(PyObject* self, PyObject* args);
 
@@ -104,99 +76,43 @@ PyObject* py_spdoc_Enum_Coerce(PyObject* self, PyObject* args);
 
 PyObject* py_spdoc_ClassMethod_Coerce(PyObject* self, PyObject* args);
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_ClassMethod_Summary(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
-#else
 PyObject* py_spdoc_ClassMethod_Summary(PyObject* self, PyObject* args, PyObject* kwargs);
-#endif
 
 PyObject* py_spdoc_CoerceFrom_Coerce(PyObject* self, PyObject* args);
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_CoerceFrom_Summary(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
-#else
 PyObject* py_spdoc_CoerceFrom_Summary(PyObject* self, PyObject* args, PyObject* kwargs);
-#endif
 
 PyObject* py_spdoc_CoerceTo_Coerce(PyObject* self, PyObject* args);
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_CoerceTo_Summary(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
-#else
 PyObject* py_spdoc_CoerceTo_Summary(PyObject* self, PyObject* args, PyObject* kwargs);
-#endif
 
 PyObject* py_spdoc_Class_Coerce(PyObject* self, PyObject* args);
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Class_ObjectName(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
-#else
 PyObject* py_spdoc_Class_ObjectName(PyObject* self, PyObject* args, PyObject* kwargs);
-#endif
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Class_ServiceNamespace(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
-#else
 PyObject* py_spdoc_Class_ServiceNamespace(PyObject* self, PyObject* args, PyObject* kwargs);
-#endif
 
 PyObject* py_spdoc_Module_Coerce(PyObject* self, PyObject* args);
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Module_combineSummaries(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
-#else
 PyObject* py_spdoc_Module_combineSummaries(PyObject* self, PyObject* args, PyObject* kwargs);
-#endif
 
 PyObject* py_spdoc_Service_Coerce(PyObject* self, PyObject* args);
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Service_Summary(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
-#else
 PyObject* py_spdoc_Service_Summary(PyObject* self, PyObject* args, PyObject* kwargs);
-#endif
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Service_combineSummaries(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
-#else
 PyObject* py_spdoc_Service_combineSummaries(PyObject* self, PyObject* args, PyObject* kwargs);
-#endif
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Service_getEnums(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
-#else
 PyObject* py_spdoc_Service_getEnums(PyObject* self, PyObject* args, PyObject* kwargs);
-#endif
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Service_getEnum(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
-#else
 PyObject* py_spdoc_Service_getEnum(PyObject* self, PyObject* args, PyObject* kwargs);
-#endif
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Service_getEnumerands(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
-#else
 PyObject* py_spdoc_Service_getEnumerands(PyObject* self, PyObject* args, PyObject* kwargs);
-#endif
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Service_getClasses(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
-#else
 PyObject* py_spdoc_Service_getClasses(PyObject* self, PyObject* args, PyObject* kwargs);
-#endif
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Service_getClass(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
-#else
 PyObject* py_spdoc_Service_getClass(PyObject* self, PyObject* args, PyObject* kwargs);
-#endif
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Service_getPropertyClass(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
-#else
 PyObject* py_spdoc_Service_getPropertyClass(PyObject* self, PyObject* args, PyObject* kwargs);
-#endif
 
 } /* end of extern "C" */
 

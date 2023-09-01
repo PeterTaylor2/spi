@@ -32,7 +32,7 @@
 #include "pyd_spdoc_decl_spec.h"
 #include <spi/Namespace.hpp>
 
-#include <spi/python/include_python.h>
+#include "Python.h"
 #include <vector>
 
 SPI_BEGIN_NAMESPACE
@@ -46,59 +46,23 @@ extern "C"
 
 PyObject* py_spdoc_Constant_Coerce(PyObject* self, PyObject* args);
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Constant_typeName(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
-#else
 PyObject* py_spdoc_Constant_typeName(PyObject* self, PyObject* args, PyObject* kwargs);
-#endif
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Constant_docString(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
-#else
 PyObject* py_spdoc_Constant_docString(PyObject* self, PyObject* args, PyObject* kwargs);
-#endif
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Constant_getInt(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
-#else
 PyObject* py_spdoc_Constant_getInt(PyObject* self, PyObject* args, PyObject* kwargs);
-#endif
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Constant_getDate(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
-#else
 PyObject* py_spdoc_Constant_getDate(PyObject* self, PyObject* args, PyObject* kwargs);
-#endif
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Constant_getDateTime(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
-#else
 PyObject* py_spdoc_Constant_getDateTime(PyObject* self, PyObject* args, PyObject* kwargs);
-#endif
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Constant_getDouble(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
-#else
 PyObject* py_spdoc_Constant_getDouble(PyObject* self, PyObject* args, PyObject* kwargs);
-#endif
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Constant_getChar(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
-#else
 PyObject* py_spdoc_Constant_getChar(PyObject* self, PyObject* args, PyObject* kwargs);
-#endif
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Constant_getString(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
-#else
 PyObject* py_spdoc_Constant_getString(PyObject* self, PyObject* args, PyObject* kwargs);
-#endif
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Constant_getBool(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
-#else
 PyObject* py_spdoc_Constant_getBool(PyObject* self, PyObject* args, PyObject* kwargs);
-#endif
 
 PyObject* py_spdoc_IntConstant_Coerce(PyObject* self, PyObject* args);
 

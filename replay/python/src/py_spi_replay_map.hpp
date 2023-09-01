@@ -32,7 +32,7 @@
 #include "pyd_replay_decl_spec.h"
 #include <spi/Namespace.hpp>
 
-#include <spi/python/include_python.h>
+#include "Python.h"
 #include <vector>
 
 SPI_BEGIN_NAMESPACE
@@ -44,29 +44,13 @@ void py_spi_replay_map_update_functions(spi::PythonService* svc);
 extern "C"
 {
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spi_replay_MapClassName(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
-#else
 PyObject* py_spi_replay_MapClassName(PyObject* self, PyObject* args, PyObject* kwargs);
-#endif
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spi_replay_MapFieldNames(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
-#else
 PyObject* py_spi_replay_MapFieldNames(PyObject* self, PyObject* args, PyObject* kwargs);
-#endif
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spi_replay_MapRef(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
-#else
 PyObject* py_spi_replay_MapRef(PyObject* self, PyObject* args, PyObject* kwargs);
-#endif
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spi_replay_MapGetValue(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
-#else
 PyObject* py_spi_replay_MapGetValue(PyObject* self, PyObject* args, PyObject* kwargs);
-#endif
 
 } /* end of extern "C" */
 

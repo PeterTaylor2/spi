@@ -400,8 +400,6 @@ std::vector<Value> pyTupleToValueVector(
     return values;
 }
 
-#ifdef PYTHON_HAS_FASTCALL
-
 std::vector<Value> pyArrayToValueVector(
     const char* name, 
     size_t nbArgs, 
@@ -432,8 +430,6 @@ std::vector<Value> pyArrayToValueVector(
 
     return values;
 }
-
-#endif
 
 PyObjectSP pyTupleFromValueVector(
     const std::vector<Value>& values)

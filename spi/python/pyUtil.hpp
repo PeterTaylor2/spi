@@ -37,7 +37,7 @@
 #define SPI_PYUTIL_HPP
 
 #include "DeclSpec.h"
-#include "include_python.h"
+#include "Python.h"
 
 #ifdef _MSC_VER
 namespace spi_boost {

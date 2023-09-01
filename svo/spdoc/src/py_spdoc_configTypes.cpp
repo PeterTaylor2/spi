@@ -92,11 +92,7 @@ PyObject* py_spdoc_DataType_Coerce(PyObject* self, PyObject* args)
     return pyo;
 }
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_DataType_ValueType(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
-#else
 PyObject* py_spdoc_DataType_ValueType(PyObject* self, PyObject* args, PyObject* kwargs)
-#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -104,11 +100,7 @@ PyObject* py_spdoc_DataType_ValueType(PyObject* self, PyObject* args, PyObject* 
         if (!func)
             func = get_function_caller("DataType.ValueType");
 
-#ifdef PYTHON_HAS_FASTCALL
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, nargs, kwargs, self);
-#else
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, kwargs, self);
-#endif
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -126,11 +118,7 @@ PyObject* py_spdoc_DataType_ValueType(PyObject* self, PyObject* args, PyObject* 
     }
 }
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_DataType_RefType(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
-#else
 PyObject* py_spdoc_DataType_RefType(PyObject* self, PyObject* args, PyObject* kwargs)
-#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -138,11 +126,7 @@ PyObject* py_spdoc_DataType_RefType(PyObject* self, PyObject* args, PyObject* kw
         if (!func)
             func = get_function_caller("DataType.RefType");
 
-#ifdef PYTHON_HAS_FASTCALL
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, nargs, kwargs, self);
-#else
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, kwargs, self);
-#endif
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -162,19 +146,9 @@ PyObject* py_spdoc_DataType_RefType(PyObject* self, PyObject* args, PyObject* kw
 static PyMethodDef DataType_methods[] = {
     {"Coerce", (PyCFunction)py_spdoc_DataType_Coerce, METH_VARARGS | METH_STATIC,
         "Coerce DataType from arbitrary value"},
-    {"ValueType", (PyCFunction)py_spdoc_DataType_ValueType,
-#ifdef PYTHON_HAS_FASTCALL
-        METH_FASTCALL | METH_KEYWORDS,
-#else
-        METH_VARARGS | METH_KEYWORDS,
-#endif
+    {"ValueType", (PyCFunction)py_spdoc_DataType_ValueType, METH_VARARGS | METH_KEYWORDS,
         "ValueType(self)\n\nReturns the value type (includes the namespace)"},
-    {"RefType", (PyCFunction)py_spdoc_DataType_RefType,
-#ifdef PYTHON_HAS_FASTCALL
-        METH_FASTCALL | METH_KEYWORDS,
-#else
-        METH_VARARGS | METH_KEYWORDS,
-#endif
+    {"RefType", (PyCFunction)py_spdoc_DataType_RefType, METH_VARARGS | METH_KEYWORDS,
         "RefType(self)\n\nReturns the reference type (includes the namespace)"},
     {NULL, NULL, 0, NULL} // sentinel
 };
@@ -271,11 +245,7 @@ PyObject* py_spdoc_Attribute_Coerce(PyObject* self, PyObject* args)
     return pyo;
 }
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Attribute_encoding(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
-#else
 PyObject* py_spdoc_Attribute_encoding(PyObject* self, PyObject* args, PyObject* kwargs)
-#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -283,11 +253,7 @@ PyObject* py_spdoc_Attribute_encoding(PyObject* self, PyObject* args, PyObject* 
         if (!func)
             func = get_function_caller("Attribute.encoding");
 
-#ifdef PYTHON_HAS_FASTCALL
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, nargs, kwargs, self);
-#else
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, kwargs, self);
-#endif
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -307,12 +273,7 @@ PyObject* py_spdoc_Attribute_encoding(PyObject* self, PyObject* args, PyObject* 
 static PyMethodDef Attribute_methods[] = {
     {"Coerce", (PyCFunction)py_spdoc_Attribute_Coerce, METH_VARARGS | METH_STATIC,
         "Coerce Attribute from arbitrary value"},
-    {"encoding", (PyCFunction)py_spdoc_Attribute_encoding,
-#ifdef PYTHON_HAS_FASTCALL
-        METH_FASTCALL | METH_KEYWORDS,
-#else
-        METH_VARARGS | METH_KEYWORDS,
-#endif
+    {"encoding", (PyCFunction)py_spdoc_Attribute_encoding, METH_VARARGS | METH_KEYWORDS,
         "encoding(self, isOutput=None)"},
     {NULL, NULL, 0, NULL} // sentinel
 };
@@ -489,11 +450,7 @@ PyObject* py_spdoc_Construct_Coerce(PyObject* self, PyObject* args)
     return pyo;
 }
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Construct_getType(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
-#else
 PyObject* py_spdoc_Construct_getType(PyObject* self, PyObject* args, PyObject* kwargs)
-#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -501,11 +458,7 @@ PyObject* py_spdoc_Construct_getType(PyObject* self, PyObject* args, PyObject* k
         if (!func)
             func = get_function_caller("Construct.getType");
 
-#ifdef PYTHON_HAS_FASTCALL
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, nargs, kwargs, self);
-#else
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, kwargs, self);
-#endif
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -523,11 +476,7 @@ PyObject* py_spdoc_Construct_getType(PyObject* self, PyObject* args, PyObject* k
     }
 }
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Construct_Summary(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
-#else
 PyObject* py_spdoc_Construct_Summary(PyObject* self, PyObject* args, PyObject* kwargs)
-#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -535,11 +484,7 @@ PyObject* py_spdoc_Construct_Summary(PyObject* self, PyObject* args, PyObject* k
         if (!func)
             func = get_function_caller("Construct.Summary");
 
-#ifdef PYTHON_HAS_FASTCALL
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, nargs, kwargs, self);
-#else
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, kwargs, self);
-#endif
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -559,19 +504,9 @@ PyObject* py_spdoc_Construct_Summary(PyObject* self, PyObject* args, PyObject* k
 static PyMethodDef Construct_methods[] = {
     {"Coerce", (PyCFunction)py_spdoc_Construct_Coerce, METH_VARARGS | METH_STATIC,
         "Coerce Construct from arbitrary value"},
-    {"getType", (PyCFunction)py_spdoc_Construct_getType,
-#ifdef PYTHON_HAS_FASTCALL
-        METH_FASTCALL | METH_KEYWORDS,
-#else
-        METH_VARARGS | METH_KEYWORDS,
-#endif
+    {"getType", (PyCFunction)py_spdoc_Construct_getType, METH_VARARGS | METH_KEYWORDS,
         "getType(self)\n\nReturns the type of the Construct - specific to each sub-class of Construct."},
-    {"Summary", (PyCFunction)py_spdoc_Construct_Summary,
-#ifdef PYTHON_HAS_FASTCALL
-        METH_FASTCALL | METH_KEYWORDS,
-#else
-        METH_VARARGS | METH_KEYWORDS,
-#endif
+    {"Summary", (PyCFunction)py_spdoc_Construct_Summary, METH_VARARGS | METH_KEYWORDS,
         "Summary(self)\n\nReturns a short summary of the construct (disregarding description)"},
     {NULL, NULL, 0, NULL} // sentinel
 };
@@ -761,11 +696,7 @@ PyObject* py_spdoc_Function_Coerce(PyObject* self, PyObject* args)
     return pyo;
 }
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Function_returnsObject(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
-#else
 PyObject* py_spdoc_Function_returnsObject(PyObject* self, PyObject* args, PyObject* kwargs)
-#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -773,11 +704,7 @@ PyObject* py_spdoc_Function_returnsObject(PyObject* self, PyObject* args, PyObje
         if (!func)
             func = get_function_caller("Function.returnsObject");
 
-#ifdef PYTHON_HAS_FASTCALL
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, nargs, kwargs, self);
-#else
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, kwargs, self);
-#endif
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -795,11 +722,7 @@ PyObject* py_spdoc_Function_returnsObject(PyObject* self, PyObject* args, PyObje
     }
 }
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Function_objectCount(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
-#else
 PyObject* py_spdoc_Function_objectCount(PyObject* self, PyObject* args, PyObject* kwargs)
-#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -807,11 +730,7 @@ PyObject* py_spdoc_Function_objectCount(PyObject* self, PyObject* args, PyObject
         if (!func)
             func = get_function_caller("Function.objectCount");
 
-#ifdef PYTHON_HAS_FASTCALL
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, nargs, kwargs, self);
-#else
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, kwargs, self);
-#endif
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -831,19 +750,9 @@ PyObject* py_spdoc_Function_objectCount(PyObject* self, PyObject* args, PyObject
 static PyMethodDef Function_methods[] = {
     {"Coerce", (PyCFunction)py_spdoc_Function_Coerce, METH_VARARGS | METH_STATIC,
         "Coerce Function from arbitrary value"},
-    {"returnsObject", (PyCFunction)py_spdoc_Function_returnsObject,
-#ifdef PYTHON_HAS_FASTCALL
-        METH_FASTCALL | METH_KEYWORDS,
-#else
-        METH_VARARGS | METH_KEYWORDS,
-#endif
+    {"returnsObject", (PyCFunction)py_spdoc_Function_returnsObject, METH_VARARGS | METH_KEYWORDS,
         "returnsObject(self)\n\nDoes this Function return an object or not?"},
-    {"objectCount", (PyCFunction)py_spdoc_Function_objectCount,
-#ifdef PYTHON_HAS_FASTCALL
-        METH_FASTCALL | METH_KEYWORDS,
-#else
-        METH_VARARGS | METH_KEYWORDS,
-#endif
+    {"objectCount", (PyCFunction)py_spdoc_Function_objectCount, METH_VARARGS | METH_KEYWORDS,
         "objectCount(self)\n\nHow many objects does this function return?"},
     {NULL, NULL, 0, NULL} // sentinel
 };
@@ -1116,11 +1025,7 @@ PyObject* py_spdoc_ClassMethod_Coerce(PyObject* self, PyObject* args)
     return pyo;
 }
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_ClassMethod_Summary(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
-#else
 PyObject* py_spdoc_ClassMethod_Summary(PyObject* self, PyObject* args, PyObject* kwargs)
-#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -1128,11 +1033,7 @@ PyObject* py_spdoc_ClassMethod_Summary(PyObject* self, PyObject* args, PyObject*
         if (!func)
             func = get_function_caller("ClassMethod.Summary");
 
-#ifdef PYTHON_HAS_FASTCALL
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, nargs, kwargs, self);
-#else
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, kwargs, self);
-#endif
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -1152,12 +1053,7 @@ PyObject* py_spdoc_ClassMethod_Summary(PyObject* self, PyObject* args, PyObject*
 static PyMethodDef ClassMethod_methods[] = {
     {"Coerce", (PyCFunction)py_spdoc_ClassMethod_Coerce, METH_VARARGS | METH_STATIC,
         "Coerce ClassMethod from arbitrary value"},
-    {"Summary", (PyCFunction)py_spdoc_ClassMethod_Summary,
-#ifdef PYTHON_HAS_FASTCALL
-        METH_FASTCALL | METH_KEYWORDS,
-#else
-        METH_VARARGS | METH_KEYWORDS,
-#endif
+    {"Summary", (PyCFunction)py_spdoc_ClassMethod_Summary, METH_VARARGS | METH_KEYWORDS,
         "Summary(self)"},
     {NULL, NULL, 0, NULL} // sentinel
 };
@@ -1244,11 +1140,7 @@ PyObject* py_spdoc_CoerceFrom_Coerce(PyObject* self, PyObject* args)
     return pyo;
 }
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_CoerceFrom_Summary(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
-#else
 PyObject* py_spdoc_CoerceFrom_Summary(PyObject* self, PyObject* args, PyObject* kwargs)
-#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -1256,11 +1148,7 @@ PyObject* py_spdoc_CoerceFrom_Summary(PyObject* self, PyObject* args, PyObject* 
         if (!func)
             func = get_function_caller("CoerceFrom.Summary");
 
-#ifdef PYTHON_HAS_FASTCALL
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, nargs, kwargs, self);
-#else
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, kwargs, self);
-#endif
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -1280,12 +1168,7 @@ PyObject* py_spdoc_CoerceFrom_Summary(PyObject* self, PyObject* args, PyObject* 
 static PyMethodDef CoerceFrom_methods[] = {
     {"Coerce", (PyCFunction)py_spdoc_CoerceFrom_Coerce, METH_VARARGS | METH_STATIC,
         "Coerce CoerceFrom from arbitrary value"},
-    {"Summary", (PyCFunction)py_spdoc_CoerceFrom_Summary,
-#ifdef PYTHON_HAS_FASTCALL
-        METH_FASTCALL | METH_KEYWORDS,
-#else
-        METH_VARARGS | METH_KEYWORDS,
-#endif
+    {"Summary", (PyCFunction)py_spdoc_CoerceFrom_Summary, METH_VARARGS | METH_KEYWORDS,
         "Summary(self)"},
     {NULL, NULL, 0, NULL} // sentinel
 };
@@ -1374,11 +1257,7 @@ PyObject* py_spdoc_CoerceTo_Coerce(PyObject* self, PyObject* args)
     return pyo;
 }
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_CoerceTo_Summary(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
-#else
 PyObject* py_spdoc_CoerceTo_Summary(PyObject* self, PyObject* args, PyObject* kwargs)
-#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -1386,11 +1265,7 @@ PyObject* py_spdoc_CoerceTo_Summary(PyObject* self, PyObject* args, PyObject* kw
         if (!func)
             func = get_function_caller("CoerceTo.Summary");
 
-#ifdef PYTHON_HAS_FASTCALL
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, nargs, kwargs, self);
-#else
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, kwargs, self);
-#endif
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -1410,12 +1285,7 @@ PyObject* py_spdoc_CoerceTo_Summary(PyObject* self, PyObject* args, PyObject* kw
 static PyMethodDef CoerceTo_methods[] = {
     {"Coerce", (PyCFunction)py_spdoc_CoerceTo_Coerce, METH_VARARGS | METH_STATIC,
         "Coerce CoerceTo from arbitrary value"},
-    {"Summary", (PyCFunction)py_spdoc_CoerceTo_Summary,
-#ifdef PYTHON_HAS_FASTCALL
-        METH_FASTCALL | METH_KEYWORDS,
-#else
-        METH_VARARGS | METH_KEYWORDS,
-#endif
+    {"Summary", (PyCFunction)py_spdoc_CoerceTo_Summary, METH_VARARGS | METH_KEYWORDS,
         "Summary(self)"},
     {NULL, NULL, 0, NULL} // sentinel
 };
@@ -1534,11 +1404,7 @@ PyObject* py_spdoc_Class_Coerce(PyObject* self, PyObject* args)
     return pyo;
 }
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Class_ObjectName(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
-#else
 PyObject* py_spdoc_Class_ObjectName(PyObject* self, PyObject* args, PyObject* kwargs)
-#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -1546,11 +1412,7 @@ PyObject* py_spdoc_Class_ObjectName(PyObject* self, PyObject* args, PyObject* kw
         if (!func)
             func = get_function_caller("Class.ObjectName");
 
-#ifdef PYTHON_HAS_FASTCALL
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, nargs, kwargs, self);
-#else
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, kwargs, self);
-#endif
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -1568,11 +1430,7 @@ PyObject* py_spdoc_Class_ObjectName(PyObject* self, PyObject* args, PyObject* kw
     }
 }
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Class_ServiceNamespace(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
-#else
 PyObject* py_spdoc_Class_ServiceNamespace(PyObject* self, PyObject* args, PyObject* kwargs)
-#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -1580,11 +1438,7 @@ PyObject* py_spdoc_Class_ServiceNamespace(PyObject* self, PyObject* args, PyObje
         if (!func)
             func = get_function_caller("Class.ServiceNamespace");
 
-#ifdef PYTHON_HAS_FASTCALL
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, nargs, kwargs, self);
-#else
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, kwargs, self);
-#endif
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -1604,19 +1458,9 @@ PyObject* py_spdoc_Class_ServiceNamespace(PyObject* self, PyObject* args, PyObje
 static PyMethodDef Class_methods[] = {
     {"Coerce", (PyCFunction)py_spdoc_Class_Coerce, METH_VARARGS | METH_STATIC,
         "Coerce Class from arbitrary value"},
-    {"ObjectName", (PyCFunction)py_spdoc_Class_ObjectName,
-#ifdef PYTHON_HAS_FASTCALL
-        METH_FASTCALL | METH_KEYWORDS,
-#else
-        METH_VARARGS | METH_KEYWORDS,
-#endif
+    {"ObjectName", (PyCFunction)py_spdoc_Class_ObjectName, METH_VARARGS | METH_KEYWORDS,
         "ObjectName(self)\n\nReturns the object name. If objectName is defined, then that is the object name. Otherwise name is the object name."},
-    {"ServiceNamespace", (PyCFunction)py_spdoc_Class_ServiceNamespace,
-#ifdef PYTHON_HAS_FASTCALL
-        METH_FASTCALL | METH_KEYWORDS,
-#else
-        METH_VARARGS | METH_KEYWORDS,
-#endif
+    {"ServiceNamespace", (PyCFunction)py_spdoc_Class_ServiceNamespace, METH_VARARGS | METH_KEYWORDS,
         "ServiceNamespace(self)"},
     {NULL, NULL, 0, NULL} // sentinel
 };
@@ -1707,11 +1551,7 @@ PyObject* py_spdoc_Module_Coerce(PyObject* self, PyObject* args)
     return pyo;
 }
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Module_combineSummaries(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
-#else
 PyObject* py_spdoc_Module_combineSummaries(PyObject* self, PyObject* args, PyObject* kwargs)
-#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -1719,11 +1559,7 @@ PyObject* py_spdoc_Module_combineSummaries(PyObject* self, PyObject* args, PyObj
         if (!func)
             func = get_function_caller("Module.combineSummaries");
 
-#ifdef PYTHON_HAS_FASTCALL
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, nargs, kwargs, self);
-#else
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, kwargs, self);
-#endif
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -1743,12 +1579,7 @@ PyObject* py_spdoc_Module_combineSummaries(PyObject* self, PyObject* args, PyObj
 static PyMethodDef Module_methods[] = {
     {"Coerce", (PyCFunction)py_spdoc_Module_Coerce, METH_VARARGS | METH_STATIC,
         "Coerce Module from arbitrary value"},
-    {"combineSummaries", (PyCFunction)py_spdoc_Module_combineSummaries,
-#ifdef PYTHON_HAS_FASTCALL
-        METH_FASTCALL | METH_KEYWORDS | METH_STATIC,
-#else
-        METH_VARARGS | METH_KEYWORDS | METH_STATIC,
-#endif
+    {"combineSummaries", (PyCFunction)py_spdoc_Module_combineSummaries, METH_VARARGS | METH_KEYWORDS | METH_STATIC,
         "combineSummaries(modules=[], sort)"},
     {NULL, NULL, 0, NULL} // sentinel
 };
@@ -1852,11 +1683,7 @@ PyObject* py_spdoc_Service_Coerce(PyObject* self, PyObject* args)
     return pyo;
 }
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Service_Summary(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
-#else
 PyObject* py_spdoc_Service_Summary(PyObject* self, PyObject* args, PyObject* kwargs)
-#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -1864,11 +1691,7 @@ PyObject* py_spdoc_Service_Summary(PyObject* self, PyObject* args, PyObject* kwa
         if (!func)
             func = get_function_caller("Service.Summary");
 
-#ifdef PYTHON_HAS_FASTCALL
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, nargs, kwargs, self);
-#else
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, kwargs, self);
-#endif
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -1886,11 +1709,7 @@ PyObject* py_spdoc_Service_Summary(PyObject* self, PyObject* args, PyObject* kwa
     }
 }
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Service_combineSummaries(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
-#else
 PyObject* py_spdoc_Service_combineSummaries(PyObject* self, PyObject* args, PyObject* kwargs)
-#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -1898,11 +1717,7 @@ PyObject* py_spdoc_Service_combineSummaries(PyObject* self, PyObject* args, PyOb
         if (!func)
             func = get_function_caller("Service.combineSummaries");
 
-#ifdef PYTHON_HAS_FASTCALL
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, nargs, kwargs, self);
-#else
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, kwargs, self);
-#endif
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -1920,11 +1735,7 @@ PyObject* py_spdoc_Service_combineSummaries(PyObject* self, PyObject* args, PyOb
     }
 }
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Service_getEnums(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
-#else
 PyObject* py_spdoc_Service_getEnums(PyObject* self, PyObject* args, PyObject* kwargs)
-#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -1932,11 +1743,7 @@ PyObject* py_spdoc_Service_getEnums(PyObject* self, PyObject* args, PyObject* kw
         if (!func)
             func = get_function_caller("Service.getEnums");
 
-#ifdef PYTHON_HAS_FASTCALL
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, nargs, kwargs, self);
-#else
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, kwargs, self);
-#endif
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -1954,11 +1761,7 @@ PyObject* py_spdoc_Service_getEnums(PyObject* self, PyObject* args, PyObject* kw
     }
 }
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Service_getEnum(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
-#else
 PyObject* py_spdoc_Service_getEnum(PyObject* self, PyObject* args, PyObject* kwargs)
-#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -1966,11 +1769,7 @@ PyObject* py_spdoc_Service_getEnum(PyObject* self, PyObject* args, PyObject* kwa
         if (!func)
             func = get_function_caller("Service.getEnum");
 
-#ifdef PYTHON_HAS_FASTCALL
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, nargs, kwargs, self);
-#else
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, kwargs, self);
-#endif
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -1988,11 +1787,7 @@ PyObject* py_spdoc_Service_getEnum(PyObject* self, PyObject* args, PyObject* kwa
     }
 }
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Service_getEnumerands(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
-#else
 PyObject* py_spdoc_Service_getEnumerands(PyObject* self, PyObject* args, PyObject* kwargs)
-#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -2000,11 +1795,7 @@ PyObject* py_spdoc_Service_getEnumerands(PyObject* self, PyObject* args, PyObjec
         if (!func)
             func = get_function_caller("Service.getEnumerands");
 
-#ifdef PYTHON_HAS_FASTCALL
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, nargs, kwargs, self);
-#else
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, kwargs, self);
-#endif
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -2022,11 +1813,7 @@ PyObject* py_spdoc_Service_getEnumerands(PyObject* self, PyObject* args, PyObjec
     }
 }
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Service_getClasses(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
-#else
 PyObject* py_spdoc_Service_getClasses(PyObject* self, PyObject* args, PyObject* kwargs)
-#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -2034,11 +1821,7 @@ PyObject* py_spdoc_Service_getClasses(PyObject* self, PyObject* args, PyObject* 
         if (!func)
             func = get_function_caller("Service.getClasses");
 
-#ifdef PYTHON_HAS_FASTCALL
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, nargs, kwargs, self);
-#else
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, kwargs, self);
-#endif
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -2056,11 +1839,7 @@ PyObject* py_spdoc_Service_getClasses(PyObject* self, PyObject* args, PyObject* 
     }
 }
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Service_getClass(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
-#else
 PyObject* py_spdoc_Service_getClass(PyObject* self, PyObject* args, PyObject* kwargs)
-#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -2068,11 +1847,7 @@ PyObject* py_spdoc_Service_getClass(PyObject* self, PyObject* args, PyObject* kw
         if (!func)
             func = get_function_caller("Service.getClass");
 
-#ifdef PYTHON_HAS_FASTCALL
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, nargs, kwargs, self);
-#else
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, kwargs, self);
-#endif
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -2090,11 +1865,7 @@ PyObject* py_spdoc_Service_getClass(PyObject* self, PyObject* args, PyObject* kw
     }
 }
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_Service_getPropertyClass(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs)
-#else
 PyObject* py_spdoc_Service_getPropertyClass(PyObject* self, PyObject* args, PyObject* kwargs)
-#endif
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -2102,11 +1873,7 @@ PyObject* py_spdoc_Service_getPropertyClass(PyObject* self, PyObject* args, PyOb
         if (!func)
             func = get_function_caller("Service.getPropertyClass");
 
-#ifdef PYTHON_HAS_FASTCALL
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, nargs, kwargs, self);
-#else
-        const spi::InputValues & iv = spi::pyGetInputValues(func, args, kwargs, self);
-#endif
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -2126,61 +1893,21 @@ PyObject* py_spdoc_Service_getPropertyClass(PyObject* self, PyObject* args, PyOb
 static PyMethodDef Service_methods[] = {
     {"Coerce", (PyCFunction)py_spdoc_Service_Coerce, METH_VARARGS | METH_STATIC,
         "Coerce Service from arbitrary value"},
-    {"Summary", (PyCFunction)py_spdoc_Service_Summary,
-#ifdef PYTHON_HAS_FASTCALL
-        METH_FASTCALL | METH_KEYWORDS,
-#else
-        METH_VARARGS | METH_KEYWORDS,
-#endif
+    {"Summary", (PyCFunction)py_spdoc_Service_Summary, METH_VARARGS | METH_KEYWORDS,
         "Summary(self, sort)"},
-    {"combineSummaries", (PyCFunction)py_spdoc_Service_combineSummaries,
-#ifdef PYTHON_HAS_FASTCALL
-        METH_FASTCALL | METH_KEYWORDS | METH_STATIC,
-#else
-        METH_VARARGS | METH_KEYWORDS | METH_STATIC,
-#endif
+    {"combineSummaries", (PyCFunction)py_spdoc_Service_combineSummaries, METH_VARARGS | METH_KEYWORDS | METH_STATIC,
         "combineSummaries(services=[], sort)"},
-    {"getEnums", (PyCFunction)py_spdoc_Service_getEnums,
-#ifdef PYTHON_HAS_FASTCALL
-        METH_FASTCALL | METH_KEYWORDS,
-#else
-        METH_VARARGS | METH_KEYWORDS,
-#endif
+    {"getEnums", (PyCFunction)py_spdoc_Service_getEnums, METH_VARARGS | METH_KEYWORDS,
         "getEnums(self)\n\nReturns a sorted list of enumerated type names."},
-    {"getEnum", (PyCFunction)py_spdoc_Service_getEnum,
-#ifdef PYTHON_HAS_FASTCALL
-        METH_FASTCALL | METH_KEYWORDS,
-#else
-        METH_VARARGS | METH_KEYWORDS,
-#endif
+    {"getEnum", (PyCFunction)py_spdoc_Service_getEnum, METH_VARARGS | METH_KEYWORDS,
         "getEnum(self, name)\n\nGet an individual Enum by name."},
-    {"getEnumerands", (PyCFunction)py_spdoc_Service_getEnumerands,
-#ifdef PYTHON_HAS_FASTCALL
-        METH_FASTCALL | METH_KEYWORDS,
-#else
-        METH_VARARGS | METH_KEYWORDS,
-#endif
+    {"getEnumerands", (PyCFunction)py_spdoc_Service_getEnumerands, METH_VARARGS | METH_KEYWORDS,
         "getEnumerands(self, name)\n\nReturns the enumerands for a given enumerated type."},
-    {"getClasses", (PyCFunction)py_spdoc_Service_getClasses,
-#ifdef PYTHON_HAS_FASTCALL
-        METH_FASTCALL | METH_KEYWORDS,
-#else
-        METH_VARARGS | METH_KEYWORDS,
-#endif
+    {"getClasses", (PyCFunction)py_spdoc_Service_getClasses, METH_VARARGS | METH_KEYWORDS,
         "getClasses(self)\n\nReturns a sorted list of class names."},
-    {"getClass", (PyCFunction)py_spdoc_Service_getClass,
-#ifdef PYTHON_HAS_FASTCALL
-        METH_FASTCALL | METH_KEYWORDS,
-#else
-        METH_VARARGS | METH_KEYWORDS,
-#endif
+    {"getClass", (PyCFunction)py_spdoc_Service_getClass, METH_VARARGS | METH_KEYWORDS,
         "getClass(self, className)\n\nReturns the class details for a class name."},
-    {"getPropertyClass", (PyCFunction)py_spdoc_Service_getPropertyClass,
-#ifdef PYTHON_HAS_FASTCALL
-        METH_FASTCALL | METH_KEYWORDS,
-#else
-        METH_VARARGS | METH_KEYWORDS,
-#endif
+    {"getPropertyClass", (PyCFunction)py_spdoc_Service_getPropertyClass, METH_VARARGS | METH_KEYWORDS,
         "getPropertyClass(self, baseClassName, fieldName)\n\nReturns the name of the class for which the given fieldName is a property. If no such class exists then returns an empty string."},
     {NULL, NULL, 0, NULL} // sentinel
 };

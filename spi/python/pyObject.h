@@ -30,7 +30,7 @@
 #ifndef SPI_PYOBJECT_H
 #define SPI_PYOBJECT_H
 
-#include "include_python.h"
+#include "Python.h"
 
 #ifndef __cplusplus
 

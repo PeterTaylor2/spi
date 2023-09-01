@@ -123,7 +123,7 @@ int main(int argc, char* argv[])
 
     std::string exe("SPPY");
     const char* longOptions = "noImporter noGeneratedCodeNotice lowerCase lowerCaseMethod"
-        " objectCoerce helpFuncList keywords license licenseFile=";
+        " objectCoerce helpFuncList keywords fastCall license licenseFile=";
 
     Options options;
 
@@ -171,6 +171,10 @@ int main(int argc, char* argv[])
             else if (opt == "--keywords")
             {
                 options.keywords = true;
+            }
+            else if (opt == "--fastCall")
+            {
+                options.fastCall = true;
             }
             else if (opt == "--license")
             {

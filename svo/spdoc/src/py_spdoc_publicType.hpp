@@ -32,7 +32,7 @@
 #include "pyd_spdoc_decl_spec.h"
 #include <spi/Namespace.hpp>
 
-#include <spi/python/include_python.h>
+#include "Python.h"
 #include <vector>
 
 SPI_BEGIN_NAMESPACE
@@ -44,11 +44,7 @@ void py_spdoc_publicType_update_functions(spi::PythonService* svc);
 extern "C"
 {
 
-#ifdef PYTHON_HAS_FASTCALL
-PyObject* py_spdoc_verifyPrimitiveTypeName(PyObject* self, PyObject* const* args, Py_ssize_t nargs, PyObject* kwargs);
-#else
 PyObject* py_spdoc_verifyPrimitiveTypeName(PyObject* self, PyObject* args, PyObject* kwargs);
-#endif
 
 } /* end of extern "C" */
 
