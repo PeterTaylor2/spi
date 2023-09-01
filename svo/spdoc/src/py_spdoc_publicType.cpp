@@ -39,7 +39,7 @@
 
 #include "spdoc_publicType.hpp"
 
-PyObject* py_spdoc_verifyPrimitiveTypeName(PyObject* self, PyObject* args)
+PyObject* py_spdoc_verifyPrimitiveTypeName(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -47,7 +47,7 @@ PyObject* py_spdoc_verifyPrimitiveTypeName(PyObject* self, PyObject* args)
         if (!func)
             func = get_function_caller("verifyPrimitiveTypeName");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args);
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -71,7 +71,8 @@ void py_spdoc_publicType_update_functions(spi::PythonService* svc)
 
     /* verifyPrimitiveTypeName */
     svc->AddFunction("verifyPrimitiveTypeName",
-        py_spdoc_verifyPrimitiveTypeName,
-        "verifyPrimitiveTypeName(typeName)\n\nGiven a c++ typename, this function will verify that this is a valid primitive type, and return the corresponding PublicType value.");
+        (PyCFunction)py_spdoc_verifyPrimitiveTypeName,
+        "verifyPrimitiveTypeName(typeName)\n\nGiven a c++ typename, this function will verify that this is a valid primitive type, and return the corresponding PublicType value.",
+        METH_VARARGS | METH_KEYWORDS);
 }
 

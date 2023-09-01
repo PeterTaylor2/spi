@@ -39,7 +39,7 @@
 
 #include "spdoc_constant.hpp"
 
-static int py_spdoc_Constant_init(SpiPyObject* self, PyObject* args, PyObject* kwds)
+static int py_spdoc_Constant_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     try
     {
@@ -67,7 +67,7 @@ PyObject* py_spdoc_Constant_Coerce(PyObject* self, PyObject* args)
     return pyo;
 }
 
-PyObject* py_spdoc_Constant_typeName(PyObject* self, PyObject* args)
+PyObject* py_spdoc_Constant_typeName(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -75,7 +75,7 @@ PyObject* py_spdoc_Constant_typeName(PyObject* self, PyObject* args)
         if (!func)
             func = get_function_caller("Constant.typeName");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args, self);
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -93,7 +93,7 @@ PyObject* py_spdoc_Constant_typeName(PyObject* self, PyObject* args)
     }
 }
 
-PyObject* py_spdoc_Constant_docString(PyObject* self, PyObject* args)
+PyObject* py_spdoc_Constant_docString(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -101,7 +101,7 @@ PyObject* py_spdoc_Constant_docString(PyObject* self, PyObject* args)
         if (!func)
             func = get_function_caller("Constant.docString");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args, self);
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -119,7 +119,7 @@ PyObject* py_spdoc_Constant_docString(PyObject* self, PyObject* args)
     }
 }
 
-PyObject* py_spdoc_Constant_getInt(PyObject* self, PyObject* args)
+PyObject* py_spdoc_Constant_getInt(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -127,7 +127,7 @@ PyObject* py_spdoc_Constant_getInt(PyObject* self, PyObject* args)
         if (!func)
             func = get_function_caller("Constant.getInt");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args, self);
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -145,7 +145,7 @@ PyObject* py_spdoc_Constant_getInt(PyObject* self, PyObject* args)
     }
 }
 
-PyObject* py_spdoc_Constant_getDate(PyObject* self, PyObject* args)
+PyObject* py_spdoc_Constant_getDate(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -153,7 +153,7 @@ PyObject* py_spdoc_Constant_getDate(PyObject* self, PyObject* args)
         if (!func)
             func = get_function_caller("Constant.getDate");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args, self);
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -171,7 +171,7 @@ PyObject* py_spdoc_Constant_getDate(PyObject* self, PyObject* args)
     }
 }
 
-PyObject* py_spdoc_Constant_getDateTime(PyObject* self, PyObject* args)
+PyObject* py_spdoc_Constant_getDateTime(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -179,7 +179,7 @@ PyObject* py_spdoc_Constant_getDateTime(PyObject* self, PyObject* args)
         if (!func)
             func = get_function_caller("Constant.getDateTime");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args, self);
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -197,7 +197,7 @@ PyObject* py_spdoc_Constant_getDateTime(PyObject* self, PyObject* args)
     }
 }
 
-PyObject* py_spdoc_Constant_getDouble(PyObject* self, PyObject* args)
+PyObject* py_spdoc_Constant_getDouble(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -205,7 +205,7 @@ PyObject* py_spdoc_Constant_getDouble(PyObject* self, PyObject* args)
         if (!func)
             func = get_function_caller("Constant.getDouble");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args, self);
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -223,7 +223,7 @@ PyObject* py_spdoc_Constant_getDouble(PyObject* self, PyObject* args)
     }
 }
 
-PyObject* py_spdoc_Constant_getChar(PyObject* self, PyObject* args)
+PyObject* py_spdoc_Constant_getChar(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -231,7 +231,7 @@ PyObject* py_spdoc_Constant_getChar(PyObject* self, PyObject* args)
         if (!func)
             func = get_function_caller("Constant.getChar");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args, self);
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -249,7 +249,7 @@ PyObject* py_spdoc_Constant_getChar(PyObject* self, PyObject* args)
     }
 }
 
-PyObject* py_spdoc_Constant_getString(PyObject* self, PyObject* args)
+PyObject* py_spdoc_Constant_getString(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -257,7 +257,7 @@ PyObject* py_spdoc_Constant_getString(PyObject* self, PyObject* args)
         if (!func)
             func = get_function_caller("Constant.getString");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args, self);
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -275,7 +275,7 @@ PyObject* py_spdoc_Constant_getString(PyObject* self, PyObject* args)
     }
 }
 
-PyObject* py_spdoc_Constant_getBool(PyObject* self, PyObject* args)
+PyObject* py_spdoc_Constant_getBool(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -283,7 +283,7 @@ PyObject* py_spdoc_Constant_getBool(PyObject* self, PyObject* args)
         if (!func)
             func = get_function_caller("Constant.getBool");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args, self);
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -303,23 +303,23 @@ PyObject* py_spdoc_Constant_getBool(PyObject* self, PyObject* args)
 static PyMethodDef Constant_methods[] = {
     {"Coerce", (PyCFunction)py_spdoc_Constant_Coerce, METH_VARARGS | METH_STATIC,
         "Coerce Constant from arbitrary value"},
-    {"typeName", (PyCFunction)py_spdoc_Constant_typeName, METH_VARARGS,
+    {"typeName", (PyCFunction)py_spdoc_Constant_typeName, METH_VARARGS | METH_KEYWORDS,
         "typeName(self)\n\nreturns the data type name for the scalar"},
-    {"docString", (PyCFunction)py_spdoc_Constant_docString, METH_VARARGS,
+    {"docString", (PyCFunction)py_spdoc_Constant_docString, METH_VARARGS | METH_KEYWORDS,
         "docString(self)\n\nreturns the string which should appear in documentation"},
-    {"getInt", (PyCFunction)py_spdoc_Constant_getInt, METH_VARARGS,
+    {"getInt", (PyCFunction)py_spdoc_Constant_getInt, METH_VARARGS | METH_KEYWORDS,
         "getInt(self)\n\nreturns the integer value (where applicable) for the scalar"},
-    {"getDate", (PyCFunction)py_spdoc_Constant_getDate, METH_VARARGS,
+    {"getDate", (PyCFunction)py_spdoc_Constant_getDate, METH_VARARGS | METH_KEYWORDS,
         "getDate(self)\n\nreturns the date value (where applicable) for the scalar"},
-    {"getDateTime", (PyCFunction)py_spdoc_Constant_getDateTime, METH_VARARGS,
+    {"getDateTime", (PyCFunction)py_spdoc_Constant_getDateTime, METH_VARARGS | METH_KEYWORDS,
         "getDateTime(self)\n\nreturns the date time value (where applicable) for the scalar"},
-    {"getDouble", (PyCFunction)py_spdoc_Constant_getDouble, METH_VARARGS,
+    {"getDouble", (PyCFunction)py_spdoc_Constant_getDouble, METH_VARARGS | METH_KEYWORDS,
         "getDouble(self)\n\nreturns the double value (where applicable) for the scalar"},
-    {"getChar", (PyCFunction)py_spdoc_Constant_getChar, METH_VARARGS,
+    {"getChar", (PyCFunction)py_spdoc_Constant_getChar, METH_VARARGS | METH_KEYWORDS,
         "getChar(self)\n\nreturns the char value (where applicable) for the scalar"},
-    {"getString", (PyCFunction)py_spdoc_Constant_getString, METH_VARARGS,
+    {"getString", (PyCFunction)py_spdoc_Constant_getString, METH_VARARGS | METH_KEYWORDS,
         "getString(self)\n\nreturns the string value (where applicable) for the scalar"},
-    {"getBool", (PyCFunction)py_spdoc_Constant_getBool, METH_VARARGS,
+    {"getBool", (PyCFunction)py_spdoc_Constant_getBool, METH_VARARGS | METH_KEYWORDS,
         "getBool(self)\n\nreturns the bool value (where applicable) for the scalar"},
     {NULL, NULL, 0, NULL} // sentinel
 };
@@ -365,7 +365,7 @@ static PyTypeObject Constant_PyObjectType = {
     PyType_GenericNew, /* tp_new */
 };
 
-static int py_spdoc_IntConstant_init(SpiPyObject* self, PyObject* args, PyObject* kwds)
+static int py_spdoc_IntConstant_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -373,7 +373,7 @@ static int py_spdoc_IntConstant_init(SpiPyObject* self, PyObject* args, PyObject
         if (!func)
             func = get_function_caller("IntConstant");
 
-        self->obj = spi::pyInitConstObject(args, func, &spdoc::IntConstant::object_type);
+        self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::IntConstant::object_type);
         return 0;
     }
     catch (spi::PyException&)
@@ -451,7 +451,7 @@ static PyTypeObject IntConstant_PyObjectType = {
     PyType_GenericNew, /* tp_new */
 };
 
-static int py_spdoc_DateConstant_init(SpiPyObject* self, PyObject* args, PyObject* kwds)
+static int py_spdoc_DateConstant_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -459,7 +459,7 @@ static int py_spdoc_DateConstant_init(SpiPyObject* self, PyObject* args, PyObjec
         if (!func)
             func = get_function_caller("DateConstant");
 
-        self->obj = spi::pyInitConstObject(args, func, &spdoc::DateConstant::object_type);
+        self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::DateConstant::object_type);
         return 0;
     }
     catch (spi::PyException&)
@@ -537,7 +537,7 @@ static PyTypeObject DateConstant_PyObjectType = {
     PyType_GenericNew, /* tp_new */
 };
 
-static int py_spdoc_DateTimeConstant_init(SpiPyObject* self, PyObject* args, PyObject* kwds)
+static int py_spdoc_DateTimeConstant_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -545,7 +545,7 @@ static int py_spdoc_DateTimeConstant_init(SpiPyObject* self, PyObject* args, PyO
         if (!func)
             func = get_function_caller("DateTimeConstant");
 
-        self->obj = spi::pyInitConstObject(args, func, &spdoc::DateTimeConstant::object_type);
+        self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::DateTimeConstant::object_type);
         return 0;
     }
     catch (spi::PyException&)
@@ -623,7 +623,7 @@ static PyTypeObject DateTimeConstant_PyObjectType = {
     PyType_GenericNew, /* tp_new */
 };
 
-static int py_spdoc_DoubleConstant_init(SpiPyObject* self, PyObject* args, PyObject* kwds)
+static int py_spdoc_DoubleConstant_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -631,7 +631,7 @@ static int py_spdoc_DoubleConstant_init(SpiPyObject* self, PyObject* args, PyObj
         if (!func)
             func = get_function_caller("DoubleConstant");
 
-        self->obj = spi::pyInitConstObject(args, func, &spdoc::DoubleConstant::object_type);
+        self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::DoubleConstant::object_type);
         return 0;
     }
     catch (spi::PyException&)
@@ -709,7 +709,7 @@ static PyTypeObject DoubleConstant_PyObjectType = {
     PyType_GenericNew, /* tp_new */
 };
 
-static int py_spdoc_CharConstant_init(SpiPyObject* self, PyObject* args, PyObject* kwds)
+static int py_spdoc_CharConstant_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -717,7 +717,7 @@ static int py_spdoc_CharConstant_init(SpiPyObject* self, PyObject* args, PyObjec
         if (!func)
             func = get_function_caller("CharConstant");
 
-        self->obj = spi::pyInitConstObject(args, func, &spdoc::CharConstant::object_type);
+        self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::CharConstant::object_type);
         return 0;
     }
     catch (spi::PyException&)
@@ -795,7 +795,7 @@ static PyTypeObject CharConstant_PyObjectType = {
     PyType_GenericNew, /* tp_new */
 };
 
-static int py_spdoc_StringConstant_init(SpiPyObject* self, PyObject* args, PyObject* kwds)
+static int py_spdoc_StringConstant_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -803,7 +803,7 @@ static int py_spdoc_StringConstant_init(SpiPyObject* self, PyObject* args, PyObj
         if (!func)
             func = get_function_caller("StringConstant");
 
-        self->obj = spi::pyInitConstObject(args, func, &spdoc::StringConstant::object_type);
+        self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::StringConstant::object_type);
         return 0;
     }
     catch (spi::PyException&)
@@ -881,7 +881,7 @@ static PyTypeObject StringConstant_PyObjectType = {
     PyType_GenericNew, /* tp_new */
 };
 
-static int py_spdoc_BoolConstant_init(SpiPyObject* self, PyObject* args, PyObject* kwds)
+static int py_spdoc_BoolConstant_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -889,7 +889,7 @@ static int py_spdoc_BoolConstant_init(SpiPyObject* self, PyObject* args, PyObjec
         if (!func)
             func = get_function_caller("BoolConstant");
 
-        self->obj = spi::pyInitConstObject(args, func, &spdoc::BoolConstant::object_type);
+        self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::BoolConstant::object_type);
         return 0;
     }
     catch (spi::PyException&)
@@ -967,7 +967,7 @@ static PyTypeObject BoolConstant_PyObjectType = {
     PyType_GenericNew, /* tp_new */
 };
 
-static int py_spdoc_UndefinedConstant_init(SpiPyObject* self, PyObject* args, PyObject* kwds)
+static int py_spdoc_UndefinedConstant_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -975,7 +975,7 @@ static int py_spdoc_UndefinedConstant_init(SpiPyObject* self, PyObject* args, Py
         if (!func)
             func = get_function_caller("UndefinedConstant");
 
-        self->obj = spi::pyInitConstObject(args, func, &spdoc::UndefinedConstant::object_type);
+        self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::UndefinedConstant::object_type);
         return 0;
     }
     catch (spi::PyException&)

@@ -46,6 +46,7 @@ struct Options
         lowerCaseMethod(false),
         objectCoerce(false),
         helpFuncList(false),
+        keywords(false),
         license()
     {}
 
@@ -56,6 +57,7 @@ struct Options
     bool lowerCaseMethod;
     bool objectCoerce;
     bool helpFuncList;
+    bool keywords;
     std::string license;
 };
 

@@ -52,15 +52,15 @@ PyObject* py_spi_replay_ReplayObjectAction_Coerce(PyObject* self, PyObject* args
 
 PyObject* py_spi_replay_ReplayCodeGenerator_Coerce(PyObject* self, PyObject* args);
 
-PyObject* py_spi_replay_ReplayCodeGenerator_GenerateFunction(PyObject* self, PyObject* args);
+PyObject* py_spi_replay_ReplayCodeGenerator_GenerateFunction(PyObject* self, PyObject* args, PyObject* kwargs);
 
-PyObject* py_spi_replay_ReplayCodeGenerator_GenerateObject(PyObject* self, PyObject* args);
+PyObject* py_spi_replay_ReplayCodeGenerator_GenerateObject(PyObject* self, PyObject* args, PyObject* kwargs);
 
 PyObject* py_spi_replay_ReplayLog_Coerce(PyObject* self, PyObject* args);
 
-PyObject* py_spi_replay_ReplayLog_generateCode(PyObject* self, PyObject* args);
+PyObject* py_spi_replay_ReplayLog_generateCode(PyObject* self, PyObject* args, PyObject* kwargs);
 
-PyObject* py_spi_replay_ReplayLog_Read(PyObject* self, PyObject* args);
+PyObject* py_spi_replay_ReplayLog_Read(PyObject* self, PyObject* args, PyObject* kwargs);
 
 } /* end of extern "C" */
 

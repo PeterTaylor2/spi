@@ -44,7 +44,7 @@ void py_spdoc_publicType_update_functions(spi::PythonService* svc);
 extern "C"
 {
 
-PyObject* py_spdoc_verifyPrimitiveTypeName(PyObject* self, PyObject* args);
+PyObject* py_spdoc_verifyPrimitiveTypeName(PyObject* self, PyObject* args, PyObject* kwargs);
 
 } /* end of extern "C" */
 

@@ -39,7 +39,7 @@
 
 #include "spdoc_configTypes.hpp"
 
-static int py_spdoc_DataType_init(SpiPyObject* self, PyObject* args, PyObject* kwds)
+static int py_spdoc_DataType_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -47,7 +47,7 @@ static int py_spdoc_DataType_init(SpiPyObject* self, PyObject* args, PyObject* k
         if (!func)
             func = get_function_caller("DataType");
 
-        self->obj = spi::pyInitConstObject(args, func, &spdoc::DataType::object_type);
+        self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::DataType::object_type);
         return 0;
     }
     catch (spi::PyException&)
@@ -92,7 +92,7 @@ PyObject* py_spdoc_DataType_Coerce(PyObject* self, PyObject* args)
     return pyo;
 }
 
-PyObject* py_spdoc_DataType_ValueType(PyObject* self, PyObject* args)
+PyObject* py_spdoc_DataType_ValueType(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -100,7 +100,7 @@ PyObject* py_spdoc_DataType_ValueType(PyObject* self, PyObject* args)
         if (!func)
             func = get_function_caller("DataType.ValueType");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args, self);
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -118,7 +118,7 @@ PyObject* py_spdoc_DataType_ValueType(PyObject* self, PyObject* args)
     }
 }
 
-PyObject* py_spdoc_DataType_RefType(PyObject* self, PyObject* args)
+PyObject* py_spdoc_DataType_RefType(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -126,7 +126,7 @@ PyObject* py_spdoc_DataType_RefType(PyObject* self, PyObject* args)
         if (!func)
             func = get_function_caller("DataType.RefType");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args, self);
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -146,9 +146,9 @@ PyObject* py_spdoc_DataType_RefType(PyObject* self, PyObject* args)
 static PyMethodDef DataType_methods[] = {
     {"Coerce", (PyCFunction)py_spdoc_DataType_Coerce, METH_VARARGS | METH_STATIC,
         "Coerce DataType from arbitrary value"},
-    {"ValueType", (PyCFunction)py_spdoc_DataType_ValueType, METH_VARARGS,
+    {"ValueType", (PyCFunction)py_spdoc_DataType_ValueType, METH_VARARGS | METH_KEYWORDS,
         "ValueType(self)\n\nReturns the value type (includes the namespace)"},
-    {"RefType", (PyCFunction)py_spdoc_DataType_RefType, METH_VARARGS,
+    {"RefType", (PyCFunction)py_spdoc_DataType_RefType, METH_VARARGS | METH_KEYWORDS,
         "RefType(self)\n\nReturns the reference type (includes the namespace)"},
     {NULL, NULL, 0, NULL} // sentinel
 };
@@ -194,7 +194,7 @@ static PyTypeObject DataType_PyObjectType = {
     PyType_GenericNew, /* tp_new */
 };
 
-static int py_spdoc_Attribute_init(SpiPyObject* self, PyObject* args, PyObject* kwds)
+static int py_spdoc_Attribute_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -202,7 +202,7 @@ static int py_spdoc_Attribute_init(SpiPyObject* self, PyObject* args, PyObject* 
         if (!func)
             func = get_function_caller("Attribute");
 
-        self->obj = spi::pyInitConstObject(args, func, &spdoc::Attribute::object_type);
+        self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::Attribute::object_type);
         return 0;
     }
     catch (spi::PyException&)
@@ -245,7 +245,7 @@ PyObject* py_spdoc_Attribute_Coerce(PyObject* self, PyObject* args)
     return pyo;
 }
 
-PyObject* py_spdoc_Attribute_encoding(PyObject* self, PyObject* args)
+PyObject* py_spdoc_Attribute_encoding(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -253,7 +253,7 @@ PyObject* py_spdoc_Attribute_encoding(PyObject* self, PyObject* args)
         if (!func)
             func = get_function_caller("Attribute.encoding");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args, self);
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -273,7 +273,7 @@ PyObject* py_spdoc_Attribute_encoding(PyObject* self, PyObject* args)
 static PyMethodDef Attribute_methods[] = {
     {"Coerce", (PyCFunction)py_spdoc_Attribute_Coerce, METH_VARARGS | METH_STATIC,
         "Coerce Attribute from arbitrary value"},
-    {"encoding", (PyCFunction)py_spdoc_Attribute_encoding, METH_VARARGS,
+    {"encoding", (PyCFunction)py_spdoc_Attribute_encoding, METH_VARARGS | METH_KEYWORDS,
         "encoding(self, isOutput=None)"},
     {NULL, NULL, 0, NULL} // sentinel
 };
@@ -319,7 +319,7 @@ static PyTypeObject Attribute_PyObjectType = {
     PyType_GenericNew, /* tp_new */
 };
 
-static int py_spdoc_ClassAttribute_init(SpiPyObject* self, PyObject* args, PyObject* kwds)
+static int py_spdoc_ClassAttribute_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -327,7 +327,7 @@ static int py_spdoc_ClassAttribute_init(SpiPyObject* self, PyObject* args, PyObj
         if (!func)
             func = get_function_caller("ClassAttribute");
 
-        self->obj = spi::pyInitConstObject(args, func, &spdoc::ClassAttribute::object_type);
+        self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::ClassAttribute::object_type);
         return 0;
     }
     catch (spi::PyException&)
@@ -422,7 +422,7 @@ static PyTypeObject ClassAttribute_PyObjectType = {
     PyType_GenericNew, /* tp_new */
 };
 
-static int py_spdoc_Construct_init(SpiPyObject* self, PyObject* args, PyObject* kwds)
+static int py_spdoc_Construct_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     try
     {
@@ -450,7 +450,7 @@ PyObject* py_spdoc_Construct_Coerce(PyObject* self, PyObject* args)
     return pyo;
 }
 
-PyObject* py_spdoc_Construct_getType(PyObject* self, PyObject* args)
+PyObject* py_spdoc_Construct_getType(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -458,7 +458,7 @@ PyObject* py_spdoc_Construct_getType(PyObject* self, PyObject* args)
         if (!func)
             func = get_function_caller("Construct.getType");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args, self);
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -476,7 +476,7 @@ PyObject* py_spdoc_Construct_getType(PyObject* self, PyObject* args)
     }
 }
 
-PyObject* py_spdoc_Construct_Summary(PyObject* self, PyObject* args)
+PyObject* py_spdoc_Construct_Summary(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -484,7 +484,7 @@ PyObject* py_spdoc_Construct_Summary(PyObject* self, PyObject* args)
         if (!func)
             func = get_function_caller("Construct.Summary");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args, self);
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -504,9 +504,9 @@ PyObject* py_spdoc_Construct_Summary(PyObject* self, PyObject* args)
 static PyMethodDef Construct_methods[] = {
     {"Coerce", (PyCFunction)py_spdoc_Construct_Coerce, METH_VARARGS | METH_STATIC,
         "Coerce Construct from arbitrary value"},
-    {"getType", (PyCFunction)py_spdoc_Construct_getType, METH_VARARGS,
+    {"getType", (PyCFunction)py_spdoc_Construct_getType, METH_VARARGS | METH_KEYWORDS,
         "getType(self)\n\nReturns the type of the Construct - specific to each sub-class of Construct."},
-    {"Summary", (PyCFunction)py_spdoc_Construct_Summary, METH_VARARGS,
+    {"Summary", (PyCFunction)py_spdoc_Construct_Summary, METH_VARARGS | METH_KEYWORDS,
         "Summary(self)\n\nReturns a short summary of the construct (disregarding description)"},
     {NULL, NULL, 0, NULL} // sentinel
 };
@@ -552,7 +552,7 @@ static PyTypeObject Construct_PyObjectType = {
     PyType_GenericNew, /* tp_new */
 };
 
-static int py_spdoc_SimpleType_init(SpiPyObject* self, PyObject* args, PyObject* kwds)
+static int py_spdoc_SimpleType_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -560,7 +560,7 @@ static int py_spdoc_SimpleType_init(SpiPyObject* self, PyObject* args, PyObject*
         if (!func)
             func = get_function_caller("SimpleType");
 
-        self->obj = spi::pyInitConstObject(args, func, &spdoc::SimpleType::object_type);
+        self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::SimpleType::object_type);
         return 0;
     }
     catch (spi::PyException&)
@@ -643,7 +643,7 @@ static PyTypeObject SimpleType_PyObjectType = {
     PyType_GenericNew, /* tp_new */
 };
 
-static int py_spdoc_Function_init(SpiPyObject* self, PyObject* args, PyObject* kwds)
+static int py_spdoc_Function_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -651,7 +651,7 @@ static int py_spdoc_Function_init(SpiPyObject* self, PyObject* args, PyObject* k
         if (!func)
             func = get_function_caller("Function");
 
-        self->obj = spi::pyInitConstObject(args, func, &spdoc::Function::object_type);
+        self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::Function::object_type);
         return 0;
     }
     catch (spi::PyException&)
@@ -696,7 +696,7 @@ PyObject* py_spdoc_Function_Coerce(PyObject* self, PyObject* args)
     return pyo;
 }
 
-PyObject* py_spdoc_Function_returnsObject(PyObject* self, PyObject* args)
+PyObject* py_spdoc_Function_returnsObject(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -704,7 +704,7 @@ PyObject* py_spdoc_Function_returnsObject(PyObject* self, PyObject* args)
         if (!func)
             func = get_function_caller("Function.returnsObject");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args, self);
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -722,7 +722,7 @@ PyObject* py_spdoc_Function_returnsObject(PyObject* self, PyObject* args)
     }
 }
 
-PyObject* py_spdoc_Function_objectCount(PyObject* self, PyObject* args)
+PyObject* py_spdoc_Function_objectCount(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -730,7 +730,7 @@ PyObject* py_spdoc_Function_objectCount(PyObject* self, PyObject* args)
         if (!func)
             func = get_function_caller("Function.objectCount");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args, self);
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -750,9 +750,9 @@ PyObject* py_spdoc_Function_objectCount(PyObject* self, PyObject* args)
 static PyMethodDef Function_methods[] = {
     {"Coerce", (PyCFunction)py_spdoc_Function_Coerce, METH_VARARGS | METH_STATIC,
         "Coerce Function from arbitrary value"},
-    {"returnsObject", (PyCFunction)py_spdoc_Function_returnsObject, METH_VARARGS,
+    {"returnsObject", (PyCFunction)py_spdoc_Function_returnsObject, METH_VARARGS | METH_KEYWORDS,
         "returnsObject(self)\n\nDoes this Function return an object or not?"},
-    {"objectCount", (PyCFunction)py_spdoc_Function_objectCount, METH_VARARGS,
+    {"objectCount", (PyCFunction)py_spdoc_Function_objectCount, METH_VARARGS | METH_KEYWORDS,
         "objectCount(self)\n\nHow many objects does this function return?"},
     {NULL, NULL, 0, NULL} // sentinel
 };
@@ -798,7 +798,7 @@ static PyTypeObject Function_PyObjectType = {
     PyType_GenericNew, /* tp_new */
 };
 
-static int py_spdoc_Enumerand_init(SpiPyObject* self, PyObject* args, PyObject* kwds)
+static int py_spdoc_Enumerand_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -806,7 +806,7 @@ static int py_spdoc_Enumerand_init(SpiPyObject* self, PyObject* args, PyObject* 
         if (!func)
             func = get_function_caller("Enumerand");
 
-        self->obj = spi::pyInitConstObject(args, func, &spdoc::Enumerand::object_type);
+        self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::Enumerand::object_type);
         return 0;
     }
     catch (spi::PyException&)
@@ -887,7 +887,7 @@ static PyTypeObject Enumerand_PyObjectType = {
     PyType_GenericNew, /* tp_new */
 };
 
-static int py_spdoc_Enum_init(SpiPyObject* self, PyObject* args, PyObject* kwds)
+static int py_spdoc_Enum_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -895,7 +895,7 @@ static int py_spdoc_Enum_init(SpiPyObject* self, PyObject* args, PyObject* kwds)
         if (!func)
             func = get_function_caller("Enum");
 
-        self->obj = spi::pyInitConstObject(args, func, &spdoc::Enum::object_type);
+        self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::Enum::object_type);
         return 0;
     }
     catch (spi::PyException&)
@@ -976,7 +976,7 @@ static PyTypeObject Enum_PyObjectType = {
     PyType_GenericNew, /* tp_new */
 };
 
-static int py_spdoc_ClassMethod_init(SpiPyObject* self, PyObject* args, PyObject* kwds)
+static int py_spdoc_ClassMethod_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -984,7 +984,7 @@ static int py_spdoc_ClassMethod_init(SpiPyObject* self, PyObject* args, PyObject
         if (!func)
             func = get_function_caller("ClassMethod");
 
-        self->obj = spi::pyInitConstObject(args, func, &spdoc::ClassMethod::object_type);
+        self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::ClassMethod::object_type);
         return 0;
     }
     catch (spi::PyException&)
@@ -1025,7 +1025,7 @@ PyObject* py_spdoc_ClassMethod_Coerce(PyObject* self, PyObject* args)
     return pyo;
 }
 
-PyObject* py_spdoc_ClassMethod_Summary(PyObject* self, PyObject* args)
+PyObject* py_spdoc_ClassMethod_Summary(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -1033,7 +1033,7 @@ PyObject* py_spdoc_ClassMethod_Summary(PyObject* self, PyObject* args)
         if (!func)
             func = get_function_caller("ClassMethod.Summary");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args, self);
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -1053,7 +1053,7 @@ PyObject* py_spdoc_ClassMethod_Summary(PyObject* self, PyObject* args)
 static PyMethodDef ClassMethod_methods[] = {
     {"Coerce", (PyCFunction)py_spdoc_ClassMethod_Coerce, METH_VARARGS | METH_STATIC,
         "Coerce ClassMethod from arbitrary value"},
-    {"Summary", (PyCFunction)py_spdoc_ClassMethod_Summary, METH_VARARGS,
+    {"Summary", (PyCFunction)py_spdoc_ClassMethod_Summary, METH_VARARGS | METH_KEYWORDS,
         "Summary(self)"},
     {NULL, NULL, 0, NULL} // sentinel
 };
@@ -1099,7 +1099,7 @@ static PyTypeObject ClassMethod_PyObjectType = {
     PyType_GenericNew, /* tp_new */
 };
 
-static int py_spdoc_CoerceFrom_init(SpiPyObject* self, PyObject* args, PyObject* kwds)
+static int py_spdoc_CoerceFrom_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -1107,7 +1107,7 @@ static int py_spdoc_CoerceFrom_init(SpiPyObject* self, PyObject* args, PyObject*
         if (!func)
             func = get_function_caller("CoerceFrom");
 
-        self->obj = spi::pyInitConstObject(args, func, &spdoc::CoerceFrom::object_type);
+        self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::CoerceFrom::object_type);
         return 0;
     }
     catch (spi::PyException&)
@@ -1140,7 +1140,7 @@ PyObject* py_spdoc_CoerceFrom_Coerce(PyObject* self, PyObject* args)
     return pyo;
 }
 
-PyObject* py_spdoc_CoerceFrom_Summary(PyObject* self, PyObject* args)
+PyObject* py_spdoc_CoerceFrom_Summary(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -1148,7 +1148,7 @@ PyObject* py_spdoc_CoerceFrom_Summary(PyObject* self, PyObject* args)
         if (!func)
             func = get_function_caller("CoerceFrom.Summary");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args, self);
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -1168,7 +1168,7 @@ PyObject* py_spdoc_CoerceFrom_Summary(PyObject* self, PyObject* args)
 static PyMethodDef CoerceFrom_methods[] = {
     {"Coerce", (PyCFunction)py_spdoc_CoerceFrom_Coerce, METH_VARARGS | METH_STATIC,
         "Coerce CoerceFrom from arbitrary value"},
-    {"Summary", (PyCFunction)py_spdoc_CoerceFrom_Summary, METH_VARARGS,
+    {"Summary", (PyCFunction)py_spdoc_CoerceFrom_Summary, METH_VARARGS | METH_KEYWORDS,
         "Summary(self)"},
     {NULL, NULL, 0, NULL} // sentinel
 };
@@ -1214,7 +1214,7 @@ static PyTypeObject CoerceFrom_PyObjectType = {
     PyType_GenericNew, /* tp_new */
 };
 
-static int py_spdoc_CoerceTo_init(SpiPyObject* self, PyObject* args, PyObject* kwds)
+static int py_spdoc_CoerceTo_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -1222,7 +1222,7 @@ static int py_spdoc_CoerceTo_init(SpiPyObject* self, PyObject* args, PyObject* k
         if (!func)
             func = get_function_caller("CoerceTo");
 
-        self->obj = spi::pyInitConstObject(args, func, &spdoc::CoerceTo::object_type);
+        self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::CoerceTo::object_type);
         return 0;
     }
     catch (spi::PyException&)
@@ -1257,7 +1257,7 @@ PyObject* py_spdoc_CoerceTo_Coerce(PyObject* self, PyObject* args)
     return pyo;
 }
 
-PyObject* py_spdoc_CoerceTo_Summary(PyObject* self, PyObject* args)
+PyObject* py_spdoc_CoerceTo_Summary(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -1265,7 +1265,7 @@ PyObject* py_spdoc_CoerceTo_Summary(PyObject* self, PyObject* args)
         if (!func)
             func = get_function_caller("CoerceTo.Summary");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args, self);
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -1285,7 +1285,7 @@ PyObject* py_spdoc_CoerceTo_Summary(PyObject* self, PyObject* args)
 static PyMethodDef CoerceTo_methods[] = {
     {"Coerce", (PyCFunction)py_spdoc_CoerceTo_Coerce, METH_VARARGS | METH_STATIC,
         "Coerce CoerceTo from arbitrary value"},
-    {"Summary", (PyCFunction)py_spdoc_CoerceTo_Summary, METH_VARARGS,
+    {"Summary", (PyCFunction)py_spdoc_CoerceTo_Summary, METH_VARARGS | METH_KEYWORDS,
         "Summary(self)"},
     {NULL, NULL, 0, NULL} // sentinel
 };
@@ -1331,7 +1331,7 @@ static PyTypeObject CoerceTo_PyObjectType = {
     PyType_GenericNew, /* tp_new */
 };
 
-static int py_spdoc_Class_init(SpiPyObject* self, PyObject* args, PyObject* kwds)
+static int py_spdoc_Class_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -1339,7 +1339,7 @@ static int py_spdoc_Class_init(SpiPyObject* self, PyObject* args, PyObject* kwds
         if (!func)
             func = get_function_caller("Class");
 
-        self->obj = spi::pyInitConstObject(args, func, &spdoc::Class::object_type);
+        self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::Class::object_type);
         return 0;
     }
     catch (spi::PyException&)
@@ -1404,7 +1404,7 @@ PyObject* py_spdoc_Class_Coerce(PyObject* self, PyObject* args)
     return pyo;
 }
 
-PyObject* py_spdoc_Class_ObjectName(PyObject* self, PyObject* args)
+PyObject* py_spdoc_Class_ObjectName(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -1412,7 +1412,7 @@ PyObject* py_spdoc_Class_ObjectName(PyObject* self, PyObject* args)
         if (!func)
             func = get_function_caller("Class.ObjectName");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args, self);
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -1430,7 +1430,7 @@ PyObject* py_spdoc_Class_ObjectName(PyObject* self, PyObject* args)
     }
 }
 
-PyObject* py_spdoc_Class_ServiceNamespace(PyObject* self, PyObject* args)
+PyObject* py_spdoc_Class_ServiceNamespace(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -1438,7 +1438,7 @@ PyObject* py_spdoc_Class_ServiceNamespace(PyObject* self, PyObject* args)
         if (!func)
             func = get_function_caller("Class.ServiceNamespace");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args, self);
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -1458,9 +1458,9 @@ PyObject* py_spdoc_Class_ServiceNamespace(PyObject* self, PyObject* args)
 static PyMethodDef Class_methods[] = {
     {"Coerce", (PyCFunction)py_spdoc_Class_Coerce, METH_VARARGS | METH_STATIC,
         "Coerce Class from arbitrary value"},
-    {"ObjectName", (PyCFunction)py_spdoc_Class_ObjectName, METH_VARARGS,
+    {"ObjectName", (PyCFunction)py_spdoc_Class_ObjectName, METH_VARARGS | METH_KEYWORDS,
         "ObjectName(self)\n\nReturns the object name. If objectName is defined, then that is the object name. Otherwise name is the object name."},
-    {"ServiceNamespace", (PyCFunction)py_spdoc_Class_ServiceNamespace, METH_VARARGS,
+    {"ServiceNamespace", (PyCFunction)py_spdoc_Class_ServiceNamespace, METH_VARARGS | METH_KEYWORDS,
         "ServiceNamespace(self)"},
     {NULL, NULL, 0, NULL} // sentinel
 };
@@ -1506,7 +1506,7 @@ static PyTypeObject Class_PyObjectType = {
     PyType_GenericNew, /* tp_new */
 };
 
-static int py_spdoc_Module_init(SpiPyObject* self, PyObject* args, PyObject* kwds)
+static int py_spdoc_Module_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -1514,7 +1514,7 @@ static int py_spdoc_Module_init(SpiPyObject* self, PyObject* args, PyObject* kwd
         if (!func)
             func = get_function_caller("Module");
 
-        self->obj = spi::pyInitConstObject(args, func, &spdoc::Module::object_type);
+        self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::Module::object_type);
         return 0;
     }
     catch (spi::PyException&)
@@ -1551,7 +1551,7 @@ PyObject* py_spdoc_Module_Coerce(PyObject* self, PyObject* args)
     return pyo;
 }
 
-PyObject* py_spdoc_Module_combineSummaries(PyObject* self, PyObject* args)
+PyObject* py_spdoc_Module_combineSummaries(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -1559,7 +1559,7 @@ PyObject* py_spdoc_Module_combineSummaries(PyObject* self, PyObject* args)
         if (!func)
             func = get_function_caller("Module.combineSummaries");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args, self);
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -1579,7 +1579,7 @@ PyObject* py_spdoc_Module_combineSummaries(PyObject* self, PyObject* args)
 static PyMethodDef Module_methods[] = {
     {"Coerce", (PyCFunction)py_spdoc_Module_Coerce, METH_VARARGS | METH_STATIC,
         "Coerce Module from arbitrary value"},
-    {"combineSummaries", (PyCFunction)py_spdoc_Module_combineSummaries, METH_VARARGS | METH_STATIC,
+    {"combineSummaries", (PyCFunction)py_spdoc_Module_combineSummaries, METH_VARARGS | METH_KEYWORDS | METH_STATIC,
         "combineSummaries(modules=[], sort)"},
     {NULL, NULL, 0, NULL} // sentinel
 };
@@ -1625,7 +1625,7 @@ static PyTypeObject Module_PyObjectType = {
     PyType_GenericNew, /* tp_new */
 };
 
-static int py_spdoc_Service_init(SpiPyObject* self, PyObject* args, PyObject* kwds)
+static int py_spdoc_Service_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -1633,7 +1633,7 @@ static int py_spdoc_Service_init(SpiPyObject* self, PyObject* args, PyObject* kw
         if (!func)
             func = get_function_caller("Service");
 
-        self->obj = spi::pyInitConstObject(args, func, &spdoc::Service::object_type);
+        self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::Service::object_type);
         return 0;
     }
     catch (spi::PyException&)
@@ -1683,7 +1683,7 @@ PyObject* py_spdoc_Service_Coerce(PyObject* self, PyObject* args)
     return pyo;
 }
 
-PyObject* py_spdoc_Service_Summary(PyObject* self, PyObject* args)
+PyObject* py_spdoc_Service_Summary(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -1691,7 +1691,7 @@ PyObject* py_spdoc_Service_Summary(PyObject* self, PyObject* args)
         if (!func)
             func = get_function_caller("Service.Summary");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args, self);
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -1709,7 +1709,7 @@ PyObject* py_spdoc_Service_Summary(PyObject* self, PyObject* args)
     }
 }
 
-PyObject* py_spdoc_Service_combineSummaries(PyObject* self, PyObject* args)
+PyObject* py_spdoc_Service_combineSummaries(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -1717,7 +1717,7 @@ PyObject* py_spdoc_Service_combineSummaries(PyObject* self, PyObject* args)
         if (!func)
             func = get_function_caller("Service.combineSummaries");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args, self);
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -1735,7 +1735,7 @@ PyObject* py_spdoc_Service_combineSummaries(PyObject* self, PyObject* args)
     }
 }
 
-PyObject* py_spdoc_Service_getEnums(PyObject* self, PyObject* args)
+PyObject* py_spdoc_Service_getEnums(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -1743,7 +1743,7 @@ PyObject* py_spdoc_Service_getEnums(PyObject* self, PyObject* args)
         if (!func)
             func = get_function_caller("Service.getEnums");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args, self);
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -1761,7 +1761,7 @@ PyObject* py_spdoc_Service_getEnums(PyObject* self, PyObject* args)
     }
 }
 
-PyObject* py_spdoc_Service_getEnum(PyObject* self, PyObject* args)
+PyObject* py_spdoc_Service_getEnum(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -1769,7 +1769,7 @@ PyObject* py_spdoc_Service_getEnum(PyObject* self, PyObject* args)
         if (!func)
             func = get_function_caller("Service.getEnum");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args, self);
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -1787,7 +1787,7 @@ PyObject* py_spdoc_Service_getEnum(PyObject* self, PyObject* args)
     }
 }
 
-PyObject* py_spdoc_Service_getEnumerands(PyObject* self, PyObject* args)
+PyObject* py_spdoc_Service_getEnumerands(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -1795,7 +1795,7 @@ PyObject* py_spdoc_Service_getEnumerands(PyObject* self, PyObject* args)
         if (!func)
             func = get_function_caller("Service.getEnumerands");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args, self);
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -1813,7 +1813,7 @@ PyObject* py_spdoc_Service_getEnumerands(PyObject* self, PyObject* args)
     }
 }
 
-PyObject* py_spdoc_Service_getClasses(PyObject* self, PyObject* args)
+PyObject* py_spdoc_Service_getClasses(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -1821,7 +1821,7 @@ PyObject* py_spdoc_Service_getClasses(PyObject* self, PyObject* args)
         if (!func)
             func = get_function_caller("Service.getClasses");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args, self);
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -1839,7 +1839,7 @@ PyObject* py_spdoc_Service_getClasses(PyObject* self, PyObject* args)
     }
 }
 
-PyObject* py_spdoc_Service_getClass(PyObject* self, PyObject* args)
+PyObject* py_spdoc_Service_getClass(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -1847,7 +1847,7 @@ PyObject* py_spdoc_Service_getClass(PyObject* self, PyObject* args)
         if (!func)
             func = get_function_caller("Service.getClass");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args, self);
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -1865,7 +1865,7 @@ PyObject* py_spdoc_Service_getClass(PyObject* self, PyObject* args)
     }
 }
 
-PyObject* py_spdoc_Service_getPropertyClass(PyObject* self, PyObject* args)
+PyObject* py_spdoc_Service_getPropertyClass(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
     try
@@ -1873,7 +1873,7 @@ PyObject* py_spdoc_Service_getPropertyClass(PyObject* self, PyObject* args)
         if (!func)
             func = get_function_caller("Service.getPropertyClass");
 
-        const spi::InputValues& iv = spi::pyGetInputValues(func, args, self);
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
         return spi::pyoFromValue(output);
     }
@@ -1893,21 +1893,21 @@ PyObject* py_spdoc_Service_getPropertyClass(PyObject* self, PyObject* args)
 static PyMethodDef Service_methods[] = {
     {"Coerce", (PyCFunction)py_spdoc_Service_Coerce, METH_VARARGS | METH_STATIC,
         "Coerce Service from arbitrary value"},
-    {"Summary", (PyCFunction)py_spdoc_Service_Summary, METH_VARARGS,
+    {"Summary", (PyCFunction)py_spdoc_Service_Summary, METH_VARARGS | METH_KEYWORDS,
         "Summary(self, sort)"},
-    {"combineSummaries", (PyCFunction)py_spdoc_Service_combineSummaries, METH_VARARGS | METH_STATIC,
+    {"combineSummaries", (PyCFunction)py_spdoc_Service_combineSummaries, METH_VARARGS | METH_KEYWORDS | METH_STATIC,
         "combineSummaries(services=[], sort)"},
-    {"getEnums", (PyCFunction)py_spdoc_Service_getEnums, METH_VARARGS,
+    {"getEnums", (PyCFunction)py_spdoc_Service_getEnums, METH_VARARGS | METH_KEYWORDS,
         "getEnums(self)\n\nReturns a sorted list of enumerated type names."},
-    {"getEnum", (PyCFunction)py_spdoc_Service_getEnum, METH_VARARGS,
+    {"getEnum", (PyCFunction)py_spdoc_Service_getEnum, METH_VARARGS | METH_KEYWORDS,
         "getEnum(self, name)\n\nGet an individual Enum by name."},
-    {"getEnumerands", (PyCFunction)py_spdoc_Service_getEnumerands, METH_VARARGS,
+    {"getEnumerands", (PyCFunction)py_spdoc_Service_getEnumerands, METH_VARARGS | METH_KEYWORDS,
         "getEnumerands(self, name)\n\nReturns the enumerands for a given enumerated type."},
-    {"getClasses", (PyCFunction)py_spdoc_Service_getClasses, METH_VARARGS,
+    {"getClasses", (PyCFunction)py_spdoc_Service_getClasses, METH_VARARGS | METH_KEYWORDS,
         "getClasses(self)\n\nReturns a sorted list of class names."},
-    {"getClass", (PyCFunction)py_spdoc_Service_getClass, METH_VARARGS,
+    {"getClass", (PyCFunction)py_spdoc_Service_getClass, METH_VARARGS | METH_KEYWORDS,
         "getClass(self, className)\n\nReturns the class details for a class name."},
-    {"getPropertyClass", (PyCFunction)py_spdoc_Service_getPropertyClass, METH_VARARGS,
+    {"getPropertyClass", (PyCFunction)py_spdoc_Service_getPropertyClass, METH_VARARGS | METH_KEYWORDS,
         "getPropertyClass(self, baseClassName, fieldName)\n\nReturns the name of the class for which the given fieldName is a property. If no such class exists then returns an empty string."},
     {NULL, NULL, 0, NULL} // sentinel
 };
