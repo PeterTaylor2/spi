@@ -126,6 +126,20 @@ std::vector<PyObject*> pyTupleToVector(PyObject* in)
     return out;
 }
 
+/**
+ * Converts a C-style array of args to a vector of objects.
+ *
+ * The outputs remain owned by the input array, and hence you should not increment
+ * or decrement the reference count of the outputs.
+ */
+std::vector<PyObject*> pyArrayToVector(PyObject* const* in, Py_ssize_t nargs)
+{
+    if (!in || nargs <= 0)
+        return std::vector<PyObject*>();
+
+    return std::vector<PyObject*>(in, in + nargs);
+}
+
 PyInterpreterLock::PyInterpreterLock()
 {
     gstate = PyGILState_Ensure();

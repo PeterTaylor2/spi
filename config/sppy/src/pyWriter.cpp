@@ -713,9 +713,16 @@ void PythonModule::declareFunction(
     ostr << "\n"
          << "PyObject* py_" << service->ns() << "_"
          << makeNamespaceSep(module->ns, "_")
-        << func->name << "(PyObject* self, PyObject* args";
+         << func->name << "(PyObject* self";
+
+    if (service->options.fastCall)
+        ostr << ", PyObject* const* args, Py_ssize_t nargs";
+    else
+        ostr << ", PyObject* args";
+
     if (service->options.keywords)
         ostr << ", PyObject* kwargs";
+
     ostr << ");\n";
 
 }
@@ -727,7 +734,12 @@ void PythonModule::implementFunction(
     ostr << "\n"
          << "PyObject* py_" << service->ns() << "_"
          << makeNamespaceSep(module->ns, "_")
-        << func->name << "(PyObject* self, PyObject* args";
+         << func->name << "(PyObject* self";
+
+    if (service->options.fastCall)
+        ostr << ", PyObject* const* args, Py_ssize_t nargs";
+    else
+        ostr << ", PyObject* args";
 
     if (service->options.keywords)
         ostr << ", PyObject* kwargs";
@@ -744,12 +756,16 @@ void PythonModule::implementFunction(
          << makeNamespaceSep(module->ns, ".") << func->name << "\");\n"
          << "\n";
 
-    ostr << "        const spi::InputValues& iv = "
-        << "spi::pyGetInputValues(func, args";
-    
+    ostr << "        const spi::InputValues& iv = spi::pyGetInputValues(func";
+
+    if (service->options.fastCall)
+        ostr << ", args, nargs";
+    else
+        ostr << ", args";
+
     if (service->options.keywords)
         ostr << ", kwargs";
-    
+
     ostr << ");\n";
 
     ostr << "        spi::Value output = spi::CallInContext(func, iv,"
@@ -810,14 +826,23 @@ void PythonModule::registerFunction(
 
     docString = spi::StringStrip(spi::StringJoin("\n", docStrings));
 
-    const char* functionCast = service->options.keywords ? "(PyCFunction)" : "";
+    const char* functionCast = service->options.keywords || service->options.fastCall ?
+        "(PyCFunction)" :
+        "";
 
     ostr << "    svc->AddFunction(\"" << regName << "\",\n"
         << "        " << functionCast << "py_" << service->ns() << "_"
         << makeNamespaceSep(module->ns, "_") << func->name << ",\n"
-        << "        \"" << spi::StringEscape(docString.c_str()) << "\"";
+        << "        \"" << spi::StringEscape(docString.c_str()) << "\",\n";
+
+    if (service->options.fastCall)
+        ostr << "        METH_FASTCALL";
+    else
+        ostr << "        METH_VARARGS";
+
     if (service->options.keywords)
-        ostr << ",\n        METH_VARARGS | METH_KEYWORDS";
+        ostr << " | METH_KEYWORDS";
+
     ostr << ");\n";
 }
 
@@ -845,9 +870,16 @@ void PythonModule::declareClass(
              << "PyObject* py_" << service->ns() << "_"
              << makeNamespaceSep(module->ns, "_") << cls->name
              << "_" << method->function->name
-            << "(PyObject* self, PyObject* args";
+             << "(PyObject* self";
+
+        if (service->options.fastCall)
+            ostr << ", PyObject* const* args, Py_ssize_t nargs";
+        else
+            ostr << ", PyObject* args";
+
         if (service->options.keywords)
             ostr << ", PyObject* kwargs";
+
         ostr << ");\n";
     }
 }
@@ -1079,6 +1111,7 @@ void PythonModule::implementClass(
         //     << "\n";
     }
 
+    // it seems that tp_init does not have a fastcall option
     if (cls->noMake)
     {
         // I was surprised to discover that even if we don't provide tp_init
@@ -1242,10 +1275,16 @@ void PythonModule::implementClass(
         classMethods[method->function->name] = funcName;
 
         ostr << "\n"
-             << "PyObject* " << funcName
-            << "(PyObject* self, PyObject* args";
+             << "PyObject* " << funcName << "(PyObject* self";
+
+        if (service->options.fastCall)
+            ostr << ", PyObject* const* args, Py_ssize_t nargs";
+        else
+            ostr << ", PyObject* args";
+
         if (service->options.keywords)
             ostr << ", PyObject* kwargs";
+
         ostr << ")\n"
              << "{\n"
              << "    static spi::FunctionCaller* func = 0;\n"
@@ -1256,8 +1295,12 @@ void PythonModule::implementClass(
              << makeNamespaceSep(module->ns, ".") << cls->name
              << "." << method->function->name << "\");\n"
              << "\n";
-        ostr << "        const spi::InputValues& iv = "
-             << "spi::pyGetInputValues(func, args";
+        ostr << "        const spi::InputValues& iv = spi::pyGetInputValues(func";
+
+        if (service->options.fastCall)
+            ostr << ", args, nargs";
+        else
+            ostr << ", args";
 
         if (service->options.keywords)
             ostr << ", kwargs";
@@ -1335,11 +1378,19 @@ void PythonModule::implementClass(
             methodName = spi_util::StringLower(methodName);
 
         docString = spi::StringStrip(spi::StringJoin("\n", docStrings));
-        ostr << "    {\"" << methodName << "\", (PyCFunction)" << funcName << ", METH_VARARGS";
+        ostr << "    {\"" << methodName << "\", (PyCFunction)" << funcName << ", ";
+
+        if (service->options.fastCall)
+            ostr << "METH_FASTCALL";
+        else
+            ostr << "METH_VARARGS";
+
         if (service->options.keywords)
             ostr << " | METH_KEYWORDS";
+
         if (method->isStatic)
             ostr << " | METH_STATIC";
+
         ostr << ",\n        \"" << spi::StringEscape(docString.c_str())
              << "\"},\n";
     }
