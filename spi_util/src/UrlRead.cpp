@@ -46,7 +46,6 @@
 #include <sstream>
 
 #ifdef _MSC_VER
-#define CURL_STATICLIB
 #include <spi_curl/curl.h>
 #else
 #include <curl/curl.h>

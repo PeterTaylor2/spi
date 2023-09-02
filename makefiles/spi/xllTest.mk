@@ -100,7 +100,8 @@ $(U_SPI_HOME)/xltest/$(G_BUILD_DIR)$(U_BUILD_SUFFIX)/xltest.lib\
 $(U_SPI_HOME)/xlcall32/$(G_BUILD_DIR)$(U_BUILD_SUFFIX)/xlcall32.lib\
 $(I_SPI_RUNTIME_BIN_DIR)/xl$(G_XL_VERSION)/$(SPI_DLL)-xl$(G_XL_VERSION).lib\
 $(I_SPI_RUNTIME_BIN_DIR)/$(SPI_DLL).lib\
-$(I_SPI_RUNTIME_BIN_DIR)/$(SPI_UTIL_DLL).lib
+$(I_SPI_RUNTIME_BIN_DIR)/$(SPI_UTIL_DLL).lib\
+$(I_SPI_RUNTIME_BIN_DIR)/$(SPI_CURL_DLL).lib
 
 U_LIBS=$(U_DEP_LIBS)
 ifeq ($(G_XL_VERSION),12)
@@ -119,6 +120,7 @@ G_XL_ABI=$(G_ABI)/xl$(G_XL_VERSION)
 exe: $(G_XL_ABI)/$(U_TARGET).exe
 exe: $(G_XL_ABI)/$(SPI_DLL).dll
 exe: $(G_XL_ABI)/$(SPI_UTIL_DLL).dll
+exe: $(G_XL_ABI)/$(SPI_CURL_DLL).dll
 exe: $(G_XL_ABI)/$(U_SERVICE_DLL).dll
 exe: $(G_XL_ABI)/$(U_XLL_TARGET).xll
 exe: $(G_XL_ABI)/xlcall32.dll
