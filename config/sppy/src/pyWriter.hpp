@@ -47,6 +47,7 @@ struct Options
         objectCoerce(false),
         helpFuncList(false),
         keywords(false),
+        fastCall(false),
         license()
     {}
 
