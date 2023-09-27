@@ -76,11 +76,18 @@ public:
     Variant& operator= (const Variant &value);
 
     /**
-     * Translation between Variant and Map for serialization.
-     *
-     * Note that a Variant with a context can be serialized in this manner.
+     * Translation between Variant and Map for serialization. Inverse of ToMap method.
+     * 
+     * Should only be used when the Map is of type Map::VARIANT - otherwise throws exception.
      */
     Variant(const MapConstSP& m);
+
+    /**
+     * We use this to serialize a Variant which has a context to a two-element
+     * Map with context and value.
+     *
+     * Inverse of Variant(const MapConstSP&) constructor.
+     */
     MapConstSP ToMap() const;
 
     /**

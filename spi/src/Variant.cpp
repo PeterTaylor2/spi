@@ -136,6 +136,8 @@ Variant::Variant(const MapConstSP& m)
 m_value(),
 m_context(0)
 {
+    SPI_PRE_CONDITION(m);
+
     Map::Type mapType = m->MapType();
     if (mapType == Map::VARIANT)
     {
@@ -145,23 +147,9 @@ m_context(0)
         m_context = InputContext::Find(contextName);
         m_value.swap(value);
     }
-    else if (mapType == Map::NAMED)
-    {
-        // the trouble is that we have lost the object reference cache
-        // in the context that this was an issue there was ValueToObject
-        // available upstream but was lost at the point that we called
-        // ObjectMap::GetVariantMatrix
-        ObjectMap om(m);
-        ObjectConstSP o = Service::CommonService()->object_from_map(
-            &om, ObjectRefCacheSP());
-        m_value = o;
-        m_context = InputContext::NoContext();
-    }
     else
     {
-        // probably meaningless since Map::MATRIX not used
-        m_value = m;
-        m_context = InputContext::NoContext();
+        SPI_THROW_RUNTIME_ERROR("Variant(const MapConstSP&) should only be used for Maps of type VARIANT");
     }
 }
 
