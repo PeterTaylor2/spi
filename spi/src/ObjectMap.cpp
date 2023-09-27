@@ -518,6 +518,7 @@ ObjectConstSP ObjectMap::GetObject(
 
 Variant ObjectMap::GetVariant(
     const char* name,
+    ValueToObject& mapToObject,
     bool optional)
 {
     Value vm = m_constMap->GetValue(name);
@@ -528,9 +529,7 @@ Variant ObjectMap::GetVariant(
         ThrowUndefinedValue(name);
     }
 
-    MapConstSP  m = vm.getMap();
-
-    return Variant(m);
+    return Variant(vm, mapToObject);
 }
 
 std::vector<std::string> ObjectMap::GetStringVector(
@@ -624,19 +623,25 @@ std::vector<ObjectConstSP> ObjectMap::GetObjectVector(
 }
 
 std::vector<Variant> ObjectMap::GetVariantVector(
-    const char* name)
+    const char* name,
+    ValueToObject& mapToObject)
 {
     Value value = m_constMap->GetValue(name);
     if (value.isUndefined())
         return std::vector<Variant>();
 
-    const std::vector<MapConstSP>& maps = value.getMapVector();
-    std::vector<Variant> variants;
-    for (size_t i = 0; i < maps.size(); ++i)
-        variants.push_back(Variant(maps[i]));
-    return variants;
-}
+    IArrayConstSP valueArray = value.getArray();
+    size_t size = valueArray->size();
+    std::vector<Variant> output;
+    output.reserve(size);
 
+    for (size_t i = 0; i < size; ++i)
+    {
+        Value item = valueArray->getItem(i);
+        output.push_back(Variant(item, mapToObject));
+    }
+    return output;
+}
 
 MatrixData<bool> ObjectMap::GetBoolMatrix(
     const char* name)
@@ -714,9 +719,28 @@ MapSP ObjectMap::ExportMap()
 }
 
 spi::MatrixData<Variant> ObjectMap::GetVariantMatrix(
-    const char* name)
+    const char* name,
+    ValueToObject& mapToObject)
 {
-    return MapGetMatrix<Variant>(m_constMap, name);
+    const MatrixData<Value>& tmp = MapGetMatrix<Value>(
+        m_constMap, name);
+
+    size_t nr = tmp.Rows();
+    size_t nc = tmp.Cols();
+
+    if (nr == 0 && nc == 0)
+        return MatrixData<Variant>();
+
+    MatrixData<Variant> output(nr, nc);
+    for (size_t i = 0; i < nr; ++i)
+    {
+        for (size_t j = 0; j < nc; ++j)
+        {
+            const Value& item = tmp[i][j];
+            output[i][j] = Variant(item, mapToObject);
+        }
+    }
+    return output;
 }
 
 bool ObjectMap::Exists(const char * name)

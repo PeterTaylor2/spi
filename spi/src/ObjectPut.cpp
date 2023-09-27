@@ -434,6 +434,7 @@ public:
 
     Variant GetVariant(
         const char* name,
+        ValueToObject& mapToObject,
         bool optional)
     {
         SPI_NOT_IMPLEMENTED;
@@ -556,7 +557,8 @@ public:
     }
 
     std::vector<Variant> GetVariantVector(
-        const char* name)
+        const char* name,
+        ValueToObject& mapToObject)
     {
         SPI_NOT_IMPLEMENTED;
     }
@@ -678,7 +680,8 @@ public:
     }
 
     MatrixData<Variant> GetVariantMatrix(
-        const char* name)
+        const char* name,
+        ValueToObject& mapToObject)
     {
         SPI_NOT_IMPLEMENTED;
     }

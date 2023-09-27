@@ -289,6 +289,7 @@ public:
 
     virtual Variant GetVariant(
         const char* name,
+        ValueToObject& mapToObject,
         bool optional = false) = 0;
 
     // all vectors are by implication optional - in other words if it is not there
@@ -315,7 +316,8 @@ public:
         const char* name) = 0;
 
     virtual std::vector<Variant> GetVariantVector(
-        const char* name) = 0;
+        const char* name,
+        ValueToObject& mapToObject) = 0;
 
     virtual std::vector<ObjectConstSP> GetObjectVector(
         const char* name,
@@ -398,7 +400,8 @@ public:
     }
 
     virtual spi::MatrixData<Variant> GetVariantMatrix(
-        const char* name) = 0;
+        const char* name,
+        ValueToObject& mapToObject) = 0;
 
     virtual bool Exists(const char* name) = 0;
 

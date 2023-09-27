@@ -48,6 +48,7 @@
 SPI_BEGIN_NAMESPACE
 
 class InputContext;
+class ValueToObject;
 
 class SPI_IMPORT Variant
 {
@@ -62,6 +63,13 @@ public:
     // essentially there is no input context
     Variant (const Value& value);
 
+    // this constructor of Variant is used when de-serializing
+    // some field declared as Variant - which might be a Map
+    // of some particular named object
+    Variant(
+        const Value& value,
+        ValueToObject& mapToObject);
+
     /* Value semantics needed */
     ~Variant ();
     Variant (const Variant &value);
@@ -69,6 +77,8 @@ public:
 
     /**
      * Translation between Variant and Map for serialization.
+     *
+     * Note that a Variant with a context can be serialized in this manner.
      */
     Variant(const MapConstSP& m);
     MapConstSP ToMap() const;
@@ -222,7 +232,7 @@ inline MatrixData<Variant> MatrixData<Variant>::FromValueMatrix(const MatrixData
     {
         const Value& value = values[i];
         if (value.getType() == Value::MAP)
-            data.push_back(Variant(values[i].getMap()));
+            data.push_back(Variant(value.getMap()));
         else
             data.push_back(Variant(value));
     }

@@ -1116,7 +1116,7 @@ void CModule::implementClass(
             << cdt.cs_to_c(arrayDim, cfa->name) << ");\n"
             << "\n"
             << "        if (inner == IntPtr.Zero)\n"
-            << "            spi.ErrorToException();\n"
+            << "            throw spi.ErrorToException();\n"
             << "\n"
             << "        return " << cls->name << ".Wrap(inner);\n"
             << "    }\n";
@@ -1136,7 +1136,7 @@ void CModule::implementClass(
             << StringReplace(dt->name, ".", "_") << "(self.self);\n"
             << "\n"
             << "        if (inner == IntPtr.Zero)\n"
-            << "            spi.ErrorToException();\n"
+            << "            throw spi.ErrorToException();\n"
             << "\n"
             << "        return " << dt->nsService << "." << dt->name << ".Wrap(inner);\n"
             << "    }\n";
@@ -1145,17 +1145,21 @@ void CModule::implementClass(
     // from_string and from_file
     std::string New = cls->baseClassName.empty() ? "" : "new ";
     ostr << "\n"
-        << "    static public " << New << cls->name << " from_string(string objectString)\n"
-        << "    {\n"
-        << "        return " << cls->name << ".Wrap(\n"
-        << "            " << cname << "_from_string(objectString));\n"
-        << "    }\n"
-        << "\n"
-        << "    static public " << New << cls->name << " from_file(string filename)\n"
-        << "    {\n"
-        << "        return " << cls->name << ".Wrap(\n"
-        << "            " << cname << "_from_string(filename));\n"
-        << "    }\n";
+         << "    static public " << New << cls->name << " from_string(string objectString)\n"
+         << "    {\n"
+         << "        IntPtr inner = " << cname << "_from_string(objectString);\n"
+         << "        if (inner == IntPtr.Zero)\n"
+         << "            throw spi.ErrorToException();\n"
+         << "        return " << cls->name << ".Wrap(inner);\n"
+         << "    }\n"
+         << "\n"
+         << "    static public " << New << cls->name << " from_file(string filename)\n"
+         << "    {\n"
+         << "        IntPtr inner = " << cname << "_from_file(filename);\n"
+         << "        if (inner == IntPtr.Zero)\n"
+         << "            throw spi.ErrorToException();\n"
+         << "        return " << cls->name << ".Wrap(inner);\n"
+         << "    }\n";
     
     for (size_t i = 0; i < cls->methods.size(); ++i)
     {

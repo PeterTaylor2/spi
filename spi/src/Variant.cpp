@@ -44,6 +44,9 @@
 #include "InputValues.hpp"
 #include "RuntimeError.hpp"
 #include "StringUtil.hpp"
+#include "Service.hpp"
+#include "ObjectMap.hpp"
+#include "ValueToObject.hpp"
 
 SPI_BEGIN_NAMESPACE
 
@@ -67,6 +70,37 @@ Variant::Variant(const Value& value)
 m_value(value),
 m_context(InputContext::NoContext())
 {}
+
+Variant::Variant(
+    const Value& value,
+    ValueToObject& mapToObject)
+    :
+    m_value(),
+    m_context(0)
+{
+    Value::Type vt = value.getType();
+
+    if (vt == Value::MAP)
+    {
+        MapConstSP m = value.getMap();
+        if (m->MapType() == Map::VARIANT)
+        {
+            // this is a special Map with context & value
+            std::string contextName = m->GetValue("context").getString();
+            Value value = m->GetValue("value");
+
+            m_context = InputContext::Find(contextName);
+            m_value.swap(value);
+
+            return;
+        }
+    }
+
+    // resolves object maps and object references
+    // everything else is just passed through
+    m_value = mapToObject.ResolveObject(value);
+    m_context = InputContext::NoContext();
+}
 
 Variant::~Variant()
 {}
@@ -102,11 +136,33 @@ Variant::Variant(const MapConstSP& m)
 m_value(),
 m_context(0)
 {
-    std::string contextName = m->GetValue("context").getString();
-    Value value = m->GetValue("value");
+    Map::Type mapType = m->MapType();
+    if (mapType == Map::VARIANT)
+    {
+        std::string contextName = m->GetValue("context").getString();
+        Value value = m->GetValue("value");
 
-    m_context = InputContext::Find(contextName);
-    m_value.swap(value);
+        m_context = InputContext::Find(contextName);
+        m_value.swap(value);
+    }
+    else if (mapType == Map::NAMED)
+    {
+        // the trouble is that we have lost the object reference cache
+        // in the context that this was an issue there was ValueToObject
+        // available upstream but was lost at the point that we called
+        // ObjectMap::GetVariantMatrix
+        ObjectMap om(m);
+        ObjectConstSP o = Service::CommonService()->object_from_map(
+            &om, ObjectRefCacheSP());
+        m_value = o;
+        m_context = InputContext::NoContext();
+    }
+    else
+    {
+        // probably meaningless since Map::MATRIX not used
+        m_value = m;
+        m_context = InputContext::NoContext();
+    }
 }
 
 Value::Type Variant::ValueType() const
