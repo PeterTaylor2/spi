@@ -1865,6 +1865,32 @@ PyObject* py_spdoc_Service_getClass(PyObject* self, PyObject* args, PyObject* kw
     }
 }
 
+PyObject* py_spdoc_Service_isSubClass(PyObject* self, PyObject* args, PyObject* kwargs)
+{
+    static spi::FunctionCaller* func = 0;
+    try
+    {
+        if (!func)
+            func = get_function_caller("Service.isSubClass");
+
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
+        spi::Value output = spi::CallInContext(func, iv, get_input_context());
+        return spi::pyoFromValue(output);
+    }
+    catch (spi::PyException&)
+    {
+        return NULL;
+    }
+    catch (std::exception &e)
+    {
+        return spi::pyExceptionHandler(e.what());
+    }
+    catch (...)
+    {
+        return spi::pyExceptionHandler("Unknown exception");
+    }
+}
+
 PyObject* py_spdoc_Service_getPropertyClass(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
@@ -1907,6 +1933,8 @@ static PyMethodDef Service_methods[] = {
         "getClasses(self)\n\nReturns a sorted list of class names."},
     {"getClass", (PyCFunction)py_spdoc_Service_getClass, METH_VARARGS | METH_KEYWORDS,
         "getClass(self, className)\n\nReturns the class details for a class name."},
+    {"isSubClass", (PyCFunction)py_spdoc_Service_isSubClass, METH_VARARGS | METH_KEYWORDS,
+        "isSubClass(self, cls, name)\n\nReturns whether a given class is a sub-class of the data type of the given name. Needs to be a method on the Service since otherwise we cannot find base class."},
     {"getPropertyClass", (PyCFunction)py_spdoc_Service_getPropertyClass, METH_VARARGS | METH_KEYWORDS,
         "getPropertyClass(self, baseClassName, fieldName)\n\nReturns the name of the class for which the given fieldName is a property. If no such class exists then returns an empty string."},
     {NULL, NULL, 0, NULL} // sentinel

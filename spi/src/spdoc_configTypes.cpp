@@ -1719,6 +1719,58 @@ ClassConstSP Service_Helper::getClass(
 
 /*
 ****************************************************************************
+* Returns whether a given class is a sub-class of the data type of the given name.
+* Needs to be a method on the Service since otherwise we cannot find base class.
+****************************************************************************
+*/
+
+bool Service::isSubClass(
+    const ClassConstSP& cls,
+    const std::string& name) const
+{
+  bool isLogging = spdoc_begin_function();
+  SPI_PROFILE("spdoc.Service.isSubClass");
+  try
+  {
+    ServiceConstSP self(this);
+    bool i_result = Service_Helper::isSubClass(self, cls, name);
+    clear_public_map();
+
+    spdoc_end_function();
+
+    return i_result;
+  }
+  catch (std::exception& e)
+  { throw spdoc_catch_exception(isLogging, "Service.isSubClass", e); }
+  catch (...)
+  { throw spdoc_catch_all(isLogging, "Service.isSubClass"); }
+}
+
+bool Service_Helper::isSubClass(
+    const ServiceConstSP& in_self,
+    const ClassConstSP& cls,
+    const std::string& name)
+{
+    const Service* self = in_self.get();
+
+    self->buildIndexClasses(); // this includes imported base classes
+
+    if (cls->getName() == name)
+        return true; // trivially the case
+
+    std::string baseClassName = cls->baseClassName;
+    while (!baseClassName.empty())
+    {
+        ClassConstSP c = self->getClass(baseClassName);
+        if (c->getName() == name)
+            return true;
+        baseClassName = c->baseClassName;
+    }
+    return false;
+}
+
+/*
+****************************************************************************
 * Returns the name of the class for which the given fieldName is a property.
 * If no such class exists then returns an empty string.
 ****************************************************************************

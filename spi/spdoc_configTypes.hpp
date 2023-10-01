@@ -836,6 +836,19 @@ public:
 
     /**
     ************************************************************************
+    * Returns whether a given class is a sub-class of the data type of the given name.
+    * Needs to be a method on the Service since otherwise we cannot find base class.
+    *
+    * @param cls
+    * @param name
+    ************************************************************************
+    */
+    bool isSubClass(
+        const ClassConstSP& cls,
+        const std::string& name) const;
+
+    /**
+    ************************************************************************
     * Returns the name of the class for which the given fieldName is a property.
     * If no such class exists then returns an empty string.
     *

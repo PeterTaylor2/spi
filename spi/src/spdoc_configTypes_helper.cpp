@@ -2313,6 +2313,35 @@ spi::FunctionCaller Service_getClass_FunctionCaller = {
 spi::ObjectType Service_getClass_FunctionObjectType =
     spi::FunctionObjectType("spdoc.Service.getClass");
 
+spi::Value Service_isSubClass_caller(
+    const spi::InputContext*       in_context,
+    const std::vector<spi::Value>& in_values)
+{
+    const ServiceConstSP& self =
+        in_context->ValueToInstance<Service const>(in_values[0]);
+    const ClassConstSP& cls =
+        in_context->ValueToInstance<Class const>(in_values[1]);
+    const std::string& name =
+        in_context->ValueToString(in_values[2]);
+
+    bool o_result = self->isSubClass(cls, name);
+    return o_result;
+}
+
+spi::FunctionCaller Service_isSubClass_FunctionCaller = {
+    "Service.isSubClass",
+    3,
+    {
+        {"self", spi::ArgType::OBJECT, "Service", false, false, false},
+        {"cls", spi::ArgType::OBJECT, "Class", false, false, true},
+        {"name", spi::ArgType::STRING, "string", false, false, true}
+    },
+    Service_isSubClass_caller
+};
+
+spi::ObjectType Service_isSubClass_FunctionObjectType =
+    spi::FunctionObjectType("spdoc.Service.isSubClass");
+
 spi::Value Service_getPropertyClass_caller(
     const spi::InputContext*       in_context,
     const std::vector<spi::Value>& in_values)
@@ -2412,6 +2441,8 @@ void configTypes_register_object_types(const spi::ServiceSP& svc)
     svc->add_function_caller(&Service_getClasses_FunctionCaller);
     svc->add_object_type(&Service_getClass_FunctionObjectType);
     svc->add_function_caller(&Service_getClass_FunctionCaller);
+    svc->add_object_type(&Service_isSubClass_FunctionObjectType);
+    svc->add_function_caller(&Service_isSubClass_FunctionCaller);
     svc->add_object_type(&Service_getPropertyClass_FunctionObjectType);
     svc->add_function_caller(&Service_getPropertyClass_FunctionCaller);
 }

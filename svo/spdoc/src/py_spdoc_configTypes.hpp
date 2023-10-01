@@ -112,6 +112,8 @@ PyObject* py_spdoc_Service_getClasses(PyObject* self, PyObject* args, PyObject* 
 
 PyObject* py_spdoc_Service_getClass(PyObject* self, PyObject* args, PyObject* kwargs);
 
+PyObject* py_spdoc_Service_isSubClass(PyObject* self, PyObject* args, PyObject* kwargs);
+
 PyObject* py_spdoc_Service_getPropertyClass(PyObject* self, PyObject* args, PyObject* kwargs);
 
 } /* end of extern "C" */

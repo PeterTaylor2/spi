@@ -157,6 +157,10 @@ public:
     static ClassConstSP getClass(
         const ServiceConstSP& self,
         const std::string& className);
+    static bool isSubClass(
+        const ServiceConstSP& self,
+        const ClassConstSP& cls,
+        const std::string& name);
     static std::string getPropertyClass(
         const ServiceConstSP& self,
         const std::string& baseClassName,
