@@ -1092,7 +1092,20 @@ void CModule::implementClass(
             << "    }\n";
     }
 
-    // coerceFrom as implicit operator cast
+    // coerce from general object - this cannot be implicit since C# doesn't allow it
+    ostr << "\n"
+        << "    ///<summary>Coerce from object - validated downcast</summary>\n";
+    std::string New = cls->baseClassName.empty() ? "" : "new ";
+    ostr << "    static public " << New << cls->name << " Coerce(spi.Object obj)\n"
+        << "    {\n"
+        << "        if (" << cname << "_coerce_from_object(spi.Object.get_inner(obj), out IntPtr inner) != 0)\n"
+        << "        {\n"
+        << "            throw spi.ErrorToException();\n"
+        << "        }\n"
+        << "        return " << cls->name << ".Wrap(inner);\n"
+        << "    }\n";
+
+    // coerceFrom as implicit operator cast as well as static Coerce method
     for (size_t i = 0; i < cls->coerceFrom.size(); ++i)
     {
         spdoc::CoerceFromConstSP cf = cls->coerceFrom[i];
@@ -1102,17 +1115,31 @@ void CModule::implementClass(
 
         CDataType cdt(cfa->dataType, service);
 
+        bool isSubClass = cfa->isArray() ?
+            false :
+            service->service()->isSubClass(cls, cfa->dataType->name);
+
         ostr << "\n";
         xmlWriteDescription(ostr, "summary", "", "    ", cf->description);
         xmlWriteDescription(ostr, "param",
             StringFormat("name=\"%s\"", cfa->name.c_str()),
             "    ",
             cfa->description);
-        ostr << "    static public implicit operator " << cls->name << "("
-            << cdt.csType(cfa->arrayDim) << " " << service->rename(cfa->name) << ")\n"
-            << "    {\n";
 
-        ostr << "        IntPtr inner = " << cfFuncNames[i] << "("
+        if (isSubClass)
+        {
+            // C# does not allow implicit downcast even if the Coerce method will
+            // almost certainly not be a downcast operator
+            ostr << "    static public " << cls->name << " Coerce(";
+        }
+        else
+        {
+            ostr << "    static public implicit operator " << cls->name << "(";
+        }
+
+        ostr << cdt.csType(cfa->arrayDim) << " " << service->rename(cfa->name) << ")\n"
+            << "    {\n"
+            << "        IntPtr inner = " << cfFuncNames[i] << "("
             << cdt.cs_to_c(arrayDim, cfa->name) << ");\n"
             << "\n"
             << "        if (inner == IntPtr.Zero)\n"
@@ -1142,10 +1169,10 @@ void CModule::implementClass(
             << "    }\n";
     }
 
-    // from_string and from_file
-    std::string New = cls->baseClassName.empty() ? "" : "new ";
+    // from_string and from_file - these are implemented returning Object in the base class
+    // hence we need to declare them as new in all cases
     ostr << "\n"
-         << "    static public " << New << cls->name << " from_string(string objectString)\n"
+         << "    static public new " << cls->name << " from_string(string objectString)\n"
          << "    {\n"
          << "        IntPtr inner = " << cname << "_from_string(objectString);\n"
          << "        if (inner == IntPtr.Zero)\n"
@@ -1153,7 +1180,7 @@ void CModule::implementClass(
          << "        return " << cls->name << ".Wrap(inner);\n"
          << "    }\n"
          << "\n"
-         << "    static public " << New << cls->name << " from_file(string filename)\n"
+         << "    static public new " << cls->name << " from_file(string filename)\n"
          << "    {\n"
          << "        IntPtr inner = " << cname << "_from_file(filename);\n"
          << "        if (inner == IntPtr.Zero)\n"

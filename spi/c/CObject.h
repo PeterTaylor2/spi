@@ -62,6 +62,14 @@ extern "C"
         const char* options);
 
     SPI_C_IMPORT
+    spi_Object* spi_Object_from_string(
+        const char* str);
+
+    SPI_C_IMPORT
+    spi_Object* spi_Object_from_file(
+        const char* filename);
+
+    SPI_C_IMPORT
     spi_Variant* spi_Object_get_value(
         spi_Object* self,
         const char* name);

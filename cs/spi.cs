@@ -147,11 +147,19 @@ namespace SPI
             out string str);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr spi_Object_from_string(
+            string str);
+
+        [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern int spi_Object_to_file(
             IntPtr self,
             string filename,
             string format,
             string options);
+
+        [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr spi_Object_from_file(
+            string filename);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr spi_Object_get_value(
@@ -1693,6 +1701,21 @@ namespace SPI
             }
 
             /// <summary>
+            /// De-serializes the string to an Object
+            /// </summary>
+            /// <param name="str">
+            /// The serialized object string, as created by the to_string method.
+            /// </param>
+            /// <returns></returns>
+            public static Object from_string(System.String str)
+            {
+                IntPtr inner = spi_Object_from_string(str);
+                if (inner == IntPtr.Zero)
+                    throw spi.ErrorToException();
+                return Object.Wrap(inner);
+            }
+
+            /// <summary>
             /// Serializes the object to file using the given format.
             /// </summary>
             /// <param name="filename">
@@ -1706,13 +1729,28 @@ namespace SPI
             /// </param>
             /// <returns></returns>
             public System.String to_file(System.String filename,
-                System.String format, System.String options)
+                System.String format = "", System.String options = "")
             {
                 if (spi_Object_to_file(self, filename, format, options) != 0)
                 {
                     throw ErrorToException();
                 }
                 return filename;
+            }
+
+            /// <summary>
+            /// De-serializes the object stored on file to an Object
+            /// </summary>
+            /// <param name="filename">
+            /// The filename containing the serialized object, e.g. as created by the to_file method.
+            /// </param>
+            /// <returns></returns>
+            public static Object from_file(System.String filename)
+            {
+                IntPtr inner = spi_Object_from_file(filename);
+                if (inner == IntPtr.Zero)
+                    throw spi.ErrorToException();
+                return Object.Wrap(inner);
             }
 
             /// <summary>

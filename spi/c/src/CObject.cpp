@@ -86,6 +86,50 @@ int spi_Object_to_file(
     }
 }
 
+spi_Object* spi_Object_from_string(const char* str)
+{
+    if (!str)
+    {
+        spi_Error_set_function(__FUNCTION__, "NULL inputs");
+        return nullptr;
+    }
+
+    try
+    {
+        spi::ServiceSP commonService = spi::Service::CommonService();
+        spi::ObjectConstSP obj = commonService->object_from_string(std::string(str));
+
+        return spi::convert_out<spi_Object>(obj);
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return nullptr;
+    }
+}
+
+spi_Object* spi_Object_from_file(const char* filename)
+{
+    if (!filename)
+    {
+        spi_Error_set_function(__FUNCTION__, "NULL inputs");
+        return nullptr;
+    }
+
+    try
+    {
+        spi::ServiceSP commonService = spi::Service::CommonService();
+        spi::ObjectConstSP obj = commonService->object_from_file(std::string(filename));
+
+        return spi::convert_out<spi_Object>(obj);
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return nullptr;
+    }
+}
+
 spi_Variant* spi_Object_get_value(spi_Object* self, const char * name)
 {
     try
