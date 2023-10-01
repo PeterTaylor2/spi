@@ -1105,7 +1105,7 @@ void CModule::implementClass(
         << "        return " << cls->name << ".Wrap(inner);\n"
         << "    }\n";
 
-    // coerceFrom as implicit operator cast as well as static Coerce method
+    // coerceFrom as implicit operator cast where possible - otherwise use static Coerce method
     for (size_t i = 0; i < cls->coerceFrom.size(); ++i)
     {
         spdoc::CoerceFromConstSP cf = cls->coerceFrom[i];
