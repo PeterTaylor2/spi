@@ -98,14 +98,14 @@ public:
      */
     Value::Type      ValueType() const;
     bool             IsUndefined() const;
-    char             ToChar() const;
-    std::string      ToString() const;
-    int              ToInt() const;
-    bool             ToBool() const;
-    double           ToDouble() const;
-    Date             ToDate() const;
-    DateTime         ToDateTime() const;
-    ObjectConstSP    ToConstObject() const;
+    char             ToChar(bool optional=false, char defaultValue=' ') const;
+    std::string      ToString(bool optional=false, const char* defaultValue="") const;
+    int              ToInt(bool optional=false, int defaultValue=0) const;
+    bool             ToBool(bool optional=false, bool defaultValue=false) const;
+    double           ToDouble(bool optional=false, double defaultValue=0.0) const;
+    Date             ToDate(bool optional=false, Date defaultValue=Date()) const;
+    DateTime         ToDateTime(bool optional=false, DateTime defaultValue=DateTime()) const;
+    ObjectConstSP    ToConstObject(ObjectType* objectType=0, bool optional=false) const;
 
     // for scalar access we can also use cast operators instead
     // of the To... methods
@@ -117,14 +117,14 @@ public:
     operator Date() const;
     operator ObjectConstSP() const;
 
-    std::vector<std::string>      ToStringVector() const;
-    std::vector<double>           ToDoubleVector() const;
-    std::vector<int>              ToIntVector() const;
-    std::vector<bool>             ToBoolVector() const;
-    std::vector<Date>             ToDateVector() const;
-    std::vector<DateTime>         ToDateTimeVector() const;
-    std::vector<ObjectSP>         ToObjectVector() const;
-    std::vector<ObjectConstSP>    ToConstObjectVector() const;
+    std::vector<std::string>      ToStringVector(bool optional = false, const char* defaultValue = "") const;
+    std::vector<double>           ToDoubleVector(bool optional = false, double defaultValue = 0.0) const;
+    std::vector<int>              ToIntVector(bool optional = false, int defaultValue = 0) const;
+    std::vector<bool>             ToBoolVector(bool optional = false, bool defaultValue = false) const;
+    std::vector<Date>             ToDateVector(bool optional = false, Date defaultValue = Date()) const;
+    std::vector<DateTime>         ToDateTimeVector(bool optional = false, DateTime defaultValue = DateTime()) const;
+    //std::vector<ObjectSP>         ToObjectVector(ObjectType* objectType = 0, bool optional = false) const;
+    std::vector<ObjectConstSP>    ToConstObjectVector(ObjectType* objectType = 0, bool optional = false) const;
 
     /**
      * Converts a Variant of type array to a scalar.

@@ -164,44 +164,44 @@ bool Variant::IsUndefined() const
     return m_value.isUndefined();
 }
 
-char Variant::ToChar() const
+char Variant::ToChar(bool optional, char defaultValue) const
 {
-    return m_context->ValueToChar(m_value);
+    return m_context->ValueToChar(m_value, optional, defaultValue);
 }
 
-std::string Variant::ToString() const
+std::string Variant::ToString(bool optional, const char* defaultValue) const
 {
-    return m_context->ValueToString(m_value);
+    return m_context->ValueToString(m_value, optional, defaultValue);
 }
 
-int Variant::ToInt() const
+int Variant::ToInt(bool optional, int defaultValue) const
 {
-    return m_context->ValueToInt(m_value);
+    return m_context->ValueToInt(m_value, optional, defaultValue);
 }
 
-bool Variant::ToBool() const
+bool Variant::ToBool(bool optional, bool defaultValue) const
 {
-    return m_context->ValueToBool(m_value);
+    return m_context->ValueToBool(m_value, optional, defaultValue);
 }
 
-double Variant::ToDouble() const
+double Variant::ToDouble(bool optional, double defaultValue) const
 {
-    return m_context->ValueToDouble(m_value);
+    return m_context->ValueToDouble(m_value, optional, defaultValue);
 }
 
-Date Variant::ToDate() const
+Date Variant::ToDate(bool optional, Date defaultValue) const
 {
-    return m_context->ValueToDate(m_value);
+    return m_context->ValueToDate(m_value, optional, defaultValue);
 }
 
-DateTime Variant::ToDateTime() const
+DateTime Variant::ToDateTime(bool optional, DateTime defaultValue) const
 {
-    return m_context->ValueToDateTime(m_value);
+    return m_context->ValueToDateTime(m_value, optional, defaultValue);
 }
 
-ObjectConstSP Variant::ToConstObject() const
+ObjectConstSP Variant::ToConstObject(ObjectType* objectType, bool optional) const
 {
-    return m_context->ValueToObject(m_value);
+    return m_context->ValueToObject(m_value, objectType, optional);
 }
 
 Variant::operator char() const
@@ -239,39 +239,39 @@ Variant::operator ObjectConstSP() const
     return ToConstObject();
 }
 
-std::vector<std::string> Variant::ToStringVector() const
+std::vector<std::string> Variant::ToStringVector(bool optional, const char* defaultValue) const
 {
-    return m_context->ValueToStringVector(m_value);
+    return m_context->ValueToStringVector(m_value, optional, defaultValue);
 }
 
-std::vector<double> Variant::ToDoubleVector() const
+std::vector<double> Variant::ToDoubleVector(bool optional, double defaultValue) const
 {
-    return m_context->ValueToDoubleVector(m_value);
+    return m_context->ValueToDoubleVector(m_value, optional, defaultValue);
 }
 
-std::vector<int> Variant::ToIntVector() const
+std::vector<int> Variant::ToIntVector(bool optional, int defaultValue) const
 {
-    return m_context->ValueToIntVector(m_value);
+    return m_context->ValueToIntVector(m_value, optional, defaultValue);
 }
 
-std::vector<bool> Variant::ToBoolVector() const
+std::vector<bool> Variant::ToBoolVector(bool optional, bool defaultValue) const
 {
-    return m_context->ValueToBoolVector(m_value);
+    return m_context->ValueToBoolVector(m_value, optional, defaultValue);
 }
 
-std::vector<Date> Variant::ToDateVector() const
+std::vector<Date> Variant::ToDateVector(bool optional, Date defaultValue) const
 {
-    return m_context->ValueToDateVector(m_value);
+    return m_context->ValueToDateVector(m_value, optional, defaultValue);
 }
 
-std::vector<DateTime> Variant::ToDateTimeVector() const
+std::vector<DateTime> Variant::ToDateTimeVector(bool optional, DateTime defaultValue) const
 {
-    return m_context->ValueToDateTimeVector(m_value);
+    return m_context->ValueToDateTimeVector(m_value, optional, defaultValue);
 }
 
-std::vector<ObjectConstSP> Variant::ToConstObjectVector() const
+std::vector<ObjectConstSP> Variant::ToConstObjectVector(ObjectType* objectType, bool optional) const
 {
-    return m_context->ValueToObjectVector(m_value);
+    return m_context->ValueToObjectVector(m_value, objectType, optional);
 }
 
 Variant Variant::ToScalar() const
