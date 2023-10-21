@@ -78,21 +78,30 @@ void Sleep(int ms)
     usleep(ms * 1000);
 }
 
-double Clock::g_scaling = CLOCKS_PER_SEC;
+double Clock::g_scaling = 1.0;
 
 Clock::Clock()
 :
 m_start(0)
 {}
 
+static double posix_accurate_clock_time()
+{
+    struct timespec spec;
+    clock_gettime(CLOCK_REALTIME, &spec);
+
+    double clock_time = (double)spec.tv_sec + (double)spec.tv_nsec/1e9;
+    return clock_time;
+}
+
 void Clock::Start()
 {
-    m_start = (double)clock();
+    m_start = posix_accurate_clock_time();
 }
 
 double Clock::Time()
 {
-    double elapsed = (double)clock() - m_start;
+    double elapsed = posix_accurate_clock_time() - m_start;
     return elapsed / g_scaling;
 }
 

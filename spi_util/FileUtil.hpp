@@ -118,6 +118,32 @@ namespace path
 SPI_UTIL_IMPORT
 double FileLastUpdateTime(const std::string& fn);
 
+enum FileReadMethod
+{
+    /** uses what we believe to be the fastest method based on the operating system */
+    FILE_READ_METHOD_DEFAULT,
+    /** uses C-style file i/o - tests length of file and reads to std::string */
+    FILE_READ_METHOD_C,
+    /** uses C++-style file i/o - tests size of file and reads to std::string */
+    FILE_READ_METHOD_CPP,
+    /** elegant method using iterators recommended in Effective STL */
+    FILE_READ_METHOD_ITERATOR,
+    /** uses rdbuf on the C++ stream to convert to stringstream */
+    FILE_READ_METHOD_RDBUF
+};
+
+/**
+ * Reads the given file in binary mode returning as std::string.
+ * Note that std::string can cope with non-zero terminated contents.
+ *
+ * You can specify the preferred method - the DEFAULT chooses what we believe
+ * to be the fastest for the actual operating system.
+ */
+SPI_UTIL_IMPORT
+std::string FileReadContents(
+    const char* filename,
+    FileReadMethod method = FILE_READ_METHOD_DEFAULT);
+
 /**
  * Directory contains the contents of a directory.
  * It will exclude . and .. and separate entries into files and directories.

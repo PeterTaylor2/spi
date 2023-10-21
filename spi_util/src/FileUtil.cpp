@@ -22,6 +22,7 @@
 #include "FileUtil.hpp"
 #include "StringUtil.hpp"
 #include "RuntimeError.hpp"
+#include "Utils.hpp"
 
 #include <spi_boost/shared_ptr.hpp>
 
@@ -48,6 +49,7 @@
 #endif
 
 #include <iostream>
+#include <fstream>
 
 
 #define BEGIN_ANONYMOUS_NAMESPACE namespace {
@@ -334,6 +336,92 @@ double FileLastUpdateTime(const std::string& fn)
 }
 
 #endif
+
+BEGIN_ANONYMOUS_NAMESPACE
+
+std::string FileReadContentsC(const char* filename)
+{
+    FILE* fp = fopen(filename, "rb");
+    if (!fp)
+    {
+        SPI_UTIL_THROW_RUNTIME_ERROR("Could not open filename " << filename);
+    }
+    std::string contents;
+    fseek(fp, 0, SEEK_END);
+    contents.resize(ftell(fp));
+    rewind(fp);
+    fread(&contents[0], 1, contents.size(), fp);
+    fclose(fp);
+    return contents;
+}
+
+std::string FileReadContentsCPP(const char* filename)
+{
+    std::ifstream fp(filename, std::ios::in | std::ios::binary);
+    if (!fp)
+    {
+        SPI_UTIL_THROW_RUNTIME_ERROR("Could not open filename " << filename);
+    }
+    std::string contents;
+    fp.seekg(0, std::ios::end);
+    contents.resize(IntegerCast<size_t>(fp.tellg()));
+    fp.seekg(0, std::ios::beg);
+    fp.read(&contents[0], contents.size());
+    fp.close();
+    return contents;
+}
+
+std::string FileReadContentsIterator(const char* filename)
+{
+    std::ifstream fp(filename, std::ios::in | std::ios::binary);
+    if (!fp)
+    {
+        SPI_UTIL_THROW_RUNTIME_ERROR("Could not open filename " << filename);
+    }
+    return std::string(std::istreambuf_iterator<char>(fp), std::istreambuf_iterator<char>());
+}
+
+std::string FileReadContentsRdbuf(const char* filename)
+{
+    std::ifstream fp(filename, std::ios::in | std::ios::binary);
+    if (!fp)
+    {
+        SPI_UTIL_THROW_RUNTIME_ERROR("Could not open filename " << filename);
+    }
+    std::ostringstream contents;
+    contents << fp.rdbuf();
+    fp.close();
+    return contents.str();
+}
+
+END_ANONYMOUS_NAMESPACE
+
+std::string FileReadContents(const char* filename, FileReadMethod method)
+{
+    SPI_UTIL_PRE_CONDITION(filename);
+
+    switch(method)
+    {
+    case FILE_READ_METHOD_DEFAULT:
+// various methods were tested in testReadFile.cpp
+// it appears that C is better for Windows and CPP is better for Linux
+#ifdef _MSC_VER
+        return FileReadContentsC(filename);
+#else
+        return FileReadContentsCPP(filename);
+#endif
+    case FILE_READ_METHOD_C:
+        return FileReadContentsC(filename);
+    case FILE_READ_METHOD_CPP:
+        return FileReadContentsCPP(filename);
+    case FILE_READ_METHOD_ITERATOR:
+        return FileReadContentsIterator(filename);
+    case FILE_READ_METHOD_RDBUF:
+        return FileReadContentsRdbuf(filename);
+    default:
+        SPI_UTIL_THROW_RUNTIME_ERROR("Unknown method " << (int)method);
+    }
+}
 
 void MakeDirectory(const std::string & dirName)
 {
