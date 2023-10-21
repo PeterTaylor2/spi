@@ -57,6 +57,12 @@ JSONValue JSONParseValue(
     const std::string& streamName=std::string());
 
 SPI_UTIL_IMPORT
+JSONValue JSONParseValue(
+    const std::string& data,
+    size_t offset,
+    const std::string& streamName = std::string());
+
+SPI_UTIL_IMPORT
 JSONValue JSONValueFromString(
     const std::string& str);
 

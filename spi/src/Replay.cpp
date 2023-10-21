@@ -38,6 +38,7 @@
 
 #include <spi_util/CommandLine.hpp>
 #include <spi_util/StringUtil.hpp>
+#include <spi_util/StreamUtil.hpp>
 
 #include <iostream>
 
@@ -551,9 +552,7 @@ ReplayLogSP ReplayLog::Read(const char* streamName, std::istream& istr, bool ver
     ReplayLogSP output(new ReplayLog());
     ReplayLog* p = output.get();
 
-    std::stringstream tmp;
-    tmp << istr.rdbuf();
-    const std::string& contents = tmp.str();
+    const std::string& contents = spi_util::StreamReadContents(istr);
 
     MapReader reader(streamName, contents.c_str());
     std::string token;

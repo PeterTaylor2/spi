@@ -27,6 +27,7 @@
 
 #include <spi_util/Lexer.hpp>
 #include <spi_util/StringUtil.hpp>
+#include <spi_util/StreamUtil.hpp>
 #include <spi_util/Utils.hpp>
 #include <spi_util/CompressUtil.hpp>
 
@@ -370,9 +371,10 @@ void MapRefCache::clear()
     m_objects.clear();
 }
 
-ObjectConstSP ObjectTextStreamer::from_stream(
+ObjectConstSP ObjectTextStreamer::from_data(
     const std::string& streamName,
-    std::istream& istr,
+    const std::string& data,
+    size_t offset,
     const MapConstSP& metaData)
 {
     SPI_UTIL_CLOCK_FUNCTION();
@@ -386,19 +388,13 @@ ObjectConstSP ObjectTextStreamer::from_stream(
     ObjectMap om(m);
     return m_service->object_from_map(&om, m_objectCache);
 #else
-    // this method appears to be faster than using the streambuf iterator
-    std::stringstream contents;
-    {
-        SPI_UTIL_CLOCK_BLOCK("read entire uncompressed stream");
-        contents << istr.rdbuf();
-    }
-    return from_text(streamName, contents.str(), metaData);
+    return from_text(streamName, data.c_str() + offset, metaData);
 #endif
 }
 
 ObjectConstSP ObjectTextStreamer::from_text(
     const std::string& streamName,
-    const std::string& contents,
+    const char* contents,
     const MapConstSP& metaData)
 {
     SPI_UTIL_CLOCK_FUNCTION();
@@ -414,7 +410,7 @@ ObjectConstSP ObjectTextStreamer::from_text(
 
     for (int format = latestFormat; format >= earliestFormat; --format)
     {
-        MapReader reader(streamName, contents.c_str());
+        MapReader reader(streamName, contents);
         try
         {
             m = ReadMap(&reader, format);
@@ -576,9 +572,10 @@ ObjectTextStreamer::ObjectTextStreamer(
 /*
  * Implementation of ObjectCompressedTextStreamer interface.
  */
-ObjectConstSP ObjectCompressedTextStreamer::from_stream(
+ObjectConstSP ObjectCompressedTextStreamer::from_data(
     const std::string& streamName,
-    std::istream& istr,
+    const std::string& data,
+    size_t offset,
     const MapConstSP& metaData)
 {
     SPI_UTIL_CLOCK_FUNCTION();
@@ -589,16 +586,10 @@ ObjectConstSP ObjectCompressedTextStreamer::from_stream(
     //
     // then invoke the text streamer
 
-    std::stringstream sstr;
-    {
-        SPI_UTIL_CLOCK_BLOCK("read entire compressed stream");
-        sstr << istr.rdbuf();
-    }
-
-    std::string contents = sstr.str();
+    std::string contents = data.substr(offset);
     spi_util::UncompressText(contents);
 
-    return m_textStreamer->from_text(streamName, contents, metaData);
+    return m_textStreamer->from_text(streamName, contents.c_str(), metaData);
 }
 
 

@@ -14,6 +14,7 @@ U_VCXPROJ_OPTIONS=-tall
 
 ifeq ($(DEBUG),1)
 U_SPCL_OPTIONS+=-w
+U_SPPY_OPTIONS+=-w
 endif
 
 include $(U_SPI_HOME)/makefiles/spi/spcl.mk

@@ -232,6 +232,14 @@ JSONValue JSONParseValue(
     return JSONParseValue(lexer);
 }
 
+JSONValue JSONParseValue(
+    const std::string& data,
+    size_t offset,
+    const std::string& streamName)
+{
+    SPI_UTIL_NOT_IMPLEMENTED;
+}
+
 JSONValue JSONValueFromString(
     const std::string& str)
 {

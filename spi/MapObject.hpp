@@ -46,7 +46,7 @@
     spi::ObjectType* get_object_type() const; \
     static spi::ObjectConstSP object_from_map(spi::IObjectMap* objMap, spi::ValueToObject& valueToObject); \
     static T::outer_type Coerce(const spi::ObjectConstSP& o);       \
-    static T::outer_type from_stream(std::istream& istr, const std::string& streamName, bool isBinary=false); \
+    static T::outer_type from_data(const std::string& data, const std::string& streamName, bool isBinary=false); \
     static T::outer_type from_string(const std::string& str);\
     static T::outer_type from_file(const char* filename);\
     static spi::ObjectType object_type
@@ -71,9 +71,9 @@ T::outer_type T::Coerce(const spi::ObjectConstSP& o)    \
     throw spi::RuntimeError("%s is not instance of %s\n", o->get_class_name(),\
         object_type.get_class_name());\
 }\
-T::outer_type T::from_stream(std::istream& istr, const std::string& streamName, bool isBinary)  \
+T::outer_type T::from_data(const std::string& data, const std::string& streamName, bool isBinary)  \
 {\
-    spi::ObjectConstSP o = serviceFunc()->object_from_stream(istr, streamName, isBinary); \
+    spi::ObjectConstSP o = serviceFunc()->object_from_data(data, streamName, isBinary); \
     return T::Coerce(o); \
 }\
 T::outer_type T::from_string(const std::string& str)\

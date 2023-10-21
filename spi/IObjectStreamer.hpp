@@ -67,9 +67,10 @@ public:
     typedef IObjectStreamerSP (Maker) (const ServiceConstSP& service,
                                        const char* options);
 
-    virtual ObjectConstSP from_stream(
+    virtual ObjectConstSP from_data(
         const std::string& streamName, // for error messages only
-        std::istream& istr,
+        const std::string& data, // can be binary or text
+        size_t offset, // skipped text (for recognizer)
         const MapConstSP& metaData = MapConstSP()) = 0;
     virtual void to_stream(
         std::ostream& ostr,

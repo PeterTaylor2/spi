@@ -78,9 +78,10 @@ class SPI_IMPORT ObjectTextStreamer : public IObjectStreamer
 {
 public:
     // functions to implement IObjectTextStreamer
-    ObjectConstSP from_stream(
+    ObjectConstSP from_data(
         const std::string& streamName,
-        std::istream& istr,
+        const std::string& data,
+        size_t offset,
         const MapConstSP& metaData);
     void to_stream(
         std::ostream& ostr,
@@ -94,7 +95,7 @@ public:
     // stream (which might have been a compressed stream)
     ObjectConstSP from_text(
         const std::string& streamName,
-        const std::string& contents,
+        const char* contents,
         const MapConstSP& metaData
     );
 
@@ -154,9 +155,10 @@ class SPI_IMPORT ObjectCompressedTextStreamer : public IObjectStreamer
 {
 public:
     // implementation of IObjectTextStreamer
-    ObjectConstSP from_stream(
+    ObjectConstSP from_data(
         const std::string& streamName,
-        std::istream& istr,
+        const std::string& data,
+        size_t offset,
         const MapConstSP& metaData);
     void to_stream(
         std::ostream& ostr,

@@ -537,8 +537,8 @@ ObjectConstSP Service::object_from_map(
     return type->make_from_map(aMap, valueToObject, metaData);
 }
 
-ObjectConstSP Service::object_from_stream(
-    std::istream& istr,
+ObjectConstSP Service::object_from_data(
+    const std::string& data, // can be binary or text
     const std::string& streamName,
     bool allowBinary,
     const MapConstSP& metaData) const
@@ -556,7 +556,6 @@ ObjectConstSP Service::object_from_stream(
 
     const std::vector<std::string>& formats = IObjectStreamer::Formats(allowBinary);
 
-    std::streampos pos = istr.tellg(); // start of stream for this object
     for (std::vector<std::string>::const_iterator iter = formats.begin();
          iter != formats.end(); ++iter)
     {
@@ -570,27 +569,18 @@ ObjectConstSP Service::object_from_stream(
 
         SPI_UTIL_CLOCK_EVENTS_LOG("recognizing");
         size_t rlen = strlen(recognizer);
-        char *buf = new char [rlen];
 
-        istr.read(buf, rlen);
+        std::string buf = data.substr(0, rlen);
 
-        bool recognized = istr && strncmp(recognizer, buf, rlen) == 0;
-        delete[] buf;
-
-        if (!recognized)
-        {
-            istr.seekg(pos); // go back to the start of the stream
-        }
-        else
+        if (buf == recognizer)
         {
             IObjectStreamerSP streamer = IObjectStreamer::Make(
                 share_this(this), *iter);
 
-            if (streamer->uses_recognizer())
-                istr.seekg(pos); // go back to the start of the stream
+            size_t offset = streamer->uses_recognizer() ? 0 : rlen;
 
-            SPI_UTIL_CLOCK_EVENTS_LOG("streamer->from_stream");
-            return streamer->from_stream(streamName, istr, metaData);
+            SPI_UTIL_CLOCK_EVENTS_LOG("streamer->from_data");
+            return streamer->from_data(streamName, data, offset, metaData);
         }
     }
     throw RuntimeError("%s: Could not recognize any of the file formats: %s",
@@ -604,7 +594,7 @@ ObjectConstSP Service::object_from_string(
     std::istringstream iss(objectString);
 
     // strings are always in text format so we won't try binary formats
-    return object_from_stream(iss, "", false);
+    return object_from_data(objectString, std::string(), false);
 }
 
 ObjectConstSP Service::object_from_file(const std::string& filename) const
@@ -645,25 +635,15 @@ ObjectConstSP Service::object_from_file(const std::string& filename) const
             return obj;
     }
 
-    std::ifstream ifs(filename.c_str(), std::ios_base::binary);
-    if (!ifs)
-    {
-        SPI_THROW_RUNTIME_ERROR("object_from_file: Could not open " << filename);
-    }
-
-    std::stringstream buf;
-    buf << ifs.rdbuf();
-    ifs.close();
-
-    buf.seekg(0, std::ios_base::end);
-    std::streamoff size = buf.tellg();
-    buf.seekg(0, std::ios_base::beg);
+    // use default method for fastest read of a file
+    const std::string& data = spi_util::FileReadContents(filename.c_str());
+    size_t size = data.size();
 
     MapSP metaData(new Map(""));
     metaData->SetValue("filename", Value(filename));
     metaData->SetValue("filetime", Value(DateTime(timestamp)));
 
-    ObjectConstSP obj = object_from_stream(buf, filename, true, metaData);
+    ObjectConstSP obj = object_from_data(data, filename, true, metaData);
     // to save memory, we need to avoid keeping huge objects in the read_cache
     // we cannot measure the amount of memory used by obj
     // our best effort is to look at the size of the serialized object

@@ -244,12 +244,13 @@ spi_util::JSONValue FromValue(const Value& value)
 
 END_ANONYMOUS_NAMESPACE
 
-ObjectConstSP ObjectJSONStreamer::from_stream(
+ObjectConstSP ObjectJSONStreamer::from_data(
     const std::string& streamName,
-    std::istream& istr,
+    const std::string& data,
+    size_t offset,
     const MapConstSP& metaData)
 {
-    spi_util::JSONValue value = spi_util::JSONParseValue(istr, streamName);
+    spi_util::JSONValue value = spi_util::JSONParseValue(data, offset, streamName);
 
     return object_from_json(value, m_service, metaData);
 }

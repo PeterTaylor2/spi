@@ -47,7 +47,7 @@
     static spi::ObjectConstSP coerce_from_value(const spi::Value& v, const spi::InputContext* c);\
     static spi::ObjectConstSP coerce_from_object(const spi::ObjectConstSP& o);\
     static T::outer_type Coerce(const spi::ObjectConstSP& o);\
-    static T::outer_type from_stream(std::istream& istr, const std::string& streamName, bool isBinary=false);\
+    static T::outer_type from_data(const std::string& data, const std::string& streamName, bool isBinary=false);\
     static T::outer_type from_string(const std::string& str);\
     static T::outer_type from_file(const std::string& filename);\
     template<typename U>\
@@ -81,9 +81,9 @@ spi::ObjectType* T::get_object_type() const\
 {\
     return &T::object_type;\
 }\
-T::outer_type T::from_stream(std::istream& istr, const std::string& streamName, bool isBinary)\
+T::outer_type T::from_data(const std::string& data, const std::string& streamName, bool isBinary)\
 {\
-    spi::ObjectConstSP o = serviceFunc()->object_from_stream(istr, streamName, isBinary);\
+    spi::ObjectConstSP o = serviceFunc()->object_from_data(data, streamName, isBinary);\
     return T::Coerce(o);\
 }\
 T::outer_type T::from_string(const std::string& str)\

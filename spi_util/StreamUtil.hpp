@@ -42,6 +42,9 @@ SPI_UTIL_NAMESPACE
 SPI_UTIL_IMPORT
 std::vector<std::string> StreamReadLines(std::istream& str);
 
+SPI_UTIL_IMPORT
+std::string StreamReadContents(std::istream& str);
+
 SPI_UTIL_END_NAMESPACE
 
 #endif

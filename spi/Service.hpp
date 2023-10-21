@@ -149,11 +149,11 @@ public:
         IObjectMap* m,
         const ObjectRefCacheSP& cache,
         const MapConstSP& metaData = MapConstSP()) const;
-    ObjectConstSP object_from_stream(std::istream& istr,
+    ObjectConstSP object_from_data(const std::string& data,
         const std::string& streamName,
         bool allowBinary,
         const MapConstSP& metaData = MapConstSP()) const;
-    // convenience method that call the fundamental object_from_stream method
+    // convenience method that call the fundamental object_from_data method
     ObjectConstSP object_from_string(const std::string& objectString) const;
     ObjectConstSP object_from_file(const std::string& filename) const;
 

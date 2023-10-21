@@ -20,6 +20,7 @@
 
 */
 #include "StreamUtil.hpp"
+#include "Utils.hpp"
 
 #include <string.h>
 #include <algorithm>
@@ -70,6 +71,16 @@ std::vector<std::string> StreamReadLines(std::istream& str)
     }
 
     return lines;
+}
+
+std::string StreamReadContents(std::istream& str)
+{
+    std::string contents;
+    str.seekg(0, std::ios::end);
+    contents.resize(IntegerCast<size_t>(str.tellg()));
+    str.seekg(0, std::ios::beg);
+    str.read(&contents[0], contents.size());
+    return contents;
 }
 
 SPI_UTIL_END_NAMESPACE

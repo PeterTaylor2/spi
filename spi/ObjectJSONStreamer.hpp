@@ -57,9 +57,10 @@ class SPI_IMPORT ObjectJSONStreamer : public IObjectStreamer
 {
 public:
     // implementation of IObjectStreamer
-    ObjectConstSP from_stream(
+    ObjectConstSP from_data(
         const std::string& streamName,
-        std::istream& istr,
+        const std::string& data,
+        size_t offset,
         const MapConstSP& metaData);
     void to_stream(
         std::ostream& ostr,
