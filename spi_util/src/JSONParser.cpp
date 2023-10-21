@@ -237,7 +237,12 @@ JSONValue JSONParseValue(
     size_t offset,
     const std::string& streamName)
 {
-    SPI_UTIL_NOT_IMPLEMENTED;
+    // this might be an unfortunate inefficiency since we are trying to avoid
+    // use of streams in parsing functions elsewhere
+    std::istringstream istr(data);
+    if (offset > 0)
+        istr.seekg(offset, std::ios::beg);
+    return JSONParseValue(istr, streamName);
 }
 
 JSONValue JSONValueFromString(
