@@ -745,7 +745,7 @@ spi::ObjectConstSP SimpleType::object_from_map(
     return new SimpleType(name, description, typeName, noDoc);
 }
 
-SPI_IMPLEMENT_OBJECT_TYPE(SimpleType, "SimpleType", spdoc_service, false, 0);
+SPI_IMPLEMENT_OBJECT_TYPE(SimpleType, "SimpleType", spdoc_service, true, 0);
 
 spi::Value SimpleType_caller(
     const spi::InputContext*       in_context,
@@ -873,7 +873,7 @@ spi::ObjectConstSP Function::object_from_map(
         returnArrayDim, inputs, outputs, excelOptions);
 }
 
-SPI_IMPLEMENT_OBJECT_TYPE(Function, "Function", spdoc_service, false, 0);
+SPI_IMPLEMENT_OBJECT_TYPE(Function, "Function", spdoc_service, true, 0);
 
 spi::Value Function_caller(
     const spi::InputContext*       in_context,
@@ -1153,7 +1153,7 @@ spi::ObjectConstSP Enum::object_from_map(
     return new Enum(name, description, enumerands);
 }
 
-SPI_IMPLEMENT_OBJECT_TYPE(Enum, "Enum", spdoc_service, false, 0);
+SPI_IMPLEMENT_OBJECT_TYPE(Enum, "Enum", spdoc_service, true, 0);
 
 spi::Value Enum_caller(
     const spi::InputContext*       in_context,
@@ -1719,7 +1719,7 @@ spi::ObjectConstSP Class::object_from_map(
         asValue, xlFuncName);
 }
 
-SPI_IMPLEMENT_OBJECT_TYPE(Class, "Class", spdoc_service, false, 0);
+SPI_IMPLEMENT_OBJECT_TYPE(Class, "Class", spdoc_service, true, 0);
 
 spi::Value Class_caller(
     const spi::InputContext*       in_context,

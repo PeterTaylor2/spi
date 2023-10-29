@@ -580,13 +580,13 @@ static int py_spdoc_SimpleType_init(SpiPyObject* self, PyObject* args, PyObject*
 }
 
 static PyGetSetDef SimpleType_properties[] = {
-    {"name", (getter)(spi_py_object_getter), NULL, NULL,
+    {"name", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "name"},
-    {"description", (getter)(spi_py_object_getter), NULL, NULL,
+    {"description", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "description"},
-    {"typeName", (getter)(spi_py_object_getter), NULL, NULL,
+    {"typeName", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "typeName"},
-    {"noDoc", (getter)(spi_py_object_getter), NULL, NULL,
+    {"noDoc", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "noDoc"},
     {NULL} // sentinel
 };
@@ -671,21 +671,21 @@ static int py_spdoc_Function_init(SpiPyObject* self, PyObject* args, PyObject* k
 }
 
 static PyGetSetDef Function_properties[] = {
-    {"name", (getter)(spi_py_object_getter), NULL, NULL,
+    {"name", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "name"},
-    {"description", (getter)(spi_py_object_getter), NULL, NULL,
+    {"description", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "description"},
-    {"returnTypeDescription", (getter)(spi_py_object_getter), NULL, NULL,
+    {"returnTypeDescription", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "returnTypeDescription"},
-    {"returnType", (getter)(spi_py_object_getter), NULL, NULL,
+    {"returnType", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "returnType"},
-    {"returnArrayDim", (getter)(spi_py_object_getter), NULL, NULL,
+    {"returnArrayDim", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "returnArrayDim"},
-    {"inputs", (getter)(spi_py_object_getter), NULL, NULL,
+    {"inputs", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "inputs"},
-    {"outputs", (getter)(spi_py_object_getter), NULL, NULL,
+    {"outputs", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "outputs"},
-    {"excelOptions", (getter)(spi_py_object_getter), NULL, NULL,
+    {"excelOptions", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "excelOptions"},
     {NULL} // sentinel
 };
@@ -915,11 +915,11 @@ static int py_spdoc_Enum_init(SpiPyObject* self, PyObject* args, PyObject* kwarg
 }
 
 static PyGetSetDef Enum_properties[] = {
-    {"name", (getter)(spi_py_object_getter), NULL, NULL,
+    {"name", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "name"},
-    {"description", (getter)(spi_py_object_getter), NULL, NULL,
+    {"description", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "description"},
-    {"enumerands", (getter)(spi_py_object_getter), NULL, NULL,
+    {"enumerands", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "enumerands"},
     {NULL} // sentinel
 };
@@ -1359,41 +1359,41 @@ static int py_spdoc_Class_init(SpiPyObject* self, PyObject* args, PyObject* kwar
 }
 
 static PyGetSetDef Class_properties[] = {
-    {"name", (getter)(spi_py_object_getter), NULL, NULL,
+    {"name", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "name"},
-    {"ns", (getter)(spi_py_object_getter), NULL, NULL,
+    {"ns", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "ns"},
-    {"description", (getter)(spi_py_object_getter), NULL, NULL,
+    {"description", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "description"},
-    {"baseClassName", (getter)(spi_py_object_getter), NULL, NULL,
+    {"baseClassName", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "baseClassName"},
-    {"attributes", (getter)(spi_py_object_getter), NULL, NULL,
+    {"attributes", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "attributes"},
-    {"properties", (getter)(spi_py_object_getter), NULL, NULL,
+    {"properties", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "properties"},
-    {"methods", (getter)(spi_py_object_getter), NULL, NULL,
+    {"methods", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "methods"},
-    {"coerceFrom", (getter)(spi_py_object_getter), NULL, NULL,
+    {"coerceFrom", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "coerceFrom"},
-    {"coerceTo", (getter)(spi_py_object_getter), NULL, NULL,
+    {"coerceTo", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "coerceTo"},
-    {"isAbstract", (getter)(spi_py_object_getter), NULL, NULL,
+    {"isAbstract", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "isAbstract"},
-    {"noMake", (getter)(spi_py_object_getter), NULL, NULL,
+    {"noMake", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "noMake"},
-    {"objectName", (getter)(spi_py_object_getter), NULL, NULL,
+    {"objectName", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "objectName"},
-    {"dataType", (getter)(spi_py_object_getter), NULL, NULL,
+    {"dataType", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "dataType"},
-    {"isDelegate", (getter)(spi_py_object_getter), NULL, NULL,
+    {"isDelegate", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "isDelegate"},
-    {"canPut", (getter)(spi_py_object_getter), NULL, NULL,
+    {"canPut", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "canPut"},
-    {"hasDynamicAttributes", (getter)(spi_py_object_getter), NULL, NULL,
+    {"hasDynamicAttributes", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "hasDynamicAttributes"},
-    {"asValue", (getter)(spi_py_object_getter), NULL, NULL,
+    {"asValue", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "asValue"},
-    {"xlFuncName", (getter)(spi_py_object_getter), NULL, NULL,
+    {"xlFuncName", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "xlFuncName"},
     {NULL} // sentinel
 };
