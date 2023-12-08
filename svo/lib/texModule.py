@@ -3,9 +3,19 @@ import sys
 if sys.version_info[0] < 3:
     from texUtils import *
     from generatedOutput import GeneratedOutput
+    from texOptions import getOptions
 else:
     from .texUtils import *
     from .generatedOutput import GeneratedOutput
+    from .texOptions import getOptions
+
+def _moduleHeader(service, module):
+    hfn = "%s_%s.hpp" % (service.ns, module.name)
+    return hfn
+
+def _moduleClassesHeader(service, module):
+    hfn = "%s_%s_classes.hpp" % (service.ns, module.name)
+    return hfn
 
 def writeTexModuleConstructs(dirname,
                              service,
@@ -83,6 +93,10 @@ def _writeTexClass(cls, dirname, service, module, allClassMethods, serviceIndex,
     if len(cls.description) == 0:
         out.write("No description.\n")
     else: writeTexDescription(out, cls.description)
+
+    if getOptions().writeIncludes:
+        out.write("\n\\verb|#include <%s>|\n" % _moduleClassesHeader(service, module))
+
     if len(cls.baseClassName):
         out.write("\n")
         out.write("\\textbf{Base Class:} %s (see page \\pageref{type_%s})\n" % (
@@ -336,6 +350,9 @@ def _writeTexFunction(func, dirname, service, module, hasClassMethods, typesUsed
     else:
         writeTexDescription(out, func.description)
 
+    if getOptions().writeIncludes:
+        out.write("\n\\verb|#include <%s>|\n" % _moduleHeader(service, module))
+
     _writeTexFunctionArgs(out, func, typesUsed)
 
     fns.add(filename)
@@ -394,6 +411,9 @@ def _writeTexEnum(enum, dirname, service, module, forImport, fns):
     if len(enum.description) == 0:
         out.write("No description.\n\n")
     else: writeTexDescription(out, enum.description)
+
+    if getOptions().writeIncludes:
+        out.write("\n\\verb|#include <%s>|\n" % _moduleClassesHeader(service, module))
 
     out.write("\\textbf{Possible Values:}\n")
     out.write("\\nopagebreak\n")

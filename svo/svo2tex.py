@@ -31,6 +31,7 @@ import os
 
 import spdoc
 import lib.texService
+from lib.texOptions import Options, setOptions
 
 if sys.version_info[0] < 3:
     input = raw_input
@@ -38,10 +39,11 @@ if sys.version_info[0] < 3:
 def print_usage(progname):
     sys.stderr.write("Usage: %s [-w] [-t] (docfile dirname)\n" % progname)
 
-def run(infilename, outfilename, dirname, extras, dnImports, summaryfilename, verbose):
-    if verbose: print(copyright)
+def run(infilename, outfilename, dirname, extras, dnImports, summaryfilename, options):
+    if options.verbose: print(copyright)
     serviceDoc = spdoc.Service.from_file(infilename)
     extraServiceDocs = [spdoc.Service.from_file(extra) for extra in extras]
+    setOptions(options)
     lib.texService.writeTexService(dirname, serviceDoc, dnImports, extraServiceDocs)
     serviceDoc.to_file(outfilename)
     if summaryfilename is not None:
@@ -58,11 +60,10 @@ def run(infilename, outfilename, dirname, extras, dnImports, summaryfilename, ve
 def main():
     import getopt
 
-    opts,args = getopt.getopt(sys.argv[1:], "S:wtvi:")
+    opts,args = getopt.getopt(sys.argv[1:], "S:wtvi:", ["writeIncludes"])
     
     waitAtStart = False
-    timings = False
-    verbose = False
+    options = Options()
     summaryfilename = None
 
     progname = os.path.basename(sys.argv[0])
@@ -71,9 +72,10 @@ def main():
     for opt in opts:
         if opt[0] == "-w": waitAtStart = True
         elif opt[0] == "-t": timings = True
-        elif opt[0] == "-v": verbose = True
+        elif opt[0] == "-v": options.verbose = True
         elif opt[0] == "-S": summaryfilename = opt[1]
         elif opt[0] == "-i": dnImports.append(opt[1])
+        elif opt[0] == "--writeIncludes": options.writeIncludes = True
         else:
             print_usage(progname)
             return -1
@@ -95,6 +97,6 @@ def main():
 
     if waitAtStart: input("Enter to continue:")
 
-    return run(infilename, outfilename, dirname, extras, dnImports, summaryfilename, verbose)
+    return run(infilename, outfilename, dirname, extras, dnImports, summaryfilename, options)
 
 if __name__ == "__main__": main()

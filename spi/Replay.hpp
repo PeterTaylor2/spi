@@ -134,7 +134,7 @@ public:
             The name of a logfile - if this is not empty then a log will be
             written to this file. This should be the match the original file.
     */
-    void execute(const ServiceSP& svc, const std::string& logfilename, bool verbose = false);
+    void execute(const ServiceSP& svc, const std::string& logfilename, bool verbose = false, bool timings = false);
 
     void generateCode(ReplayCodeGenerator* generator);
 

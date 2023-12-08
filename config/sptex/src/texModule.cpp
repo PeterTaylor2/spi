@@ -19,6 +19,7 @@
 */
 #include "texModule.hpp"
 #include "texIndex.hpp"
+#include "texOptions.hpp"
 
 #include <spgtools/texUtils.hpp>
 #include <spgtools/generatedOutput.hpp>
@@ -27,8 +28,31 @@
 
 #include <spi/RuntimeError.hpp>
 #include <spi/StringUtil.hpp>
+#include <spi/spdoc_configTypes.hpp>
 
 #include <algorithm>
+#include <sstream>
+
+namespace {
+
+    std::string moduleHeader(
+        const spdoc::ServiceConstSP& service,
+        const spdoc::ModuleConstSP& module)
+    {
+        std::ostringstream oss;
+        oss << service->ns << "_" << module->name << ".hpp";
+        return oss.str();
+    }
+
+    std::string moduleClassesHeader(
+        const spdoc::ServiceConstSP& service,
+        const spdoc::ModuleConstSP& module)
+    {
+        std::ostringstream oss;
+        oss << service->ns << "_" << module->name << "_classes.hpp";
+        return oss.str();
+    }
+}
 
 template<class T>
 T const* ConstructCast(
@@ -367,6 +391,12 @@ std::string writeTexEnum(
     else
         writeTexDescription(ostr, construct->description);
 
+    if (getOptions().writeIncludes)
+    {
+        ostr << "\n"
+            << "\\verb|#include <" << moduleClassesHeader(service, module) << ">|\n";
+    }
+
     ostr << "\\textbf{Possible Values:}\n"
          << "\\nopagebreak\n";
 
@@ -464,6 +494,12 @@ std::string writeTexClass(
         ostr << "No description.\n";
     else
         writeTexDescription(ostr, cls->description);
+
+    if (getOptions().writeIncludes)
+    {
+        ostr << "\n"
+            << "\\verb|#include <" << moduleClassesHeader(service, module) << ">|\n";
+    }
 
     if (!cls->baseClassName.empty())
     {
@@ -750,6 +786,12 @@ std::string writeTexFunction(
         ostr << "No description.\n";
     else
         writeTexDescription(ostr, func->description);
+
+    if (getOptions().writeIncludes)
+    {
+        ostr << "\n"
+            << "\\verb|#include <" << moduleHeader(service, module) << ">|\n";
+    }
 
     writeTexFunctionArgs(ostr, func, typesUsed);
 

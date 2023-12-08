@@ -21,6 +21,7 @@
     <Compile Include="lib\generatedOutput.py" />
     <Compile Include="lib\texIndex.py" />
     <Compile Include="lib\texModule.py" />
+    <Compile Include="lib\texOptions.py" />
     <Compile Include="lib\texService.py" />
     <Compile Include="lib\texUtils.py" />
     <Compile Include="lib\__init__.py" />

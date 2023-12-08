@@ -38,6 +38,7 @@ const char* copyright = "Copyright (C) 2012-2023 Sartorial Programming Ltd.";
 #include <spi/spdoc_dll_service.hpp>
 
 #include "texService.hpp"
+#include "texOptions.hpp"
 #include <spgtools/licenseTools.hpp>
 
 static void print_usage(std::ostream& ostr, const std::string& exe, const char* longOptions)
@@ -54,7 +55,7 @@ static int run(
     const std::vector<std::string>& extras,
     const std::vector<std::string>& dnImports,
     const std::string& summaryfilename,
-    bool verbose)
+    const Options& getOptions)
 {
     spi::ServiceSP docService = spdoc::spdoc_start_service();
     spdoc::ServiceConstSP serviceDoc = spdoc::Service::from_file(infilename);
@@ -62,6 +63,7 @@ static int run(
     for (size_t i = 0; i < extras.size(); ++i)
         extraServiceDocs.push_back(spdoc::Service::from_file(extras[i]));
 
+    setOptions(getOptions);
     writeTexService(dirname, serviceDoc, dnImports, extraServiceDocs);
 
     serviceDoc->to_file(outfilename.c_str());
@@ -96,18 +98,18 @@ static int run(
 int main(int argc, char* argv[])
 {
     bool waitAtStart = false;
-    bool timings = false;
-    bool verbose = false;
 
     std::string infilename;
     std::string outfilename;
     std::string dirname;
+
     std::string summaryfilename;
     std::vector<std::string> extras;
     std::vector<std::string> dnImports;
 
+    Options getOptions;
     std::string exe("SPTEX");
-    const char* longOptions = "license";
+    const char* longOptions = "license writeIncludes";
 
     try
     {
@@ -124,7 +126,7 @@ int main(int argc, char* argv[])
             }
             else if (opt == "-v")
             {
-                verbose = true;
+                getOptions.verbose = true;
             }
             else if (opt == "-i")
             {
@@ -137,6 +139,10 @@ int main(int argc, char* argv[])
             else if (opt == "--license")
             {
                 printBanner(exe, true);
+            }
+            else if (opt == "--writeIncludes")
+            {
+                getOptions.writeIncludes = true;
             }
             else
             {
@@ -176,7 +182,7 @@ int main(int argc, char* argv[])
 
     try
     {
-        int status = run(infilename, outfilename, dirname, extras, dnImports, summaryfilename, verbose);
+        int status = run(infilename, outfilename, dirname, extras, dnImports, summaryfilename, getOptions);
         return status;
     }
     catch (std::exception &e)

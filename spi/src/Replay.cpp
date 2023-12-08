@@ -39,6 +39,7 @@
 #include <spi_util/CommandLine.hpp>
 #include <spi_util/StringUtil.hpp>
 #include <spi_util/StreamUtil.hpp>
+#include <spi_util/ClockUtil.hpp>
 
 #include <iostream>
 
@@ -111,7 +112,6 @@ void mainReplay(int argc, char* argv[])
         std::cout << "Reading " << infilename << std::endl;
 
     ReplayLogSP replayLog = ReplayLog::Read(infilename, verbose);
-    // timings not done
 
     // create a common service
     //
@@ -126,7 +126,7 @@ void mainReplay(int argc, char* argv[])
     //int logLevel = 0;
     ServiceSP svc = spi::Service::CommonService();
 
-    replayLog->execute(svc, outfilename, verbose);
+    replayLog->execute(svc, outfilename, verbose, timings);
 }
 
 
@@ -491,9 +491,15 @@ ReplayLog::~ReplayLog()
  * ReplayLog main methods.
  */
 
-void ReplayLog::execute(const ServiceSP& svc, const std::string& logfilename, bool verbose)
+void ReplayLog::execute(const ServiceSP& svc, const std::string& logfilename, bool verbose, bool timings)
 {
     findActions();
+
+    spi_util::Clock clock;
+    double totalTime = 0.0;
+    double slowestTime = 0.0;
+    std::string slowestAction;
+    std::map<std::string, double> indexTime;
 
     if (!logfilename.empty())
         svc->start_logging(logfilename.c_str(), "");
@@ -509,7 +515,22 @@ void ReplayLog::execute(const ServiceSP& svc, const std::string& logfilename, bo
         }
         try
         {
+            if (timings)
+                clock.Start();
             m_actions[i]->execute(svc, cache);
+            if (timings)
+            {
+                double thisTime = clock.Time();
+                totalTime += thisTime;
+                indexTime[m_actions[i]->description()] += thisTime;
+                if (thisTime > slowestTime)
+                {
+                    slowestAction = m_actions[i]->description();
+                    slowestTime = thisTime;
+                }
+                if (verbose)
+                    std::cout << "time: " << thisTime << std::endl;
+            }
         }
         catch (std::exception& e)
         {
@@ -521,6 +542,17 @@ void ReplayLog::execute(const ServiceSP& svc, const std::string& logfilename, bo
             else
                 std::cerr << "ERROR: " << m_actions[i]->description() << ": " << e.what() << std::endl;
         }
+    }
+
+    if (timings)
+    {
+        std::cout << "totalTime: " << totalTime << std::endl;
+        for (std::map<std::string,double>::const_iterator iter = indexTime.begin(); iter != indexTime.end(); ++iter)
+        {
+            std::cout << spi_util::StringFormat("%-50s: %10.6f", iter->first.c_str(), iter->second) << std::endl;
+        }
+        std::cout << "slowest single action" << std::endl;
+        std::cout << spi_util::StringFormat("%-50s: %10.6f", slowestAction.c_str(), slowestTime) << std::endl;
     }
 
     if (!logfilename.empty())
