@@ -247,6 +247,10 @@ TypesLibraryConstSP ServiceDefinition::getTypesLibrary() const
     }
 
     std::vector<EnumConstSP> enums;
+    if (m_importedTypes)
+    {
+        enums = m_importedTypes->enums();
+    }
     for (size_t i = 0; i < m_modules.size(); ++i)
     {
         const std::vector<EnumConstSP>& moduleEnums = m_modules[i]->enums();
@@ -261,7 +265,7 @@ TypesLibraryConstSP ServiceDefinition::getTypesLibrary() const
         m_dataTypes,
         m_publicDataTypes,
         m_classes,
-	enums);
+        enums);
 }
 
 void ServiceDefinition::importTypesLibrary(const TypesLibraryConstSP& tl, bool publicImport)
