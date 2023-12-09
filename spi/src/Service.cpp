@@ -237,6 +237,27 @@ const std::string& CommonRuntime::get_last_error() const
     return m_lastError;
 }
 
+std::vector<std::string> CommonRuntime::get_service_names() const
+{
+    std::vector<std::string> serviceNames;
+
+    for (std::list<Service*>::const_iterator iter = m_allServices.begin();
+        iter != m_allServices.end(); ++iter)
+    {
+        Service* svc = *iter;
+        serviceNames.push_back(svc->get_name());
+    }
+
+    return serviceNames;
+}
+
+std::vector<std::string> CommonRuntime::get_client_names() const
+{
+    std::vector<std::string> clientNames(m_clients.begin(), m_clients.end());
+
+    return clientNames;
+}
+
 void CommonRuntime::add_service(Service* svc)
 {
     m_allServices.push_back(svc);
@@ -729,6 +750,16 @@ void Service::set_last_error(const std::string& error)
 const std::string& Service::get_last_error() const
 {
     return m_commonRuntime->get_last_error();
+}
+
+std::vector<std::string> Service::get_service_names() const
+{
+    return common_runtime()->get_service_names();
+}
+
+std::vector<std::string> Service::get_client_names() const
+{
+    return common_runtime()->get_client_names();
 }
 
 void Service::implement_read_cache(bool useReadCache)

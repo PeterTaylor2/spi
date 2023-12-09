@@ -72,6 +72,10 @@ public:
     void set_last_error(const std::string& error);
     const std::string& get_last_error() const;
 
+    // information methods
+    std::vector<std::string> get_service_names() const;
+    std::vector<std::string> get_client_names() const;
+
     static CommonRuntimeSP Make();
 
     bool use_read_cache;
@@ -186,6 +190,10 @@ public:
     void log_message(const std::string& msg);
     void set_last_error(const std::string& error);
     const std::string& get_last_error() const;
+
+    // information methods
+    std::vector<std::string> get_service_names() const;
+    std::vector<std::string> get_client_names() const;
 
     // functions for managing the cache of previously read objects
     void implement_read_cache(bool useReadCache);
