@@ -846,6 +846,7 @@ void CModule::implementClass(
     oss << service->ns() << "_" << makeNamespaceSep(module->ns, "_") << cls->name;
     std::string cname = oss.str();
     bool hasBaseClass = !cls->baseClassName.empty();
+    bool hasEmptyConstructor = false;
 
     //Usage usage = service->usage(cls->dataType->name);
 
@@ -1090,6 +1091,9 @@ void CModule::implementClass(
             << "        }\n"
             << "        set_inner(inner);\n"
             << "    }\n";
+
+        if (cls->attributes.size() == 0)
+            hasEmptyConstructor = true;
     }
 
     // coerce from general object - this cannot be implicit since C# doesn't allow it
@@ -1226,9 +1230,13 @@ void CModule::implementClass(
     }
 
     // internal constructor via IntPtr
+    if (!hasEmptyConstructor)
+    {
+        ostr << "\n"
+            << "    protected " << cls->name << "() { }\n";
+    }
+
     ostr << "\n"
-        << "    protected " << cls->name << "() { }\n"
-        << "\n"
         << "    public";
 
     //if (hasBaseClass)
