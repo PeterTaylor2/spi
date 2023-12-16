@@ -7,6 +7,7 @@ import sys
 
 if sys.version_info[0] > 2:
     raw_input = input
+    time.clock = time.perf_counter
 
 def runDriverClass(driverClass, ifn, ofn, profile=False):
     #
