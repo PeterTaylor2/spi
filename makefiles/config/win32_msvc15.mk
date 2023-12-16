@@ -36,6 +36,7 @@ I_WINDOWS_KITS=$(I_WIN32_PROGRAM_FILES_DOS)\Windows Kits
 I_WINDOWS_KITS_BASE_INCLUDE=$(I_WINDOWS_KITS)\10\include\$(G_VS15_KITS_VERSION)
 I_WINDOWS_KITS_BASE_LIB=$(I_WINDOWS_KITS)\10\lib\$(G_VS15_KITS_VERSION)
 I_WINDOWS_KITS_BIN=$(G_WIN32_PROGRAM_FILES)/Windows Kits/10/bin/$(G_VS15_KITS_VERSION)/x86
+G_WINDOWS_REDIST_DLLS_HOME=$(I_WIN32_PROGRAM_FILES_DOS)\Windows Kits\10\Redist\$(G_VS15_KITS_VERSION)\ucrt\DLLS\x86
 
 I_VC15_PATH:=$(I_VS15_HOME)/VC/Tools/MSVC/$(G_VS15_TOOLS_VERSION)/bin/Hostx86/x86:$(I_VS15_HOME)/Common7/IDE:$(I_WINDOWS_KITS_BIN):$(I_VS15_HOME)/MSBuild/15.0/Bin
 
@@ -68,6 +69,9 @@ vc15::
 	@echo
 	@echo "where is the Microsoft Visual Studio builder:"
 	@which MSBuild.exe
+	@echo
+	@echo "where are the redist DLLS:"
+	@echo "G_WINDOWS_REDIST_DLLS_HOME=$(G_WINDOWS_REDIST_DLLS_HOME)"
 
 
 ###########################################################################
