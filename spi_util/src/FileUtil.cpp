@@ -347,10 +347,18 @@ std::string FileReadContentsC(const char* filename)
         SPI_UTIL_THROW_RUNTIME_ERROR("Could not open filename " << filename);
     }
     std::string contents;
-    fseek(fp, 0, SEEK_END);
-    contents.resize(ftell(fp));
-    rewind(fp);
-    fread(&contents[0], 1, contents.size(), fp);
+    try
+    {
+        fseek(fp, 0, SEEK_END);
+        contents.resize(ftell(fp));
+        rewind(fp);
+        fread(&contents[0], 1, contents.size(), fp);
+    }
+    catch (...)
+    {
+        fclose(fp);
+        throw;
+    }
     fclose(fp);
     return contents;
 }
@@ -363,10 +371,18 @@ std::string FileReadContentsCPP(const char* filename)
         SPI_UTIL_THROW_RUNTIME_ERROR("Could not open filename " << filename);
     }
     std::string contents;
-    fp.seekg(0, std::ios::end);
-    contents.resize(IntegerCast<size_t>(fp.tellg()));
-    fp.seekg(0, std::ios::beg);
-    fp.read(&contents[0], contents.size());
+    try
+    {
+        fp.seekg(0, std::ios::end);
+        contents.resize(IntegerCast<size_t>(fp.tellg()));
+        fp.seekg(0, std::ios::beg);
+        fp.read(&contents[0], contents.size());
+    }
+    catch (...)
+    {
+        fp.close(); // should be unnecessary
+        throw;
+    }
     fp.close();
     return contents;
 }
@@ -378,6 +394,7 @@ std::string FileReadContentsIterator(const char* filename)
     {
         SPI_UTIL_THROW_RUNTIME_ERROR("Could not open filename " << filename);
     }
+    // we rely on fp closing on going out of scope
     return std::string(std::istreambuf_iterator<char>(fp), std::istreambuf_iterator<char>());
 }
 
@@ -389,7 +406,15 @@ std::string FileReadContentsRdbuf(const char* filename)
         SPI_UTIL_THROW_RUNTIME_ERROR("Could not open filename " << filename);
     }
     std::ostringstream contents;
-    contents << fp.rdbuf();
+    try
+    {
+        contents << fp.rdbuf();
+    }
+    catch (...)
+    {
+        fp.close();
+        throw;
+    }
     fp.close();
     return contents.str();
 }
