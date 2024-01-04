@@ -770,8 +770,10 @@ void CModule::declareClass(
         << "DECLARE_VECTOR_METHODS(" << cname << ", " << service->import() << ");\n"
         << "DECLARE_MATRIX_METHODS(" << cname << ", " << service->import() << ");\n";
 
-    // FIXME - I think this should return cname*
-    // actually not - a null input for spi_Object is legal and should return null
+    ostr << "\n"
+        << service->import() << "\n"
+        << cname << "* " << cname << "_dynamic_cast(spi_Object* obj);\n";
+
     ostr << "\n"
         << service->import() << "\n"
         << "int " << cname << "_coerce_from_object(\n"
@@ -1033,6 +1035,14 @@ void CModule::implementClass(
         << "    return spi::Matrix_size<" << cpptype << ">(m, nr, nc);\n"
         << "}\n";
 #endif
+
+    ostr << "\n"
+        << cname << "* " << cname << "_dynamic_cast(spi_Object* o)\n"
+        << "{\n"
+        << "    const " << cpptype << "* out = dynamic_cast<const " << cpptype << "*>"
+        << "((const spi::Object*)o);\n"
+        << "    return (" << cname << "*)out;\n"
+        << "}\n";
 
     ostr << "\n"
         << "int " << cname << "_coerce_from_object(\n"
