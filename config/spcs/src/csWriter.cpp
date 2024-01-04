@@ -259,6 +259,7 @@ CService::CService(
     m_exclusions.insert("object");
     m_exclusions.insert("params");
     m_exclusions.insert("in");
+    m_exclusions.insert("ToString");
 }
 
 std::string CService::writeServiceFile(const std::string& dirname) const
@@ -890,6 +891,11 @@ void CModule::implementClass(
 
     ostr << "\n"
         << service->csDllImport() << "\n"
+        << "private static extern IntPtr " << cname << "_dynamic_cast(\n"
+        << "    IntPtr o);\n";
+
+    ostr << "\n"
+        << service->csDllImport() << "\n"
         << "private static extern int " << cname << "_coerce_from_object(\n"
         << "    IntPtr o, out IntPtr item);\n";
 
@@ -1397,7 +1403,7 @@ void CModule::implementClassMethod(
     if (method->isStatic)
         ostr << "static ";
 
-    ostr << csReturnType << " " << func->name << "(";
+    ostr << csReturnType << " " << service->rename(func->name) << "(";
 
     implementFunctionBegin(ostr, func.get(), 4);
 
