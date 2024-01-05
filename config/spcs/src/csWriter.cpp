@@ -386,18 +386,7 @@ std::string CService::writeServiceFile(const std::string& dirname) const
     for (size_t i = 0; i < nbModules; ++i)
     {
         const spdoc::ModuleConstSP module = m_service->modules[i];
-        size_t nbConstructs = module->constructs.size();
-        for (size_t j = 0; j < nbConstructs; ++j)
-        {
-            const spdoc::ConstructConstSP construct = module->constructs[j];
-            const std::string& constructType = construct->getType();
-            if (constructType != "CLASS")
-                continue;
-
-            CONSTRUCT_CAST(Class, cls, construct);
-
-            ostr << "    " << cls->name << ".init_class();\n";
-        }
+        CModule::updateInitClasses(ostr, module);
     }
 
     ostr << "}\n";
@@ -586,6 +575,22 @@ std::string CModule::writeModuleFile(const std::string & dirname) const
     ostr.close();
     return filename;
 
+}
+
+void CModule::updateInitClasses(GeneratedOutput& ostr, const spdoc::ModuleConstSP& module)
+{
+    size_t nbConstructs = module->constructs.size();
+    for (size_t j = 0; j < nbConstructs; ++j)
+    {
+        const spdoc::ConstructConstSP construct = module->constructs[j];
+        const std::string& constructType = construct->getType();
+        if (constructType != "CLASS")
+            continue;
+
+        CONSTRUCT_CAST(Class, cls, construct);
+
+        ostr << "    " << cls->name << ".init_class();\n";
+    }
 }
 
 void CModule::implementFunction(

@@ -137,6 +137,7 @@ public:
         const spdoc::ModuleConstSP& module);
 
     std::string writeModuleFile(const std::string& dirname) const;
+    static void updateInitClasses(GeneratedOutput& ostr, const spdoc::ModuleConstSP& module);
 
     friend class CService;
 
