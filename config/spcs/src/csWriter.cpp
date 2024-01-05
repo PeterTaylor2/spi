@@ -1242,22 +1242,72 @@ void CModule::implementClass(
             << "    protected " << cls->name << "() { }\n";
     }
 
-    ostr << "\n"
-        << "    public";
 
-    //if (hasBaseClass)
-        ostr << " new";
+    if (cls->isAbstract)
+    {
+        // to avoid slicing an abstract class must be able to wrap itself using
+        // the correct sub-class - hence just like at the C++ level we need to
+        // define the sub-class-wrappers to be tried out in turn
+        ostr << "\n"
+            << "    public delegate " << cls->name << " sub_class_wrapper(IntPtr self);\n"
+            << "    public static System.Collections.Generic.List<sub_class_wrapper> zz_sub_class_wrappers;\n";
 
-    ostr << " static " << cls->name << " Wrap(IntPtr self)\n"
-        << "    {\n"
-        << "        if (self == IntPtr.Zero)\n"
-        << "            return null;\n"
-        << "\n"
-        << "        " << cls->name << " obj = new " << cls->name << "();\n"
-        << "        obj.set_inner(self);\n"
-        << "        return obj;\n"
-        << "    }\n";
+        ostr << "\n"
+            << "    public new static " << cls->name << " Wrap(IntPtr self)\n"
+            << "    {\n"
+            << "        if (self == IntPtr.Zero)\n"
+            << "            return null;\n"
+            << "\n"
+            << "        foreach(var wrapper in zz_sub_class_wrappers)\n"
+            << "        {\n"
+            << "            " << cls->name << " obj = wrapper(self);\n"
+            << "            if (obj != null)\n"
+            << "                return obj;\n"
+            << "        }\n"
+            << "        throw new Exception(\"self is not a sub-class of " << cls->name << "\");\n"
+            << "    }\n";
+    }
+    else
+    {
+        // for a non-abstract class we just wrap (checking that we have the right type)
+        ostr << "\n"
+            << "    public new static " << cls->name << " Wrap(IntPtr self)\n"
+            << "    {\n"
+            << "        if (self == IntPtr.Zero)\n"
+            << "            return null;\n"
+            << "\n"
+            << "        self = " << cname << "_dynamic_cast(self);\n"
+            << "        if (self == IntPtr.Zero)\n"
+            << "            throw new Exception(\"self is not an instance of " << cls->name << "\");\n"
+            << "\n"
+            << "        " << cls->name << " obj = new " << cls->name << "();\n"
+            << "        obj.set_inner(self);\n"
+            << "        return obj;\n"
+            << "    }\n";
+    }
 
+    if (!cls->baseClassName.empty())
+    {
+        // for a class with a base class we supply BaseWrap which tries to wrap
+        // but returns null if the given inner type is not an instance of our type
+        // we call Wrap to allow a deep class hierarchy
+
+        spdoc::ClassConstSP baseClass = service->service()->getClass(cls->baseClassName);
+        const char* newBaseWrap = baseClass->baseClassName.empty() ? "" : "new ";
+
+        ostr << "\n"
+            << "    public " << newBaseWrap << "static " << cls->baseClassName << " BaseWrap(IntPtr self)\n"
+            << "    {\n"
+            << "        if (self == IntPtr.Zero)\n"
+            << "            return null;\n"
+            << "\n"
+            << "        self = " << cname << "_dynamic_cast(self);\n"
+            << "        if (self == IntPtr.Zero)\n"
+            << "            return null;\n"
+            << "\n"
+            << "        return Wrap(self);\n"
+            << "    }\n";
+    }
 
     ostr << "}\n";
 
