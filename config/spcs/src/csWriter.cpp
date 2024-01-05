@@ -589,7 +589,10 @@ void CModule::updateInitClasses(GeneratedOutput& ostr, const spdoc::ModuleConstS
 
         CONSTRUCT_CAST(Class, cls, construct);
 
-        ostr << "    " << cls->name << ".init_class();\n";
+        ostr << "    ";
+        if (!cls->ns.empty())
+            ostr << cls->ns << ".";
+        ostr << cls->name << ".init_class();\n";
     }
 }
 
