@@ -104,6 +104,13 @@ static int run(
     // this file might be copied directly via the Makefile
     fns.insert(spi_util::path::join(dirname.c_str(), "spi.cs", 0));
 
+    // this file is hand crafted and should not be overwritten
+    {
+        std::string fn = spi_util::StringFormat("cs_%s_construct.cs",
+            service->ns().c_str());
+        fns.insert(spi_util::path::join(dirname.c_str(), fn.c_str(), 0));
+    }
+
     CModuleConstSP previousModule;
     for (size_t i = 0; i < nbModules; ++i)
     {
@@ -114,9 +121,9 @@ static int run(
         previousModule = module;
     }
 
+    fns.insert(service->writeServiceFile(dirname));
     if (!service->service()->sharedService)
     {
-        fns.insert(service->writeServiceFile(dirname));
         fns.insert(service->writeAssemblyInfo(dirname));
     }
 

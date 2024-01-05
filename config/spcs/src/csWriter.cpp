@@ -325,57 +325,82 @@ std::string CService::writeServiceFile(const std::string& dirname) const
             << "        throw spi.ErrorToException();\n"
             << "    }\n"
             << "}\n";
+
+        ostr << "\n"
+            << m_spiImport << "\n"
+            << "private static extern int spi_Instance_Vector_item(\n"
+            << "    IntPtr v, int i, out IntPtr item);\n"
+            << "\n"
+            << m_spiImport << "\n"
+            << "private static extern int spi_Instance_Vector_set_item(\n"
+            << "    IntPtr v, int i, IntPtr item);\n"
+            << "\n"
+            << m_spiImport << "\n"
+            << "private static extern int spi_Instance_Vector_size(\n"
+            << "    IntPtr v, out int size);\n"
+            << "\n"
+            << m_spiImport << "\n"
+            << "private static extern int spi_Instance_Matrix_item(\n"
+            << "    IntPtr v, int r, int c, out IntPtr item);\n"
+            << "\n"
+            << m_spiImport << "\n"
+            << "private static extern int spi_Instance_Matrix_set_item(\n"
+            << "    IntPtr v, int r, int c, IntPtr item);\n"
+            << "\n"
+            << m_spiImport << "\n"
+            << "private static extern int spi_Instance_Matrix_size(\n"
+            << "    IntPtr v, out int nr, out int nc);\n";
+
+        ostr << "\n"
+            << m_spiImport << "\n"
+            << "private static extern int spi_Enum_Vector_item(\n"
+            << "    IntPtr v, int i, out int item);\n"
+            << "\n"
+            << m_spiImport << "\n"
+            << "private static extern int spi_Enum_Vector_set_item(\n"
+            << "    IntPtr v, int i, int item);\n"
+            << "\n"
+            << m_spiImport << "\n"
+            << "private static extern int spi_Enum_Vector_size(\n"
+            << "    IntPtr v, out int size);\n"
+            << "\n"
+            << m_spiImport << "\n"
+            << "private static extern int spi_Enum_Matrix_item(\n"
+            << "    IntPtr v, int r, int c, out int item);\n"
+            << "\n"
+            << m_spiImport << "\n"
+            << "private static extern int spi_Enum_Matrix_set_item(\n"
+            << "    IntPtr v, int r, int c, int item);\n"
+            << "\n"
+            << m_spiImport << "\n"
+            << "private static extern int spi_Enum_Matrix_size(\n"
+            << "    IntPtr v, out int nr, out int nc);\n";
     }
 
     ostr << "\n"
-        << m_spiImport << "\n"
-        << "private static extern int spi_Instance_Vector_item(\n"
-        << "    IntPtr v, int i, out IntPtr item);\n"
-        << "\n"
-        << m_spiImport << "\n"
-        << "private static extern int spi_Instance_Vector_set_item(\n"
-        << "    IntPtr v, int i, IntPtr item);\n"
-        << "\n"
-        << m_spiImport << "\n"
-        << "private static extern int spi_Instance_Vector_size(\n"
-        << "    IntPtr v, out int size);\n"
-        << "\n"
-        << m_spiImport << "\n"
-        << "private static extern int spi_Instance_Matrix_item(\n"
-        << "    IntPtr v, int r, int c, out IntPtr item);\n"
-        << "\n"
-        << m_spiImport << "\n"
-        << "private static extern int spi_Instance_Matrix_set_item(\n"
-        << "    IntPtr v, int r, int c, IntPtr item);\n"
-        << "\n"
-        << m_spiImport << "\n"
-        << "private static extern int spi_Instance_Matrix_size(\n"
-        << "    IntPtr v, out int nr, out int nc);\n";
+        << "public static void init_" << m_service->name << "_classes()\n"
+        << "{\n";
 
-    ostr << "\n"
-        << m_spiImport << "\n"
-        << "private static extern int spi_Enum_Vector_item(\n"
-        << "    IntPtr v, int i, out int item);\n"
-        << "\n"
-        << m_spiImport << "\n"
-        << "private static extern int spi_Enum_Vector_set_item(\n"
-        << "    IntPtr v, int i, int item);\n"
-        << "\n"
-        << m_spiImport << "\n"
-        << "private static extern int spi_Enum_Vector_size(\n"
-        << "    IntPtr v, out int size);\n"
-        << "\n"
-        << m_spiImport << "\n"
-        << "private static extern int spi_Enum_Matrix_item(\n"
-        << "    IntPtr v, int r, int c, out int item);\n"
-        << "\n"
-        << m_spiImport << "\n"
-        << "private static extern int spi_Enum_Matrix_set_item(\n"
-        << "    IntPtr v, int r, int c, int item);\n"
-        << "\n"
-        << m_spiImport << "\n"
-        << "private static extern int spi_Enum_Matrix_size(\n"
-        << "    IntPtr v, out int nr, out int nc);\n";
+    size_t nbModules = m_service->modules.size();
+
+    for (size_t i = 0; i < nbModules; ++i)
+    {
+        const spdoc::ModuleConstSP module = m_service->modules[i];
+        size_t nbConstructs = module->constructs.size();
+        for (size_t j = 0; j < nbConstructs; ++j)
+        {
+            const spdoc::ConstructConstSP construct = module->constructs[j];
+            const std::string& constructType = construct->getType();
+            if (constructType != "CLASS")
+                continue;
+
+            CONSTRUCT_CAST(Class, cls, construct);
+
+            ostr << "    " << cls->name << ".init_class();\n";
+        }
+    }
+
+    ostr << "}\n";
 
     ostr << "\n"
         << "}\n";
@@ -1248,9 +1273,12 @@ void CModule::implementClass(
         // to avoid slicing an abstract class must be able to wrap itself using
         // the correct sub-class - hence just like at the C++ level we need to
         // define the sub-class-wrappers to be tried out in turn
+
+        const char* New = cls->baseClassName.empty() ? "" : "new ";
+
         ostr << "\n"
-            << "    public delegate " << cls->name << " sub_class_wrapper(IntPtr self);\n"
-            << "    public static System.Collections.Generic.List<sub_class_wrapper> zz_sub_class_wrappers;\n";
+            << "    public " << New << "delegate " << cls->name << " sub_class_wrapper(IntPtr self); \n"
+            << "    public " << New << "static System.Collections.Generic.List<sub_class_wrapper> zz_sub_class_wrappers; \n";
 
         ostr << "\n"
             << "    public new static " << cls->name << " Wrap(IntPtr self)\n"
@@ -1286,17 +1314,19 @@ void CModule::implementClass(
             << "    }\n";
     }
 
+    spdoc::ClassConstSP baseClass;
+
     if (!cls->baseClassName.empty())
     {
         // for a class with a base class we supply BaseWrap which tries to wrap
         // but returns null if the given inner type is not an instance of our type
         // we call Wrap to allow a deep class hierarchy
 
-        spdoc::ClassConstSP baseClass = service->service()->getClass(cls->baseClassName);
+        baseClass = service->service()->getClass(cls->baseClassName);
         const char* newBaseWrap = baseClass->baseClassName.empty() ? "" : "new ";
 
         ostr << "\n"
-            << "    public " << newBaseWrap << "static " << cls->baseClassName << " BaseWrap(IntPtr self)\n"
+            << "    public " << newBaseWrap << "static " << baseClass->ServiceNamespace() << "." << cls->baseClassName << " BaseWrap(IntPtr self)\n"
             << "    {\n"
             << "        if (self == IntPtr.Zero)\n"
             << "            return null;\n"
@@ -1308,6 +1338,38 @@ void CModule::implementClass(
             << "        return Wrap(self);\n"
             << "    }\n";
     }
+
+    if (cls->isAbstract || !cls->baseClassName.empty())
+    {
+        ostr << "\n"
+            << "    static " << cls->name << "()\n"
+            << "    {\n";
+
+        if (cls->isAbstract)
+        {
+            ostr << "        "
+                << "zz_sub_class_wrappers = new System.Collections.Generic.List<sub_class_wrapper>();\n";
+        }
+
+        if (!cls->baseClassName.empty())
+        {
+            ostr << "        " << baseClass->ServiceNamespace() << "."
+                << cls->baseClassName << ".zz_sub_class_wrappers.Add("
+                << cls->name << ".BaseWrap);\n";
+        }
+
+        ostr << "    }\n";
+    }
+
+    ostr << "\n"
+        << "    // call this to invoke static constructor (if present)\n"
+        << "    public";
+
+    if (!cls->baseClassName.empty())
+        ostr << " new";
+
+    ostr << " static void init_class()\n"
+        << "    {}\n";
 
     ostr << "}\n";
 
