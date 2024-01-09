@@ -37,6 +37,44 @@ void spi_Object_delete(spi_Object* item)
     intrusive_ptr_release((spi::Object*)item);
 }
 
+int spi_Object_get_object_id(spi_Object* item, char** objectId)
+{
+    try
+    {
+        if (!item || !objectId)
+            SPI_THROW_RUNTIME_ERROR("Null inputs");
+
+        const std::string& i_objectId = ((const spi::Object*)item)->get_object_id();
+
+        *objectId = spi_String_copy(i_objectId.c_str());
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
+}
+
+int spi_Object_get_class_name(spi_Object* item, char** className)
+{
+    try
+    {
+        if (!item || !className)
+            SPI_THROW_RUNTIME_ERROR("Null inputs");
+
+        const char* i_className = ((const spi::Object*)item)->get_class_name();
+
+        *className = spi_String_copy(i_className);
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
+}
+
 int spi_Object_to_string(
     spi_Object* self,
     const char* format,

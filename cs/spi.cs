@@ -140,6 +140,12 @@ namespace SPI
         private static extern void spi_Object_delete(IntPtr item);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int spi_Object_get_object_id(IntPtr item, out string objectId);
+
+        [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int spi_Object_get_class_name(IntPtr item, out string className);
+
+        [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern int spi_Object_to_string(
             IntPtr self,
             string format,

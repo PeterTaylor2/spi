@@ -48,6 +48,12 @@ extern "C"
     void spi_Object_delete(spi_Object* item);
 
     SPI_C_IMPORT
+    int spi_Object_get_object_id(spi_Object* item, char** objectId);
+
+    SPI_C_IMPORT
+    int spi_Object_get_class_name(spi_Object* item, char** className);
+
+    SPI_C_IMPORT
     int spi_Object_to_string(
         spi_Object* self,
         const char* format,
