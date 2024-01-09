@@ -6,6 +6,7 @@ makefiles/build/lib.mk
 makefiles/build/dll.mk
 makefiles/build/exe.mk
 makefiles/build/importlib.mk
+makefiles/build/redist.mk
 makefiles/version.mk
 makefiles/spi/spcl.mk
 makefiles/spi/spc.mk
@@ -24,6 +25,7 @@ makefiles/spi/runtime.mk
 makefiles/config/*.mk
 makefiles/config/configs/*.mk
 makefiles/python/copyManifest.py
+makefiles/python/copyRedist.py
 makefiles/python/copyVcxproj.py
 makefiles/python/installPython.py
 makefiles/python/installExcel.py
