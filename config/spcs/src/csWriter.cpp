@@ -420,6 +420,18 @@ std::string CService::writeEnumExtensionsFile(const std::string& dirname) const
         << "using SPI;\n";
 
     ostr << "\n"
+        << "/*\n"
+        << "*****************************************************************************\n"
+        << "* To use these extensions you need to add 'using " << m_nsGlobal << ";' to your C# code.\n"
+        << "*\n"
+        << "* Subsequently the to_string() method will appear to be a method for each\n"
+        << "* enumerated type, and a method with the name of the enumerated type\n"
+        << "* (replacing '.' with '_') will appear to be a method on the string class.\n"
+        << "*\n"
+        << "* This is really just syntactic sugar - wrapping up the real functions\n"
+        << "* (for which see the implementation below)\n"
+        << "******************************************************************************\n"
+        << "*/\n"
         << "\n"
         << "namespace " << m_nsGlobal << " {\n";
 
@@ -663,15 +675,15 @@ bool CModule::updateEnumExtensions(
         CONSTRUCT_CAST(Enum, e, construct);
 
         std::string ename = svc->ns + "." + makeNamespaceSep(module->ns, ".") + e->name;
-        std::string name = makeNamespaceSep(module->ns, "_") + e->name;
+        std::string name = svc->ns + "_" + makeNamespaceSep(module->ns, "_") + e->name;
 
         ostr << "\n"
-            << "static public string To_String(this " << ename << " value)\n"
+            << "static public string to_string(this " << ename << " value)\n"
             << "{\n"
             << "    return " << ename << "_to_string(value);\n"
             << "}\n"
             << "\n"
-            << "static public " << ename << " To_" << name << "(this string str)\n"
+            << "static public " << ename << " " << name << "(this string str)\n"
             << "{\n"
             << "    return " << ename << "_from_string(str); \n"
             << "}\n";
@@ -1430,30 +1442,31 @@ void CModule::implementClass(
             << "    }\n";
     }
 
-    if (cls->isAbstract || !cls->baseClassName.empty())
+    ostr << "\n"
+        << "    static " << cls->name << "()\n"
+        << "    {\n"
+        << "        spi.Object.zz_register_class_wrapper(\"";
+    if (!cls->ns.empty())
+        ostr << cls->ns << ".";
+    ostr << cls->ObjectName() << "\", Wrap);\n";
+
+    if (cls->isAbstract)
     {
-        ostr << "\n"
-            << "    static " << cls->name << "()\n"
-            << "    {\n";
-
-        if (cls->isAbstract)
-        {
-            ostr << "        "
-                << "zz_sub_class_wrappers = new System.Collections.Generic.List<sub_class_wrapper>();\n";
-        }
-
-        if (!cls->baseClassName.empty())
-        {
-            ostr << "        " << baseClass->ServiceNamespace() << "."
-                << cls->baseClassName << ".zz_sub_class_wrappers.Add("
-                << cls->name << ".BaseWrap);\n";
-        }
-
-        ostr << "    }\n";
+        ostr << "        "
+            << "zz_sub_class_wrappers = new System.Collections.Generic.List<sub_class_wrapper>();\n";
     }
 
+    if (!cls->baseClassName.empty())
+    {
+        ostr << "        " << baseClass->ServiceNamespace() << "."
+            << cls->baseClassName << ".zz_sub_class_wrappers.Add("
+            << cls->name << ".BaseWrap);\n";
+    }
+
+    ostr << "    }\n";
+
     ostr << "\n"
-        << "    // call this to invoke static constructor (if present)\n"
+        << "    // call this to invoke static constructor\n"
         << "    public";
 
     if (!cls->baseClassName.empty())
