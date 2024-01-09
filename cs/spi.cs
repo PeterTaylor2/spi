@@ -1677,14 +1677,66 @@ namespace SPI
                 GC.SuppressFinalize(true);
             }
 
+            public delegate Object class_wrapper(IntPtr self);
+            public static System.Collections.Generic.Dictionary<string, class_wrapper> zz_class_wrappers;
+
+            static Object()
+            {
+                zz_class_wrappers = new System.Collections.Generic.Dictionary<string, class_wrapper>();
+            }
+
+            public static void zz_register_class_wrapper(string name, class_wrapper wrapper)
+            {
+                zz_class_wrappers.Add(name, wrapper);
+            }
+
             public static Object Wrap(IntPtr self)
             {
                 if (self == IntPtr.Zero)
                     return null;
 
-                Object obj = new Object();
-                obj.set_inner(self);
-                return obj;
+                if (spi_Object_get_class_name(self, out string className) != 0)
+                    throw spi.ErrorToException();
+
+                try
+                {
+                    class_wrapper wrapper = zz_class_wrappers[className];
+                    return wrapper(self);
+                }
+                catch
+                {
+                    Object obj = new Object();
+                    obj.set_inner(self);
+                    return obj;
+                }
+            }
+
+            public string object_id
+            {
+                get
+                {
+                    if (self == IntPtr.Zero)
+                        return null;
+
+                    if (spi_Object_get_object_id(self, out string objectId) != 0)
+                        throw spi.ErrorToException();
+
+                    return objectId;
+                }
+            }
+
+            public string typename
+            {
+                get
+                {
+                    if (self == IntPtr.Zero)
+                        return null;
+
+                    if (spi_Object_get_class_name(self, out string typename) != 0)
+                        throw spi.ErrorToException();
+
+                    return typename;
+                }
             }
 
             /// <summary>
