@@ -402,6 +402,54 @@ std::string CService::writeServiceFile(const std::string& dirname) const
     return filename;
 }
 
+std::string CService::writeEnumExtensionsFile(const std::string& dirname) const
+{
+    std::string basename = spi::StringFormat("cs_%s_enum_extensions.cs", m_service->name.c_str());
+    std::string filename = spi_util::path::join(
+        dirname.c_str(), basename.c_str(), 0);
+
+    bool hasEnums = false;
+    GeneratedOutput ostr(filename, spi_util::path::dirname(filename));
+    writeLicense(ostr, license());
+    startSourceFile(ostr, filename, false);
+    if (!noGeneratedCodeNotice())
+        writeGeneratedCodeNotice(ostr, filename);
+
+    ostr << "using System;\n"
+        << "using System.Runtime.InteropServices;\n"
+        << "using SPI;\n";
+
+    ostr << "\n"
+        << "\n"
+        << "namespace " << m_nsGlobal << " {\n";
+
+    ostr << "\n"
+        << "static public class " << m_service->ns << "_enum_extensions {\n";
+
+    size_t nbModules = m_service->modules.size();
+
+    for (size_t i = 0; i < nbModules; ++i)
+    {
+        const spdoc::ModuleConstSP module = m_service->modules[i];
+        if (CModule::updateEnumExtensions(ostr, m_service, module))
+            hasEnums = true;
+    }
+
+    ostr << "\n"
+        << "}\n";
+
+    ostr << "\n"
+        << "} // end namespace " << m_nsGlobal << "\n";
+
+    endSourceFile(ostr, filename);
+    ostr.close();
+
+    if (hasEnums)
+        return filename;
+
+    return std::string(); // will trigger deletion
+}
+
 std::string CService::writeAssemblyInfo(const std::string& dirname) const
 {
     std::string basename = StringFormat("cs_%s_AssemblyInfo.cs", m_service->name.c_str());
@@ -594,6 +642,41 @@ void CModule::updateInitClasses(GeneratedOutput& ostr, const spdoc::ModuleConstS
             ostr << cls->ns << ".";
         ostr << cls->name << ".init_class();\n";
     }
+}
+
+bool CModule::updateEnumExtensions(
+    GeneratedOutput& ostr,
+    const spdoc::ServiceConstSP& svc,
+    const spdoc::ModuleConstSP& module)
+{
+    bool hasEnums = false;
+    size_t nbConstructs = module->constructs.size();
+    for (size_t j = 0; j < nbConstructs; ++j)
+    {
+        const spdoc::ConstructConstSP construct = module->constructs[j];
+        const std::string& constructType = construct->getType();
+        if (constructType != "ENUM")
+            continue;
+
+        hasEnums = true;
+
+        CONSTRUCT_CAST(Enum, e, construct);
+
+        std::string ename = svc->ns + "." + makeNamespaceSep(module->ns, ".") + e->name;
+        std::string name = makeNamespaceSep(module->ns, "_") + e->name;
+
+        ostr << "\n"
+            << "static public string To_String(this " << ename << " value)\n"
+            << "{\n"
+            << "    return " << ename << "_to_string(value);\n"
+            << "}\n"
+            << "\n"
+            << "static public " << ename << " To_" << name << "(this string str)\n"
+            << "{\n"
+            << "    return " << ename << "_from_string(str); \n"
+            << "}\n";
+    }
+    return hasEnums;
 }
 
 void CModule::implementFunction(
@@ -1607,6 +1690,35 @@ void CModule::implementEnum(
         sep = ",\n";
     }
     ostr << "}\n";
+
+    ostr << "\n"
+        << service->csDllImport() << "\n"
+        << "private static extern int " << cname
+        << "_from_string(string str, out " << enumType->name << " value);\n"
+        << "\n"
+        << service->csDllImport() << "\n"
+        << "private static extern int " << cname
+        << "_to_string(" << enumType->name << " value, out string str);\n";
+
+    // string conversion functions for the enumerated type
+    // note we also provide extensions so that for the enumerated type we can
+    // use the to_string() method and for the string class we can use the parse_<enum> method
+    ostr << "\n"
+        << "public static " << enumType->name << " " << enumType->name
+        << "_from_string(string str)\n"
+        << "{\n"
+        << "    if (" << cname << "_from_string(str, out " << enumType->name << " value) != 0)\n"
+        << "        throw spi.ErrorToException();\n"
+        << "    return value;\n"
+        << "}\n"
+        << "\n"
+        << "public static string " << enumType->name
+        << "_to_string(" << enumType->name << " value)\n"
+        << "{\n"
+        << "    if (" << cname << "_to_string(value, out string str) != 0)\n"
+        << "        throw spi.ErrorToException();\n"
+        << "    return str;\n"
+        << "}\n";
 
     ostr << "\n"
         << service->csDllImport() << "\n"

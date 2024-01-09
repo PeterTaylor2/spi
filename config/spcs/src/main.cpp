@@ -126,6 +126,7 @@ static int run(
     {
         fns.insert(service->writeAssemblyInfo(dirname));
     }
+    fns.insert(service->writeEnumExtensionsFile(dirname));
 
     if (!noTidyUp)
         tidyup(serviceDoc, dirname, fns);

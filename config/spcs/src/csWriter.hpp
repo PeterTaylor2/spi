@@ -83,7 +83,8 @@ public:
 
     std::string writeServiceFile(const std::string& dirname) const;
     std::string writeAssemblyInfo(const std::string& dirname) const;
- 
+    std::string writeEnumExtensionsFile(const std::string& dirname) const;
+
     const std::string& name() const;
     const std::string& ns() const;
     const std::string& nsGlobal() const;
@@ -138,6 +139,10 @@ public:
 
     std::string writeModuleFile(const std::string& dirname) const;
     static void updateInitClasses(GeneratedOutput& ostr, const spdoc::ModuleConstSP& module);
+    static bool updateEnumExtensions(
+        GeneratedOutput& ostr,
+        const spdoc::ServiceConstSP& svc,
+        const spdoc::ModuleConstSP& module);
 
     friend class CService;
 
