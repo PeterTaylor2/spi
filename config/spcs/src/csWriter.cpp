@@ -435,8 +435,10 @@ std::string CService::writeEnumExtensionsFile(const std::string& dirname) const
         << "\n"
         << "namespace " << m_nsGlobal << " {\n";
 
+    // use name here rather than namespace since there might be multiple services for the
+    // same namespace - the actual name of the static class is totally irrelevant it seems
     ostr << "\n"
-        << "static public class " << m_service->ns << "_enum_extensions {\n";
+        << "static public class " << m_service->name << "_enum_extensions {\n";
 
     size_t nbModules = m_service->modules.size();
 
