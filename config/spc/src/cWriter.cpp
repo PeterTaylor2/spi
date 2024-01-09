@@ -1498,8 +1498,16 @@ void CModule::declareEnum(GeneratedOutput& ostr,
     }
     ostr << "};\n";
 
-    ostr << "typedef struct _" << cname << "_Vector " << cname << "_Vector;\n";
-    ostr << "typedef struct _" << cname << "_Matrix " << cname << "_Matrix;\n";
+    ostr << "\n"
+        << service->import() << "\n"
+        << "int " << cname << "_from_string(char* str, " << cname << "* value);\n"
+        << "\n"
+        << service->import() << "\n"
+        << "int " << cname << "_to_string(" << cname << " value, char** str);\n";
+
+    ostr << "\n"
+        << "typedef struct _" << cname << "_Vector " << cname << "_Vector;\n"
+        << "typedef struct _" << cname << "_Matrix " << cname << "_Matrix;\n";
 
     ostr << "\n"
         << service->import() << "\n"
@@ -1568,6 +1576,46 @@ void CModule::implementEnum(GeneratedOutput & ostr,
     std::ostringstream oss2;
     oss2 << service->ns() << "::" << makeNamespaceSep(module->ns, "::") << enumType->name;
     std::string cppname = oss2.str();
+
+    ostr << "\n"
+        << "int " << cname << "_from_string(char* str, " << cname << "* value)\n"
+        << "{\n"
+        << "    try\n"
+        << "    {\n"
+        << "        if (!str || !value)\n"
+        << "        {\n"
+        << "            SPI_THROW_RUNTIME_ERROR(\"Null inputs\");\n"
+        << "        }\n"
+        << "        " << cppname << "::Enum i_value = " << cppname << "::from_string(str);\n"
+        << "        *value = (" << cname << ")i_value;\n"
+        << "        return 0;\n"
+        << "    }\n"
+        << "    catch (std::exception& e)\n"
+        << "    {\n"
+        << "        spi_Error_set_function(__FUNCTION__, e.what());\n"
+        << "        return -1;\n"
+        << "    }\n"
+        << "}\n"
+        << "\n"
+        << "int " << cname << "_to_string(" << cname << " value, char** str)\n"
+        << "{\n"
+        << "    try\n"
+        << "    {\n"
+        << "        if (!str)\n"
+        << "        {\n"
+        << "            SPI_THROW_RUNTIME_ERROR(\"Null inputs\");\n"
+        << "        }\n"
+        << "        " << cppname << "::Enum i_value = (" << cppname << "::Enum)value;\n"
+        << "        const char* i_str = " << cppname << "::to_string(i_value);\n"
+        << "        *str = spi_String_copy(i_str);\n"
+        << "        return 0;\n"
+        << "    }\n"
+        << "    catch (std::exception& e)\n"
+        << "    {\n"
+        << "        spi_Error_set_function(__FUNCTION__, e.what());\n"
+        << "        return -1;\n"
+        << "    }\n"
+        << "}\n";
 
     ostr << "\n"
         << "void " << cname << "_Vector_delete(" << cname << "_Vector* c)\n"
