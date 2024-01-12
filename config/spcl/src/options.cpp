@@ -28,7 +28,8 @@ Options::Options()
     allHeader(false),
     noTidyup(false),
     sessionLogging(false),
-    license()
+    license(),
+    writeBackup(false)
 {
 }
 

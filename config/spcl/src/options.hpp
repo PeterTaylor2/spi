@@ -35,6 +35,7 @@ struct Options
     bool sessionLogging;
     std::string license;
     std::string outputDir;
+    bool writeBackup;
 };
 
 #endif

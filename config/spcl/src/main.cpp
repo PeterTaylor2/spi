@@ -118,7 +118,7 @@ int main(int argc, char* argv[])
     std::string exe("SPCL");
     const char* longOptions = "allHeader noVerbatimLine noHeaderSplit noTidyup"
         " noGeneratedCodeNotice sortSummary version= optionalArgs license outputDir="
-        " sessionLogging licenseFile=";
+        " sessionLogging licenseFile= backup";
 
     try
     {
@@ -208,6 +208,10 @@ int main(int argc, char* argv[])
             else if (opt == "--outputDir")
             {
                 options.outputDir = val;
+            }
+            else if (opt == "--backup")
+            {
+                options.writeBackup = true;
             }
             else
             {
