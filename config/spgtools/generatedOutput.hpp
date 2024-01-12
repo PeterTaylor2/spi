@@ -43,12 +43,13 @@ public:
     //
     // note that cwd is from where we will be compiling the code
     GeneratedOutput(const std::string& filename,
-                    const std::string& cwd);
+                    const std::string& cwd,
+                    bool writeBackup);
 
     // in the version without cwd then we will be compiling the code from
     // the same directory as filename and cwd is effectively set to
     // dirname(filename)
-    GeneratedOutput(const std::string& filename);
+    GeneratedOutput(const std::string& filename, bool writeBackup);
 
     ~GeneratedOutput();
 
@@ -81,6 +82,7 @@ private:
     std::ostringstream m_oss;
     size_t m_lines;
     bool m_closed;
+    bool m_writeBackup;
 
     void testClosure() const;
 
@@ -119,6 +121,7 @@ void endSourceFile(GeneratedOutput& ostr, const std::string& fn);
  */
 bool writeFileIfChanged(
     const char*        filename,
-    const std::string& newContents);
+    const std::string& newContents,
+    bool writeBackup);
 
 #endif

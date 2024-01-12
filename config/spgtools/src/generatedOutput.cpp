@@ -29,6 +29,7 @@
 #include <fstream>
 #include <iostream>
 
+#include <stdio.h>
 #include <string.h>
 
 namespace {
@@ -45,24 +46,27 @@ void CheckDirectory(const std::string& cwd)
 } // end of anonymous namespace
 
 GeneratedOutput::GeneratedOutput(const std::string& filename,
-                                 const std::string& cwd)
+                                 const std::string& cwd,
+                                 bool writeBackup)
     :
     m_filename(filename),
     m_cwd(cwd),
     m_oss(),
     m_lines(0),
-    m_closed(false)
+    m_closed(false),
+    m_writeBackup(writeBackup)
 {
     CheckDirectory(m_cwd);
 }
 
-GeneratedOutput::GeneratedOutput(const std::string& filename)
+GeneratedOutput::GeneratedOutput(const std::string& filename, bool writeBackup)
     :
     m_filename(filename),
     m_cwd(spi_util::path::dirname(filename)),
     m_oss(),
     m_lines(0),
-    m_closed(false)
+    m_closed(false),
+    m_writeBackup(writeBackup)
 {
     CheckDirectory(m_cwd);
 }
@@ -122,7 +126,9 @@ bool GeneratedOutput::close()
 
     std::string newContents = m_oss.str();
 
-    bool writeMe = writeFileIfChanged(m_filename.c_str(), newContents);
+    bool writeMe = writeFileIfChanged(m_filename.c_str(), newContents, m_writeBackup);
+
+    m_closed = true;
 
     return writeMe;
 }
@@ -260,10 +266,12 @@ void endSourceFile(
 
 bool writeFileIfChanged(
     const char*        filename,
-    const std::string& newContents)
+    const std::string& newContents,
+    bool writeBackup)
 {
     bool writeFile = false;
 
+    std::string backup = (std::string)filename + ".bak";
     std::ifstream original(filename);
     if (original.good())
     {
@@ -299,6 +307,17 @@ bool writeFileIfChanged(
             diff = true;
 
         writeFile = diff;
+
+        if (writeFile && writeBackup)
+        {
+            std::cout << backup << std::endl;
+            std::ofstream bstr(backup.c_str());
+            if (bstr.good())
+            {
+                bstr.write(oldContents.c_str(), oldContents.length());
+                bstr.close();
+            }
+        }
     }
     else
     {
@@ -316,6 +335,12 @@ bool writeFileIfChanged(
         }
         ostr.write(newContents.c_str(), newContents.length());
         ostr.close();
+    }
+    else if (writeBackup && spi_util::path::isfile(backup))
+    {
+        // the backup files are transitory
+        std::cout << "Removing: " << backup << std::endl;
+        remove(backup.c_str());
     }
 
     return writeFile;
