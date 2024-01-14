@@ -27,11 +27,13 @@ struct Options
 {
     Options() :
         verbose(false),
-        writeIncludes(false)
+        writeIncludes(false),
+        writeBackup(false)
     {}
 
     bool verbose;
     bool writeIncludes;
+    bool writeBackup;
 };
 
 void setOptions(const Options& getOptions);

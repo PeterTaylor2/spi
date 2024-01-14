@@ -40,6 +40,7 @@
 #include "generatorTools.hpp"
 #include "verbatim.hpp"
 #include "verbatimConstruct.hpp"
+#include "options.hpp"
 
 #include <spgtools/licenseTools.hpp>
 
@@ -166,18 +167,17 @@ void ModuleDefinition::writeHeader(
     const std::string& fn,
     const std::string& cwd,
     const ServiceDefinitionSP& svc,
-    bool noHeaderSplit,
-    const std::string& license,
+    const Options& options,
     bool types)
 {
-    GeneratedOutput ostr(fn, cwd);
-    writeLicense(ostr, license);
+    GeneratedOutput ostr(fn, cwd, options.writeBackup);
+    writeLicense(ostr, options.license);
     startHeaderFile(ostr, fn);
 
     NamespaceManager nsman;
 
     bool isFirst = false;
-    if (noHeaderSplit)
+    if (options.noHeaderSplit)
     {
         const std::string& sharedPtrInclude = svc->getSharedPtrInclude();
 
@@ -191,7 +191,7 @@ void ModuleDefinition::writeHeader(
 
         // we include the previous module's header file - thus via a daisy-chain
         // we include all previous modules
-        bool isFirst = svc->writePreviousModuleInclude(ostr, m_name, noHeaderSplit, false);
+        bool isFirst = svc->writePreviousModuleInclude(ostr, m_name, options.noHeaderSplit, false);
 
         for (size_t i = 0; i < m_innerClasses.size(); ++i)
             m_innerClasses[i]->preDeclare(ostr, nsman);
@@ -211,7 +211,7 @@ void ModuleDefinition::writeHeader(
     svc->writeStartNamespace(ostr);
     nsman.startNamespace(ostr, m_moduleNamespace, 0);
 
-    if (noHeaderSplit)
+    if (options.noHeaderSplit)
     {
         if (isFirst)
             svc->writeUsingImportedTypes(ostr);
@@ -245,11 +245,11 @@ void ModuleDefinition::writeClassesHeader(
     const std::string& fn,
     const std::string& cwd,
     const ServiceDefinitionSP& svc,
-    const std::string& license,
+    const Options& options,
     bool types)
 {
-    GeneratedOutput ostr(fn, cwd);
-    writeLicense(ostr, license);
+    GeneratedOutput ostr(fn, cwd, options.writeBackup);
+    writeLicense(ostr, options.license);
     startHeaderFile(ostr, fn);
 
     const std::string& sharedPtrInclude = svc->getSharedPtrInclude();
@@ -310,15 +310,14 @@ void ModuleDefinition::writeHelperHeader(
     const std::string& fn,
     const std::string& cwd,
     const ServiceDefinitionSP& svc,
-    bool noHeaderSplit,
-    const std::string& license,
+    const Options& options,
     bool types)
 {
-    GeneratedOutput ostr(fn, cwd);
-    writeLicense(ostr, license);
+    GeneratedOutput ostr(fn, cwd, options.writeBackup);
+    writeLicense(ostr, options.license);
     startHeaderFile(ostr, fn);
 
-    if (noHeaderSplit)
+    if (options.noHeaderSplit)
     {
         ostr << "\n"
             << "#include \"" << svc->getNamespace() << "_" << m_name << ".hpp\"\n";
@@ -351,11 +350,11 @@ void ModuleDefinition::writeSource(
     const std::string& fn,
     const std::string& cwd,
     const ServiceDefinitionSP& svc,
-    const std::string& license,
+    const Options& options,
     bool types)
 {
-    GeneratedOutput ostr(fn, cwd);
-    writeLicense(ostr, license);
+    GeneratedOutput ostr(fn, cwd, options.writeBackup);
+    writeLicense(ostr, options.license);
     startSourceFile(ostr, fn);
     if (!noGeneratedCodeNotice())
         writeGeneratedCodeNotice(ostr, fn);
@@ -390,11 +389,11 @@ void ModuleDefinition::writeHelperSource(
     const std::string& fn,
     const std::string& cwd,
     const ServiceDefinitionSP& svc,
-    const std::string& license,
+    const Options& options,
     bool types)
 {
-    GeneratedOutput ostr(fn, cwd);
-    writeLicense(ostr, license);
+    GeneratedOutput ostr(fn, cwd, options.writeBackup);
+    writeLicense(ostr, options.license);
     startSourceFile(ostr, fn);
     if (!noGeneratedCodeNotice())
         writeGeneratedCodeNotice(ostr, fn);

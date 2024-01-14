@@ -66,7 +66,7 @@ PythonService::writeDeclSpecHeaderFile(const std::string& dirname) const
     std::string filename = spi_util::path::join(
         dirname.c_str(), basename.c_str(), 0);
 
-    GeneratedOutput ostr(filename, spi_util::path::dirname(filename));
+    GeneratedOutput ostr(filename, spi_util::path::dirname(filename), options.writeBackup);
     writeLicense(ostr, options.license);
     startHeaderFile(ostr, filename);
 
@@ -102,7 +102,7 @@ std::string PythonService::writePydHeaderFile(const std::string& dirname) const
     std::string filename = spi_util::path::join(
         dirname.c_str(), basename.c_str(), 0);
 
-    GeneratedOutput ostr(filename, spi_util::path::dirname(filename));
+    GeneratedOutput ostr(filename, spi_util::path::dirname(filename), options.writeBackup);
     writeLicense(ostr, options.license);
     startHeaderFile(ostr, filename);
 
@@ -158,7 +158,7 @@ std::string PythonService::writePydSourceFile(const std::string& dirname) const
     std::string filename = spi_util::path::join(
         dirname.c_str(), basename.c_str(), 0);
 
-    GeneratedOutput ostr(filename, spi_util::path::dirname(filename));
+    GeneratedOutput ostr(filename, spi_util::path::dirname(filename), options.writeBackup);
     writeLicense(ostr, options.license);
     startSourceFile(ostr, filename);
     if (!options.noGeneratedCodeNotice)
@@ -416,7 +416,7 @@ std::string PythonService::writePyImporter(const std::string& dirname) const
     std::string filename = spi_util::path::join(
         dirname.c_str(), basename.c_str(), 0);
 
-    GeneratedOutput ostr(filename, spi_util::path::dirname(filename));
+    GeneratedOutput ostr(filename, spi_util::path::dirname(filename), options.writeBackup);
 
     ostr << "\"\"\"\n";
     if (m_service->description.size() > 0)
@@ -504,7 +504,7 @@ std::string PythonModule::writeHeaderFile(const std::string& dirname) const
     std::string filename = spi_util::path::join(
         dirname.c_str(), basename.c_str(), 0);
 
-    GeneratedOutput ostr(filename, spi_util::path::dirname(filename));
+    GeneratedOutput ostr(filename, spi_util::path::dirname(filename), service->options.writeBackup);
     writeLicense(ostr, service->options.license);
     startHeaderFile(ostr, filename);
 
@@ -573,7 +573,7 @@ std::string PythonModule::writeSourceFile(const std::string& dirname) const
     std::string filename = spi_util::path::join(
         dirname.c_str(), basename.c_str(), 0);
 
-    GeneratedOutput ostr(filename, spi_util::path::dirname(filename));
+    GeneratedOutput ostr(filename, spi_util::path::dirname(filename), service->options.writeBackup);
     writeLicense(ostr, service->options.license);
     startSourceFile(ostr, filename);
     if (!service->options.noGeneratedCodeNotice)

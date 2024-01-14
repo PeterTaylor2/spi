@@ -23,7 +23,7 @@
 #include "constant.hpp"
 #include "configLexer.hpp"
 
-typedef std::map<std::string, ConstantConstSP> Options;
+typedef std::map<std::string, ConstantConstSP> ParserOptions;
 
 class DescriptionParser
 {
@@ -55,13 +55,13 @@ private:
  * On success, we push back the final token since we allow termination
  * via multiple single character tokens.
  */
-Options parseOptions(
+ParserOptions parseOptions(
     ConfigLexer& lexer,
     const char* terminators,
-    const Options& defaultOptions,
+    const ParserOptions& defaultOptions,
     bool verbose);
 
-ConstantConstSP getOption(const Options& options, const char* name);
+ConstantConstSP getOption(const ParserOptions& options, const char* name);
 
 ConstantConstSP parseConstant(ConfigLexer& lexer);
 

@@ -49,6 +49,8 @@ SPI_DECLARE_RC_CLASS(ServiceDefinition);
 SPI_DECLARE_RC_CLASS(Verbatim);
 SPI_DECLARE_RC_CLASS(TypesLibrary);
 
+struct Options;
+
 #include <spgtools/generatedOutput.hpp>
 
 SPDOC_BEGIN_NAMESPACE
@@ -176,11 +178,11 @@ public:
     void writeDeclSpecHeader(
         const std::string& fn, 
         const std::string& cwd,
-        const std::string& license);
+        const Options& options);
     void writeServiceNamespace(
         const std::string& fn,
         const std::string& cwd,
-        const std::string& license,
+        const Options& options,
         bool types);
     void writeStartNamespace(GeneratedOutput& ostr);
     void writeEndNamespace(GeneratedOutput& ostr);
@@ -189,21 +191,21 @@ public:
         const std::string& fn1,
         const std::string& fn2,
         const std::string& cwd,
-        const std::string& license,
+        const Options& options,
         bool types);
     void writeTimeoutHeader(
         const std::string& fn,
         const std::string& cwd,
-        const std::string& license);
+        const Options& options);
     void writeServiceSource(
         const std::string& fn,
         const std::string& cwd,
-        const std::string& license,
+        const Options& options,
         bool types);
     void writeTypeConvertersHeader(
         const std::string& fn,
         const std::string& cwd,
-        const std::string& license);
+        const Options& options);
     bool writePreviousModuleInclude(
         GeneratedOutput& ostr, const std::string& moduleName,
         bool noHeaderSplit, bool helper);

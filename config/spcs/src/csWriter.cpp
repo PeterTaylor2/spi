@@ -268,7 +268,7 @@ std::string CService::writeServiceFile(const std::string& dirname) const
     std::string filename = spi_util::path::join(
         dirname.c_str(), basename.c_str(), 0);
 
-    GeneratedOutput ostr(filename, spi_util::path::dirname(filename));
+    GeneratedOutput ostr(filename, spi_util::path::dirname(filename), writeBackup());
     writeLicense(ostr, license());
     startSourceFile(ostr, filename, false);
     if (!noGeneratedCodeNotice())
@@ -409,7 +409,7 @@ std::string CService::writeEnumExtensionsFile(const std::string& dirname) const
         dirname.c_str(), basename.c_str(), 0);
 
     bool hasEnums = false;
-    GeneratedOutput ostr(filename, spi_util::path::dirname(filename));
+    GeneratedOutput ostr(filename, spi_util::path::dirname(filename), writeBackup());
     writeLicense(ostr, license());
     startSourceFile(ostr, filename, false);
     if (!noGeneratedCodeNotice())
@@ -470,7 +470,7 @@ std::string CService::writeAssemblyInfo(const std::string& dirname) const
     std::string filename = spi_util::path::join(
         dirname.c_str(), basename.c_str(), 0);
 
-    GeneratedOutput ostr(filename, spi_util::path::dirname(filename));
+    GeneratedOutput ostr(filename, spi_util::path::dirname(filename), writeBackup());
 
     int year = spi::Date::Today().Year();
 
@@ -550,6 +550,11 @@ const std::string& CService::license() const
     return m_options.license;
 }
 
+bool CService::writeBackup() const
+{
+    return m_options.writeBackup;
+}
+
 /*
 ***************************************************************************
 ** Implementation of CModule
@@ -577,7 +582,7 @@ std::string CModule::writeModuleFile(const std::string & dirname) const
     std::string filename = spi_util::path::join(
         dirname.c_str(), basename.c_str(), 0);
 
-    GeneratedOutput ostr(filename, spi_util::path::dirname(filename));
+    GeneratedOutput ostr(filename, spi_util::path::dirname(filename), service->writeBackup());
     writeLicense(ostr, service->license());
     startSourceFile(ostr, filename, false);
     if (!service->noGeneratedCodeNotice())

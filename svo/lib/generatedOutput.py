@@ -1,5 +1,11 @@
 import os
 import shutil
+import sys
+
+if sys.version_info[0] < 2:
+    import texOptions
+else:
+    from . import texOptions
 
 class GeneratedOutput:
     """
@@ -27,6 +33,7 @@ class GeneratedOutput:
         self.data = []
         self.lines = 0
         self.closed = False
+        self.writeBackup = texOptions.getOptions().writeBackup
         
         if not os.path.isdir(self.cwd):
             raise RuntimeError("Directory '%s' does not exist" % self.cwd)
@@ -42,14 +49,14 @@ class GeneratedOutput:
     def close(self):
         if self.closed: return False
         contents = "".join(self.data)
-        writeMe = writeFileIfChanged(self.filename, contents)
+        writeMe = writeFileIfChanged(self.filename, contents, self.writeBackup)
         self.closed = True
         return writeMe
 
     def relativePath(self, filename):
         return _relativePath(filename, self.cwd)
 
-def writeFileIfChanged(filename, newContents, backup=False):
+def writeFileIfChanged(filename, newContents, backup):
     """
     Writes newContents to the file filename if the new contents are different
     from the existing contents.
@@ -58,22 +65,25 @@ def writeFileIfChanged(filename, newContents, backup=False):
 
     Throws an exception on failure to write when attempting to write.
     """
+    backupFilename = filename + ".bak"
     if os.path.isfile(filename):
         fp = open(filename, "rU")
         oldContents = fp.read()
         fp.close()
         writeFile = oldContents != newContents
+        if backup and writeFile:
+            print(backupFilename)
+            shutil.copy2(filename, backupFilename)
     else: writeFile = True
 
     if writeFile:
-        if backup and os.path.isfile(filename):
-            backupFilename = filename + ".bak"
-            print(backupFilename)
-            shutil.copy2(filename, backupFilename)
         print(filename)
         fp = open(filename, "w")
         fp.write(newContents)
         fp.close()
+    elif backup and os.path.isfile(backupFilename):
+        print("removing: %s" % backupFilename)
+        os.remove(backupFilename)
 
     return writeFile
 

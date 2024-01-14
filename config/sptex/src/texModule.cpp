@@ -52,6 +52,11 @@ namespace {
         oss << service->ns << "_" << module->name << "_classes.hpp";
         return oss.str();
     }
+
+    bool writeBackup()
+    {
+        return getOptions().writeBackup;
+    }
 }
 
 template<class T>
@@ -350,7 +355,7 @@ std::string writeTexSimpleType(
 
     sprintf(filename, "simpleType_%s.tex", constructName.c_str());
 
-    GeneratedOutput ostr(texFileName(dirname, filename, forImport));
+    GeneratedOutput ostr(texFileName(dirname, filename, forImport), writeBackup());
     ostr << "\\subsection{" << constructName << "} "
          << "\\label{type_" << constructName << "}\n";
 
@@ -381,7 +386,7 @@ std::string writeTexEnum(
     std::string constructName = ConstructName(construct, module);
     sprintf(filename, "enum_%s.tex", constructName.c_str());
 
-    GeneratedOutput ostr(texFileName(dirname, filename, forImport));
+    GeneratedOutput ostr(texFileName(dirname, filename, forImport), writeBackup());
     ostr << "\\subsection{" << constructName << "} "
          << "\\label{type_" << constructName << "}\n";
 
@@ -451,7 +456,7 @@ std::string writeTexClassMethod(
     sprintf(filename, "classMethod_%s_%s.tex", cls->dataType->name.c_str(),
         method->function->name.c_str());
 
-    GeneratedOutput ostr(texFileName(dirname, filename));
+    GeneratedOutput ostr(texFileName(dirname, filename), writeBackup());
 
     ostr << "\\subsection{" << texEscape(cls->dataType->name) << "."
          << texEscape(method->function->name) << "} "
@@ -485,7 +490,7 @@ std::string writeTexClass(
     std::string className = ConstructName(cls, module);
     sprintf(filename, "class_%s.tex", className.c_str());
 
-    GeneratedOutput ostr(texFileName(dirname, filename, forImport));
+    GeneratedOutput ostr(texFileName(dirname, filename, forImport), writeBackup());
     ostr << "\\subsection{" << texEscape(className) << "} "
          << "\\label{type_" << className << "}\n";
 
@@ -772,7 +777,7 @@ std::string writeTexFunction(
     sprintf(filename, "function_%s%s.tex",
         moduleNamespaceSep.c_str(), func->name.c_str());
 
-    GeneratedOutput ostr(texFileName(dirname, filename));
+    GeneratedOutput ostr(texFileName(dirname, filename), writeBackup());
     if (hasClassMethods)
         ostr << "\\subsection{";
     else

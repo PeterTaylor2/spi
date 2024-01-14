@@ -41,7 +41,7 @@ ServiceDefinitionSP serviceKeywordHandler(
     const std::string& commandLineVersion,
     bool verbose)
 {
-    Options defaultOptions;
+    ParserOptions defaultOptions;
 
     ConfigLexer::Token token = getTokenOfType(
         lexer, SPI_CONFIG_TOKEN_TYPE_NAME, "Name", __FUNCTION__);
@@ -61,7 +61,7 @@ ServiceDefinitionSP serviceKeywordHandler(
     defaultOptions["baseService"] = StringConstant::Make("");
     defaultOptions["noLog"] = BoolConstant::Make(false);
     defaultOptions["useVersionedNamespace"] = BoolConstant::Make(false);
-    Options options = parseOptions(lexer, ";", defaultOptions, verbose);
+    ParserOptions options = parseOptions(lexer, ";", defaultOptions, verbose);
     getTokenOfType(lexer, ';');
 
     std::string baseServiceName = options["baseService"]->getString();
@@ -188,7 +188,7 @@ void exportKeywordHandler(
     ServiceDefinitionSP& service,
     bool verbose)
 {
-    static Options defaultOptions;
+    static ParserOptions defaultOptions;
 
     if (defaultOptions.empty())
     {
@@ -202,7 +202,7 @@ void exportKeywordHandler(
     if (verbose)
         std::cout << "export file name: " << fn << std::endl;
 
-    Options options = parseOptions(lexer, ";", defaultOptions, verbose);
+    ParserOptions options = parseOptions(lexer, ";", defaultOptions, verbose);
     getTokenOfType(lexer, ';');
 
     if (options["header"]->getBool())

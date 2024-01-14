@@ -109,7 +109,7 @@ int main(int argc, char* argv[])
 
     Options getOptions;
     std::string exe("SPTEX");
-    const char* longOptions = "license writeIncludes";
+    const char* longOptions = "license writeIncludes writeBackup";
 
     try
     {
@@ -143,6 +143,10 @@ int main(int argc, char* argv[])
             else if (opt == "--writeIncludes")
             {
                 getOptions.writeIncludes = true;
+            }
+            else if (opt == "--writeBackup")
+            {
+                getOptions.writeBackup = true;
             }
             else
             {

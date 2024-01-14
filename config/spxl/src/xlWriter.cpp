@@ -74,7 +74,7 @@ ExcelService::writeDeclSpecHeaderFile(const std::string& dirname) const
     std::string filename = spi_util::path::join(
         dirname.c_str(), basename.c_str(), 0);
 
-    GeneratedOutput ostr(filename, spi_util::path::dirname(filename));
+    GeneratedOutput ostr(filename, spi_util::path::dirname(filename), writeBackup());
     writeLicense(ostr, license());
     startHeaderFile(ostr, filename);
 
@@ -109,7 +109,7 @@ ExcelService::writeXllHeaderFile(const std::string& dirname) const
     std::string filename = spi_util::path::join(
         dirname.c_str(), basename.c_str(), 0);
 
-    GeneratedOutput ostr(filename, spi_util::path::dirname(filename));
+    GeneratedOutput ostr(filename, spi_util::path::dirname(filename), writeBackup());
     writeLicense(ostr, license());
     startHeaderFile(ostr, filename);
 
@@ -182,7 +182,7 @@ ExcelService::writeXllSourceFile(const std::string& dirname) const
     std::string filename = spi_util::path::join(
         dirname.c_str(), basename.c_str(), 0);
 
-    GeneratedOutput ostr(filename, spi_util::path::dirname(filename));
+    GeneratedOutput ostr(filename, spi_util::path::dirname(filename), writeBackup());
     writeLicense(ostr, license());
     startSourceFile(ostr, filename);
     if (!noGeneratedCodeNotice())
@@ -602,7 +602,7 @@ std::vector<std::string> ExcelService::translateVbaFiles(
         std::ifstream istr(ifn.c_str());
         if (!istr)
             throw spi::RuntimeError("Could not open '%s'", ifn.c_str());
-        generateFromTemplate(istr, ifn, values, ofn, outdir);
+        generateFromTemplate(istr, ifn, values, ofn, outdir, writeBackup());
         fns.push_back(ofn);
     }
 
@@ -647,7 +647,7 @@ std::vector<std::string> ExcelService::translateVbaFiles(
         std::ifstream istr(ifn.c_str());
         if (!istr)
             throw spi::RuntimeError("Could not open '%s'", ifn.c_str());
-        generateFromTemplate(istr, ifn, values, ofn, outdir);
+        generateFromTemplate(istr, ifn, values, ofn, outdir, writeBackup());
         fns.push_back(ofn);
     }
 
@@ -665,7 +665,7 @@ std::vector<std::string> ExcelService::translateVbaFiles(
         std::ifstream istr(ifn.c_str());
         if (!istr)
             throw spi::RuntimeError("Could not open '%s'", ifn.c_str());
-        generateFromTemplate(istr, ifn, values, ofn, outdir);
+        generateFromTemplate(istr, ifn, values, ofn, outdir, writeBackup());
         fns.push_back(ofn);
     }
 
@@ -692,7 +692,7 @@ std::string ExcelService::writeVbaFile(const std::string& dirname) const
     std::string filename = spi_util::path::join(
         dirname.c_str(), basename.c_str(), 0);
 
-    GeneratedOutput ostr(filename, spi_util::path::dirname(filename));
+    GeneratedOutput ostr(filename, spi_util::path::dirname(filename), writeBackup());
 
     ostr << "Attribute VB_Name = \"" << m_service->name
          << "_load_addins\"\n"
@@ -788,6 +788,11 @@ const std::string& ExcelService::license() const
     return m_options.license;
 }
 
+bool ExcelService::writeBackup() const
+{
+    return m_options.writeBackup;
+}
+
 /*
 ***************************************************************************
 ** Implementation of ExcelModule
@@ -815,7 +820,7 @@ std::string ExcelModule::writeHeaderFile(const std::string& dirname) const
     std::string filename = spi_util::path::join(
         dirname.c_str(), basename.c_str(), 0);
 
-    GeneratedOutput ostr(filename, spi_util::path::dirname(filename));
+    GeneratedOutput ostr(filename, spi_util::path::dirname(filename),service->writeBackup());
     writeLicense(ostr, service->license());
     startHeaderFile(ostr, filename);
 
@@ -884,7 +889,7 @@ std::string ExcelModule::writeSourceFile(const std::string& dirname) const
     std::string filename = spi_util::path::join(
         dirname.c_str(), basename.c_str(), 0);
 
-    GeneratedOutput ostr(filename, spi_util::path::dirname(filename));
+    GeneratedOutput ostr(filename, spi_util::path::dirname(filename), service->writeBackup());
     writeLicense(ostr, service->license());
     startSourceFile(ostr, filename);
     if (!service->noGeneratedCodeNotice())

@@ -46,6 +46,7 @@ struct Options
         noObjectFuncs(false),
         errIsNA(false),
         license(),
+        writeBackup(false),
         helpFunc("help_func"),
         helpFuncList(""),
         helpEnum("help_enum"),
@@ -77,6 +78,7 @@ struct Options
     bool upperCase;
     bool noObjectFuncs;
     bool errIsNA;
+    bool writeBackup;
     std::string license;
     std::string helpFunc;
     std::string helpFuncList;
@@ -141,6 +143,7 @@ public:
     bool xlfuncNamesInUpperCase() const;
     const char* funcNameSep() const;
     const std::string& license() const;
+    bool writeBackup() const;
 
 protected:
     ExcelService(

@@ -154,7 +154,7 @@ int main(int argc, char* argv[])
 
     Options options;
 
-    const char* longOptions = "noGeneratedCodeNotice noTidyUp license licenseFile=";
+    const char* longOptions = "noGeneratedCodeNotice noTidyUp license licenseFile= backup";
     try
     {
         spi_util::CommandLine commandLine(argc, argv, "wvx=", longOptions);
@@ -191,6 +191,10 @@ int main(int argc, char* argv[])
             else if (opt == "--licenseFile")
             {
                 options.license = readLicenseFile(val);
+            }
+            else if (opt == "--backup")
+            {
+                options.writeBackup = true;
             }
             else
             {

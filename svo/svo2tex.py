@@ -60,7 +60,7 @@ def run(infilename, outfilename, dirname, extras, dnImports, summaryfilename, op
 def main():
     import getopt
 
-    opts,args = getopt.getopt(sys.argv[1:], "S:wtvi:", ["writeIncludes"])
+    opts,args = getopt.getopt(sys.argv[1:], "S:wtvi:", ["writeIncludes", "backup"])
     
     waitAtStart = False
     options = Options()
@@ -76,6 +76,7 @@ def main():
         elif opt[0] == "-S": summaryfilename = opt[1]
         elif opt[0] == "-i": dnImports.append(opt[1])
         elif opt[0] == "--writeIncludes": options.writeIncludes = True
+        elif opt[0] == "--backup": options.writeBackup = True
         else:
             print_usage(progname)
             return -1

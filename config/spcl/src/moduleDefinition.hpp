@@ -44,6 +44,7 @@ SPI_DECLARE_RC_CLASS(InnerClass);
 SPI_DECLARE_RC_CLASS(InnerClassTemplate);
 class GeneratedOutput;
 class NamespaceManager;
+struct Options;
 
 SPDOC_BEGIN_NAMESPACE
 SPI_DECLARE_OBJECT_CLASS(Module);
@@ -80,33 +81,31 @@ public:
         const std::string& fn,
         const std::string& cwd,
         const ServiceDefinitionSP& svc,
-        bool noHeaderSplit,
-        const std::string& license,
+        const Options& options,
         bool types);
     void writeClassesHeader(
         const std::string& fn,
         const std::string& cwd,
         const ServiceDefinitionSP& svc,
-        const std::string& license,
+        const Options& options,
         bool types);
     void writeHelperHeader(
         const std::string& fn,
         const std::string& cwd,
         const ServiceDefinitionSP& svc,
-        bool noHeaderSplit,
-        const std::string& license,
+        const Options& options,
         bool types);
     void writeSource(
         const std::string& fn,
         const std::string& cwd,
         const ServiceDefinitionSP& svc,
-        const std::string& license,
+        const Options& options,
         bool types);
     void writeHelperSource(
         const std::string& fn,
         const std::string& cwd,
         const ServiceDefinitionSP& svc,
-        const std::string& license,
+        const Options& options,
         bool types);
     void declareTypeConversions(
         GeneratedOutput& ostr,

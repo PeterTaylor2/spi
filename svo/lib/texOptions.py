@@ -6,6 +6,7 @@ class Options:
     def __init__(self):
         self.verbose = False
         self.writeIncludes = False
+        self.writeBackup = False
 
 _options = None
 

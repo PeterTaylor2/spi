@@ -88,7 +88,7 @@ static void writeParserDoc(
     const std::string& outfilename,
     bool verbose)
 {
-    GeneratedOutput ostr(outfilename, spi_util::path::dirname(outfilename));
+    GeneratedOutput ostr(outfilename, spi_util::path::dirname(outfilename), false);
     writeServiceParserDoc(ostr, verbose);
     ostr << "\n";
     ostr.close();

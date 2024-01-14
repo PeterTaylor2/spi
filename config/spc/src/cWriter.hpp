@@ -48,12 +48,14 @@ struct Options
         :
         noGeneratedCodeNotice(false),
         imports(),
-        license()
+        license(),
+        writeBackup()
     {}
 
     bool noGeneratedCodeNotice;
     std::vector<std::string> imports;
     std::string license;
+    bool writeBackup;
 };
 
 /**
@@ -85,6 +87,7 @@ public:
     const spdoc::ServiceConstSP& service() const;
     bool noGeneratedCodeNotice() const;
     const std::string& license() const;
+    bool writeBackup() const;
 
 protected:
     CService(

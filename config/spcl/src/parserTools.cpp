@@ -98,13 +98,13 @@ ConfigLexer::Token DescriptionParser::consume(
  * On success, we push back the final token since we allow termination
  * via multiple single character tokens.
  */
-Options parseOptions(
+ParserOptions parseOptions(
     ConfigLexer& lexer,
     const char* terminators,
-    const Options& defaultOptions,
+    const ParserOptions& defaultOptions,
     bool verbose)
 {
-    Options output(defaultOptions);
+    ParserOptions output(defaultOptions);
     ConfigLexer::Token token = lexer.getToken();
 
     while (strchr(terminators, token.type) == NULL)
@@ -129,7 +129,7 @@ Options parseOptions(
         if (defaultOptions.count(name) == 0)
         {
             std::vector<std::string> allOptions;
-            for (Options::const_iterator iter = defaultOptions.begin();
+            for (ParserOptions::const_iterator iter = defaultOptions.begin();
                 iter != defaultOptions.end(); ++iter)
             {
                 allOptions.push_back(iter->first);
@@ -204,9 +204,9 @@ Options parseOptions(
 }
 
 
-ConstantConstSP getOption(const Options& options, const char* name)
+ConstantConstSP getOption(const ParserOptions& options, const char* name)
 {
-    Options::const_iterator iter = options.find(name);
+    ParserOptions::const_iterator iter = options.find(name);
     if (iter == options.end())
         return Constant::UNDEFINED;
     return iter->second;

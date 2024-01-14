@@ -816,7 +816,7 @@ void ServiceDefinition::writeMakefileProperties(
     const std::string& cwd,
     const std::string& outputDir)
 {
-    GeneratedOutput ostr(fn, cwd);
+    GeneratedOutput ostr(fn, cwd, false);
 
     ostr << "U_SERVICE?=" << m_name << "\n"
          << "U_SERVICE_DLL?=" << m_dllName << "\n"
@@ -834,10 +834,10 @@ void ServiceDefinition::writeMakefileProperties(
 void ServiceDefinition::writeDeclSpecHeader(
     const std::string& fn,
     const std::string& cwd,
-    const std::string& license)
+    const Options& options)
 {
-    GeneratedOutput ostr(fn, cwd);
-    writeLicense(ostr, license);
+    GeneratedOutput ostr(fn, cwd, options.writeBackup);
+    writeLicense(ostr, options.license);
 
     std::string guardMacro = headerGuardMacroName(fn);
     ostr << "#ifndef " << guardMacro << "\n"
@@ -878,11 +878,11 @@ void ServiceDefinition::writeDeclSpecHeader(
 void ServiceDefinition::writeServiceNamespace(
     const std::string& fn,
     const std::string& cwd,
-    const std::string& license,
+    const Options& options,
     bool types)
 {
-    GeneratedOutput ostr(fn, cwd);
-    writeLicense(ostr, license);
+    GeneratedOutput ostr(fn, cwd, options.writeBackup);
+    writeLicense(ostr, options.license);
     startHeaderFile(ostr, fn);
     if (!noGeneratedCodeNotice())
         writeGeneratedCodeNotice(ostr, fn);
@@ -948,7 +948,7 @@ void ServiceDefinition::writeEndNamespace(GeneratedOutput& ostr)
 
 void ServiceDefinition::writeAllHeader(const std::string& fn, const std::string& cwd)
 {
-    GeneratedOutput ostr(fn, cwd);
+    GeneratedOutput ostr(fn, cwd, false);
     startHeaderFile(ostr, fn);
 
     ostr << "\n"
@@ -968,13 +968,13 @@ void ServiceDefinition::writeServiceHeaders(
     const std::string& fn1,
     const std::string& fn2,
     const std::string& cwd,
-    const std::string& license,
+    const Options& options,
     bool types)
 {
     // fn1 is in the public directory and contains all the exported functions
     // fn2 is in the source directory and contains all the internal functions
-    GeneratedOutput ostr(fn1, cwd);
-    writeLicense(ostr, license);
+    GeneratedOutput ostr(fn1, cwd, options.writeBackup);
+    writeLicense(ostr, options.license);
     startHeaderFile(ostr, fn1);
     if (!noGeneratedCodeNotice())
         writeGeneratedCodeNotice(ostr, fn1);
@@ -1018,8 +1018,8 @@ void ServiceDefinition::writeServiceHeaders(
 
     endHeaderFile(ostr, fn1);
 
-    GeneratedOutput ostr2(fn2, cwd);
-    writeLicense(ostr2, license);
+    GeneratedOutput ostr2(fn2, cwd, options.writeBackup);
+    writeLicense(ostr2, options.license);
     startHeaderFile(ostr2, fn2);
     if (!noGeneratedCodeNotice())
         writeGeneratedCodeNotice(ostr2, fn2);
@@ -1072,10 +1072,10 @@ void ServiceDefinition::writeServiceHeaders(
 void ServiceDefinition::writeTimeoutHeader(
     const std::string& fn,
     const std::string& cwd,
-    const std::string& license)
+    const Options& options)
 {
-    GeneratedOutput ostr(fn, cwd);
-    writeLicense(ostr, license);
+    GeneratedOutput ostr(fn, cwd, options.writeBackup);
+    writeLicense(ostr, options.license);
     startHeaderFile(ostr, fn);
     if (!noGeneratedCodeNotice())
         writeGeneratedCodeNotice(ostr, fn);
@@ -1099,11 +1099,11 @@ void ServiceDefinition::writeTimeoutHeader(
 void ServiceDefinition::writeServiceSource(
     const std::string& fn,
     const std::string& cwd,
-    const std::string& license,
+    const Options& options,
     bool types)
 {
-    GeneratedOutput ostr(fn, cwd);
-    writeLicense(ostr, license);
+    GeneratedOutput ostr(fn, cwd, options.writeBackup);
+    writeLicense(ostr, options.license);
     startSourceFile(ostr, fn);
     if (!noGeneratedCodeNotice())
         writeGeneratedCodeNotice(ostr, fn);
@@ -1515,10 +1515,10 @@ void ServiceDefinition::writeServiceSource(
 void ServiceDefinition::writeTypeConvertersHeader(
     const std::string& fn,
     const std::string& cwd,
-    const std::string& license)
+    const Options& options)
 {
-    GeneratedOutput ostr(fn, cwd);
-    writeLicense(ostr, license);
+    GeneratedOutput ostr(fn, cwd, options.writeBackup);
+    writeLicense(ostr, options.license);
     startHeaderFile(ostr, fn);
 
     ostr << "\n"

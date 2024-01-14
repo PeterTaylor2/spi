@@ -55,10 +55,10 @@ ModuleDefinitionSP moduleKeywordHandler(
         lexer, SPI_CONFIG_TOKEN_TYPE_NAME, "Name", __FUNCTION__);
     std::string moduleName (token.value.aName);
 
-    Options defaultOptions;
+    ParserOptions defaultOptions;
     defaultOptions["namespace"] = StringConstant::Make("");
 
-    Options options = parseOptions(lexer, ";", defaultOptions, verbose);
+    ParserOptions options = parseOptions(lexer, ";", defaultOptions, verbose);
     getTokenOfType(lexer, ';');
 
     return ModuleDefinition::Make(moduleName, description,
@@ -498,7 +498,7 @@ ClassAttributeConstSP parseClassAttribute(
 
     VerbatimConstSP code;
 
-    static Options accessorDefaultOptions;
+    static ParserOptions accessorDefaultOptions;
     if (accessorDefaultOptions.size() == 0)
     {
         accessorDefaultOptions["noConvert"] = BoolConstant::Make(false);
@@ -506,7 +506,7 @@ ClassAttributeConstSP parseClassAttribute(
         accessorDefaultOptions["hideIf"] = StringConstant::Make();
         accessorDefaultOptions["noCopy"] = BoolConstant::Make(false);
     }
-    Options accessorOptions;
+    ParserOptions accessorOptions;
     accessorOptions = parseOptions(lexer, "{;", accessorDefaultOptions, false);
 
     bool noConvert = getOption(accessorOptions, "noConvert")->getBool();
@@ -696,13 +696,13 @@ CoerceFromConstSP parseCoerceFrom(
         throw spi::RuntimeError(
             "Parameter for CoerceFrom should not be an output");
 
-    static Options defaultOptions;
+    static ParserOptions defaultOptions;
     if (defaultOptions.size() == 0)
     {
         defaultOptions["convert"] = BoolConstant::Make(false);
     }
 
-    Options options;
+    ParserOptions options;
     options = parseOptions(lexer, "{", defaultOptions, verbose);
     bool convert = getOption(options, "convert")->getBool();
 
@@ -858,7 +858,7 @@ FunctionConstSP parseFunction(
         }
     }
 
-    static Options defaultOptions;
+    static ParserOptions defaultOptions;
     if (defaultOptions.size() == 0)
     {
         defaultOptions["noLog"]        = BoolConstant::Make(service->noLog());
@@ -868,7 +868,7 @@ FunctionConstSP parseFunction(
         defaultOptions["cache"]        = IntConstant::Make(0);
     }
 
-    Options options;
+    ParserOptions options;
     options = parseOptions(lexer, "{;", defaultOptions, verbose);
     bool ignore = getOption(options, "ignore")->getBool();
 
@@ -1228,7 +1228,7 @@ void enumKeywordHandler(
                 "Expected '>' to match '<' for enum %s - actual was (%s)",
                 name.c_str(), token.toString().c_str());
         }
-        static Options defaultOptions;
+        static ParserOptions defaultOptions;
         if (defaultOptions.size() == 0)
         {
             defaultOptions["innerHeader"]  = StringConstant::Make("");
@@ -1236,7 +1236,7 @@ void enumKeywordHandler(
             defaultOptions["ignore"] = BoolConstant::Make(false);
         }
 
-        Options options;
+        ParserOptions options;
         options = parseOptions(lexer, "{", defaultOptions, verbose);
         ignore = getOption(options, "ignore")->getBool();
 
@@ -1250,13 +1250,13 @@ void enumKeywordHandler(
     }
     else
     {
-        static Options defaultOptions;
+        static ParserOptions defaultOptions;
         if (defaultOptions.size() == 0)
         {
             defaultOptions["ignore"] = BoolConstant::Make(false);
         }
 
-        Options options;
+        ParserOptions options;
         lexer.returnToken(token);
         options = parseOptions(lexer, "{", defaultOptions, verbose);
         ignore = getOption(options, "ignore")->getBool();
@@ -1408,7 +1408,7 @@ void typedefKeywordHandler(
         innerTypeName = parseInnerType(lexer);
         //getTokenOfType(lexer, '>');
 
-        static Options defaultOptions;
+        static ParserOptions defaultOptions;
         if (defaultOptions.size() == 0)
         {
             defaultOptions["innerHeader"] = StringConstant::Make("");
@@ -1417,7 +1417,7 @@ void typedefKeywordHandler(
             defaultOptions["ignore"] = BoolConstant::Make(false);
         }
 
-        Options options;
+        ParserOptions options;
         options = parseOptions(lexer, "{", defaultOptions, verbose);
 
         innerHeader = getOption(options, "innerHeader")->getString();
@@ -1430,14 +1430,14 @@ void typedefKeywordHandler(
         lexer.returnToken(token);
         innerTypeName = outerDataType->name();
 
-        static Options defaultOptions;
+        static ParserOptions defaultOptions;
         if (defaultOptions.size() == 0)
         {
             defaultOptions["noDoc"] = BoolConstant::Make(false);
             defaultOptions["ignore"] = BoolConstant::Make(false);
         }
 
-        Options options;
+        ParserOptions options;
         options = parseOptions(lexer, "{", defaultOptions, verbose);
 
         noDoc = getOption(options, "noDoc")->getBool();
@@ -1673,7 +1673,7 @@ void typenameKeywordHandler(
     oss << name << ";";
     std::string preDeclaration = oss.str();
 
-    static Options defaultOptions;
+    static ParserOptions defaultOptions;
     if (defaultOptions.size() == 0)
     {
         defaultOptions["freeFunc"] = StringConstant::Make("");
@@ -1699,7 +1699,7 @@ void typenameKeywordHandler(
 
     if (hasOptions)
     {
-        Options options;
+        ParserOptions options;
         options  = parseOptions(lexer, ")", defaultOptions, verbose);
         getTokenOfType(lexer, ')');
         freeFunc = getOption(options, "freeFunc")->getString();
@@ -1854,13 +1854,13 @@ void templateKeywordHandler(
 
     std::string fullName = getCppTypeName(lexer);
 
-    static Options defaultOptions;
+    static ParserOptions defaultOptions;
     if (defaultOptions.size() == 0)
     {
         defaultOptions["boolTest"] = StringConstant::Make("");
     }
 
-    Options options;
+    ParserOptions options;
     options = parseOptions(lexer, ";", defaultOptions, verbose);
     std::string boolTest = getOption(options, "boolTest")->getString();
 
@@ -2004,7 +2004,7 @@ void structKeywordHandler(
         lexer.returnToken(token);
     }
 
-    static Options defaultOptions;
+    static ParserOptions defaultOptions;
     if (defaultOptions.size() == 0)
     {
         defaultOptions["noMake"] = BoolConstant::Make(false);
@@ -2017,7 +2017,7 @@ void structKeywordHandler(
         defaultOptions["uuid"] = BoolConstant::Make(false);
         defaultOptions["xlFuncName"] = StringConstant::Make("");
     }
-    Options options;
+    ParserOptions options;
     options = parseOptions(lexer, "{", defaultOptions, verbose);
     getTokenOfType(lexer, '{');
     bool noMake = getOption(options, "noMake")->getBool();
@@ -2586,7 +2586,7 @@ void classNoWrapHandler(
         lexer.returnToken(token);
     }
 
-    static Options defaultOptions;
+    static ParserOptions defaultOptions;
     if (defaultOptions.size() == 0)
     {
         defaultOptions["noMake"] = BoolConstant::Make(false);
@@ -2600,7 +2600,7 @@ void classNoWrapHandler(
         defaultOptions["xlFuncName"] = StringConstant::Make("");
     }
 
-    Options options;
+    ParserOptions options;
     options = parseOptions(lexer, "{", defaultOptions, verbose);
     getTokenOfType(lexer, '{');
 
@@ -2784,14 +2784,14 @@ void classKeywordHandler(
 
     if (isMap)
     {
-        static Options defaultMapOptions;
+        static ParserOptions defaultMapOptions;
         if (defaultMapOptions.size() == 0)
         {
             defaultMapOptions["canPut"] = BoolConstant::Make(false);
             defaultMapOptions["ignore"] = BoolConstant::Make(false);
             defaultMapOptions["uuid"] = BoolConstant::Make(false);
         }
-        Options options;
+        ParserOptions options;
         options = parseOptions(lexer, ";", defaultMapOptions, verbose);
         getTokenOfType(lexer, ';');
         bool ignore = getOption(options, "ignore")->getBool();
@@ -2824,7 +2824,7 @@ void classKeywordHandler(
 
     WrapperClassConstSP baseWrapperClass;
 
-    static Options defaultOptions;
+    static ParserOptions defaultOptions;
     if (defaultOptions.size() == 0)
     {
         defaultOptions["noMake"] = BoolConstant::Make(false);
@@ -2891,7 +2891,7 @@ void classKeywordHandler(
         lexer.returnToken(token);
     }
 
-    Options options;
+    ParserOptions options;
     options = parseOptions(lexer, "{", defaultOptions, verbose);
     getTokenOfType(lexer, '{');
 

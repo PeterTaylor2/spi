@@ -142,7 +142,7 @@ CService::writeDeclSpecHeaderFile(const std::string& dirname) const
     std::string filename = spi_util::path::join(
         dirname.c_str(), basename.c_str(), 0);
 
-    GeneratedOutput ostr(filename, spi_util::path::dirname(filename));
+    GeneratedOutput ostr(filename, spi_util::path::dirname(filename), writeBackup());
     writeLicense(ostr, license());
     startHeaderFile(ostr, filename);
 
@@ -179,7 +179,7 @@ std::string CService::writePublicHeaderFile(const std::string& dirname,
     std::string filename = spi_util::path::join(
         dirname.c_str(), basename.c_str(), 0);
 
-    GeneratedOutput ostr(filename, spi_util::path::dirname(filename));
+    GeneratedOutput ostr(filename, spi_util::path::dirname(filename), writeBackup());
     writeLicense(ostr, license());
     startHeaderFile(ostr, filename);
 
@@ -245,7 +245,7 @@ std::string CService::writePrivateHeaderFile(const std::string& dirname,
     std::string filename = spi_util::path::join(
         dirname.c_str(), "src", basename.c_str(), 0);
 
-    GeneratedOutput ostr(filename, spi_util::path::dirname(filename));
+    GeneratedOutput ostr(filename, spi_util::path::dirname(filename), writeBackup());
     writeLicense(ostr, license());
     startHeaderFile(ostr, filename);
 
@@ -288,7 +288,7 @@ std::string CService::writeSourceFile(const std::string& dirname) const
     std::string filename = spi_util::path::join(
         dirname.c_str(), "src", basename.c_str(), 0);
 
-    GeneratedOutput ostr(filename, spi_util::path::dirname(filename));
+    GeneratedOutput ostr(filename, spi_util::path::dirname(filename), writeBackup());
     writeLicense(ostr, license());
     startSourceFile(ostr, filename);
     if (!m_options.noGeneratedCodeNotice)
@@ -405,6 +405,11 @@ const std::string& CService::license() const
     return m_options.license;
 }
 
+bool CService::writeBackup() const
+{
+    return m_options.writeBackup;
+}
+
 /*
 ***************************************************************************
 ** Implementation of CModule
@@ -504,7 +509,7 @@ std::string CModule::writeSourceFile(const std::string& dirname) const
     std::string filename = spi_util::path::join(
         dirname.c_str(), "src", basename.c_str(), 0);
 
-    GeneratedOutput ostr(filename, spi_util::path::dirname(filename));
+    GeneratedOutput ostr(filename, spi_util::path::dirname(filename), service->writeBackup());
     writeLicense(ostr, service->license());
     startSourceFile(ostr, filename);
     if (!service->noGeneratedCodeNotice())

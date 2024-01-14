@@ -20,6 +20,7 @@
 #include "texService.hpp"
 #include "texModule.hpp"
 #include "texIndex.hpp"
+#include "texOptions.hpp"
 
 #include <spgtools/generatedOutput.hpp>
 #include <spgtools/commonTools.hpp>
@@ -34,6 +35,13 @@
 #include <algorithm>
 #include <iostream>
 
+namespace
+{
+    bool writeBackup()
+    {
+        return getOptions().writeBackup;
+    }
+}
 
 static void tidyup(
     const spdoc::ServiceConstSP& svc,
@@ -90,7 +98,7 @@ bool writeTexServiceDescription(
     const spdoc::ServiceConstSP& service,
     std::set<std::string>&       fns)
 {
-    GeneratedOutput ostr(texFileName(dirname, "service.tex"));
+    GeneratedOutput ostr(texFileName(dirname, "service.tex"), writeBackup());
     writeTexDescription(ostr, service->description);
     fns.insert("service.tex");
     return ostr.close();
@@ -105,7 +113,7 @@ bool writeTexServiceDateStamp(
         "January,February,March,April,May,June,July,August,September,October,November,December",
         ',');
 
-    GeneratedOutput ostr(texFileName(dirname, "datestamp.tex"));
+    GeneratedOutput ostr(texFileName(dirname, "datestamp.tex"), writeBackup());
     spi::Date today = spi::Date::Today();
 
     ostr << "\\date{" << today.Day() << " " << months[today.Month()-1]
@@ -124,7 +132,7 @@ bool writeTexServiceBuiltinTypes(
     const spdoc::ServiceConstSP& service,
     std::set<std::string>&       fns)
 {
-    GeneratedOutput ostr(texFileName(dirname, "builtinTypes.tex"));
+    GeneratedOutput ostr(texFileName(dirname, "builtinTypes.tex"), writeBackup());
 
     ostr << "\\section{Built-in types}\n\n";
     ostr << "Built-in types are data types that are provided as standard for "
@@ -157,7 +165,7 @@ bool writeTexServiceSimpleTypes(
     const std::vector<std::string>& fileNames,
     std::set<std::string>&          fns)
 {
-    GeneratedOutput ostr(texFileName(dirname, "simpleTypes.tex"));
+    GeneratedOutput ostr(texFileName(dirname, "simpleTypes.tex"), writeBackup());
     ostr << "\\section{Simple types}\n\n";
     ostr << "Simple types are types which are represented by one of the "
          << "standard types in the public interface (bool, int, double, "
@@ -178,7 +186,7 @@ bool writeTexServiceEnums(
     const std::vector<std::string>& fileNames,
     std::set<std::string>&          fns)
 {
-    GeneratedOutput ostr(texFileName(dirname, "enums.tex"));
+    GeneratedOutput ostr(texFileName(dirname, "enums.tex"), writeBackup());
     ostr << "\\section{Enumerated types}\n\n";
     ostr << "Enumerated types are types which can take one of a finite number "
          << "of possible values. At the C++ level, these are represented by "
@@ -203,7 +211,7 @@ bool writeTexServiceClasses(
     const std::vector<std::string>& fileNames,
     std::set<std::string>&          fns)
 {
-    GeneratedOutput ostr(texFileName(dirname, "classes.tex"));
+    GeneratedOutput ostr(texFileName(dirname, "classes.tex"), writeBackup());
     ostr << "\\section{Classes}\n\n";
     ostr << "Classes contain data represented by attributes and can have "
          << "function represented by so-called class methods.\n\n";
@@ -297,7 +305,7 @@ bool writeTexImportedTypes(
             stillUndefined.push_back(*iter);
     }
 
-    GeneratedOutput ostr(texFileName(dirname, "importedTypes.tex"));
+    GeneratedOutput ostr(texFileName(dirname, "importedTypes.tex"), writeBackup());
     ostr << "\\section{Imported types}\n\n";
     ostr << "Some types are defined by other services.\n"
          << "For a full description (including constructors) please refer to "
@@ -336,7 +344,7 @@ bool writeTexServiceTypes(
     const std::vector<std::string>& dnImports,
     std::set<std::string>&          fns)
 {
-    GeneratedOutput ostr(texFileName(dirname, "types.tex"));
+    GeneratedOutput ostr(texFileName(dirname, "types.tex"), writeBackup());
 
     std::set<std::string> undefinedTypes(typesUsed);
 
@@ -407,7 +415,7 @@ bool writeTexServiceFunctions(
     {
         // we need three files - functionsAndClassMethods.tex, functions.tex, classMethods.tex
         // when we wrote the functions, each function had its own subsection
-        GeneratedOutput fcmstr(texFileName(dirname, "functionsAndClassMethods.tex"));
+        GeneratedOutput fcmstr(texFileName(dirname, "functionsAndClassMethods.tex"), writeBackup());
         fcmstr << "In this library there are two types of functions.\n"
                << "We have free standing functions not attached to a "
                << "particular class, and we have class methods which are "
@@ -453,7 +461,7 @@ bool writeTexServiceFunctions(
         fns.insert("functionsAndClassMethods.tex");
         fcmstr.close();
 
-        GeneratedOutput cmstr(texFileName(dirname, "classMethods.tex"));
+        GeneratedOutput cmstr(texFileName(dirname, "classMethods.tex"), writeBackup());
         cmstr << "\\section{Class methods}\n\n";
         cmstr << "These are the class methods (including \\texttt{static} "
               << "methods in the library).\n"
@@ -478,7 +486,7 @@ bool writeTexServiceFunctions(
         fns.insert("classMethods.tex");
         cmstr.close();
     }
-    GeneratedOutput ostr(texFileName(dirname, "functions.tex"));
+    GeneratedOutput ostr(texFileName(dirname, "functions.tex"), writeBackup());
     if (classMethods.size() > 0)
     {
         ostr << "\\section{Functions}\n\n";
@@ -522,7 +530,7 @@ bool writeTexServiceClassMethods(
     const std::vector<std::string>& fileNames,
     std::set<std::string>&          fns)
 {
-    GeneratedOutput ostr(texFileName(dirname, "classMethods.tex"));
+    GeneratedOutput ostr(texFileName(dirname, "classMethods.tex"), writeBackup());
     ostr << "\\section{Class methods}\n\n";
     writeTexInputList(ostr, fileNames, true);
     fns.insert("classMethods.tex");

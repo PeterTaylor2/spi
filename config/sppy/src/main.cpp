@@ -123,7 +123,7 @@ int main(int argc, char* argv[])
 
     std::string exe("SPPY");
     const char* longOptions = "noImporter noGeneratedCodeNotice lowerCase lowerCaseMethod"
-        " objectCoerce helpFuncList keywords fastCall license licenseFile=";
+        " objectCoerce helpFuncList keywords fastCall license licenseFile= backup";
 
     Options options;
 
@@ -183,6 +183,10 @@ int main(int argc, char* argv[])
             else if (opt == "--licenseFile")
             {
                 options.license = readLicenseFile(val);
+            }
+            else if (opt == "--backup")
+            {
+                options.writeBackup = true;
             }
             else
             {

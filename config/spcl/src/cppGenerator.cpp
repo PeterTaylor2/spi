@@ -39,8 +39,7 @@ static void generateModule(
     const ModuleDefinitionSP& module,
     const std::string& dn,
     std::set<std::string>& fns,
-    bool noHeaderSplit,
-    const std::string& license,
+    const Options& options,
     bool types=false);
 
 static void generateModuleConfig(
@@ -75,7 +74,7 @@ void generateCpp(
     }
     const std::vector<ModuleDefinitionSP>& modules = svc->getModules();
     for (size_t i = 0; i < modules.size(); ++i)
-        generateModule(svc, modules[i], dn, fns, options.noHeaderSplit, options.license);
+        generateModule(svc, modules[i], dn, fns, options);
     if (!options.noTidyup)
         tidyup(svc, dn, fns);
 }
@@ -86,7 +85,7 @@ void generateTypes(const ServiceDefinitionSP& svc, const std::string& dn, const 
     generateService(svc, dn, fns, options, true);
     const std::vector<ModuleDefinitionSP>& modules = svc->getModules();
     for (size_t i = 0; i < modules.size(); ++i)
-        generateModule(svc, modules[i], dn, fns, true, options.license, true);
+        generateModule(svc, modules[i], dn, fns, options, true);
     if (!options.noTidyup)
         tidyup(svc, dn, fns);
 }
@@ -212,7 +211,7 @@ void generateService(
     */
     fn = spi_util::path::posix(
         spi::StringFormat("%s/%s_dll_decl_spec.h", dn.c_str(), name.c_str()));
-    svc->writeDeclSpecHeader(fn, dn, options.license);
+    svc->writeDeclSpecHeader(fn, dn, options);
     fns.insert(fn);
 
     /*
@@ -222,7 +221,7 @@ void generateService(
     */
     fn = spi_util::path::posix(
         spi::StringFormat("%s/%s_namespace.hpp", dn.c_str(), name.c_str()));
-    svc->writeServiceNamespace(fn, dn, options.license, types);
+    svc->writeServiceNamespace(fn, dn, options, types);
     fns.insert(fn);
 
     /*
@@ -234,7 +233,7 @@ void generateService(
         spi::StringFormat("%s/%s_dll_service.hpp", dn.c_str(), name.c_str()));
     std::string fn2 = spi_util::path::posix(
         spi::StringFormat("%s/src/%s_dll_service_manager.hpp", dn.c_str(), name.c_str()));
-    svc->writeServiceHeaders(fn1, fn2, dn, options.license, types);
+    svc->writeServiceHeaders(fn1, fn2, dn, options, types);
     fns.insert(fn1);
     fns.insert(fn2);
 
@@ -245,7 +244,7 @@ void generateService(
     */
     fn = spi_util::path::posix(
         spi::StringFormat("%s/src/%s_dll_time_out.hpp", dn.c_str(), name.c_str()));
-    svc->writeTimeoutHeader(fn, dn, options.license);
+    svc->writeTimeoutHeader(fn, dn, options);
     fns.insert(fn);
 
     /*
@@ -255,7 +254,7 @@ void generateService(
     */
     fn = spi_util::path::posix(
         spi::StringFormat("%s/src/%s_dll_service_manager.cpp", dn.c_str(), name.c_str()));
-    svc->writeServiceSource(fn, dn, options.license, types);
+    svc->writeServiceSource(fn, dn, options, types);
     fns.insert(fn);
 
     /*
@@ -265,7 +264,7 @@ void generateService(
     */
     fn = spi_util::path::posix(
         spi::StringFormat("%s/src/%s_dll_type_converters.hpp", dn.c_str(), name.c_str()));
-    svc->writeTypeConvertersHeader(fn, dn, options.license);
+    svc->writeTypeConvertersHeader(fn, dn, options);
     fns.insert(fn);
 }
 
@@ -275,8 +274,7 @@ void generateModule(
     const ModuleDefinitionSP& module,
     const std::string& dn,
     std::set<std::string>& fns,
-    bool noHeaderSplit,
-    const std::string& license,
+    const Options& options,
     bool types)
 {
     const char* name  = module->name().c_str();
@@ -304,7 +302,7 @@ void generateModule(
     * main header
     **********************************************************************
     */
-    module->writeHeader(hfn, dn, svc, noHeaderSplit, license, types);
+    module->writeHeader(hfn, dn, svc, options, types);
     fns.insert(hfn);
 
     /*
@@ -312,9 +310,9 @@ void generateModule(
     * forward header
     **********************************************************************
     */
-    if (!noHeaderSplit)
+    if (!options.noHeaderSplit)
     {
-        module->writeClassesHeader(hcfn, dn, svc, license, types);
+        module->writeClassesHeader(hcfn, dn, svc, options, types);
         fns.insert(hcfn);
     }
 
@@ -323,7 +321,7 @@ void generateModule(
     * helper header
     **********************************************************************
     */
-    module->writeHelperHeader(hhfn, dn, svc, noHeaderSplit, license, types);
+    module->writeHelperHeader(hhfn, dn, svc, options, types);
     fns.insert(hhfn);
 
     /*
@@ -331,7 +329,7 @@ void generateModule(
     * main implementation
     **********************************************************************
     */
-    module->writeSource(ofn, dn, svc, license, types);
+    module->writeSource(ofn, dn, svc, options, types);
     fns.insert(ofn);
 
     /*
@@ -339,7 +337,7 @@ void generateModule(
     * helper implementation
     **********************************************************************
     */
-    module->writeHelperSource(ohfn, dn, svc, license, types);
+    module->writeHelperSource(ohfn, dn, svc, options, types);
     fns.insert(ohfn);
 }
 
