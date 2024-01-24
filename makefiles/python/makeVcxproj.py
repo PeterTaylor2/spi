@@ -19,7 +19,8 @@ def command_line(compiler, toolsVersion, platformToolset, abiFunc):
                               ["buildSuffix=",
                                "exe=",
                                "makefileTarget=",
-                               "cleanTarget="])
+                               "cleanTarget=",
+                               "silent"])
     headerPatterns  = ["*.hpp", "*.h"]
     sourcePatterns  = ["*.cpp", "*.c"]
     extraSourceDirs = []
@@ -37,6 +38,7 @@ def command_line(compiler, toolsVersion, platformToolset, abiFunc):
         elif opt[0] == "--makefileTarget": kwargs["makefileTarget"] = opt[1]
         elif opt[0] == "--cleanTarget": kwargs["cleanTarget"] = opt[1]
         elif opt[0] == "--exe": kwargs["exeName"] = opt[1]
+        elif opt[0] == "--silent": kwargs["silent"] = True
         elif opt[0] == "-I": includePath.append(opt[1])
         elif opt[0] == "-b": kwargs["bin"] = opt[1]
         elif opt[0] == "-j": kwargs["parallel"] = int(opt[1])
@@ -219,7 +221,7 @@ def get_import_property_sheets(platforms):
     return "\n".join(lines)
 
 def _get_property_groups(platforms, makefileTarget, cleanTarget, compiler, bin,
-                      buildSuffix, includePath, parallel, exeName, abiFunc):
+                      buildSuffix, includePath, parallel, exeName, abiFunc, silent):
 
     vsIncludePath = []
     for include in includePath:
@@ -230,7 +232,8 @@ def _get_property_groups(platforms, makefileTarget, cleanTarget, compiler, bin,
     vsIncludePath = ";".join(vsIncludePath)
 
     lines = []
-    parallelMake = "make" if parallel <= 1 else ("make -j%d" % parallel)
+    make = "make -s" if silent else "make"
+    parallelMake = make if parallel <= 1 else ("%s -j%d" % (make, parallel))
     for platform in platforms:
         name = platform[0]
         bits = platform[1]
@@ -245,11 +248,11 @@ def _get_property_groups(platforms, makefileTarget, cleanTarget, compiler, bin,
                     condition, dn))
             lines.append("    <NMakeBuildCommandLine Condition=\"%s\">%s %s VS_BUILD=1 COMPILER=%s BITS=%s%s</NMakeBuildCommandLine>" % (
                     condition, parallelMake, makefileTarget, compiler, bits, debugFlag))
-            lines.append("    <NMakeReBuildCommandLine Condition=\"%s\">make %s VS_BUILD=1 COMPILER=%s BITS=%s%s &amp;&amp; %s %s VS_BUILD=1 COMPILER=%s BITS=%s%s</NMakeReBuildCommandLine>" % (
-                    condition, cleanTarget, compiler, bits, debugFlag,
+            lines.append("    <NMakeReBuildCommandLine Condition=\"%s\">%s %s VS_BUILD=1 COMPILER=%s BITS=%s%s &amp;&amp; %s %s VS_BUILD=1 COMPILER=%s BITS=%s%s</NMakeReBuildCommandLine>" % (
+                    condition, make, cleanTarget, compiler, bits, debugFlag,
                     parallelMake, makefileTarget, compiler, bits, debugFlag))
-            lines.append("    <NMakeCleanCommandLine Condition=\"%s\">make %s VS_BUILD=1 COMPILER=%s BITS=%s%s</NMakeCleanCommandLine>" % (
-                    condition, cleanTarget, compiler, bits, debugFlag))
+            lines.append("    <NMakeCleanCommandLine Condition=\"%s\">%s %s VS_BUILD=1 COMPILER=%s BITS=%s%s</NMakeCleanCommandLine>" % (
+                    condition, make, cleanTarget, compiler, bits, debugFlag))
             lines.append("    <ExecutablePath Condition=\"%s\">%s;$(ExecutablePath)</ExecutablePath>" % (condition, os.path.normpath(bin)))
             if len(vsIncludePath):
                 lines.append("    <NMakeIncludeSearchPath>%s%s</NMakeIncludeSearchPath>" % (
@@ -280,7 +283,8 @@ def make_proj(fileName, name, compiler, srcDir, incDir,
              cleanTarget="clean",
              bin=r"C:\cygwin\bin",
              exeName=None,
-             parallel=4):
+             parallel=4,
+             silent=False):
 
     guids = guidUtils.read_and_write_guids(fileName, ["Project"])
     guids.update(guidUtils.read_and_write_guids(fileName + ".filters", ["Header Files", "Source Files"],
@@ -304,7 +308,7 @@ def make_proj(fileName, name, compiler, srcDir, incDir,
     importPropertySheets   = get_import_property_sheets(platforms)
     propertyGroups         = _get_property_groups(
         platforms, makefileTarget, cleanTarget, compiler, bin,
-        buildSuffix, includePath, parallel, exeName, abiFunc)
+        buildSuffix, includePath, parallel, exeName, abiFunc, silent)
 
     data = {"name" : name,
             "tools_version" : toolsVersion}
