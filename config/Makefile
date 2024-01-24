@@ -21,8 +21,10 @@ sppy\
 sptex\
 spxl
 
+EXTRA_VCPROJ_DIRS=spcl/types spdoc
+
 U_VCPROJ=config-build
-U_VCPROJ_OPTIONS=-tconfig-build
+U_VCPROJ_OPTIONS=-j4 -tconfig-build --cleanTarget=config-clean --silent
 U_SRC_DIR=.
 U_INC_DIR=.
 
@@ -52,19 +54,34 @@ clean::
 		$(MAKE) -C $$lib clean; \
 	done
 
+# note that after copying to the bin-$(G_PLATFORM) directory we need to delete the bin/<ABI> directory
+# since the latter directory takes precedence in makefiles
 config-build::
 	@$(MAKE) build DEBUG=0 COMPILER=$(G_CONFIG_COMPILER) BITS=$(G_CONFIG_COMPILER_BITS)
-	mkdir -p $(U_SPI_HOME)/config/bin-$(G_PLATFORM)
-	cp $(U_SPI_HOME)/config/bin/$(G_CONFIG_COMPILER_ABI)/*$(G_EXE) $(U_SPI_HOME)/config/bin-$(G_PLATFORM)
-	rm -fr $(U_SPI_HOME)/config/bin
+	mkdir -p bin-$(G_PLATFORM)
+	$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/copyFiles.py bin-$(G_PLATFORM) bin/$(G_CONFIG_COMPILER_ABI)/*$(G_EXE)
+	rm -fr $(U_SPI_HOME)/config/bin/$(G_CONFIG_COMPILER_ABI)
 	$(MAKE) -C spcl doc DEBUG=0 COMPILER=$(G_CONFIG_COMPILER) BITS=$(G_CONFIG_COMPILER_BITS)
 
 config-clean::
 	@$(MAKE) clean DEBUG=0 COMPILER=$(G_CONFIG_COMPILER) BITS=$(G_CONFIG_COMPILER_BITS)
-	rm -fr $(U_SPI_HOME)/config/bin
+	rm -fr $(U_SPI_HOME)/config/bin/$(G_CONFIG_COMPILER_ABI)
 
 rebuild: clean build
 
 code:
 	make -C spcl types-code
 	make -C spdoc
+
+vc-all:
+	@$(MAKE) -s v16.vcxproj U_VCPROJ=refresh-projects U_VCPROJ_OPTIONS="-j1 -tvc-all"
+	@$(MAKE) -s v17.vcxproj U_VCPROJ=refresh-projects U_VCPROJ_OPTIONS="-j1 -tvc-all"
+	@$(MAKE) -s v16.vcxproj U_VCPROJ=config-build U_VCPROJ_OPTIONS="-j4 -tconfig-build --cleanTarget=config-clean --silent"
+	@$(MAKE) -s v17.vcxproj U_VCPROJ=config-build U_VCPROJ_OPTIONS="-j4 -tconfig-build --cleanTarget=config-clean --silent"
+	@$(MAKE) -s v16.vcxproj U_VCPROJ=all U_VCPROJ_OPTIONS="-j4 -tbuild"
+	@$(MAKE) -s v17.vcxproj U_VCPROJ=all U_VCPROJ_OPTIONS="-j4 -tbuild"
+	@for lib in $(BUILD_DIRS) $(EXTRA_VCPROJ_DIRS); do \
+		echo Creating vcproject for $$lib; \
+		$(MAKE) -s -C $$lib v16.vcxproj; \
+		$(MAKE) -s -C $$lib v17.vcxproj; \
+	done

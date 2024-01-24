@@ -21,3 +21,10 @@ copy: code
 	cp -pf types*.hpp ../src
 	cp -pf src/types*.[ch]pp ../src
 
+clean::
+	rm -f *.h
+	rm -f *.hpp
+	rm -fr src
+	rm -f *.svt
+	rm -f properties.mk
+

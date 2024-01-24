@@ -1,4 +1,10 @@
+help:
+
 .PHONY: all copy clean doc zip doc-zip tar build doc-clean
+
+help:
+	@echo "make copy TARGET=<path_to_spi_directory>"
+	@echo "make copy-config CONFIG_TARGET=<path_to_cpldev_directory>"
 
 all: copy
 
@@ -33,6 +39,12 @@ $(TARGET)-$(G_PLATFORM).tar.bz2: copy
 copy: build
 	@$(COPY_MANIFEST) spi-common.man $(U_SPI_HOME) $(TARGET)
 	@$(COPY_MANIFEST) spi-$(G_PLATFORM).man $(U_SPI_HOME) $(TARGET) SPI_DLL=$(SPI_DLL)
+
+copy-config:
+ifndef CONFIG_TARGET
+	@echo "CONFIG_TARGET undefined" && exit 1
+endif
+	@$(COPY_MANIFEST) spi-config.man $(U_SPI_HOME) $(CONFIG_TARGET)/3rdParty/spi
 
 doc:
 	@$(COPY_MANIFEST) spi-doc-source.man $(U_SPI_HOME)/doc $(TARGET)-doc

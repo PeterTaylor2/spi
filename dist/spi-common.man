@@ -52,6 +52,7 @@ makefiles/config/computers/*.mk
 
 # header files
 
+LGPL.h
 spi_boost/*.h
 spi_boost/*.hpp
 spi_boost/config

@@ -28,6 +28,7 @@ include $(U_SPI_HOME)/makefiles/build/exe.mk
 libs:
 	$(MAKE) -C ../spgtools
 	$(MAKE) -C ../../lib
+	$(MAKE) -C ../../spi_util/lib
 
 debug:
 	$(MAKE) run DEBUG=1 ARGS="-w $(ARGS)"

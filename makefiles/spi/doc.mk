@@ -58,7 +58,7 @@ ifdef NO_SVO2TEX
 $(U_SERVICE).svo: $(U_CONFIG_DIR)/$(U_SERVICE).svo $(I_SPTEX) $(U_EXTRA_SERVICES)
 	@mkdir -p tex
 	@mkdir -p tex_imports
-	$(I_SPTEX) $(U_SPTEX_OPTIONS) $(U_CONFIG_DIR)/$(U_SERVICE).svo $(U_SERVICE).svo . $(U_EXTRA_SERVICES)
+	$(I_SPTEX) $(G_SPTEX_OPTIONS) $(U_SPTEX_OPTIONS) $(U_CONFIG_DIR)/$(U_SERVICE).svo $(U_SERVICE).svo . $(U_EXTRA_SERVICES)
 
 else
 
@@ -66,7 +66,7 @@ $(U_SERVICE).svo: $(U_CONFIG_DIR)/$(U_SERVICE).svo $(I_SVO2TEX_SCRIPTS) $(U_EXTR
 	@mkdir -p tex
 	@mkdir -p tex_imports
 	@echo PYTHONPATH=$(PYTHONPATH)
-	$(G_PYTHON) $(U_SPI_HOME)/svo/svo2tex.py $(U_SPTEX_OPTIONS) $(U_CONFIG_DIR)/$(U_SERVICE).svo $(U_SERVICE).svo . $(U_EXTRA_SERVICES)
+	$(G_PYTHON) $(U_SPI_HOME)/svo/svo2tex.py $(G_SPTEX_OPTIONS) $(U_SPTEX_OPTIONS) $(U_CONFIG_DIR)/$(U_SERVICE).svo $(U_SERVICE).svo . $(U_EXTRA_SERVICES)
 
 endif
 

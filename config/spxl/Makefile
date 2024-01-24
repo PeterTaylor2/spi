@@ -10,10 +10,6 @@ U_TARGET=spxl
 
 include $(U_SPI_HOME)/makefiles/config/config.mk
 
-ifneq ($(G_PLATFORM),win32)
-U_NO_BUILD=1
-endif
-
 U_DEP_LIBS = \
  ../spgtools/$(G_BUILD_DIR)/$(G_LIB_PFX)spgtools$(G_LIB_EXT)\
  $(U_SPI_HOME)/lib/$(G_BUILD_DIR)/$(G_LIB_PFX)spi$(G_LIB_EXT)\

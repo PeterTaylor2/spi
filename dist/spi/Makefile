@@ -41,19 +41,7 @@ clean-all::
 		$(MAKE) -C $$lib clean-all; \
 	done
 
-v16.vcxproj:
-	@$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/makeVcproj16.py -b $(U_SPI_HOME)/build-win32/bin --makefileTarget=build --cleanTarget=clean spi.v16.vcxproj spi spi/src spi
-	@for lib in $(BUILD_DIRS); do \
-		echo Creating vcproject for $$lib; \
-		$(MAKE) -C $$lib v16.vcxproj; \
-	done
-
-v17.vcxproj:
-	@$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/makeVcproj17.py -b $(U_SPI_HOME)/build-win32/bin --makefileTarget=build --cleanTarget=clean spi.v17.vcxproj spi spi/src spi
-	@for lib in $(BUILD_DIRS); do \
-		echo Creating vcproject for $$lib; \
-		$(MAKE) -C $$lib v17.vcxproj; \
-	done
+include $(U_SPI_HOME)/makefiles/build/vcproj.mk
 
 rebuild: clean build
 
@@ -61,11 +49,20 @@ test:
 	@$(MAKE) -C test all
 
 vc-all:
-	$(MAKE) -s v16.vcxproj
-	$(MAKE) -s v17.vcxproj
+	@$(MAKE) -s v16.vcxproj U_VCPROJ=refresh-projects U_VCPROJ_OPTIONS="-j1 -tvc-all" U_SRC_DIR=. U_INC_DIR=None
+	@$(MAKE) -s v17.vcxproj U_VCPROJ=refresh-projects U_VCPROJ_OPTIONS="-j1 -tvc-all" U_SRC_DIR=. U_INC_DIR=None
+	@$(MAKE) -s v16.vcxproj U_VCPROJ=all U_VCPROJ_OPTIONS="-j4 -tbuild" U_SRC_DIR=. U_INC_DIR=None
+	@$(MAKE) -s v17.vcxproj U_VCPROJ=all U_VCPROJ_OPTIONS="-j4 -tbuild" U_SRC_DIR=. U_INC_DIR=None
+	@for lib in $(BUILD_DIRS); do \
+		echo Creating vcproject for $$lib; \
+		$(MAKE) -s -C $$lib v16.vcxproj; \
+		$(MAKE) -s -C $$lib v17.vcxproj; \
+	done
+
+WIN32_COMPILERS=msvc16 msvc17
 
 win32:
-	@for compiler in msvc16 msvc17; do \
+	@for compiler in $(WIN32_COMPILERS); do \
 		echo "=========================================================="; \
 		echo "Building for COMPILER=$$compiler" DEBUG=$(DEBUG) BITS=32; \
 		echo "=========================================================="; \
@@ -74,10 +71,12 @@ win32:
 	done
 
 win64:
-	@for compiler in msvc16 msvc17; do \
+	@for compiler in $(WIN32_COMPILERS); do \
 		echo "=========================================================="; \
 		echo "Building for COMPILER=$$compiler" DEBUG=$(DEBUG) BITS=64; \
 		echo "=========================================================="; \
 		$(MAKE) build COMPILER=$$compiler BITS=64; \
 		$(MAKE) build COMPILER=$$compiler BITS=64; \
 	done
+
+
