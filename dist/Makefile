@@ -3,8 +3,12 @@ help:
 .PHONY: all copy clean doc zip doc-zip tar build doc-clean
 
 help:
-	@echo "make copy TARGET=<path_to_spi_directory>"
-	@echo "make copy-config CONFIG_TARGET=<path_to_cpldev_directory>"
+	@echo "make copy-runtime TARGET=<path_to_spi_directory>"
+	@echo "  --- copies runtime libraries"
+	@echo "make copy-config-source TARGET=<path_to_spi_directory>"
+	@echo "  --- copies source code for code generators"
+	@echo "make copy-config-bin TARGET=<path_to_spi_directory>"
+	@echo "  --- copies binaries for code generators"
 
 all: copy
 
@@ -36,15 +40,24 @@ $(TARGET)-$(G_PLATFORM).tar.bz2: copy
 	tar cf $(TARGET)-$(G_PLATFORM).tar $(TARGET)
 	bzip2 $(TARGET)-$(G_PLATFORM).tar
 
-copy: build
+copy-runtime:
+ifndef TARGET
+	@echo "TARGET undefined" && exit 1
+endif
 	@$(COPY_MANIFEST) spi-common.man $(U_SPI_HOME) $(TARGET)
 	@$(COPY_MANIFEST) spi-$(G_PLATFORM).man $(U_SPI_HOME) $(TARGET) SPI_DLL=$(SPI_DLL)
 
-copy-config:
-ifndef CONFIG_TARGET
-	@echo "CONFIG_TARGET undefined" && exit 1
+copy-config-source:
+ifndef TARGET
+	@echo "TARGET undefined" && exit 1
 endif
-	@$(COPY_MANIFEST) spi-config.man $(U_SPI_HOME) $(CONFIG_TARGET)/3rdParty/spi
+	@$(COPY_MANIFEST) spi-config-source.man $(U_SPI_HOME) $(TARGET)
+
+copy-config-bin: build
+ifndef TARGET
+	@echo "TARGET undefined" && exit 1
+endif
+	@$(COPY_MANIFEST) spi-config-$(G_PLATFORM).man $(U_SPI_HOME) $(TARGET)
 
 doc:
 	@$(COPY_MANIFEST) spi-doc-source.man $(U_SPI_HOME)/doc $(TARGET)-doc

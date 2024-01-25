@@ -1,12 +1,4 @@
 # win32 specific files
-# not config-build target should put these in config/bin directory
-
-config/bin-win32/spcl.exe config/bin-win32
-config/bin-win32/spxl.exe config/bin-win32
-config/bin-win32/sppy.exe config/bin-win32
-config/bin-win32/sptex.exe config/bin-win32
-config/bin-win32/spc.exe config/bin-win32
-config/bin-win32/spcs.exe config/bin-win32
 
 python/x86/lib/python27.lib
 python/x86/lib/python37.lib

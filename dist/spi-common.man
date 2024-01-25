@@ -24,6 +24,7 @@ makefiles/spi/doc.mk
 makefiles/spi/runtime.mk
 makefiles/config/*.mk
 makefiles/config/configs/*.mk
+makefiles/python/copyFiles.py
 makefiles/python/copyManifest.py
 makefiles/python/copyRedist.py
 makefiles/python/copyVcxproj.py

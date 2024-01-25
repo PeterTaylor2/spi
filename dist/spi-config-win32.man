@@ -1,0 +1,9 @@
+# win32 code generators specific files
+
+config/bin-win32/spcl.exe config/bin-win32
+config/bin-win32/spxl.exe config/bin-win32
+config/bin-win32/sppy.exe config/bin-win32
+config/bin-win32/sptex.exe config/bin-win32
+config/bin-win32/spc.exe config/bin-win32
+config/bin-win32/spcs.exe config/bin-win32
+

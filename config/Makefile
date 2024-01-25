@@ -61,7 +61,6 @@ config-build::
 	mkdir -p bin-$(G_PLATFORM)
 	$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/copyFiles.py bin-$(G_PLATFORM) bin/$(G_CONFIG_COMPILER_ABI)/*$(G_EXE)
 	rm -fr $(U_SPI_HOME)/config/bin/$(G_CONFIG_COMPILER_ABI)
-	$(MAKE) -C spcl doc DEBUG=0 COMPILER=$(G_CONFIG_COMPILER) BITS=$(G_CONFIG_COMPILER_BITS)
 
 config-clean::
 	@$(MAKE) clean DEBUG=0 COMPILER=$(G_CONFIG_COMPILER) BITS=$(G_CONFIG_COMPILER_BITS)
@@ -72,6 +71,11 @@ rebuild: clean build
 code:
 	make -C spcl types-code
 	make -C spdoc
+
+vs-translate:
+	@echo "Translating spi-config-vs16.sln to spi-config-vs17.sln"
+	@$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/translateVS.py spi-config-vs16.sln spi-config-vs17.sln > spi-config-vs17.log
+	@echo "See spi-config-vs17.log for details"
 
 vc-all:
 	@$(MAKE) -s v16.vcxproj U_VCPROJ=refresh-projects U_VCPROJ_OPTIONS="-j1 -tvc-all"
