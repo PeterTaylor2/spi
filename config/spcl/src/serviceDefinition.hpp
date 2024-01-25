@@ -74,6 +74,10 @@ public:
         const std::vector<ClassConstSP>& classes,
         const std::vector<EnumConstSP>& enums);
 
+    // removes types which are already defined in one of the existing types libraries
+    // note that all the namespaces must be the same
+    TypesLibraryConstSP RemoveDuplicates(const std::vector<TypesLibraryConstSP>& tls) const;
+
     const std::string& name() const;
     const std::string& ns() const;
     const std::string& version() const;
@@ -258,8 +262,8 @@ private:
     VerbatimConstSP m_permission;
     VerbatimConstSP m_serviceInit;
     std::vector<std::string> m_includes;
-    TypesLibraryConstSP m_importedTypes;
-    bool m_publicImport;
+    std::vector<TypesLibraryConstSP> m_importedTypes;
+    std::vector<bool> m_publicImports;
 
     void VerifyAndComplete();
     void addModuleToIndex(const ModuleDefinitionSP& module);

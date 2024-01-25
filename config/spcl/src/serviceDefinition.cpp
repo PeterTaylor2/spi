@@ -85,6 +85,90 @@ TypesLibraryConstSP TypesLibrary::Make(
         new TypesLibrary(name, ns, version, lastModuleName, definedDataTypes, publicDataTypes, baseClasses, enums));
 }
 
+TypesLibraryConstSP TypesLibrary::RemoveDuplicates(const std::vector<TypesLibraryConstSP>& tls) const
+{
+    std::set<std::string> dataTypeNames;
+    std::set<std::string> publicDataTypeNames;
+    std::set<std::string> baseClassNames;
+    std::set<std::string> enumNames;
+
+    for (size_t j = 0; j < tls.size(); ++j)
+    {
+        const TypesLibraryConstSP& tl = tls[j];
+        if (tl->m_ns != m_ns)
+            SPI_THROW_RUNTIME_ERROR("Namespaces for all types library must be the same");
+
+        size_t N = tl->m_dataTypes.size();
+        for (size_t i = 0; i < N; ++i)
+        {
+            dataTypeNames.insert(tl->m_dataTypes[i]->name());
+        }
+
+        N = tl->m_publicDataTypes.size();
+        for (size_t i = 0; i < N; ++i)
+        {
+            publicDataTypeNames.insert(tl->m_publicDataTypes[i]->name());
+        }
+
+        N = tl->m_baseClasses.size();
+        for (size_t i = 0; i < N; ++i)
+        {
+            baseClassNames.insert(tl->m_baseClasses[i]->getName(true, "."));
+        }
+
+        N = tl->m_enums.size();
+        for (size_t i = 0; i < N; ++i)
+        {
+            enumNames.insert(tl->m_enums[i]->name());
+        }
+    }
+
+    std::vector<DataTypeConstSP> dataTypes;
+    std::vector<DataTypeConstSP> publicDataTypes;
+    std::vector<ClassConstSP> baseClasses;
+    std::vector<EnumConstSP> enums;
+
+    size_t N = m_dataTypes.size();
+    for (size_t i = 0; i < N; ++i)
+    {
+        if (dataTypeNames.count(m_dataTypes[i]->name()) == 0)
+        {
+            dataTypes.push_back(m_dataTypes[i]);
+        }
+    }
+
+    N = m_publicDataTypes.size();
+    for (size_t i = 0; i < N; ++i)
+    {
+        if (publicDataTypeNames.count(m_publicDataTypes[i]->name()) == 0)
+        {
+            publicDataTypes.push_back(m_publicDataTypes[i]);
+        }
+    }
+
+    N = m_baseClasses.size();
+    for (size_t i = 0; i < N; ++i)
+    {
+        if (baseClassNames.count(m_baseClasses[i]->getName(true, ".")) == 0)
+        {
+            baseClasses.push_back(m_baseClasses[i]);
+        }
+    }
+
+    N = m_enums.size();
+    for (size_t i = 0; i < N; ++i)
+    {
+        if (enumNames.count(m_enums[i]->name()) == 0)
+        {
+            enums.push_back(m_enums[i]);
+        }
+    }
+
+    return TypesLibraryConstSP(new TypesLibrary(
+        m_name, m_ns, m_version, m_lastModuleName,
+        dataTypes, publicDataTypes, baseClasses, enums));
+}
+
 TypesLibrary::TypesLibrary(
     const std::string& name,
     const std::string& ns,
@@ -231,7 +315,7 @@ ServiceDefinition::ServiceDefinition(
     m_serviceInit(),
     m_includes(),
     m_importedTypes(),
-    m_publicImport(false)
+    m_publicImports()
 {
     VerifyAndComplete();
 }
@@ -247,10 +331,13 @@ TypesLibraryConstSP ServiceDefinition::getTypesLibrary() const
     }
 
     std::vector<EnumConstSP> enums;
-    if (m_importedTypes)
+
+    for (size_t i = 0; i < m_importedTypes.size(); ++i)
     {
-        enums = m_importedTypes->enums();
+        const std::vector<EnumConstSP>& importedEnums = m_importedTypes[i]->enums();
+        enums.insert(enums.end(), importedEnums.begin(), importedEnums.end());
     }
+
     for (size_t i = 0; i < m_modules.size(); ++i)
     {
         const std::vector<EnumConstSP>& moduleEnums = m_modules[i]->enums();
@@ -268,22 +355,24 @@ TypesLibraryConstSP ServiceDefinition::getTypesLibrary() const
         enums);
 }
 
-void ServiceDefinition::importTypesLibrary(const TypesLibraryConstSP& tl, bool publicImport)
+void ServiceDefinition::importTypesLibrary(const TypesLibraryConstSP& tl_in, bool publicImport)
 {
     if (m_modules.size() > 0)
         throw spi::RuntimeError("Must import types library before defining "
             "any modules");
 
-    if (m_importedTypes)
-        throw spi::RuntimeError("Can only import one types library");
+    TypesLibraryConstSP tl;
+    if (m_importedTypes.size() > 0)
+    {
+        tl = tl_in->RemoveDuplicates(m_importedTypes);
+    }
+    else
+    {
+        tl = tl_in;
+    }
 
-    //if (tl->ns() == m_namespace)
-    //    throw spi::RuntimeError("Namespace '%s' of types library cannot be "
-    //        "the same as this service namespace",
-    //        tl->ns().c_str());
-
-    m_importedTypes = tl;
-    m_publicImport = publicImport;
+    m_importedTypes.push_back(tl);
+    m_publicImports.push_back(publicImport);
 
     const std::vector<DataTypeConstSP>& publicDataTypes = tl->publicDataTypes();
 
@@ -323,6 +412,7 @@ void ServiceDefinition::importTypesLibrary(const TypesLibraryConstSP& tl, bool p
     {
         addPublicDataType(publicDataTypes[i]);
     }
+
 }
 
 void ServiceDefinition::addModule(ModuleDefinitionSP& module)
@@ -620,7 +710,7 @@ void ServiceDefinition::setBaseService(const ServiceDefinitionConstSP& svc)
     SPI_PRE_CONDITION(m_modules.size() == 0);
     SPI_PRE_CONDITION(svc->m_modules.size() > 0);
     SPI_PRE_CONDITION(svc->m_namespace == m_namespace);
-    SPI_PRE_CONDITION(!m_importedTypes);
+    SPI_PRE_CONDITION(m_importedTypes.size() == 0);
 
     m_dataTypes           = svc->m_dataTypes;
     m_publicDataTypes     = svc->m_publicDataTypes;
@@ -783,28 +873,31 @@ spdoc::ServiceConstSP ServiceDefinition::getDoc() const
         moduleDocs.push_back(m_modules[i]->getDoc());
 
     std::vector<spdoc::ClassConstSP> importedBaseClasses;
-
-    if (m_importedTypes && !m_publicImport)
-    {
-        const std::vector<ClassConstSP>& v = m_importedTypes->baseClasses();
-        size_t n = v.size();
-        for (size_t i = 0; i < n; ++i)
-        {
-            importedBaseClasses.push_back(
-                spdoc::Class::Coerce(v[i]->getDoc()));
-        }
-    }
-
     std::vector<spdoc::EnumConstSP> importedEnums;
-    if (m_importedTypes)
+
+    for (size_t j = 0; j < m_importedTypes.size(); ++j)
     {
-        std::vector<EnumConstSP> enums = m_importedTypes->enums();
+        if (!m_publicImports[j])
+        {
+            const std::vector<ClassConstSP>& v = m_importedTypes[j]->baseClasses();
+            size_t n = v.size();
+            for (size_t i = 0; i < n; ++i)
+            {
+                importedBaseClasses.push_back(
+                    spdoc::Class::Coerce(v[i]->getDoc()));
+            }
+        }
+
+        std::vector<EnumConstSP> enums = m_importedTypes[j]->enums();
         size_t n = enums.size();
         for (size_t i = 0; i < n; ++i)
             importedEnums.push_back(enums[i]->getDoc());
     }
 
-    bool sharedService = m_importedTypes && (m_importedTypes->ns() == m_namespace);
+    // note that all imported types have the same namespace
+    // this is validated by TypesLibrary::RemoveDuplicates function
+
+    bool sharedService = m_importedTypes.size() > 0 && (m_importedTypes[0]->ns() == m_namespace);
 
     return spdoc::Service::Make(m_name, m_description, m_longName,
         m_namespace, m_declSpec, m_version.versionString(), moduleDocs,
@@ -1117,9 +1210,9 @@ void ServiceDefinition::writeServiceSource(
         ostr << "#include \"" << m_baseService->m_name << "_dll_service_manager.hpp\"\n";
     }
 
-    if (m_importedTypes)
+    for (size_t j = 0; j < m_importedTypes.size(); ++j)
     {
-        ostr << "#include \"" << m_importedTypes->name() << "_dll_service.hpp\"\n";
+        ostr << "#include \"" << m_importedTypes[j]->name() << "_dll_service.hpp\"\n";
     }
 
     if (m_shutdown)
@@ -1207,9 +1300,15 @@ void ServiceDefinition::writeServiceSource(
         ostr << "    spi::ServiceSP baseSvc = " << m_baseService->m_name << "_exported_service();\n"
              << "    spi::ServiceSP svc = spi::Service::Make(\"" << m_name << "\", baseSvc);\n";
     }
-    else if (m_importedTypes && m_importedTypes->ns() == m_namespace)
+    else if (m_importedTypes.size() > 0 && m_importedTypes[0]->ns() == m_namespace)
     {
-        ostr << "    spi::ServiceSP svc = " << m_importedTypes->name() << "_exported_service();\n";
+        // note that all imported types have the same namespace
+        // the service is defined for the namespace
+        // hence each imported service defines the same spi::Service object
+        // calling each of the exported_service functions ensures all types get registered
+        ostr << "    spi::ServiceSP svc = " << m_importedTypes[0]->name() << "_exported_service();\n";
+        for (size_t j = 1; j < m_importedTypes.size(); ++j)
+            ostr << "    svc = " << m_importedTypes[j]->name() << "_exported_service();\n";
     }
     else
     {
@@ -1573,78 +1672,79 @@ void ServiceDefinition::writeTypeConvertersHeader(
 void ServiceDefinition::writeUsingImportedTypes(
     GeneratedOutput& ostr)
 {
-    if (!m_importedTypes)
-        return;
-
-    const std::vector<DataTypeConstSP>& dataTypes   = m_publicImport ?
-        m_importedTypes->publicDataTypes() :
-        m_importedTypes->dataTypes();
-    const std::vector<ClassConstSP>     baseClasses = m_importedTypes->baseClasses();
-    const std::string& importedNamespace = m_importedTypes->ns();
-
-    if (!m_publicImport)
+    for (size_t j = 0; j < m_importedTypes.size(); ++j)
     {
+        const std::vector<DataTypeConstSP>& dataTypes = m_publicImports[j] ?
+            m_importedTypes[j]->publicDataTypes() :
+            m_importedTypes[j]->dataTypes();
+        const std::vector<ClassConstSP>     baseClasses = m_importedTypes[j]->baseClasses();
+        const std::string& importedNamespace = m_importedTypes[j]->ns();
+
+        if (!m_publicImports[j])
+        {
+            if (baseClasses.size() > 0)
+                ostr << "\n";
+            for (size_t i = 0; i < baseClasses.size(); ++i)
+            {
+                // FIXME: what if the class has a namespace?
+                ostr << "using " << importedNamespace << "::"
+                    << baseClasses[i]->getName(true, "::") << ";\n";
+            }
+        }
+
+        if (dataTypes.size() > 0)
+            ostr << "\n";
+        for (size_t i = 0; i < dataTypes.size(); ++i)
+        {
+            const DataTypeConstSP& dataType = dataTypes[i];
+
+            if (dataType->ignored())
+                continue;
+
+            //const std::string& outerValueType = dataType->outerValueType();
+            spdoc::PublicType publicType = dataType->publicType();
+
+            // we only need to declare enums and classes
+            // anything else is a simple type where the outer type is primitive
+            switch (spdoc::PublicType::Enum(publicType))
+            {
+            case spdoc::PublicType::ENUM:
+                ostr << "using " << importedNamespace << "::"
+                    << dataType->outerValueType() << ";\n";
+                break;
+            case spdoc::PublicType::CLASS:
+                ostr << "using " << importedNamespace << "::"
+                    << dataType->outerValueType() << ";\n";
+                ostr << "using " << importedNamespace << "::"
+                    << dataType->cppName() << ";\n";
+                break;
+            default:
+                continue;
+            }
+        }
+    }
+
+}
+
+void ServiceDefinition::writeUsingImportedHelperTypes(
+    GeneratedOutput& ostr)
+{
+    for (size_t j = 0; j < m_importedTypes.size(); ++j)
+    {
+        if (m_publicImports[j])
+            continue;
+
+        const std::vector<ClassConstSP> baseClasses = m_importedTypes[j]->baseClasses();
+        const std::string& importedNamespace = m_importedTypes[j]->ns();
+
         if (baseClasses.size() > 0)
             ostr << "\n";
         for (size_t i = 0; i < baseClasses.size(); ++i)
         {
             // FIXME: what if the class has a namespace?
             ostr << "using " << importedNamespace << "::"
-                << baseClasses[i]->getName(true, "::") << ";\n";
+                << baseClasses[i]->getName(true, "::") << "_Helper;\n";
         }
-    }
-
-    if (dataTypes.size() > 0)
-        ostr << "\n";
-    for (size_t i = 0; i < dataTypes.size(); ++i)
-    {
-        const DataTypeConstSP& dataType = dataTypes[i];
-
-        if (dataType->ignored())
-            continue;
-
-        //const std::string& outerValueType = dataType->outerValueType();
-        spdoc::PublicType publicType = dataType->publicType();
-
-        // we only need to declare enums and classes
-        // anything else is a simple type where the outer type is primitive
-        switch(spdoc::PublicType::Enum(publicType))
-        {
-        case spdoc::PublicType::ENUM:
-            ostr << "using " << importedNamespace << "::"
-                 << dataType->outerValueType() << ";\n";
-            break;
-        case spdoc::PublicType::CLASS:
-            ostr << "using " << importedNamespace << "::"
-                 << dataType->outerValueType() << ";\n";
-            ostr << "using " << importedNamespace << "::"
-                 << dataType->cppName() << ";\n";
-            break;
-        default:
-            continue;
-        }
-    }
-}
-
-void ServiceDefinition::writeUsingImportedHelperTypes(
-    GeneratedOutput& ostr)
-{
-    if (!m_importedTypes)
-        return;
-
-    if (m_publicImport)
-        return;
-
-    const std::vector<ClassConstSP> baseClasses = m_importedTypes->baseClasses();
-    const std::string& importedNamespace = m_importedTypes->ns();
-
-    if (baseClasses.size() > 0)
-        ostr << "\n";
-    for (size_t i = 0; i < baseClasses.size(); ++i)
-    {
-        // FIXME: what if the class has a namespace?
-        ostr << "using " << importedNamespace << "::"
-             << baseClasses[i]->getName(true, "::") << "_Helper;\n";
     }
 
 }
@@ -1652,36 +1752,36 @@ void ServiceDefinition::writeUsingImportedHelperTypes(
 void ServiceDefinition::writeUsingImportedConverters(
     GeneratedOutput& ostr)
 {
-    if (!m_importedTypes)
-        return;
-
-    if (m_publicImport)
-        return;
-
-    const std::vector<DataTypeConstSP>& dataTypes = m_importedTypes->dataTypes();
-    const std::string& importedNamespace = m_importedTypes->ns();
-
-    if (dataTypes.size() > 0)
-        ostr << "\n";
-    for (size_t i = 0; i < dataTypes.size(); ++i)
+    for (size_t j = 0; j < m_importedTypes.size(); ++j)
     {
-        const DataTypeConstSP& dataType = dataTypes[i];
-        spdoc::PublicType publicType = dataType->publicType();
-
-        // we don't need converters for classes (they are within the class)
-        switch(spdoc::PublicType::Enum(publicType))
-        {
-        case spdoc::PublicType::CLASS:
+        if (m_publicImports[j])
             continue;
-        default:
-            break;
-        }
-        if (dataType->needsTranslation())
+
+        const std::vector<DataTypeConstSP>& dataTypes = m_importedTypes[j]->dataTypes();
+        const std::string& importedNamespace = m_importedTypes[j]->ns();
+
+        if (dataTypes.size() > 0)
+            ostr << "\n";
+        for (size_t i = 0; i < dataTypes.size(); ++i)
         {
-            ostr << "using " << importedNamespace << "::" << dataType->name()
-                 << "_convert_in;\n";
-            ostr << "using " << importedNamespace << "::" << dataType->name()
-                 << "_convert_out;\n";
+            const DataTypeConstSP& dataType = dataTypes[i];
+            spdoc::PublicType publicType = dataType->publicType();
+
+            // we don't need converters for classes (they are within the class)
+            switch (spdoc::PublicType::Enum(publicType))
+            {
+            case spdoc::PublicType::CLASS:
+                continue;
+            default:
+                break;
+            }
+            if (dataType->needsTranslation())
+            {
+                ostr << "using " << importedNamespace << "::" << dataType->name()
+                    << "_convert_in;\n";
+                ostr << "using " << importedNamespace << "::" << dataType->name()
+                    << "_convert_out;\n";
+            }
         }
     }
 }
@@ -1725,10 +1825,10 @@ bool ServiceDefinition::writePreviousModuleInclude(
             ostr << "#include \"" << m_name << "_namespace.hpp\"\n";
         }
 
-        if (m_importedTypes)
+        for (size_t j = 0; j < m_importedTypes.size(); ++j)
         {
-            const std::string lastModuleName = m_importedTypes->lastModuleName();
-            if (!(m_publicImport && helper))
+            const std::string lastModuleName = m_importedTypes[j]->lastModuleName();
+            if (!(m_publicImports[j] && helper))
             {
                 ostr << "#include \"" << lastModuleName;
                 if (helper)
@@ -1755,15 +1855,15 @@ bool ServiceDefinition::writePreviousModuleInclude(
 void ServiceDefinition::writeDeclareImportedConverters(
     GeneratedOutput& ostr)
 {
-    if (!m_importedTypes)
-        return;
+    for (size_t j = 0; j < m_importedTypes.size(); ++j)
+    {
+        if (m_publicImports[j])
+            continue;
 
-    if (m_publicImport)
-        return;
-
-    // note that this only works if we have access to the dll/src directory
-    // for the library from which we are importing the types
-    ostr << "\n"
-         << "#include \"src/" << m_importedTypes->name() << "_dll_type_converters.hpp\"\n";
+        // note that this only works if we have access to the dll/src directory
+        // for the library from which we are importing the types
+        ostr << "\n"
+            << "#include \"src/" << m_importedTypes[j]->name() << "_dll_type_converters.hpp\"\n";
+    }
 
 }
