@@ -38,6 +38,9 @@ $(U_SPI_HOME)/makefiles/win32/makeXLAddin.exe: Release/makeXLAddin.exe
 	cp $< $@
 
 
+v16.vcxproj:
+
+v17.vcxproj:
 
 
 
