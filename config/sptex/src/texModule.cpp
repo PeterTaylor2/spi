@@ -301,7 +301,7 @@ void writeTexFunctionArgs(
 
     if (func->returnType)
     {
-        ostr << func->returnType->name;
+        ostr << texEscape(func->returnType->name);
         switch(func->returnArrayDim)
         {
         case 2:
@@ -614,7 +614,7 @@ std::string writeTexClass(
                 ostr << "void";
             }
 
-            ostr << " " << method->function->name << "(";
+            ostr << " " << texEscape(method->function->name) << "(";
             ostr << spi::StringJoin(", ", argTypes);
             ostr << ") &\n";
             ostr << "\\raggedright ";
