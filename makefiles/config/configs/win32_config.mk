@@ -7,6 +7,10 @@
 # which on a 32-bit machine will be installed in Program Files
 #
 
+# note this is included after the optional site.mk which can override compiler
+G_WIN32_COMPILER?=msvc16
+G_WIN32_BITS=32
+
 ifdef WIN32_COMPILER
 COMPILER?=$(WIN32_COMPILER)
 else

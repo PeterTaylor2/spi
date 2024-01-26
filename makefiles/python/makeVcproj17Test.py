@@ -2,8 +2,6 @@
 
 import makeVcxprojTest
 
-from makeVcproj17 import abiFunc
-
 if __name__ == "__main__":
-    makeVcxprojTest.command_line("msvc17", "17.0", "v143", abiFunc)
+    makeVcxprojTest.command_line("msvc17", "17.0", "v143")
 

@@ -97,11 +97,11 @@ detail:
 	@echo Tests run in $(CURDIR) using $(G_PYTHON)
 
 v15.vcxproj:
-	$(G_PYTHON) $(U_MAKEFILES)/python/makeVcproj15Test.py -b $(U_MAKEFILES)/cygwin32/bin $(U_TEST_NAME).v15.vcxproj $(U_TEST_NAME)
+	$(G_PYTHON) $(U_MAKEFILES)/python/makeVcproj15Test.py -b $(U_MAKEFILES)/cygwin32/bin $(U_TEST_NAME).v15.vcxproj $(U_TEST_NAME) $(G_WIN32_COMPILER) $(G_WIN32_BITS)
 
 v16.vcxproj:
-	$(G_PYTHON) $(U_MAKEFILES)/python/makeVcproj16Test.py -b $(U_MAKEFILES)/cygwin32/bin $(U_TEST_NAME).v16.vcxproj $(U_TEST_NAME)
+	$(G_PYTHON) $(U_MAKEFILES)/python/makeVcproj16Test.py -b $(U_MAKEFILES)/cygwin32/bin $(U_TEST_NAME).v16.vcxproj $(U_TEST_NAME) $(G_WIN32_COMPILER) $(G_WIN32_BITS)
 
 v17.vcxproj:
-	$(G_PYTHON) $(U_MAKEFILES)/python/makeVcproj17Test.py -b $(U_MAKEFILES)/cygwin32/bin $(U_TEST_NAME).v17.vcxproj $(U_TEST_NAME)
+	$(G_PYTHON) $(U_MAKEFILES)/python/makeVcproj17Test.py -b $(U_MAKEFILES)/cygwin32/bin $(U_TEST_NAME).v17.vcxproj $(U_TEST_NAME) $(G_WIN32_COMPILER) $(G_WIN32_BITS)
 

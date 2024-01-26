@@ -16,7 +16,8 @@ def _xmlfiles(filenames, label, indent=4):
              for filename in filenames]
     return "\n".join(lines)
 
-def _get_property_groups(platforms, makefileTarget, cleanTarget, bin, compiler, includePath, exePath, abiFunc):
+def _get_property_groups(platforms, makefileTarget, cleanTarget, bin,
+        compiler, defaultCompiler, defaultBits, includePath, exePath):
 
     vsIncludePath = []
     for include in includePath:
@@ -51,7 +52,7 @@ def _get_property_groups(platforms, makefileTarget, cleanTarget, bin, compiler, 
             name = platform[0]
             bits = platform[1]
             for debug in ["Debug", "Release"]:
-                abi = abiFunc(bits, debug) if abiFunc else "win%s\\%s" % (bits, debug)
+                abi = makeVcxproj.get_abi(compiler, bits, debug, defaultCompiler, defaultBits)
                 condition = "'$(Configuration)|$(Platform)'=='%s|%s'" % (debug,name)
                 lines.append("  </PropertyGroup>")
                 lines.append("  <PropertyGroup Condition=\"%s\">" % condition)
@@ -65,13 +66,14 @@ def make_proj(fileName,
               inputPatterns,
               baselinePatterns,
               compiler,
+              defaultCompiler,
+              defaultBits,
               toolsVersion,
               platformToolset,
               makefileTarget="all", 
               bin=r"C:\cygwin\bin",
               includes=None,
-              exePath=None,
-              abiFunc=None):
+              exePath=None):
 
     guids = guidUtils.read_and_write_guids(fileName, ["Project"])
     guids.update(guidUtils.read_and_write_guids(fileName + ".filters", ["baseline", "inputs", "drivers"],
@@ -101,8 +103,8 @@ def make_proj(fileName,
     propertyConfigurations = makeVcxproj.get_property_configurations(
         platforms, platformToolset)
     importPropertySheets   = makeVcxproj.get_import_property_sheets(platforms)
-    propertyGroups         = _get_property_groups(
-        platforms, makefileTarget, "clean", bin, compiler, includePath, exePath, abiFunc)
+    propertyGroups         = _get_property_groups(platforms, makefileTarget, "clean", bin,
+            compiler, defaultCompiler, defaultBits, includePath, exePath)
 
     data = {"name" : name,
             "tools_version" : toolsVersion}
@@ -132,6 +134,14 @@ def make_proj(fileName,
         fp = open(fileName, "w")
         fp.write(contents)
         fp.close()
+        if len(oldcontents):
+            print(fileName + ".bak")
+            fp = open(fileName + ".bak", "w")
+            fp.write(oldcontents)
+            fp.close()
+    elif os.path.isfile(fileName + ".bak"):
+        print("removing", (fileName + ".bak"))
+        os.remove(fileName + ".bak")
 
     filters  = [("None", "baseline", sorted(baselineFiles)),
                 ("None", "inputs", sorted(inputFiles)),
@@ -139,7 +149,7 @@ def make_proj(fileName,
                 ("None", None, sorted(buildFiles))]
     makeVcxproj.write_filters(fileName, filters, toolsVersion, guids)
 
-def command_line(compiler, toolsVersion, platformToolset, abiFunc):
+def command_line(compiler, toolsVersion, platformToolset):
     import sys
     import getopt
 
@@ -148,8 +158,8 @@ def command_line(compiler, toolsVersion, platformToolset, abiFunc):
     driverPatterns   = ["drivers/*.py"]
     inputPatterns    = ["inputs/*.inp"]
     baselinePatterns = ["baseline/*.out"]
+    kwargs           = {}
     includes         = []
-    kwargs           = {"abiFunc" : abiFunc}
     for opt in opts:
         if opt[0] == "-d": driverPatterns.append(opt[1])
         elif opt[0] == "-i": inputPatterns.append(opt[1])
@@ -161,15 +171,17 @@ def command_line(compiler, toolsVersion, platformToolset, abiFunc):
         elif opt[0] == "--exe": kwargs["exePath"] = opt[1]
 
     if len(includes): kwargs["includes"] = includes
-    if len(args) != 2:
+    if len(args) != 4:
         print((" ".join(sys.argv)))
-        raise Exception("Expecting 2 arguments: fileName name")
+        raise Exception("Expecting 4 arguments: fileName name defaultCompiler defaultBits")
 
     fileName = args[0]
     name     = args[1]
+    defaultCompiler = args[2]
+    defaultBits     = int(args[3])
 
     make_proj(fileName, name, driverPatterns, inputPatterns, baselinePatterns,
-              compiler, toolsVersion, platformToolset, **kwargs)
+              compiler, defaultCompiler, defaultBits, toolsVersion, platformToolset, **kwargs)
 
 
 _template = """\

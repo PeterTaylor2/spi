@@ -4,6 +4,14 @@
 G_ABI=Debug-x86-vc17
 G_BUILD_DIR=win32/msvc17_debug
 
+ifeq ($(G_WIN32_COMPILER),msvc17)
+ifeq ($(G_WIN32_BITS),32)
+G_ABI=Debug
+else
+G_ABI=Debug-x86
+endif
+endif
+
 include $(U_MAKEFILES)/config/win32_msvc17.mk
 
 ###########################################################################

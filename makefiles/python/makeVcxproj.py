@@ -11,7 +11,7 @@ import guidUtils
 
 # interprets the command line (with the standard compiler for the given project type)
 # then calls the main routine for this project type
-def command_line(compiler, toolsVersion, platformToolset, abiFunc):
+def command_line(compiler, toolsVersion, platformToolset):
     import sys
     import getopt
 
@@ -43,14 +43,16 @@ def command_line(compiler, toolsVersion, platformToolset, abiFunc):
         elif opt[0] == "-b": kwargs["bin"] = opt[1]
         elif opt[0] == "-j": kwargs["parallel"] = int(opt[1])
 
-    if len(args) != 4:
+    if len(args) != 6:
         print (" ".join(sys.argv))
-        raise Exception("Expecting 4 arguments: fileName name srcDir incDir")
+        raise Exception("Expecting 4 arguments: fileName name srcDir incDir defaultCompiler defaultBits")
 
     fileName = args[0]
     name     = args[1]
     srcDir   = args[2]
     incDir   = args[3]
+    defaultCompiler = args[4]
+    defaultBits     = int(args[5])
     
     make_proj(fileName,
               name,
@@ -64,7 +66,8 @@ def command_line(compiler, toolsVersion, platformToolset, abiFunc):
               extraSourceDirs, 
               toolsVersion,
               platformToolset,
-              abiFunc,
+              defaultCompiler,
+              defaultBits,
               **kwargs)
 
 def _xmlfiles(filenames, label, filterName=None, indent=4):
@@ -220,8 +223,21 @@ def get_import_property_sheets(platforms):
             lines.append("  </ImportGroup>")
     return "\n".join(lines)
 
-def _get_property_groups(platforms, makefileTarget, cleanTarget, compiler, bin,
-                      buildSuffix, includePath, parallel, exeName, abiFunc, silent):
+def get_abi(compiler, bits, debug, defaultCompiler, defaultBits):
+    if bits != 32 and bits != 64:
+        raise Exception("bits (%s) must be 32 or 64" % bits)
+    if debug != "Debug" and debug != "Release":
+        raise Exception("debug (%s) must be Debug or Release" % debug)
+    if compiler == defaultCompiler and bits == defaultBits:
+        abi = debug
+    elif compiler == defaultCompiler:
+        abi = "%s-%s" % (debug, "x64" if bits == 64 else "x86")
+    else:
+        abi = "%s-%s-%s" % (debug, "x64" if bits == 64 else "x86", compiler.replace("msvc", "vc"))
+    return abi
+
+def _get_property_groups(platforms, makefileTarget, cleanTarget, compiler, defaultCompiler, defaultBits,
+        bin, buildSuffix, includePath, parallel, exeName, silent):
 
     vsIncludePath = []
     for include in includePath:
@@ -263,7 +279,7 @@ def _get_property_groups(platforms, makefileTarget, cleanTarget, compiler, bin,
             name = platform[0]
             bits = platform[1]
             for debug in ["Debug", "Release"]:
-                abi = abiFunc(bits, debug) if abiFunc else "win%s\\%s" % (bits, debug)
+                abi = get_abi(compiler, bits, debug, defaultCompiler, defaultBits)
                 condition = "'$(Configuration)|$(Platform)'=='%s|%s'" % (debug,name)
                 lines.append("  </PropertyGroup>")
                 lines.append("  <PropertyGroup Condition=\"%s\">" % condition)
@@ -277,7 +293,8 @@ def make_proj(fileName, name, compiler, srcDir, incDir,
              extraHeaderDirs, extraSourceDirs,
              toolsVersion,
              platformToolset,
-             abiFunc,
+             defaultCompiler,
+             defaultBits,
              buildSuffix="",
              makefileTarget="target",
              cleanTarget="clean",
@@ -307,8 +324,8 @@ def make_proj(fileName, name, compiler, srcDir, incDir,
         platforms, platformToolset)
     importPropertySheets   = get_import_property_sheets(platforms)
     propertyGroups         = _get_property_groups(
-        platforms, makefileTarget, cleanTarget, compiler, bin,
-        buildSuffix, includePath, parallel, exeName, abiFunc, silent)
+        platforms, makefileTarget, cleanTarget, compiler, defaultCompiler, defaultBits,
+        bin, buildSuffix, includePath, parallel, exeName, silent)
 
     data = {"name" : name,
             "tools_version" : toolsVersion}
@@ -336,6 +353,14 @@ def make_proj(fileName, name, compiler, srcDir, incDir,
         fp = open(fileName, "w")
         fp.write(contents)
         fp.close()
+        if len(oldcontents):
+            print(fileName + ".bak")
+            fp = open(fileName + ".bak", "w")
+            fp.write(oldcontents)
+            fp.close()
+    elif os.path.isfile(fileName + ".bak"):
+        print("removing", (fileName + ".bak"))
+        os.remove(fileName + ".bak")
 
     write_filters(fileName,
                  [("ClCompile", "Source Files", sourceFiles),
