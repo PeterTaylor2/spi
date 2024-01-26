@@ -1208,8 +1208,8 @@ void enumKeywordHandler(
     // };
     //
     // the enum token is taken as read
-    ConfigLexer::Token token = getTokenOfType(
-        lexer, SPI_CONFIG_TOKEN_TYPE_NAME, "Name");
+
+    ConfigLexer::Token token = getTokenOfType(lexer, SPI_CONFIG_TOKEN_TYPE_NAME, "Name");
     std::string name(token.value.aName);
     std::string innerName;
     std::string innerHeader;
@@ -1217,32 +1217,94 @@ void enumKeywordHandler(
 
     token = lexer.getToken();
     bool ignore = false;
+    bool enumDeclared = false;
 
     if (token.type == '<')
     {
+        token = lexer.getToken();
+
+        if (token.type == SPI_CONFIG_TOKEN_TYPE_KEYWORD &&
+            strcmp(token.value.aKeyword, "enum") == 0)
+        {
+            // we allow enum class
+            // or enum : <int-type>
+            // or just enum
+            // if an enum is declared then the inner type cannot be an integer type
+            enumDeclared = true;
+            token = lexer.getToken();
+            if (token.type == SPI_CONFIG_TOKEN_TYPE_KEYWORD &&
+                strcmp(token.value.aKeyword, "class") == 0)
+            {
+                enumTypedef = "enum class";
+            }
+            else
+            {
+                lexer.returnToken(token);
+            }
+        }
+        else
+        {
+            lexer.returnToken(token);
+        }
+
         innerName = getCppTypeName(lexer);
         token = lexer.getToken();
+        if (enumDeclared && enumTypedef.empty())
+        {
+            if (token.type == ':')
+            {
+                // expect something like int
+                token = getTokenOfType(lexer, SPI_CONFIG_TOKEN_TYPE_KEYWORD, "enumSize");
+                if (strcmp(token.value.aKeyword, "int") == 0 ||
+                    strcmp(token.value.aKeyword, "char") == 0 ||
+                    strcmp(token.value.aKeyword, "long") == 0 ||
+                    strcmp(token.value.aKeyword, "size_t") == 0)
+                {
+                    enumTypedef = spi_util::StringFormat("enum : %s", token.value.aKeyword);
+                }
+                else
+                {
+                    throw spi::RuntimeError("%s is not a valid enum size", token.value.aKeyword);
+                }
+                token = lexer.getToken();
+            }
+        }
         if (token.type != '>')
         {
             throw spi::RuntimeError(
                 "Expected '>' to match '<' for enum %s - actual was (%s)",
                 name.c_str(), token.toString().c_str());
         }
-        static ParserOptions defaultOptions;
-        if (defaultOptions.size() == 0)
+        ParserOptions defaultOptions;
+        defaultOptions["innerHeader"]  = StringConstant::Make("");
+
+        if (enumDeclared)
         {
-            defaultOptions["innerHeader"]  = StringConstant::Make("");
-            defaultOptions["typedef"] = StringConstant::Make("enum : int");
-            defaultOptions["ignore"] = BoolConstant::Make(false);
+            if (innerName == "int" ||
+                innerName == "long" || 
+                innerName == "size_t" ||
+                innerName == "char")
+            {
+                throw spi::RuntimeError("enum declared is not consistent with integer type %s",
+                    innerName.c_str());
+            }
         }
+        else
+        {
+            // cannot define enumType in more than one manner
+            // this is really for backward compatibility
+            // better is to declare the type inside <...>
+            defaultOptions["typedef"] = StringConstant::Make("enum : int");
+        }
+        defaultOptions["ignore"] = BoolConstant::Make(false);
 
         ParserOptions options;
         options = parseOptions(lexer, "{", defaultOptions, verbose);
         ignore = getOption(options, "ignore")->getBool();
 
         innerHeader = getOption(options, "innerHeader")->getString();
-        if (innerName != "int" && innerName != "long" && innerName != "size_t")
-        {
+        if (!enumDeclared)
+        { 
             enumTypedef = getOption(options, "typedef")->getString();
         }
 
