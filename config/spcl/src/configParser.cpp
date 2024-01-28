@@ -1277,19 +1277,20 @@ void enumKeywordHandler(
         }
         ParserOptions defaultOptions;
         defaultOptions["innerHeader"]  = StringConstant::Make("");
+        bool integerType = innerName == "int" ||
+            innerName == "long" ||
+            innerName == "size_t" ||
+            innerName == "char";
 
         if (enumDeclared)
         {
-            if (innerName == "int" ||
-                innerName == "long" || 
-                innerName == "size_t" ||
-                innerName == "char")
+            if (integerType)
             {
                 throw spi::RuntimeError("enum declared is not consistent with integer type %s",
                     innerName.c_str());
             }
         }
-        else
+        else if (!integerType)
         {
             // cannot define enumType in more than one manner
             // this is really for backward compatibility
@@ -1303,7 +1304,7 @@ void enumKeywordHandler(
         ignore = getOption(options, "ignore")->getBool();
 
         innerHeader = getOption(options, "innerHeader")->getString();
-        if (!enumDeclared)
+        if (!enumDeclared && !integerType)
         { 
             enumTypedef = getOption(options, "typedef")->getString();
         }
