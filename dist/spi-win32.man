@@ -10,6 +10,7 @@ python/x64/lib/python37.lib
 python/x64/lib/python38.lib
 python/x64/lib/python39.lib
 python/x64/lib/python310.lib
+python/x64/lib/python311.lib
 python/include/py27/*.h
 python/include/py37/*.h
 python/include/py38/*.h
@@ -18,6 +19,8 @@ python/include/py39/*.h
 python/include/py39/cpython/*.h
 python/include/py310/*.h
 python/include/py310/cpython/*.h
+python/include/py311/*.h
+python/include/py311/cpython/*.h
 excel/win32/xl4/xlcall32.lib
 excel/win32/xl12/xlcall32.lib
 excel/win32/xl15/xlcall32.lib

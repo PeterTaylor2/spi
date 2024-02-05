@@ -569,7 +569,11 @@ PyTypeObject* SpiPyObjectType(/*const char* ns*/)
 
     if (!initialised)
     {
+#if PY_MAJOR_VERSION > 3 || (PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION >= 9)
+        Py_SET_TYPE(&typeObject, &PyType_Type);
+#else
         Py_TYPE(&typeObject)  = &PyType_Type;
+#endif
         typeObject.tp_name    = className;
         typeObject.tp_flags   = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE;
         typeObject.tp_methods = methods;
