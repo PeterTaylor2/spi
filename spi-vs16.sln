@@ -252,8 +252,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config-build", "config-buil
 		makefiles\config\config-build\win64_32.mk = makefiles\config\config-build\win64_32.mk
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spi_curl_dll", "spi_curl\dll\spi_curl_dll.v16.vcxproj", "{0B41DD28-094A-4E8B-9A0B-8FD02A086BA7}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -486,14 +484,6 @@ Global
 		{251BD000-4DE2-48FF-939C-BF51D09AD9A2}.Release|x64.Build.0 = Release|x64
 		{251BD000-4DE2-48FF-939C-BF51D09AD9A2}.Release|x86.ActiveCfg = Release|Win32
 		{251BD000-4DE2-48FF-939C-BF51D09AD9A2}.Release|x86.Build.0 = Release|Win32
-		{0B41DD28-094A-4E8B-9A0B-8FD02A086BA7}.Debug|x64.ActiveCfg = Debug|x64
-		{0B41DD28-094A-4E8B-9A0B-8FD02A086BA7}.Debug|x64.Build.0 = Debug|x64
-		{0B41DD28-094A-4E8B-9A0B-8FD02A086BA7}.Debug|x86.ActiveCfg = Debug|Win32
-		{0B41DD28-094A-4E8B-9A0B-8FD02A086BA7}.Debug|x86.Build.0 = Debug|Win32
-		{0B41DD28-094A-4E8B-9A0B-8FD02A086BA7}.Release|x64.ActiveCfg = Release|x64
-		{0B41DD28-094A-4E8B-9A0B-8FD02A086BA7}.Release|x64.Build.0 = Release|x64
-		{0B41DD28-094A-4E8B-9A0B-8FD02A086BA7}.Release|x86.ActiveCfg = Release|Win32
-		{0B41DD28-094A-4E8B-9A0B-8FD02A086BA7}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -529,7 +519,6 @@ Global
 		{65693DA8-738F-4183-A9C2-3015EA30BF8C} = {CFEF2266-DDD1-4AA7-A824-9A0CC1F04526}
 		{1A7CA00D-309E-4AE4-AEAA-7C289E91636F} = {A714AB43-15CE-4D1B-BE6D-0D000D960EC6}
 		{D9016CB7-C928-4B50-93B1-F25F5C44CEDD} = {A714AB43-15CE-4D1B-BE6D-0D000D960EC6}
-		{0B41DD28-094A-4E8B-9A0B-8FD02A086BA7} = {6DB8A382-131E-4902-8484-4935B37B0B01}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B689A53E-5D3F-44C8-BF7A-1FE88BBD18AA}

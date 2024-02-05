@@ -22,6 +22,7 @@ xltest
 CONFIG_BUILD_DIRS=\
 spi_util/lib\
 lib\
+makeXLAddin\
 config/spgtools\
 config/spcl\
 config/spc\
@@ -128,3 +129,5 @@ win64:
 	done
 
 
+vs-translate:
+	$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/translateVS.py spi-vs16.sln spi-vs17.sln
