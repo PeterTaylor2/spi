@@ -144,20 +144,7 @@ public:
     virtual std::vector<CoerceFromConstSP> getCoerceFrom() const = 0;
     virtual bool byValue() const = 0;
 
-    void declareConstructor(
-        GeneratedOutput& ostr,
-        const ServiceDefinitionSP& svc,
-        const std::string& className,
-        const std::string& constructor,
-        const std::vector<AttributeConstSP>& attributes,
-        bool returnByValue = false) const;
-
-    void implementConstructor(
-        GeneratedOutput& ostr,
-        const std::string& className,
-        const std::string& constructor,
-        const std::vector<AttributeConstSP>& attributes,
-        bool returnByValue = false) const;
+    virtual std::vector<AttributeConstSP> AllAttributes() const = 0;
 
     void declareMethodAsFunction(
         GeneratedOutput& ostr,

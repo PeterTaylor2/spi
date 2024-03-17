@@ -2027,6 +2027,71 @@ void initClassStructOptions(
         defaultOptions["byValue"] = BoolConstant::Make(false);
 }
 
+// given a class (or struct) with defined constructor this creates the corresponding function
+void addConstructorFunction(
+    const ClassConstSP& cls,
+    const std::string& constructor,
+    ModuleDefinitionSP& module,
+    ServiceDefinitionSP& svc,
+    bool verbose)
+{
+    if (constructor.empty())
+        return;
+
+    std::vector<AttributeConstSP> attributes = cls->AllAttributes();
+    std::vector<FunctionAttributeConstSP> funcAttributes;
+    funcAttributes.reserve(attributes.size());
+    size_t N = attributes.size();
+    for (size_t i = 0; i < N; ++i)
+        funcAttributes.push_back(FunctionAttribute::Make(attributes[i], false));
+
+    std::vector<std::string> description;
+    std::vector<std::string> returnTypeDescription;
+
+    description.push_back("Constructor for " + cls->getName(true, "."));
+
+    bool ignored = false; // if the class is ignored we shouldn't get here
+    DataTypeConstSP returnType = cls->getDataType(svc, ignored);
+
+    bool noLog = false;
+    bool noConvert = true;
+    std::vector<std::string> excelOptions; // we don't know whether this is slow or not
+    int cacheSize = 0;
+
+    std::ostringstream code;
+    code << "    return " << cls->getName(true, "::") << "::Make";
+    char* sep = "(";
+    for (size_t i = 0; i < N; ++i)
+    {
+        code << sep << "\n        " << attributes[i]->name();
+        sep = ",";
+    }
+    code << ");\n"
+        << "}";
+
+    VerbatimConstSP implementation = Verbatim::Make(
+        std::string(), // no filename
+        0,
+        spi_util::StringSplit(code.str(), "\n"));
+
+    std::string ns;
+    FunctionConstSP func = Function::Make(
+        description,
+        returnTypeDescription,
+        returnType,
+        0,
+        constructor,
+        ns,
+        funcAttributes,
+        implementation,
+        noLog,
+        noConvert,
+        excelOptions,
+        cacheSize);
+
+    module->addConstruct(func);
+}
+
 void structKeywordHandler(
     ConfigLexer& lexer,
     const std::vector<std::string>& description,
@@ -2245,6 +2310,10 @@ void structKeywordHandler(
     {
         service->addClass(type);
         module->addConstruct(type);
+        if (!constructor.empty())
+        {
+            addConstructorFunction(type, constructor, module, service, verbose);
+        }
     }
 }
 
@@ -2807,6 +2876,10 @@ void classNoWrapHandler(
     {
         service->addClass(type);
         module->addConstruct(type);
+        if (!constructor.empty())
+        {
+            addConstructorFunction(type, constructor, module, service, verbose);
+        }
     }
 }
 
@@ -2973,6 +3046,7 @@ void classKeywordHandler(
     }
 
     std::string funcPrefix = getOption(options, "funcPrefix")->getString();
+    std::string constructor = getOption(options, "constructor")->getString();
     WrapperClassSP type = WrapperClass::Make(
         description, name, module->moduleNamespace(), innerClass,
         baseWrapperClass, isVirtual,
@@ -2984,7 +3058,7 @@ void classKeywordHandler(
         getOption(options, "asValue")->getBool(),
         uuid,
         funcPrefix.empty() ? getOption(options, "xlFuncName")->getString() : funcPrefix,
-        getOption(options, "constructor")->getString(),
+        constructor,
         getOption(options, "instance")->getString());
 
     // we need to register the type before parsing the contents in order to
@@ -3206,6 +3280,10 @@ void classKeywordHandler(
     {
         service->addClass(type);
         module->addConstruct(type);
+        if (!constructor.empty())
+        {
+            addConstructorFunction(type, constructor, module, service, verbose);
+        }
     }
 }
 

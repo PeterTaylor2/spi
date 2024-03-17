@@ -96,64 +96,6 @@ void Construct::SplitTypedef(const std::string& td,
     }
 }
 
-// declares a stand-alone function which uses all the attributes of the class
-// and returns a shared pointer for that class
-void Class::declareConstructor(
-    GeneratedOutput& ostr,
-    const ServiceDefinitionSP& svc,
-    const std::string& className,
-    const std::string& constructor,
-    const std::vector<AttributeConstSP>& attributes,
-    bool returnByValue) const
-{
-    if (constructor.empty())
-        return;
-
-    std::vector<std::string> description;
-    description.push_back(spi_util::StringFormat(
-        "Stand alone constructor equivalent to %s::Make",
-        className.c_str()));
-    writeStartCommentBlock(ostr, true);
-    writeComments(ostr, description);
-    writeEndCommentBlock(ostr);
-
-    ostr << svc->getImport() << " " << className;
-    if (!returnByValue)
-        ostr << "ConstSP";
-    ostr << " " << constructor;
-
-    writeFunctionInputs(ostr, false, attributes, true, 4);
-    ostr << ";\n";
-}
-
-void Class::implementConstructor(
-    GeneratedOutput& ostr,
-    const std::string& className,
-    const std::string& constructor,
-    const std::vector<AttributeConstSP>& attributes,
-    bool returnByValue) const
-{
-    if (constructor.empty())
-        return;
-
-    ostr << "\n";
-
-    ostr << className;
-    if (!returnByValue)
-        ostr << "ConstSP";
-    ostr << " " << constructor;
-    writeFunctionInputs(ostr, false, attributes, true, 4);
-    ostr << "\n"
-        << "{\n";
-
-    ostr << "    return " << className << "::Make";
-    std::vector<AttributeConstSP> outputs;
-    writeArgsCall(ostr, false, attributes, 16 + className.length(), 8);
-    ostr << ";\n";
-
-    ostr << "}\n";
-}
-
 void Class::declareMethodAsFunction(
     GeneratedOutput& ostr,
     const ServiceDefinitionSP& svc,

@@ -234,11 +234,6 @@ void Struct::declareClassFunctions(
     GeneratedOutput& ostr,
     const ServiceDefinitionSP& svc) const
 {
-    if (!m_constructor.empty() && !isAbstract())
-    {
-        declareConstructor(ostr, svc, m_name, m_constructor, AllAttributes(), m_byValue);
-    }
-
     if (!m_funcPrefix.empty())
     {
         size_t numMethods = m_methods.size();
@@ -616,11 +611,6 @@ void Struct::implement(
     for (size_t i = 0; i < m_classProperties.size(); ++i)
     {
         writeOpenAccessor(ostr, m_classProperties[i], m_name, false, true, true);
-    }
-
-    if (!m_constructor.empty() && !isAbstract())
-    {
-        implementConstructor(ostr, m_name, m_constructor, allAttributes, m_byValue);
     }
 
     if (!m_funcPrefix.empty())

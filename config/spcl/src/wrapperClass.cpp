@@ -251,11 +251,6 @@ void WrapperClass::declareClassFunctions(
     GeneratedOutput& ostr,
     const ServiceDefinitionSP& svc) const
 {
-    if (!m_constructor.empty() && !isAbstract())
-    {
-        declareConstructor(ostr, svc, m_name, m_constructor, AllAttributes());
-    }
-
     if (!m_funcPrefix.empty())
     {
         size_t numMethods = m_methods.size();
@@ -1152,11 +1147,6 @@ void WrapperClass::implement(
              << "    return inner_type(new " << m_name
              << "_Delegate(outer_type(this)));\n"
              << "}\n";
-    }
-
-    if (!m_constructor.empty() && !isAbstract())
-    {
-        implementConstructor(ostr, m_name, m_constructor, attributes);
     }
 }
 

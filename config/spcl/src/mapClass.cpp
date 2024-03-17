@@ -305,3 +305,8 @@ bool MapClass::byValue() const
 {
     return false;
 }
+
+std::vector<AttributeConstSP> MapClass::AllAttributes() const
+{
+    SPI_THROW_RUNTIME_ERROR("AllAttributes not implemented for MapClass");
+}

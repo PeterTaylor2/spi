@@ -103,6 +103,8 @@ public:
     bool hasObjectId() const;
     bool byValue() const;
 
+    std::vector<AttributeConstSP> AllAttributes() const;
+
 protected:
     MapClass(
         const std::vector<std::string>& description,
