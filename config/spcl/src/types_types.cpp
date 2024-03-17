@@ -565,7 +565,6 @@ bool DataType::ignored() const
 */
 AttributeConstSP Attribute::Make(
     const DataTypeConstSP& dataType,
-    bool innerConst,
     const std::string& name,
     int arrayDim)
 {
@@ -573,7 +572,7 @@ AttributeConstSP Attribute::Make(
   types_check_permission();
   try
   {
-    inner_type self = make_inner(dataType, innerConst, name, arrayDim);
+    inner_type self = make_inner(dataType, name, arrayDim);
     return Wrap(self);
   }
   catch (std::exception& e)
@@ -584,7 +583,6 @@ AttributeConstSP Attribute::Make(
 
 Attribute::inner_type Attribute::make_inner(
     const DataTypeConstSP& o_dataType,
-    bool o_innerConst,
     const std::string& o_name,
     int o_arrayDim)
 {
@@ -593,14 +591,12 @@ Attribute::inner_type Attribute::make_inner(
     SPI_PRE_CONDITION(o_dataType);
     dataType = DataType::get_inner(o_dataType);
 
-    const bool& innerConst = o_innerConst;
     const std::string& name = o_name;
     const int& arrayDim = o_arrayDim;
 
     ::AttributeConstSP self = ::Attribute::Make(
         std::vector<std::string>(),
         dataType,
-        innerConst,
         name,
         arrayDim);
 
@@ -650,13 +646,6 @@ spi_boost::intrusive_ptr< ::DataType const > Attribute_Helper::get_dataType(cons
 {
     Attribute::inner_type self = o->get_inner();
     return self->dataType();
-}
-
-bool Attribute::innerConst() const
-{
-    inner_type self = get_inner();
-
-    return self->innerConst();
 }
 
 std::string Attribute::name() const

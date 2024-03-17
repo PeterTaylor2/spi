@@ -701,14 +701,12 @@ void Attribute::to_map(
     spi::IObjectMap* obj_map, bool public_only) const
 {
     const DataTypeConstSP& dataType = this->dataType();
-    bool innerConst = this->innerConst();
     const std::string& name = this->name();
     int arrayDim = this->arrayDim();
 
     if (!public_only)
     {
         obj_map->SetObject("dataType", dataType);
-        obj_map->SetBool("innerConst", innerConst, !public_only && (innerConst == false));
         obj_map->SetString("name", name);
         obj_map->SetInt("arrayDim", arrayDim, !public_only && (arrayDim == 0));
     }
@@ -720,14 +718,12 @@ spi::ObjectConstSP Attribute::object_from_map(
 {
     const DataTypeConstSP& dataType
         = obj_map->GetInstance<DataType const>("dataType", value_to_object);
-    bool innerConst
-        = obj_map->GetBool("innerConst", true, false);
     const std::string& name
         = obj_map->GetString("name");
     int arrayDim
         = obj_map->GetInt("arrayDim", true, 0);
 
-    return Attribute::Make(dataType, innerConst, name, arrayDim);
+    return Attribute::Make(dataType, name, arrayDim);
 }
 
 SPI_IMPLEMENT_OBJECT_TYPE(Attribute, "Attribute", types_service, false, 0);
@@ -738,24 +734,21 @@ spi::Value Attribute_caller(
 {
     const DataTypeConstSP& dataType =
         in_context->ValueToInstance<DataType const>(in_values[0]);
-    bool innerConst =
-        in_context->ValueToBool(in_values[1], true, false);
     const std::string& name =
-        in_context->ValueToString(in_values[2]);
+        in_context->ValueToString(in_values[1]);
     int arrayDim =
-        in_context->ValueToInt(in_values[3], true, 0);
+        in_context->ValueToInt(in_values[2], true, 0);
 
-    const AttributeConstSP& o_result = types::Attribute::Make(dataType,
-        innerConst, name, arrayDim);
+    const AttributeConstSP& o_result = types::Attribute::Make(dataType, name,
+        arrayDim);
     return spi::ObjectConstSP(o_result);
 }
 
 spi::FunctionCaller Attribute_FunctionCaller = {
     "Attribute",
-    4,
+    3,
     {
         {"dataType", spi::ArgType::OBJECT, "DataType", false, false, false},
-        {"innerConst", spi::ArgType::BOOL, "bool", false, true, false},
         {"name", spi::ArgType::STRING, "string", false, false, false},
         {"arrayDim", spi::ArgType::INT, "int", false, true, false}
     },

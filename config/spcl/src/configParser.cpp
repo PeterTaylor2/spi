@@ -357,7 +357,7 @@ FunctionAttributeConstSP parseFunctionAttribute(
     }
 
     AttributeConstSP attr = Attribute::Make(
-        desc.take(), dataType, innerConst, name, arrayDim, isOptional, defaultValue);
+        desc.take(), dataType, name, arrayDim, isOptional, defaultValue);
 
     return FunctionAttribute::Make(attr, isOutput);
 }
@@ -494,7 +494,7 @@ ClassAttributeConstSP parseClassAttribute(
     }
 
     AttributeConstSP attr = Attribute::Make(
-        description, dataType, innerConst, name, arrayDim, isOptional, defaultValue);
+        description, dataType, name, arrayDim, isOptional, defaultValue);
 
     VerbatimConstSP code;
 
@@ -893,7 +893,7 @@ FunctionConstSP parseFunction(
 
     FunctionConstSP func = Function::Make(
         description, returnTypeDesc.take(),
-        returnType, returnInnerConst, returnArrayDim, name, module->moduleNamespace(),
+        returnType, returnArrayDim, name, module->moduleNamespace(),
         args, implementation,
         getOption(options, "noLog")->getBool(),
         getOption(options, "noConvert")->getBool(),

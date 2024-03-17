@@ -58,7 +58,6 @@ public:
         const std::vector<std::string>&      description,
         const std::vector<std::string>&      returnTypeDescription,
         const DataTypeConstSP&               returnType,
-        bool                                 returnInnerConst,
         int                                  returnArrayDim,
         const std::string&                   name,
         const std::string&                   ns,
@@ -105,7 +104,6 @@ protected:
         const std::vector<std::string>&      description,
         const std::vector<std::string>&      returnTypeDescription,
         const DataTypeConstSP&               returnType,
-        bool                                 returnInnerConst,
         int                                  returnArrayDim,
         const std::string&                   name,
         const std::string&                   ns,
@@ -120,7 +118,6 @@ private:
     std::vector<std::string>      m_description;
     std::vector<std::string>      m_returnTypeDescription;
     DataTypeConstSP               m_returnType;
-    bool                          m_returnInnerConst;
     int                           m_returnArrayDim;
     std::string                   m_name;
     std::string                   m_ns;

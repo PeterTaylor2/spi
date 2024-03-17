@@ -44,7 +44,7 @@ namespace
 AttributeConstSP getInstance(const DataTypeConstSP& classType)
 {
     std::vector<std::string> description;
-    return Attribute::Make(description, classType, false, "self");
+    return Attribute::Make(description, classType, "self");
 }
 
 std::vector<AttributeConstSP> getExtendedArgs(

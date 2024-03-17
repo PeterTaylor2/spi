@@ -200,7 +200,7 @@ void Class::declareMethodAsFunction(
         std::vector<std::string> description;
         std::string name = instance.empty() ? "handle" : instance;
         description.push_back(spi_util::StringFormat("instance variable"));
-        inputs.push_back(Attribute::Make(description, instanceType, true, name));
+        inputs.push_back(Attribute::Make(description, instanceType, name));
     }
     std::vector<AttributeConstSP> methodInputs = methodFunc->inputs();
     inputs.insert(inputs.end(), methodInputs.begin(), methodInputs.end());
@@ -257,8 +257,7 @@ void Class::implementMethodAsFunction(
     if (!method->isStatic())
     {
         std::vector<std::string> description;
-        bool innerConst = true; // explain
-        inputs.push_back(Attribute::Make(description, instanceType, innerConst, instanceName));
+        inputs.push_back(Attribute::Make(description, instanceType, instanceName));
     }
     std::vector<AttributeConstSP> methodInputs = methodFunc->inputs();
     std::vector<AttributeConstSP> methodOutputs = methodFunc->outputs();

@@ -343,7 +343,6 @@ class SPI_IMPORT Attribute : public spi::Object
 public:
     static AttributeConstSP Make(
         const DataTypeConstSP& dataType,
-        bool innerConst,
         const std::string& name,
         int arrayDim);
 
@@ -369,13 +368,11 @@ private:
 
     static inner_type make_inner(
         const DataTypeConstSP& dataType,
-        bool innerConst,
         const std::string& name,
         int arrayDim);
 
     /* private accessor methods */
     DataTypeConstSP dataType() const;
-    bool innerConst() const;
     std::string name() const;
     int arrayDim() const;
 
