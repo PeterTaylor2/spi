@@ -140,6 +140,8 @@ private:
 public:
     const std::string& name() const { return m_name; }
     bool hasIgnored() const { return m_hasIgnored; }
+    const std::vector<AttributeConstSP>& inputs() const { return m_inputs; }
+    const std::vector<AttributeConstSP>& outputs() const { return m_outputs; }
 };
 
 #endif

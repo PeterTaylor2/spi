@@ -68,7 +68,9 @@ public:
         bool                            noId,
         bool                            asValue,
         bool                            uuid,
-        const std::string&              xlFuncName);
+        const std::string&              funcPrefix,
+        const std::string&              constructor,
+        const std::string&              instance);
 
     void addClassAttribute(const ClassAttributeConstSP& classAttribute);
     void addMethod(const ClassMethodConstSP& method);
@@ -92,6 +94,9 @@ public:
 
     int preDeclare(GeneratedOutput& ostr,
                    const ServiceDefinitionSP& svc) const;
+
+    void declareClassFunctions(GeneratedOutput& ostr,
+        const ServiceDefinitionSP& svc) const;
 
     // implementation of Construct
     void declare(GeneratedOutput& ostr,
@@ -131,6 +136,7 @@ public:
     const DataTypeConstSP& getDataType(const ServiceDefinitionSP& svc, bool ignored) const;
     ClassConstSP getBaseClass() const;
     std::vector<CoerceFromConstSP> getCoerceFrom() const;
+    bool byValue() const;
     std::string ObjectName() const;
     std::vector<ClassAttributeConstSP> getBaseClassProperties() const;
     std::vector<AttributeConstSP> AllAttributes() const;
@@ -151,7 +157,9 @@ protected:
         bool                            noId,
         bool                            asValue,
         bool                            uuid,
-        const std::string&              xlFuncName);
+        const std::string&              funcPrefix,
+        const std::string&              constructor,
+        const std::string&              instance);
 
 private:
     std::vector<std::string>           m_description;
@@ -167,7 +175,9 @@ private:
     bool                               m_noId;
     bool                               m_asValue;
     bool                               m_uuid;
-    std::string                        m_xlFuncName;
+    std::string                        m_funcPrefix;
+    std::string                        m_constructor;
+    std::string                        m_instance;
 
 private:
     std::string                        m_verbatimStart;
@@ -207,7 +217,9 @@ public:
     bool noId() const { return m_noId; }
     bool asValue() const { return m_asValue; }
     bool uuid() const { return m_uuid; }
-    const std::string& xlFuncName() const { return m_xlFuncName; }
+    const std::string& funcPrefix() const { return m_funcPrefix; }
+    const std::string& constructor() const { return m_constructor; }
+    const std::string& instance() const { return m_instance; }
     const DataTypeConstSP& dataType() const { return m_dataType; }
     const std::vector<ClassAttributeConstSP>& classProperties() const { return m_classProperties; }
 

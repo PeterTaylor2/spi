@@ -570,7 +570,9 @@ public:
         bool uuid,
         bool byValue,
         bool useAccessors,
-        const std::string& xlFuncName);
+        const std::string& funcPrefix,
+        const std::string& constructor,
+        const std::string& instance);
 
     typedef spi::ObjectSmartPtr<BaseStruct> outer_type; 
 
@@ -607,7 +609,9 @@ private:
         bool uuid,
         bool byValue,
         bool useAccessors,
-        const std::string& xlFuncName);
+        const std::string& funcPrefix,
+        const std::string& constructor,
+        const std::string& instance);
 
     /* private accessor methods */
     std::vector<std::string> description() const;
@@ -623,7 +627,9 @@ private:
     bool uuid() const;
     bool byValue() const;
     bool useAccessors() const;
-    std::string xlFuncName() const;
+    std::string funcPrefix() const;
+    std::string constructor() const;
+    std::string instance() const;
 
     /* shared pointer to implementation */
     spi_boost::intrusive_ptr< ::Struct const > inner_value;
@@ -714,6 +720,28 @@ private:
 
 /**
 ****************************************************************************
+* Stand alone constructor equivalent to InnerClass::Make
+****************************************************************************
+*/
+SPI_IMPORT InnerClassConstSP INNER_CLASS_MAKE(
+    const std::string& typeName,
+    const std::string& ns,
+    const std::string& freeFunc,
+    const std::string& copyFunc,
+    const std::string& preDeclaration,
+    const std::string& sharedPtr,
+    bool isShared,
+    bool isConst,
+    bool isOpen,
+    bool isStruct,
+    bool isCached,
+    bool isTemplate,
+    bool byValue,
+    const std::string& boolTest,
+    bool allowConst);
+
+/**
+****************************************************************************
 * No description.
 ****************************************************************************
 */
@@ -736,7 +764,9 @@ public:
         bool asValue,
         const std::vector<ClassPropertyConstSP>& classProperties,
         bool uuid,
-        const std::string& xlFuncName);
+        const std::string& funcPrefix,
+        const std::string& constructor,
+        const std::string& instance);
 
     typedef spi::ObjectSmartPtr<BaseWrapperClass> outer_type; 
 
@@ -775,7 +805,9 @@ private:
         bool asValue,
         const std::vector<ClassPropertyConstSP>& classProperties,
         bool uuid,
-        const std::string& xlFuncName);
+        const std::string& funcPrefix,
+        const std::string& constructor,
+        const std::string& instance);
 
     /* private accessor methods */
     std::vector<std::string> description() const;
@@ -793,7 +825,9 @@ private:
     bool asValue() const;
     std::vector<ClassPropertyConstSP> classProperties() const;
     bool uuid() const;
-    std::string xlFuncName() const;
+    std::string funcPrefix() const;
+    std::string constructor() const;
+    std::string instance() const;
 
     /* shared pointer to implementation */
     spi_boost::intrusive_ptr< ::WrapperClass const > inner_value;

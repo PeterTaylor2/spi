@@ -620,7 +620,9 @@ public:
         bool canPut,
         bool hasDynamicAttributes,
         bool asValue,
-        const std::string& xlFuncName);
+        const std::string& funcPrefix,
+        const std::string& constructor,
+        const std::string& instance);
 
     /**
     ************************************************************************
@@ -675,7 +677,9 @@ protected:
         bool canPut,
         bool hasDynamicAttributes,
         bool asValue,
-        const std::string& xlFuncName);
+        const std::string& funcPrefix,
+        const std::string& constructor,
+        const std::string& instance);
 
 public:
 
@@ -696,7 +700,9 @@ public:
     const bool canPut;
     const bool hasDynamicAttributes;
     const bool asValue;
-    const std::string xlFuncName;
+    const std::string funcPrefix;
+    const std::string constructor;
+    const std::string instance;
 
 public:
     std::string getName() const { return name; } 

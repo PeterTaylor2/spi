@@ -1669,7 +1669,9 @@ void Class::to_map(
     obj_map->SetBool("canPut", canPut);
     obj_map->SetBool("hasDynamicAttributes", hasDynamicAttributes);
     obj_map->SetBool("asValue", asValue, !public_only && (asValue == false));
-    obj_map->SetString("xlFuncName", xlFuncName, !public_only && (xlFuncName == std::string("")));
+    obj_map->SetString("funcPrefix", funcPrefix, !public_only && (funcPrefix == std::string("")));
+    obj_map->SetString("constructor", constructor, !public_only && (constructor == std::string("")));
+    obj_map->SetString("instance", instance, !public_only && (instance == std::string("")));
 }
 
 spi::ObjectConstSP Class::object_from_map(
@@ -1710,13 +1712,17 @@ spi::ObjectConstSP Class::object_from_map(
         = obj_map->GetBool("hasDynamicAttributes");
     bool asValue
         = obj_map->GetBool("asValue", true, false);
-    const std::string& xlFuncName
-        = obj_map->GetString("xlFuncName", true, "");
+    const std::string& funcPrefix
+        = obj_map->GetString("funcPrefix", true, "");
+    const std::string& constructor
+        = obj_map->GetString("constructor", true, "");
+    const std::string& instance
+        = obj_map->GetString("instance", true, "");
 
     return new Class(name, ns, description, baseClassName, attributes,
         properties, methods, coerceFrom, coerceTo, isAbstract, noMake,
         objectName, dataType, isDelegate, canPut, hasDynamicAttributes,
-        asValue, xlFuncName);
+        asValue, funcPrefix, constructor, instance);
 }
 
 SPI_IMPLEMENT_OBJECT_TYPE(Class, "Class", spdoc_service, true, 0);
@@ -1759,19 +1765,23 @@ spi::Value Class_caller(
         in_context->ValueToBool(in_values[15]);
     bool asValue =
         in_context->ValueToBool(in_values[16], true, false);
-    const std::string& xlFuncName =
+    const std::string& funcPrefix =
         in_context->ValueToString(in_values[17], true, "");
+    const std::string& constructor =
+        in_context->ValueToString(in_values[18], true, "");
+    const std::string& instance =
+        in_context->ValueToString(in_values[19], true, "");
 
     const ClassConstSP& o_result = spdoc::Class::Make(name, ns, description,
         baseClassName, attributes, properties, methods, coerceFrom, coerceTo,
         isAbstract, noMake, objectName, dataType, isDelegate, canPut,
-        hasDynamicAttributes, asValue, xlFuncName);
+        hasDynamicAttributes, asValue, funcPrefix, constructor, instance);
     return spi::ObjectConstSP(o_result);
 }
 
 spi::FunctionCaller Class_FunctionCaller = {
     "Class",
-    18,
+    20,
     {
         {"name", spi::ArgType::STRING, "string", false, false, false},
         {"ns", spi::ArgType::STRING, "string", false, true, false},
@@ -1790,7 +1800,9 @@ spi::FunctionCaller Class_FunctionCaller = {
         {"canPut", spi::ArgType::BOOL, "bool", false, false, false},
         {"hasDynamicAttributes", spi::ArgType::BOOL, "bool", false, false, false},
         {"asValue", spi::ArgType::BOOL, "bool", false, true, false},
-        {"xlFuncName", spi::ArgType::STRING, "string", false, true, false}
+        {"funcPrefix", spi::ArgType::STRING, "string", false, true, false},
+        {"constructor", spi::ArgType::STRING, "string", false, true, false},
+        {"instance", spi::ArgType::STRING, "string", false, true, false}
     },
     Class_caller
 };

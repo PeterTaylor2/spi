@@ -40,6 +40,7 @@ SPI_DECLARE_RC_CLASS(InnerClass);
 SPI_DECLARE_RC_CLASS(ServiceDefinition);
 SPI_DECLARE_RC_CLASS(ModuleDefinition);
 SPI_DECLARE_RC_CLASS(CoerceFrom);
+SPI_DECLARE_RC_CLASS(ClassMethod);
 
 #include "coerceFrom.hpp" // FIXME
 
@@ -73,6 +74,10 @@ public:
         GeneratedOutput& ostr,
         const ServiceDefinitionSP& svc,
         bool types) const = 0;
+
+    virtual void declareClassFunctions(
+        GeneratedOutput& ostr,
+        const ServiceDefinitionSP& svc) const;
 
     virtual void declareHelper(
         GeneratedOutput& ostr,
@@ -137,6 +142,42 @@ public:
         const ServiceDefinitionSP& svc, bool ignored) const = 0;
     virtual ClassConstSP getBaseClass() const = 0;
     virtual std::vector<CoerceFromConstSP> getCoerceFrom() const = 0;
+    virtual bool byValue() const = 0;
+
+    void declareConstructor(
+        GeneratedOutput& ostr,
+        const ServiceDefinitionSP& svc,
+        const std::string& className,
+        const std::string& constructor,
+        const std::vector<AttributeConstSP>& attributes,
+        bool returnByValue = false) const;
+
+    void implementConstructor(
+        GeneratedOutput& ostr,
+        const std::string& className,
+        const std::string& constructor,
+        const std::vector<AttributeConstSP>& attributes,
+        bool returnByValue = false) const;
+
+    void declareMethodAsFunction(
+        GeneratedOutput& ostr,
+        const ServiceDefinitionSP& svc,
+        const ClassMethodConstSP& method,
+        const std::string& className,
+        const std::string& funcPrefix,
+        const std::string& instance,
+        const DataTypeConstSP& instanceType) const;
+
+    void implementMethodAsFunction(
+        GeneratedOutput& ostr,
+        const ClassMethodConstSP& method,
+        const std::string& className,
+        const std::string& funcPrefix,
+        const std::string& instance,
+        const DataTypeConstSP& instanceType) const;
+
 };
+
+
 
 #endif

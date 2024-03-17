@@ -214,7 +214,9 @@ spdoc::ConstructConstSP MapClass::getDoc() const
             m_canPut,
             true, // hasDynamicAttributes
             false, // asValue
-            std::string()); // xlFuncName
+            std::string(), // funcPrefix
+            std::string(), // constructor
+            std::string()); // instance
     }
     return m_doc;
 }
@@ -297,4 +299,9 @@ ClassConstSP MapClass::getBaseClass() const
 bool MapClass::hasObjectId() const
 {
     return m_uuid;
+}
+
+bool MapClass::byValue() const
+{
+    return false;
 }

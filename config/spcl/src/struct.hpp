@@ -73,7 +73,9 @@ public:
         bool                            uuid,
         bool                            byValue,
         bool                            useAccessors,
-        const std::string&              xlFuncName);
+        const std::string&              funcPrefix,
+        const std::string&              constructor,
+        const std::string&              instance);
 
     void addClassAttribute(const ClassAttributeConstSP& attribute);
     void addMethod(const ClassMethodConstSP& method);
@@ -88,6 +90,9 @@ public:
     // re-implementation of Construct
     int preDeclare(GeneratedOutput& ostr,
                    const ServiceDefinitionSP& svc) const;
+
+    void declareClassFunctions(GeneratedOutput& ostr,
+        const ServiceDefinitionSP& svc) const;
 
     // implementation of construct
     void declare(GeneratedOutput& ostr,
@@ -144,7 +149,9 @@ protected:
         bool                            uuid,
         bool                            byValue,
         bool useAccessors,
-        const std::string& xlFuncName);
+        const std::string& xlFuncName,
+        const std::string& constructor,
+        const std::string& instance);
 
 private:
     std::vector<std::string>        m_description;
@@ -160,7 +167,9 @@ private:
     bool                            m_uuid;
     bool                            m_byValue;
     bool                            m_useAccessors;
-    std::string                     m_xlFuncName;
+    std::string                     m_funcPrefix;
+    std::string                     m_constructor;
+    std::string                     m_instance;
 
     std::vector<AttributeConstSP>   m_attributes;
     std::vector<ClassMethodConstSP> m_methods;
@@ -203,7 +212,9 @@ public:
     bool uuid() const { return m_uuid; }
     bool byValue() const { return m_byValue; }
     bool useAccessors() const { return m_useAccessors; }
-    const std::string& xlFuncName() const { return m_xlFuncName; }
+    const std::string& funcPrefix() const { return m_funcPrefix; }
+    const std::string& constructor() const { return m_constructor; }
+    const std::string& instance() const { return m_instance; }
 };
 
 #endif

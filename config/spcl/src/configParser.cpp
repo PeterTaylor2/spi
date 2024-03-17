@@ -2005,6 +2005,28 @@ void writeTemplateDoc(GeneratedOutput& ostr, bool verbose)
          << "\n";
 }
 
+void initClassStructOptions(
+    ParserOptions& defaultOptions,
+    bool wrapperClass)
+{
+    defaultOptions["noMake"] = BoolConstant::Make(false);
+    defaultOptions["objectName"] = StringConstant::Make("");
+    defaultOptions["canPut"] = BoolConstant::Make(false);
+    defaultOptions["noId"] = BoolConstant::Make(false);
+    defaultOptions["asValue"] = BoolConstant::Make(false);
+    defaultOptions["ignore"] = BoolConstant::Make(false);
+    defaultOptions["uuid"] = BoolConstant::Make(false);
+    defaultOptions["xlFuncName"] = StringConstant::Make(""); // for backward compatibility - should be funcPrefix instead
+    defaultOptions["constructor"] = StringConstant::Make("");
+    defaultOptions["funcPrefix"] = StringConstant::Make(""); // same as xlFuncName
+    defaultOptions["instance"] = StringConstant::Make(""); // name of the instance field in functions
+
+    if (wrapperClass)
+        defaultOptions["sharedPtr"] = StringConstant::Make("");
+    else
+        defaultOptions["byValue"] = BoolConstant::Make(false);
+}
+
 void structKeywordHandler(
     ConfigLexer& lexer,
     const std::vector<std::string>& description,
@@ -2070,15 +2092,7 @@ void structKeywordHandler(
     static ParserOptions defaultOptions;
     if (defaultOptions.size() == 0)
     {
-        defaultOptions["noMake"] = BoolConstant::Make(false);
-        defaultOptions["objectName"] = StringConstant::Make("");
-        defaultOptions["canPut"] = BoolConstant::Make(false);
-        defaultOptions["noId"] = BoolConstant::Make(false);
-        defaultOptions["asValue"] = BoolConstant::Make(false);
-        defaultOptions["byValue"] = BoolConstant::Make(false);
-        defaultOptions["ignore"] = BoolConstant::Make(false);
-        defaultOptions["uuid"] = BoolConstant::Make(false);
-        defaultOptions["xlFuncName"] = StringConstant::Make("");
+        initClassStructOptions(defaultOptions, false);
     }
     ParserOptions options;
     options = parseOptions(lexer, "{", defaultOptions, verbose);
@@ -2091,11 +2105,15 @@ void structKeywordHandler(
     bool ignore = getOption(options, "ignore")->getBool();
     bool uuid = getOption(options, "uuid")->getBool();
     std::string xlFuncName = getOption(options, "xlFuncName")->getString();
+    std::string funcPrefix = getOption(options, "funcPrefix")->getString();
+    std::string constructor = getOption(options, "constructor")->getString();
+    std::string instance = getOption(options, "instance")->getString();
 
     StructSP type = Struct::Make(
         description, name, module->moduleNamespace(), baseClass, noMake,
         getOption(options, "objectName")->getString(),
-        canPut, noId, isVirtual, asValue, uuid, byValue, false, xlFuncName);
+        canPut, noId, isVirtual, asValue, uuid, byValue, false,
+        funcPrefix.empty() ? xlFuncName : funcPrefix, constructor, instance);
 
     // we need to register the type before parsing the contents in order to
     // allow references to itself in the structure definition
@@ -2652,15 +2670,7 @@ void classNoWrapHandler(
     static ParserOptions defaultOptions;
     if (defaultOptions.size() == 0)
     {
-        defaultOptions["noMake"] = BoolConstant::Make(false);
-        defaultOptions["objectName"] = StringConstant::Make("");
-        defaultOptions["canPut"] = BoolConstant::Make(false);
-        defaultOptions["noId"] = BoolConstant::Make(false);
-        defaultOptions["asValue"] = BoolConstant::Make(false);
-        defaultOptions["byValue"] = BoolConstant::Make(false);
-        defaultOptions["ignore"] = BoolConstant::Make(false);
-        defaultOptions["uuid"] = BoolConstant::Make(false);
-        defaultOptions["xlFuncName"] = StringConstant::Make("");
+        initClassStructOptions(defaultOptions, false);
     }
 
     ParserOptions options;
@@ -2675,12 +2685,16 @@ void classNoWrapHandler(
     bool ignore = getOption(options, "ignore")->getBool();
     bool uuid = getOption(options, "uuid")->getBool();
     std::string xlFuncName = getOption(options, "xlFuncName")->getString();
+    std::string funcPrefix = getOption(options, "funcPrefx")->getString();
+    std::string constructor = getOption(options, "constructor")->getString();
+    std::string instance = getOption(options, "instance")->getString();
 
     StructSP type = Struct::Make(
         description, className, module->moduleNamespace(),
         baseClass, noMake,
         getOption(options, "objectName")->getString(),
-        canPut, noId, isVirtual, asValue, uuid, byValue, true, xlFuncName);
+        canPut, noId, isVirtual, asValue, uuid, byValue, true,
+        funcPrefix.empty() ? xlFuncName : funcPrefix, constructor, instance);
 
     // we need to register the type before parsing the contents in order to
     // allow references to itself in the class definition
@@ -2890,15 +2904,7 @@ void classKeywordHandler(
     static ParserOptions defaultOptions;
     if (defaultOptions.size() == 0)
     {
-        defaultOptions["noMake"] = BoolConstant::Make(false);
-        defaultOptions["objectName"] = StringConstant::Make("");
-        defaultOptions["canPut"] = BoolConstant::Make(false);
-        defaultOptions["noId"] = BoolConstant::Make(false);
-        defaultOptions["asValue"] = BoolConstant::Make(false);
-        defaultOptions["ignore"] = BoolConstant::Make(false);
-        defaultOptions["uuid"] = BoolConstant::Make(false);
-        defaultOptions["sharedPtr"] = StringConstant::Make("");
-        defaultOptions["xlFuncName"] = StringConstant::Make("");
+        initClassStructOptions(defaultOptions, true);
     }
 
     lexer.returnToken(token);
@@ -2966,6 +2972,7 @@ void classKeywordHandler(
         innerClass = innerClass->setSharedPtr(sharedPtr);
     }
 
+    std::string funcPrefix = getOption(options, "funcPrefix")->getString();
     WrapperClassSP type = WrapperClass::Make(
         description, name, module->moduleNamespace(), innerClass,
         baseWrapperClass, isVirtual,
@@ -2976,7 +2983,9 @@ void classKeywordHandler(
         getOption(options, "noId")->getBool(),
         getOption(options, "asValue")->getBool(),
         uuid,
-        getOption(options, "xlFuncName")->getString());
+        funcPrefix.empty() ? getOption(options, "xlFuncName")->getString() : funcPrefix,
+        getOption(options, "constructor")->getString(),
+        getOption(options, "instance")->getString());
 
     // we need to register the type before parsing the contents in order to
     // allow references to itself in the class definition

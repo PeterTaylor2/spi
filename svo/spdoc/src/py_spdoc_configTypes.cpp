@@ -1393,8 +1393,12 @@ static PyGetSetDef Class_properties[] = {
         (void*) "hasDynamicAttributes"},
     {"asValue", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "asValue"},
-    {"xlFuncName", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
-        (void*) "xlFuncName"},
+    {"funcPrefix", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
+        (void*) "funcPrefix"},
+    {"constructor", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
+        (void*) "constructor"},
+    {"instance", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
+        (void*) "instance"},
     {NULL} // sentinel
 };
 
@@ -1486,7 +1490,7 @@ static PyTypeObject Class_PyObjectType = {
     0, /*tp_setattro*/
     0, /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT, /*tp_flags*/
-    "Defines a class.\n\n__init__(self, name, ns=None, description=[], baseClassName, attributes=[], properties=[], methods=[], coerceFrom=[], coerceTo=[], isAbstract, noMake, objectName, dataType, isDelegate, canPut, hasDynamicAttributes, asValue=None, xlFuncName=None)", /* tp_doc */
+    "Defines a class.\n\n__init__(self, name, ns=None, description=[], baseClassName, attributes=[], properties=[], methods=[], coerceFrom=[], coerceTo=[], isAbstract, noMake, objectName, dataType, isDelegate, canPut, hasDynamicAttributes, asValue=None, funcPrefix=None, constructor=None, instance=None)", /* tp_doc */
     0, /* tp_traverse */
     0, /* tp_clear */
     0, /* tp_richcompare */

@@ -63,11 +63,14 @@ WrapperClassSP WrapperClass::Make(
     bool                            noId,
     bool                            asValue,
     bool                            uuid,
-    const std::string&              xlFuncName)
+    const std::string&              funcPrefix,
+    const std::string&              constructor,
+    const std::string&              instance)
 {
     return new WrapperClass(
         description, name, ns, innerClass, baseClass, isVirtual, noMake,
-        objectName, isDelegate, canPut, noId, asValue, uuid, xlFuncName);
+        objectName, isDelegate, canPut, noId, asValue, uuid,
+        funcPrefix, constructor, instance);
 }
 
 WrapperClass::WrapperClass(
@@ -84,7 +87,9 @@ WrapperClass::WrapperClass(
     bool                            noId,
     bool                            asValue,
     bool                            uuid,
-    const std::string&              xlFuncName)
+    const std::string&              funcPrefix,
+    const std::string&              constructor,
+    const std::string&              instance)
     :
     m_description(description),
     m_name(name),
@@ -99,7 +104,9 @@ WrapperClass::WrapperClass(
     m_noId(noId),
     m_asValue(asValue),
     m_uuid(uuid),
-    m_xlFuncName(xlFuncName),
+    m_funcPrefix(funcPrefix),
+    m_constructor(constructor),
+    m_instance(instance),
     m_verbatimConstructor(),
     m_classAttributes(),
     m_methods(),
@@ -238,6 +245,28 @@ int WrapperClass::preDeclare(
     ostr << "\n";
     ostr << "SPI_DECLARE_OBJECT_CLASS(" << m_name << ");";
     return 1;
+}
+
+void WrapperClass::declareClassFunctions(
+    GeneratedOutput& ostr,
+    const ServiceDefinitionSP& svc) const
+{
+    if (!m_constructor.empty() && !isAbstract())
+    {
+        declareConstructor(ostr, svc, m_name, m_constructor, AllAttributes());
+    }
+
+    if (!m_funcPrefix.empty())
+    {
+        size_t numMethods = m_methods.size();
+        bool ignored = false; // explain
+        DataTypeConstSP instanceType = getDataType(svc, ignored);
+        for (size_t i = 0; i < numMethods; ++i)
+        {
+            declareMethodAsFunction(
+                ostr, svc, m_methods[i], m_name, m_funcPrefix, m_instance, instanceType);
+        }
+    }
 }
 
 bool WrapperClass::declareInClasses() const
@@ -1124,6 +1153,11 @@ void WrapperClass::implement(
              << "_Delegate(outer_type(this)));\n"
              << "}\n";
     }
+
+    if (!m_constructor.empty() && !isAbstract())
+    {
+        implementConstructor(ostr, m_name, m_constructor, attributes);
+    }
 }
 
 void WrapperClass::implementHelper(
@@ -1296,6 +1330,19 @@ void WrapperClass::implementHelper(
              << "spi::ObjectWrapperCacheSP " << m_name << "_Helper::cache("
              << "new spi::ObjectWrapperCache(\"" << m_name << "\"));\n";
     }
+
+    if (!m_funcPrefix.empty())
+    {
+        size_t numMethods = m_methods.size();
+        bool ignored = false; // explain
+        DataTypeConstSP instanceType = getDataType(svc, ignored);
+        for (size_t i = 0; i < numMethods; ++i)
+        {
+            implementMethodAsFunction(
+                ostr, m_methods[i], m_name, m_funcPrefix, m_instance, instanceType);
+        }
+    }
+
 }
 
 void WrapperClass::implementRegistration(
@@ -1367,7 +1414,7 @@ spdoc::ConstructConstSP WrapperClass::getDoc() const
             !m_dataType ? spdoc::DataTypeConstSP() : m_dataType->getDoc(),
             isDelegate(), m_canPut,
             !!m_dynamicPropertiesCode,
-            m_asValue, m_xlFuncName);
+            m_asValue, m_funcPrefix, m_constructor, m_instance);
     }
     return m_doc;
 }
@@ -1534,6 +1581,11 @@ bool WrapperClass::isVirtualMethod(const std::string& methodName)
 std::vector<CoerceFromConstSP> WrapperClass::getCoerceFrom() const
 {
     return m_coerceFromVector;
+}
+
+bool WrapperClass::byValue() const
+{
+    return false;
 }
 
 std::string WrapperClass::ObjectName() const

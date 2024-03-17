@@ -1018,7 +1018,9 @@ BaseStructConstSP BaseStruct::Make(
     bool uuid,
     bool byValue,
     bool useAccessors,
-    const std::string& xlFuncName)
+    const std::string& funcPrefix,
+    const std::string& constructor,
+    const std::string& instance)
 {
   SPI_PROFILE("types.BaseStruct.Make");
   types_check_permission();
@@ -1026,7 +1028,7 @@ BaseStructConstSP BaseStruct::Make(
   {
     inner_type self = make_inner(description, name, ns, baseClass, noMake,
         objectName, canPut, noId, isVirtual, asValue, uuid, byValue,
-        useAccessors, xlFuncName);
+        useAccessors, funcPrefix, constructor, instance);
     return Wrap(self);
   }
   catch (std::exception& e)
@@ -1049,7 +1051,9 @@ BaseStruct::inner_type BaseStruct::make_inner(
     bool o_uuid,
     bool o_byValue,
     bool o_useAccessors,
-    const std::string& o_xlFuncName)
+    const std::string& o_funcPrefix,
+    const std::string& o_constructor,
+    const std::string& o_instance)
 {
     spi_boost::intrusive_ptr< ::Class const > baseClass;
 
@@ -1067,11 +1071,13 @@ BaseStruct::inner_type BaseStruct::make_inner(
     const bool& uuid = o_uuid;
     const bool& byValue = o_byValue;
     const bool& useAccessors = o_useAccessors;
-    const std::string& xlFuncName = o_xlFuncName;
+    const std::string& funcPrefix = o_funcPrefix;
+    const std::string& constructor = o_constructor;
+    const std::string& instance = o_instance;
 
     ::StructSP self = ::Struct::Make(
         description, name, ns, baseClass, noMake, objectName, canPut, noId, isVirtual, asValue, 
-        uuid, byValue, useAccessors, xlFuncName);
+        uuid, byValue, useAccessors, funcPrefix, constructor, instance);
 
     SPI_POST_CONDITION(self->isAbstract());
 
@@ -1216,11 +1222,25 @@ bool BaseStruct::useAccessors() const
     return self->useAccessors();
 }
 
-std::string BaseStruct::xlFuncName() const
+std::string BaseStruct::funcPrefix() const
 {
     inner_type self = get_inner();
 
-    return self->xlFuncName();
+    return self->funcPrefix();
+}
+
+std::string BaseStruct::constructor() const
+{
+    inner_type self = get_inner();
+
+    return self->constructor();
+}
+
+std::string BaseStruct::instance() const
+{
+    inner_type self = get_inner();
+
+    return self->instance();
 }
 
 /*
@@ -1438,6 +1458,28 @@ bool InnerClass::allowConst() const
     return self->allowConst();
 }
 
+InnerClassConstSP INNER_CLASS_MAKE(
+    const std::string& typeName,
+    const std::string& ns,
+    const std::string& freeFunc,
+    const std::string& copyFunc,
+    const std::string& preDeclaration,
+    const std::string& sharedPtr,
+    bool isShared,
+    bool isConst,
+    bool isOpen,
+    bool isStruct,
+    bool isCached,
+    bool isTemplate,
+    bool byValue,
+    const std::string& boolTest,
+    bool allowConst)
+{
+    return InnerClass::Make(typeName, ns, freeFunc, copyFunc, preDeclaration,
+        sharedPtr, isShared, isConst, isOpen, isStruct, isCached, isTemplate,
+        byValue, boolTest, allowConst);
+}
+
 /*
 ****************************************************************************
 * Implementation of BaseWrapperClass
@@ -1459,7 +1501,9 @@ BaseWrapperClassConstSP BaseWrapperClass::Make(
     bool asValue,
     const std::vector<ClassPropertyConstSP>& classProperties,
     bool uuid,
-    const std::string& xlFuncName)
+    const std::string& funcPrefix,
+    const std::string& constructor,
+    const std::string& instance)
 {
   SPI_PROFILE("types.BaseWrapperClass.Make");
   types_check_permission();
@@ -1467,7 +1511,7 @@ BaseWrapperClassConstSP BaseWrapperClass::Make(
   {
     inner_type self = make_inner(description, name, ns, innerClass, baseClass,
         isVirtual, noMake, objectName, isDelegate, canPut, noId, dataType,
-        asValue, classProperties, uuid, xlFuncName);
+        asValue, classProperties, uuid, funcPrefix, constructor, instance);
     return Wrap(self);
   }
   catch (std::exception& e)
@@ -1492,7 +1536,9 @@ BaseWrapperClass::inner_type BaseWrapperClass::make_inner(
     bool o_asValue,
     const std::vector<ClassPropertyConstSP>& o_classProperties,
     bool o_uuid,
-    const std::string& o_xlFuncName)
+    const std::string& o_funcPrefix,
+    const std::string& o_constructor,
+    const std::string& o_instance)
 {
     spi_boost::intrusive_ptr< ::InnerClass const > innerClass;
     spi_boost::intrusive_ptr< ::WrapperClass const > baseClass;
@@ -1521,11 +1567,14 @@ BaseWrapperClass::inner_type BaseWrapperClass::make_inner(
     const bool& noId = o_noId;
     const bool& asValue = o_asValue;
     const bool& uuid = o_uuid;
-    const std::string& xlFuncName = o_xlFuncName;
+    const std::string& funcPrefix = o_funcPrefix;
+    const std::string& constructor = o_constructor;
+    const std::string& instance = o_instance;
 
     ::WrapperClassSP self = ::WrapperClass::Make(
         description, name, ns, innerClass, baseClass, isVirtual,
-        noMake, objectName, isDelegate, canPut, noId, asValue, uuid, xlFuncName);
+        noMake, objectName, isDelegate, canPut, noId, asValue, uuid,
+        funcPrefix, constructor, instance);
 
     SPI_POST_CONDITION(self->isAbstract());
 
@@ -1710,11 +1759,25 @@ bool BaseWrapperClass::uuid() const
     return self->uuid();
 }
 
-std::string BaseWrapperClass::xlFuncName() const
+std::string BaseWrapperClass::funcPrefix() const
 {
     inner_type self = get_inner();
 
-    return self->xlFuncName();
+    return self->funcPrefix();
+}
+
+std::string BaseWrapperClass::constructor() const
+{
+    inner_type self = get_inner();
+
+    return self->constructor();
+}
+
+std::string BaseWrapperClass::instance() const
+{
+    inner_type self = get_inner();
+
+    return self->instance();
 }
 
 /*

@@ -63,11 +63,14 @@ StructSP Struct::Make(
     bool                            uuid,
     bool                            byValue,
     bool useAccessors,
-    const std::string& xlFuncName)
+    const std::string& funcPrefix,
+    const std::string& constructor,
+    const std::string& instance)
 {
     return new Struct(
         description, name, ns, baseClass, noMake, objectName, canPut, noId,
-        isVirtual, asValue, uuid, byValue, useAccessors, xlFuncName);
+        isVirtual, asValue, uuid, byValue, useAccessors,
+        funcPrefix, constructor, instance);
 }
 
 Struct::Struct(
@@ -84,7 +87,9 @@ Struct::Struct(
     bool                            uuid,
     bool                            byValue,
     bool useAccessors,
-    const std::string& xlFuncName)
+    const std::string& funcPrefix,
+    const std::string& constructor,
+    const std::string& instance)
     :
     m_description(description),
     m_name(name),
@@ -99,7 +104,9 @@ Struct::Struct(
     m_uuid(uuid),
     m_byValue(byValue),
     m_useAccessors(useAccessors),
-    m_xlFuncName(xlFuncName),
+    m_funcPrefix(funcPrefix),
+    m_constructor(constructor),
+    m_instance(instance),
     m_attributes(),
     m_methods(),
     m_verbatimStart(),
@@ -221,6 +228,28 @@ int Struct::preDeclare(
     ostr << "\n";
     ostr << "SPI_DECLARE_OBJECT_CLASS(" << m_name << ");";
     return 1;
+}
+
+void Struct::declareClassFunctions(
+    GeneratedOutput& ostr,
+    const ServiceDefinitionSP& svc) const
+{
+    if (!m_constructor.empty() && !isAbstract())
+    {
+        declareConstructor(ostr, svc, m_name, m_constructor, AllAttributes(), m_byValue);
+    }
+
+    if (!m_funcPrefix.empty())
+    {
+        size_t numMethods = m_methods.size();
+        bool ignored = false; // explain
+        DataTypeConstSP instanceType = getDataType(svc, ignored);
+        for (size_t i = 0; i < numMethods; ++i)
+        {
+            declareMethodAsFunction(
+                ostr, svc, m_methods[i], m_name, m_funcPrefix, m_instance, instanceType);
+        }
+    }
 }
 
 bool Struct::declareInClasses() const
@@ -588,6 +617,24 @@ void Struct::implement(
     {
         writeOpenAccessor(ostr, m_classProperties[i], m_name, false, true, true);
     }
+
+    if (!m_constructor.empty() && !isAbstract())
+    {
+        implementConstructor(ostr, m_name, m_constructor, allAttributes, m_byValue);
+    }
+
+    if (!m_funcPrefix.empty())
+    {
+        size_t numMethods = m_methods.size();
+        bool ignored = false; // explain
+        DataTypeConstSP instanceType = getDataType(svc, ignored);
+        for (size_t i = 0; i < numMethods; ++i)
+        {
+            implementMethodAsFunction(
+                ostr, m_methods[i], m_name, m_funcPrefix, m_instance, instanceType);
+        }
+    }
+
 }
 
 void Struct::implementHelper(
@@ -753,7 +800,7 @@ spdoc::ConstructConstSP Struct::getDoc() const
             m_noMake || isAbstract(), m_objectName,
             m_dataType->getDoc(), isDelegate(), m_canPut,
             !!m_dynamicPropertiesCode,
-            m_asValue, m_xlFuncName);
+            m_asValue, m_funcPrefix, m_constructor, m_instance);
     }
     return m_doc;
 }
