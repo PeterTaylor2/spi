@@ -1559,73 +1559,6 @@ spi::FunctionCaller InnerClass_FunctionCaller = {
     InnerClass_caller
 };
 
-spi::Value INNER_CLASS_MAKE_caller(
-    const spi::InputContext*       in_context,
-    const std::vector<spi::Value>& in_values)
-{
-    const std::string& typeName =
-        in_context->ValueToString(in_values[0]);
-    const std::string& ns =
-        in_context->ValueToString(in_values[1]);
-    const std::string& freeFunc =
-        in_context->ValueToString(in_values[2]);
-    const std::string& copyFunc =
-        in_context->ValueToString(in_values[3]);
-    const std::string& preDeclaration =
-        in_context->ValueToString(in_values[4]);
-    const std::string& sharedPtr =
-        in_context->ValueToString(in_values[5]);
-    bool isShared =
-        in_context->ValueToBool(in_values[6]);
-    bool isConst =
-        in_context->ValueToBool(in_values[7]);
-    bool isOpen =
-        in_context->ValueToBool(in_values[8]);
-    bool isStruct =
-        in_context->ValueToBool(in_values[9]);
-    bool isCached =
-        in_context->ValueToBool(in_values[10]);
-    bool isTemplate =
-        in_context->ValueToBool(in_values[11]);
-    bool byValue =
-        in_context->ValueToBool(in_values[12]);
-    const std::string& boolTest =
-        in_context->ValueToString(in_values[13], true, "");
-    bool allowConst =
-        in_context->ValueToBool(in_values[14], true, false);
-
-    const InnerClassConstSP& o_result = types::INNER_CLASS_MAKE(typeName, ns,
-        freeFunc, copyFunc, preDeclaration, sharedPtr, isShared, isConst,
-        isOpen, isStruct, isCached, isTemplate, byValue, boolTest, allowConst);
-    return spi::ObjectConstSP(o_result);
-}
-
-spi::FunctionCaller INNER_CLASS_MAKE_FunctionCaller = {
-    "INNER_CLASS_MAKE",
-    15,
-    {
-        {"typeName", spi::ArgType::STRING, "string", false, false, true},
-        {"ns", spi::ArgType::STRING, "string", false, false, true},
-        {"freeFunc", spi::ArgType::STRING, "string", false, false, true},
-        {"copyFunc", spi::ArgType::STRING, "string", false, false, true},
-        {"preDeclaration", spi::ArgType::STRING, "string", false, false, true},
-        {"sharedPtr", spi::ArgType::STRING, "string", false, false, true},
-        {"isShared", spi::ArgType::BOOL, "bool", false, false, true},
-        {"isConst", spi::ArgType::BOOL, "bool", false, false, true},
-        {"isOpen", spi::ArgType::BOOL, "bool", false, false, true},
-        {"isStruct", spi::ArgType::BOOL, "bool", false, false, true},
-        {"isCached", spi::ArgType::BOOL, "bool", false, false, true},
-        {"isTemplate", spi::ArgType::BOOL, "bool", false, false, true},
-        {"byValue", spi::ArgType::BOOL, "bool", false, false, true},
-        {"boolTest", spi::ArgType::STRING, "string", false, true, true},
-        {"allowConst", spi::ArgType::BOOL, "bool", false, true, true}
-    },
-    INNER_CLASS_MAKE_caller
-};
-
-spi::ObjectType INNER_CLASS_MAKE_FunctionObjectType =
-    spi::FunctionObjectType("types.INNER_CLASS_MAKE");
-
 /*
 ****************************************************************************
 * Implementation of BaseWrapperClass
@@ -2023,8 +1956,6 @@ void types_register_object_types(const spi::ServiceSP& svc)
     BaseClass::g_sub_class_wrappers.push_back(BaseStruct::BaseWrap);
     svc->add_object_type(&InnerClass::object_type);
     svc->add_function_caller(&InnerClass_FunctionCaller);
-    svc->add_object_type(&INNER_CLASS_MAKE_FunctionObjectType);
-    svc->add_function_caller(&INNER_CLASS_MAKE_FunctionCaller);
     svc->add_object_type(&BaseWrapperClass::object_type);
     svc->add_function_caller(&BaseWrapperClass_FunctionCaller);
     BaseClass::g_sub_class_wrappers.push_back(BaseWrapperClass::BaseWrap);

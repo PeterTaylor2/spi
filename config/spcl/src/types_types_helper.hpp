@@ -93,23 +93,6 @@ class InnerClass_Helper
 public:
 };
 
-InnerClassConstSP INNER_CLASS_MAKE_Helper(
-    const std::string& typeName,
-    const std::string& ns,
-    const std::string& freeFunc,
-    const std::string& copyFunc,
-    const std::string& preDeclaration,
-    const std::string& sharedPtr,
-    bool isShared,
-    bool isConst,
-    bool isOpen,
-    bool isStruct,
-    bool isCached,
-    bool isTemplate,
-    bool byValue,
-    const std::string& boolTest,
-    bool allowConst);
-
 class BaseWrapperClass_Helper
 {
 public:

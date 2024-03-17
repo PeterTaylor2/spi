@@ -714,45 +714,6 @@ private:
 
 /**
 ****************************************************************************
-* Constructor for InnerClass
-*
-* @param typeName
-* @param ns
-* @param freeFunc
-* @param copyFunc
-* @param preDeclaration
-* @param sharedPtr
-* @param isShared
-* @param isConst
-* @param isOpen
-* @param isStruct
-* @param isCached
-* @param isTemplate
-* @param byValue
-* @param boolTest
-* @param allowConst
-****************************************************************************
-*/
-SPI_IMPORT
-InnerClassConstSP INNER_CLASS_MAKE(
-    const std::string& typeName,
-    const std::string& ns,
-    const std::string& freeFunc,
-    const std::string& copyFunc,
-    const std::string& preDeclaration,
-    const std::string& sharedPtr,
-    bool isShared,
-    bool isConst,
-    bool isOpen,
-    bool isStruct,
-    bool isCached,
-    bool isTemplate,
-    bool byValue,
-    const std::string& boolTest,
-    bool allowConst);
-
-/**
-****************************************************************************
 * No description.
 ****************************************************************************
 */
