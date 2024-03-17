@@ -1035,7 +1035,6 @@ ClassConstSP Class::Make(
     bool hasDynamicAttributes,
     bool asValue,
     const std::string& funcPrefix,
-    const std::string& constructor,
     const std::string& instance)
 {
     spdoc_check_permission();
@@ -1043,7 +1042,7 @@ ClassConstSP Class::Make(
         new Class(name, ns, description, baseClassName, attributes,
             properties, methods, coerceFrom, coerceTo, isAbstract, noMake,
             objectName, dataType, isDelegate, canPut, hasDynamicAttributes,
-            asValue, funcPrefix, constructor, instance));
+            asValue, funcPrefix, instance));
 }
 
 Class::Class(
@@ -1065,7 +1064,6 @@ Class::Class(
     bool hasDynamicAttributes,
     bool asValue,
     const std::string& funcPrefix,
-    const std::string& constructor,
     const std::string& instance)
     :
     name(name),
@@ -1086,7 +1084,6 @@ Class::Class(
     hasDynamicAttributes(hasDynamicAttributes),
     asValue(asValue),
     funcPrefix(funcPrefix),
-    constructor(constructor),
     instance(instance)
 {}
 

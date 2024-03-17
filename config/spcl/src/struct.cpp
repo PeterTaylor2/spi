@@ -64,13 +64,12 @@ StructSP Struct::Make(
     bool                            byValue,
     bool useAccessors,
     const std::string& funcPrefix,
-    const std::string& constructor,
     const std::string& instance)
 {
     return new Struct(
         description, name, ns, baseClass, noMake, objectName, canPut, noId,
         isVirtual, asValue, uuid, byValue, useAccessors,
-        funcPrefix, constructor, instance);
+        funcPrefix, instance);
 }
 
 Struct::Struct(
@@ -88,7 +87,6 @@ Struct::Struct(
     bool                            byValue,
     bool useAccessors,
     const std::string& funcPrefix,
-    const std::string& constructor,
     const std::string& instance)
     :
     m_description(description),
@@ -105,7 +103,6 @@ Struct::Struct(
     m_byValue(byValue),
     m_useAccessors(useAccessors),
     m_funcPrefix(funcPrefix),
-    m_constructor(constructor),
     m_instance(instance),
     m_attributes(),
     m_methods(),
@@ -790,7 +787,7 @@ spdoc::ConstructConstSP Struct::getDoc() const
             m_noMake || isAbstract(), m_objectName,
             m_dataType->getDoc(), isDelegate(), m_canPut,
             !!m_dynamicPropertiesCode,
-            m_asValue, m_funcPrefix, m_constructor, m_instance);
+            m_asValue, m_funcPrefix, m_instance);
     }
     return m_doc;
 }

@@ -568,7 +568,6 @@ public:
         bool byValue,
         bool useAccessors,
         const std::string& funcPrefix,
-        const std::string& constructor,
         const std::string& instance);
 
     typedef spi::ObjectSmartPtr<BaseStruct> outer_type; 
@@ -607,7 +606,6 @@ private:
         bool byValue,
         bool useAccessors,
         const std::string& funcPrefix,
-        const std::string& constructor,
         const std::string& instance);
 
     /* private accessor methods */
@@ -625,7 +623,6 @@ private:
     bool byValue() const;
     bool useAccessors() const;
     std::string funcPrefix() const;
-    std::string constructor() const;
     std::string instance() const;
 
     /* shared pointer to implementation */
@@ -717,10 +714,27 @@ private:
 
 /**
 ****************************************************************************
-* Stand alone constructor equivalent to InnerClass::Make
+* Constructor for InnerClass
+*
+* @param typeName
+* @param ns
+* @param freeFunc
+* @param copyFunc
+* @param preDeclaration
+* @param sharedPtr
+* @param isShared
+* @param isConst
+* @param isOpen
+* @param isStruct
+* @param isCached
+* @param isTemplate
+* @param byValue
+* @param boolTest
+* @param allowConst
 ****************************************************************************
 */
-SPI_IMPORT InnerClassConstSP INNER_CLASS_MAKE(
+SPI_IMPORT
+InnerClassConstSP INNER_CLASS_MAKE(
     const std::string& typeName,
     const std::string& ns,
     const std::string& freeFunc,
@@ -762,7 +776,6 @@ public:
         const std::vector<ClassPropertyConstSP>& classProperties,
         bool uuid,
         const std::string& funcPrefix,
-        const std::string& constructor,
         const std::string& instance);
 
     typedef spi::ObjectSmartPtr<BaseWrapperClass> outer_type; 
@@ -803,7 +816,6 @@ private:
         const std::vector<ClassPropertyConstSP>& classProperties,
         bool uuid,
         const std::string& funcPrefix,
-        const std::string& constructor,
         const std::string& instance);
 
     /* private accessor methods */
@@ -823,7 +835,6 @@ private:
     std::vector<ClassPropertyConstSP> classProperties() const;
     bool uuid() const;
     std::string funcPrefix() const;
-    std::string constructor() const;
     std::string instance() const;
 
     /* shared pointer to implementation */

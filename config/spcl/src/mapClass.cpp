@@ -215,7 +215,6 @@ spdoc::ConstructConstSP MapClass::getDoc() const
             true, // hasDynamicAttributes
             false, // asValue
             std::string(), // funcPrefix
-            std::string(), // constructor
             std::string()); // instance
     }
     return m_doc;

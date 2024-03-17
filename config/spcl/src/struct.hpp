@@ -74,7 +74,6 @@ public:
         bool                            byValue,
         bool                            useAccessors,
         const std::string&              funcPrefix,
-        const std::string&              constructor,
         const std::string&              instance);
 
     void addClassAttribute(const ClassAttributeConstSP& attribute);
@@ -150,7 +149,6 @@ protected:
         bool                            byValue,
         bool useAccessors,
         const std::string& xlFuncName,
-        const std::string& constructor,
         const std::string& instance);
 
 private:
@@ -168,7 +166,6 @@ private:
     bool                            m_byValue;
     bool                            m_useAccessors;
     std::string                     m_funcPrefix;
-    std::string                     m_constructor;
     std::string                     m_instance;
 
     std::vector<AttributeConstSP>   m_attributes;
@@ -213,7 +210,6 @@ public:
     bool byValue() const { return m_byValue; }
     bool useAccessors() const { return m_useAccessors; }
     const std::string& funcPrefix() const { return m_funcPrefix; }
-    const std::string& constructor() const { return m_constructor; }
     const std::string& instance() const { return m_instance; }
 };
 

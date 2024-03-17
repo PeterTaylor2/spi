@@ -64,13 +64,12 @@ WrapperClassSP WrapperClass::Make(
     bool                            asValue,
     bool                            uuid,
     const std::string&              funcPrefix,
-    const std::string&              constructor,
     const std::string&              instance)
 {
     return new WrapperClass(
         description, name, ns, innerClass, baseClass, isVirtual, noMake,
         objectName, isDelegate, canPut, noId, asValue, uuid,
-        funcPrefix, constructor, instance);
+        funcPrefix, instance);
 }
 
 WrapperClass::WrapperClass(
@@ -88,7 +87,6 @@ WrapperClass::WrapperClass(
     bool                            asValue,
     bool                            uuid,
     const std::string&              funcPrefix,
-    const std::string&              constructor,
     const std::string&              instance)
     :
     m_description(description),
@@ -105,7 +103,6 @@ WrapperClass::WrapperClass(
     m_asValue(asValue),
     m_uuid(uuid),
     m_funcPrefix(funcPrefix),
-    m_constructor(constructor),
     m_instance(instance),
     m_verbatimConstructor(),
     m_classAttributes(),
@@ -1404,7 +1401,7 @@ spdoc::ConstructConstSP WrapperClass::getDoc() const
             !m_dataType ? spdoc::DataTypeConstSP() : m_dataType->getDoc(),
             isDelegate(), m_canPut,
             !!m_dynamicPropertiesCode,
-            m_asValue, m_funcPrefix, m_constructor, m_instance);
+            m_asValue, m_funcPrefix, m_instance);
     }
     return m_doc;
 }

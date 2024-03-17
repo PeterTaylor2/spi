@@ -621,7 +621,6 @@ public:
         bool hasDynamicAttributes,
         bool asValue,
         const std::string& funcPrefix,
-        const std::string& constructor,
         const std::string& instance);
 
     /**
@@ -678,7 +677,6 @@ protected:
         bool hasDynamicAttributes,
         bool asValue,
         const std::string& funcPrefix,
-        const std::string& constructor,
         const std::string& instance);
 
 public:
@@ -701,7 +699,6 @@ public:
     const bool hasDynamicAttributes;
     const bool asValue;
     const std::string funcPrefix;
-    const std::string constructor;
     const std::string instance;
 
 public:

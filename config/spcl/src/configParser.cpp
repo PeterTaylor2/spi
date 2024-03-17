@@ -2178,7 +2178,7 @@ void structKeywordHandler(
         description, name, module->moduleNamespace(), baseClass, noMake,
         getOption(options, "objectName")->getString(),
         canPut, noId, isVirtual, asValue, uuid, byValue, false,
-        funcPrefix.empty() ? xlFuncName : funcPrefix, constructor, instance);
+        funcPrefix.empty() ? xlFuncName : funcPrefix, instance);
 
     // we need to register the type before parsing the contents in order to
     // allow references to itself in the structure definition
@@ -2763,7 +2763,7 @@ void classNoWrapHandler(
         baseClass, noMake,
         getOption(options, "objectName")->getString(),
         canPut, noId, isVirtual, asValue, uuid, byValue, true,
-        funcPrefix.empty() ? xlFuncName : funcPrefix, constructor, instance);
+        funcPrefix.empty() ? xlFuncName : funcPrefix, instance);
 
     // we need to register the type before parsing the contents in order to
     // allow references to itself in the class definition
@@ -3058,7 +3058,6 @@ void classKeywordHandler(
         getOption(options, "asValue")->getBool(),
         uuid,
         funcPrefix.empty() ? getOption(options, "xlFuncName")->getString() : funcPrefix,
-        constructor,
         getOption(options, "instance")->getString());
 
     // we need to register the type before parsing the contents in order to

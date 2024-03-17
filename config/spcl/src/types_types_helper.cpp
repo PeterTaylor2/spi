@@ -1228,7 +1228,6 @@ void BaseStruct::to_map(
     bool byValue = this->byValue();
     bool useAccessors = this->useAccessors();
     const std::string& funcPrefix = this->funcPrefix();
-    const std::string& constructor = this->constructor();
     const std::string& instance = this->instance();
 
     if (!public_only)
@@ -1247,7 +1246,6 @@ void BaseStruct::to_map(
         obj_map->SetBool("byValue", byValue, !public_only && (byValue == false));
         obj_map->SetBool("useAccessors", useAccessors, !public_only && (useAccessors == false));
         obj_map->SetString("funcPrefix", funcPrefix, !public_only && (funcPrefix == std::string("")));
-        obj_map->SetString("constructor", constructor, !public_only && (constructor == std::string("")));
         obj_map->SetString("instance", instance, !public_only && (instance == std::string("")));
     }
 }
@@ -1284,14 +1282,12 @@ spi::ObjectConstSP BaseStruct::object_from_map(
         = obj_map->GetBool("useAccessors", true, false);
     const std::string& funcPrefix
         = obj_map->GetString("funcPrefix", true, "");
-    const std::string& constructor
-        = obj_map->GetString("constructor", true, "");
     const std::string& instance
         = obj_map->GetString("instance", true, "");
 
     return BaseStruct::Make(description, name, ns, baseClass, noMake,
         objectName, canPut, noId, isVirtual, asValue, uuid, byValue,
-        useAccessors, funcPrefix, constructor, instance);
+        useAccessors, funcPrefix, instance);
 }
 
 SPI_IMPLEMENT_OBJECT_TYPE(BaseStruct, "BaseStruct", types_service, false, 0);
@@ -1328,21 +1324,18 @@ spi::Value BaseStruct_caller(
         in_context->ValueToBool(in_values[12], true, false);
     const std::string& funcPrefix =
         in_context->ValueToString(in_values[13], true, "");
-    const std::string& constructor =
-        in_context->ValueToString(in_values[14], true, "");
     const std::string& instance =
-        in_context->ValueToString(in_values[15], true, "");
+        in_context->ValueToString(in_values[14], true, "");
 
     const BaseStructConstSP& o_result = types::BaseStruct::Make(description,
         name, ns, baseClass, noMake, objectName, canPut, noId, isVirtual,
-        asValue, uuid, byValue, useAccessors, funcPrefix, constructor,
-        instance);
+        asValue, uuid, byValue, useAccessors, funcPrefix, instance);
     return spi::ObjectConstSP(o_result);
 }
 
 spi::FunctionCaller BaseStruct_FunctionCaller = {
     "BaseStruct",
-    16,
+    15,
     {
         {"description", spi::ArgType::STRING, "string", true, false, false},
         {"name", spi::ArgType::STRING, "string", false, false, false},
@@ -1358,7 +1351,6 @@ spi::FunctionCaller BaseStruct_FunctionCaller = {
         {"byValue", spi::ArgType::BOOL, "bool", false, true, false},
         {"useAccessors", spi::ArgType::BOOL, "bool", false, true, false},
         {"funcPrefix", spi::ArgType::STRING, "string", false, true, false},
-        {"constructor", spi::ArgType::STRING, "string", false, true, false},
         {"instance", spi::ArgType::STRING, "string", false, true, false}
     },
     BaseStruct_caller
@@ -1567,6 +1559,73 @@ spi::FunctionCaller InnerClass_FunctionCaller = {
     InnerClass_caller
 };
 
+spi::Value INNER_CLASS_MAKE_caller(
+    const spi::InputContext*       in_context,
+    const std::vector<spi::Value>& in_values)
+{
+    const std::string& typeName =
+        in_context->ValueToString(in_values[0]);
+    const std::string& ns =
+        in_context->ValueToString(in_values[1]);
+    const std::string& freeFunc =
+        in_context->ValueToString(in_values[2]);
+    const std::string& copyFunc =
+        in_context->ValueToString(in_values[3]);
+    const std::string& preDeclaration =
+        in_context->ValueToString(in_values[4]);
+    const std::string& sharedPtr =
+        in_context->ValueToString(in_values[5]);
+    bool isShared =
+        in_context->ValueToBool(in_values[6]);
+    bool isConst =
+        in_context->ValueToBool(in_values[7]);
+    bool isOpen =
+        in_context->ValueToBool(in_values[8]);
+    bool isStruct =
+        in_context->ValueToBool(in_values[9]);
+    bool isCached =
+        in_context->ValueToBool(in_values[10]);
+    bool isTemplate =
+        in_context->ValueToBool(in_values[11]);
+    bool byValue =
+        in_context->ValueToBool(in_values[12]);
+    const std::string& boolTest =
+        in_context->ValueToString(in_values[13], true, "");
+    bool allowConst =
+        in_context->ValueToBool(in_values[14], true, false);
+
+    const InnerClassConstSP& o_result = types::INNER_CLASS_MAKE(typeName, ns,
+        freeFunc, copyFunc, preDeclaration, sharedPtr, isShared, isConst,
+        isOpen, isStruct, isCached, isTemplate, byValue, boolTest, allowConst);
+    return spi::ObjectConstSP(o_result);
+}
+
+spi::FunctionCaller INNER_CLASS_MAKE_FunctionCaller = {
+    "INNER_CLASS_MAKE",
+    15,
+    {
+        {"typeName", spi::ArgType::STRING, "string", false, false, true},
+        {"ns", spi::ArgType::STRING, "string", false, false, true},
+        {"freeFunc", spi::ArgType::STRING, "string", false, false, true},
+        {"copyFunc", spi::ArgType::STRING, "string", false, false, true},
+        {"preDeclaration", spi::ArgType::STRING, "string", false, false, true},
+        {"sharedPtr", spi::ArgType::STRING, "string", false, false, true},
+        {"isShared", spi::ArgType::BOOL, "bool", false, false, true},
+        {"isConst", spi::ArgType::BOOL, "bool", false, false, true},
+        {"isOpen", spi::ArgType::BOOL, "bool", false, false, true},
+        {"isStruct", spi::ArgType::BOOL, "bool", false, false, true},
+        {"isCached", spi::ArgType::BOOL, "bool", false, false, true},
+        {"isTemplate", spi::ArgType::BOOL, "bool", false, false, true},
+        {"byValue", spi::ArgType::BOOL, "bool", false, false, true},
+        {"boolTest", spi::ArgType::STRING, "string", false, true, true},
+        {"allowConst", spi::ArgType::BOOL, "bool", false, true, true}
+    },
+    INNER_CLASS_MAKE_caller
+};
+
+spi::ObjectType INNER_CLASS_MAKE_FunctionObjectType =
+    spi::FunctionObjectType("types.INNER_CLASS_MAKE");
+
 /*
 ****************************************************************************
 * Implementation of BaseWrapperClass
@@ -1644,7 +1703,6 @@ void BaseWrapperClass::to_map(
     const std::vector<ClassPropertyConstSP>& classProperties = this->classProperties();
     bool uuid = this->uuid();
     const std::string& funcPrefix = this->funcPrefix();
-    const std::string& constructor = this->constructor();
     const std::string& instance = this->instance();
 
     if (!public_only)
@@ -1665,7 +1723,6 @@ void BaseWrapperClass::to_map(
         obj_map->SetInstanceVector<ClassProperty const>("classProperties", classProperties, !public_only && (classProperties.size() == 0));
         obj_map->SetBool("uuid", uuid, !public_only && (uuid == false));
         obj_map->SetString("funcPrefix", funcPrefix, !public_only && (funcPrefix == std::string("")));
-        obj_map->SetString("constructor", constructor, !public_only && (constructor == std::string("")));
         obj_map->SetString("instance", instance, !public_only && (instance == std::string("")));
     }
 }
@@ -1706,14 +1763,12 @@ spi::ObjectConstSP BaseWrapperClass::object_from_map(
         = obj_map->GetBool("uuid", true, false);
     const std::string& funcPrefix
         = obj_map->GetString("funcPrefix", true, "");
-    const std::string& constructor
-        = obj_map->GetString("constructor", true, "");
     const std::string& instance
         = obj_map->GetString("instance", true, "");
 
     return BaseWrapperClass::Make(description, name, ns, innerClass, baseClass,
         isVirtual, noMake, objectName, isDelegate, canPut, noId, dataType,
-        asValue, classProperties, uuid, funcPrefix, constructor, instance);
+        asValue, classProperties, uuid, funcPrefix, instance);
 }
 
 SPI_IMPLEMENT_OBJECT_TYPE(BaseWrapperClass, "BaseWrapperClass", types_service, false, 0);
@@ -1754,21 +1809,19 @@ spi::Value BaseWrapperClass_caller(
         in_context->ValueToBool(in_values[14], true, false);
     const std::string& funcPrefix =
         in_context->ValueToString(in_values[15], true, "");
-    const std::string& constructor =
-        in_context->ValueToString(in_values[16], true, "");
     const std::string& instance =
-        in_context->ValueToString(in_values[17], true, "");
+        in_context->ValueToString(in_values[16], true, "");
 
     const BaseWrapperClassConstSP& o_result = types::BaseWrapperClass::Make(
         description, name, ns, innerClass, baseClass, isVirtual, noMake,
         objectName, isDelegate, canPut, noId, dataType, asValue,
-        classProperties, uuid, funcPrefix, constructor, instance);
+        classProperties, uuid, funcPrefix, instance);
     return spi::ObjectConstSP(o_result);
 }
 
 spi::FunctionCaller BaseWrapperClass_FunctionCaller = {
     "BaseWrapperClass",
-    18,
+    17,
     {
         {"description", spi::ArgType::STRING, "string", true, false, false},
         {"name", spi::ArgType::STRING, "string", false, false, false},
@@ -1786,7 +1839,6 @@ spi::FunctionCaller BaseWrapperClass_FunctionCaller = {
         {"classProperties", spi::ArgType::OBJECT, "ClassProperty", true, false, false},
         {"uuid", spi::ArgType::BOOL, "bool", false, true, false},
         {"funcPrefix", spi::ArgType::STRING, "string", false, true, false},
-        {"constructor", spi::ArgType::STRING, "string", false, true, false},
         {"instance", spi::ArgType::STRING, "string", false, true, false}
     },
     BaseWrapperClass_caller
@@ -1971,6 +2023,8 @@ void types_register_object_types(const spi::ServiceSP& svc)
     BaseClass::g_sub_class_wrappers.push_back(BaseStruct::BaseWrap);
     svc->add_object_type(&InnerClass::object_type);
     svc->add_function_caller(&InnerClass_FunctionCaller);
+    svc->add_object_type(&INNER_CLASS_MAKE_FunctionObjectType);
+    svc->add_function_caller(&INNER_CLASS_MAKE_FunctionCaller);
     svc->add_object_type(&BaseWrapperClass::object_type);
     svc->add_function_caller(&BaseWrapperClass_FunctionCaller);
     BaseClass::g_sub_class_wrappers.push_back(BaseWrapperClass::BaseWrap);

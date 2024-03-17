@@ -69,7 +69,6 @@ public:
         bool                            asValue,
         bool                            uuid,
         const std::string&              funcPrefix,
-        const std::string&              constructor,
         const std::string&              instance);
 
     void addClassAttribute(const ClassAttributeConstSP& classAttribute);
@@ -158,7 +157,6 @@ protected:
         bool                            asValue,
         bool                            uuid,
         const std::string&              funcPrefix,
-        const std::string&              constructor,
         const std::string&              instance);
 
 private:
@@ -176,7 +174,6 @@ private:
     bool                               m_asValue;
     bool                               m_uuid;
     std::string                        m_funcPrefix;
-    std::string                        m_constructor;
     std::string                        m_instance;
 
 private:
@@ -218,7 +215,6 @@ public:
     bool asValue() const { return m_asValue; }
     bool uuid() const { return m_uuid; }
     const std::string& funcPrefix() const { return m_funcPrefix; }
-    const std::string& constructor() const { return m_constructor; }
     const std::string& instance() const { return m_instance; }
     const DataTypeConstSP& dataType() const { return m_dataType; }
     const std::vector<ClassAttributeConstSP>& classProperties() const { return m_classProperties; }
