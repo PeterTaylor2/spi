@@ -30,7 +30,12 @@
  * data is translated into the inner library.
  */
 
-%service spdoc namespace=spdoc declSpec=SPI sharedPtrInclude="" sharedPtr="spi_boost::shared_ptr" noLog=True;
+%service spdoc 
+    namespace=spdoc
+    declSpec=SPI 
+    sharedPtrInclude=""
+    sharedPtr="spi_boost::shared_ptr" 
+    noLog=True;
 
 %export "publicType.cfg";
 %export "constant.cfg";

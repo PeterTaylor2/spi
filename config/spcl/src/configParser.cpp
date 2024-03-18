@@ -754,13 +754,13 @@ CoerceToConstSP parseCoerceTo(
 struct MethodContext
 {
     MethodContext(
-        const std::string&  className,
+        const ClassConstSP& cls,
         const ClassConstSP& baseClass,
         bool isVirtual,
         bool isStatic,
         bool isDelegate)
         :
-        className(className),
+        cls(cls),
         baseClass(baseClass),
         isVirtual(isVirtual),
         isStatic(isStatic),
@@ -769,7 +769,7 @@ struct MethodContext
         implements()
     {}
 
-    const std::string  className;
+    const ClassConstSP cls;
     const ClassConstSP baseClass;
     const bool isVirtual;
     const bool isStatic;
@@ -814,8 +814,8 @@ FunctionConstSP parseFunction(
     // however there are a lot of similarities so this justifies using the
     // same routine
 
-    DescriptionParser returnTypeDesc;
-    ConfigLexer::Token token   = returnTypeDesc.consume(lexer, verbose);
+    DescriptionParser returnTypeDescParser;
+    ConfigLexer::Token token = returnTypeDescParser.consume(lexer, verbose);
 
     bool returnInnerConst = false;
     if (token.toString() == "const")
@@ -830,11 +830,6 @@ FunctionConstSP parseFunction(
 
     token = getTokenOfType(lexer, SPI_CONFIG_TOKEN_TYPE_NAME, "Name");
     std::string name(token.value.aName);
-
-    if (name == "BinaryOp")
-    {
-        int wait = 1;
-    }
 
     token = getTokenOfType(lexer, '(', "(");
 
@@ -858,18 +853,33 @@ FunctionConstSP parseFunction(
         }
     }
 
-    static ParserOptions defaultOptions;
-    if (defaultOptions.size() == 0)
+    static ParserOptions functionDefaultOptions;
+    static ParserOptions methodDefaultOptions;
+
+    if (functionDefaultOptions.size() == 0)
     {
-        defaultOptions["noLog"]        = BoolConstant::Make(service->noLog());
-        defaultOptions["noConvert"]    = BoolConstant::Make(false);
-        defaultOptions["excelOptions"] = StringConstant::Make("");
-        defaultOptions["ignore"]       = BoolConstant::Make(false);
-        defaultOptions["cache"]        = IntConstant::Make(0);
+        functionDefaultOptions["noLog"]        = BoolConstant::Make(service->noLog());
+        functionDefaultOptions["noConvert"]    = BoolConstant::Make(false);
+        functionDefaultOptions["excelOptions"] = StringConstant::Make("");
+        functionDefaultOptions["ignore"]       = BoolConstant::Make(false);
+        functionDefaultOptions["cache"]        = IntConstant::Make(0);
+    }
+    if (methodDefaultOptions.size() == 0)
+    {
+        methodDefaultOptions = functionDefaultOptions;
+        methodDefaultOptions["function"] = StringConstant::Make("");
+        methodDefaultOptions["instance"] = StringConstant::Make("handle");
     }
 
     ParserOptions options;
-    options = parseOptions(lexer, "{;", defaultOptions, verbose);
+    if (methodContext)
+    {
+        options = parseOptions(lexer, "{;", methodDefaultOptions, verbose);
+    }
+    else
+    {
+        options = parseOptions(lexer, "{;", functionDefaultOptions, verbose);
+    }
     bool ignore = getOption(options, "ignore")->getBool();
 
     // at the end of the function we either have some code started by '{'
@@ -877,6 +887,8 @@ FunctionConstSP parseFunction(
     const VerbatimConstSP& implementation =
         parseImplementation(lexer, mustImplement);
 
+    std::string methodFunction;
+    std::string methodInstance;
     if (methodContext)
     {
         bool isImplementation = methodContext->isImplementation(name);
@@ -885,19 +897,33 @@ FunctionConstSP parseFunction(
         if (isImplementation)
             methodContext->implements = methodContext->baseClass->getName(true, ".");
 
+        methodFunction = getOption(options, "function")->getString();
+        methodInstance = getOption(options, "instance")->getString();
+
         // TBD: match prototypes when isImplementation == true
     }
 
     if (ignore)
         return FunctionConstSP();
 
+    std::vector<std::string> returnTypeDescription = returnTypeDescParser.take();
+    std::vector<std::string> excelOptions = spi_util::StringSplit(
+        getOption(options, "excelOptions")->getString(), ';');
+    std::vector<std::string> methodFunctionExcelOptions;
+
+    if (methodContext && !methodFunction.empty())
+    {
+        methodFunctionExcelOptions = excelOptions;
+        excelOptions.push_back("hidden");
+    }
+
     FunctionConstSP func = Function::Make(
-        description, returnTypeDesc.take(),
+        description, returnTypeDescription,
         returnType, returnArrayDim, name, module->moduleNamespace(),
         args, implementation,
         getOption(options, "noLog")->getBool(),
         getOption(options, "noConvert")->getBool(),
-        spi_util::StringSplit(getOption(options, "excelOptions")->getString(), ';'),
+        excelOptions,
         getOption(options, "cache")->getInt());
 
     if (func->hasIgnored())
@@ -905,6 +931,70 @@ FunctionConstSP parseFunction(
         std::cerr << "Function " << name << " uses ignored dataTypes - function not added" << std::endl;
         return FunctionConstSP();
     }
+
+    if (methodContext && !methodFunction.empty())
+    {
+        std::vector<FunctionAttributeConstSP> methodArgs;
+        if (!methodContext->isStatic)
+        {
+            bool ignored = false; // if the class is ignored we shouldn't get here
+            DataTypeConstSP instanceType = methodContext->cls->getDataType(service, ignored);
+
+            FunctionAttributeConstSP instanceArg = FunctionAttribute::Make(
+                Attribute::Make(std::vector<std::string>(), instanceType, methodInstance), false);
+
+            methodArgs.push_back(instanceArg);
+        }
+        methodArgs.insert(methodArgs.end(), args.begin(), args.end());
+
+        std::ostringstream code;
+        code << "    return ";
+        if (methodContext->isStatic)
+        {
+            code << methodContext->cls->getName(true, "::") << "::";
+        }
+        else if (methodContext->cls->byValue())
+        {
+            code << methodInstance << ".";
+        }
+        else
+        {
+            code << methodInstance << "->";
+        }
+        code << name;
+
+        size_t N = args.size();
+        char* sep = "(";
+        for (size_t i = 0; i < N; ++i)
+        {
+            code << sep << "\n        " << args[i]->attribute()->name();
+            sep = ",";
+        }
+        code << ");\n"
+            << "}";
+
+        VerbatimConstSP implementation = Verbatim::Make(
+            std::string(), // no filename
+            0,
+            spi_util::StringSplit(code.str(), "\n"));
+
+        FunctionConstSP methodFunc = Function::Make(
+            description,
+            returnTypeDescription,
+            returnType,
+            0,
+            methodFunction,
+            module->moduleNamespace(),
+            methodArgs,
+            implementation,
+            true, // noLog - leave this to the actual method
+            true, // noConvert - we are calling at the outer level so don't convert
+            methodFunctionExcelOptions,
+            0); // caching done at lower level
+
+        module->addConstruct(methodFunc);
+    }
+
     return func;
 }
 
@@ -1050,7 +1140,7 @@ ClassMethodConstSP classMethodKeywordHandler(
     const std::vector<std::string>& description,
     ModuleDefinitionSP& module,
     ServiceDefinitionSP& service,
-    const std::string& className,
+    const ClassConstSP& cls,
     const ClassConstSP& baseClass,
     bool mustImplement,
     bool isVirtual,
@@ -1088,7 +1178,7 @@ ClassMethodConstSP classMethodKeywordHandler(
         }
     }
 
-    MethodContext methodContext(className, baseClass, isVirtual, isStatic, isDelegate);
+    MethodContext methodContext(cls, baseClass, isVirtual, isStatic, isDelegate);
     FunctionConstSP function = parseFunction(
         lexer, description, module, service, mustImplement,
         &methodContext, verbose);
@@ -2074,14 +2164,13 @@ void addConstructorFunction(
         0,
         spi_util::StringSplit(code.str(), "\n"));
 
-    std::string ns;
     FunctionConstSP func = Function::Make(
         description,
         returnTypeDescription,
         returnType,
         0,
         constructor,
-        ns,
+        module->moduleNamespace(),
         funcAttributes,
         implementation,
         noLog,
@@ -2207,7 +2296,7 @@ void structKeywordHandler(
                 bool isStatic  = keyword == "static";
                 bool isDelegate = keyword == "delegate";
                 ClassMethodConstSP classMethod = classMethodKeywordHandler(
-                    lexer, desc.take(), module, service, name, baseClass, false,
+                    lexer, desc.take(), module, service, type, baseClass, false,
                     isVirtual, isStatic, verbose, byValue);
                 if (classMethod)
                     type->addMethod(classMethod);
@@ -2787,7 +2876,7 @@ void classNoWrapHandler(
                 bool isVirtual = keyword == "virtual";
                 bool isStatic = keyword == "static";
                 ClassMethodConstSP classMethod = classMethodKeywordHandler(
-                    lexer, desc.take(), module, service, className, baseClass, false,
+                    lexer, desc.take(), module, service, type, baseClass, false,
                     isVirtual, isStatic, verbose, byValue);
                 if (classMethod)
                     type->addMethod(classMethod);
@@ -3084,7 +3173,7 @@ void classKeywordHandler(
                 bool isVirtual = keyword == "virtual";
                 bool isStatic = keyword == "static";
                 ClassMethodConstSP classMethod = classMethodKeywordHandler(
-                    lexer, desc.take(), module, service, name,
+                    lexer, desc.take(), module, service, type,
                     StructConstSP(), false,
                     isVirtual, isStatic, verbose, innerClass->byValue());
                 if (classMethod)
