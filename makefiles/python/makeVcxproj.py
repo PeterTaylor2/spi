@@ -45,7 +45,7 @@ def command_line(compiler, toolsVersion, platformToolset):
 
     if len(args) != 6:
         print (" ".join(sys.argv))
-        raise Exception("Expecting 4 arguments: fileName name srcDir incDir defaultCompiler defaultBits")
+        raise Exception("Expecting 6 arguments: fileName name srcDir incDir defaultCompiler defaultBits")
 
     fileName = args[0]
     name     = args[1]
