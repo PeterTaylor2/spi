@@ -1597,7 +1597,7 @@ void ExcelModule::registerClass(
 {
     bool nameAtEnd = service->nameAtEnd();
     const char* funcNameSep = service->funcNameSep();
-    const std::string& xlFuncPrefix = cls->funcPrefix.empty() ? cls->name : cls->funcPrefix;
+    const std::string& xlFuncPrefix = cls->name;
 
     if (!cls->noMake)
     {

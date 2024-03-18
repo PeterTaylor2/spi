@@ -2106,10 +2106,7 @@ void initClassStructOptions(
     defaultOptions["asValue"] = BoolConstant::Make(false);
     defaultOptions["ignore"] = BoolConstant::Make(false);
     defaultOptions["uuid"] = BoolConstant::Make(false);
-    defaultOptions["xlFuncName"] = StringConstant::Make(""); // for backward compatibility - should be funcPrefix instead
     defaultOptions["constructor"] = StringConstant::Make("");
-    defaultOptions["funcPrefix"] = StringConstant::Make(""); // same as xlFuncName
-    defaultOptions["instance"] = StringConstant::Make(""); // name of the instance field in functions
 
     if (wrapperClass)
         defaultOptions["sharedPtr"] = StringConstant::Make("");
@@ -2258,16 +2255,12 @@ void structKeywordHandler(
     bool byValue = getOption(options, "byValue")->getBool();
     bool ignore = getOption(options, "ignore")->getBool();
     bool uuid = getOption(options, "uuid")->getBool();
-    std::string xlFuncName = getOption(options, "xlFuncName")->getString();
-    std::string funcPrefix = getOption(options, "funcPrefix")->getString();
     std::string constructor = getOption(options, "constructor")->getString();
-    std::string instance = getOption(options, "instance")->getString();
 
     StructSP type = Struct::Make(
         description, name, module->moduleNamespace(), baseClass, noMake,
         getOption(options, "objectName")->getString(),
-        canPut, noId, isVirtual, asValue, uuid, byValue, false,
-        funcPrefix.empty() ? xlFuncName : funcPrefix, instance);
+        canPut, noId, isVirtual, asValue, uuid, byValue, false);
 
     // we need to register the type before parsing the contents in order to
     // allow references to itself in the structure definition
@@ -2842,17 +2835,13 @@ void classNoWrapHandler(
     bool byValue = getOption(options, "byValue")->getBool();
     bool ignore = getOption(options, "ignore")->getBool();
     bool uuid = getOption(options, "uuid")->getBool();
-    std::string xlFuncName = getOption(options, "xlFuncName")->getString();
-    std::string funcPrefix = getOption(options, "funcPrefx")->getString();
     std::string constructor = getOption(options, "constructor")->getString();
-    std::string instance = getOption(options, "instance")->getString();
 
     StructSP type = Struct::Make(
         description, className, module->moduleNamespace(),
         baseClass, noMake,
         getOption(options, "objectName")->getString(),
-        canPut, noId, isVirtual, asValue, uuid, byValue, true,
-        funcPrefix.empty() ? xlFuncName : funcPrefix, instance);
+        canPut, noId, isVirtual, asValue, uuid, byValue, true);
 
     // we need to register the type before parsing the contents in order to
     // allow references to itself in the class definition
@@ -3134,7 +3123,6 @@ void classKeywordHandler(
         innerClass = innerClass->setSharedPtr(sharedPtr);
     }
 
-    std::string funcPrefix = getOption(options, "funcPrefix")->getString();
     std::string constructor = getOption(options, "constructor")->getString();
     WrapperClassSP type = WrapperClass::Make(
         description, name, module->moduleNamespace(), innerClass,
@@ -3145,9 +3133,7 @@ void classKeywordHandler(
         getOption(options, "canPut")->getBool(),
         getOption(options, "noId")->getBool(),
         getOption(options, "asValue")->getBool(),
-        uuid,
-        funcPrefix.empty() ? getOption(options, "xlFuncName")->getString() : funcPrefix,
-        getOption(options, "instance")->getString());
+        uuid);
 
     // we need to register the type before parsing the contents in order to
     // allow references to itself in the class definition

@@ -566,9 +566,7 @@ public:
         bool asValue,
         bool uuid,
         bool byValue,
-        bool useAccessors,
-        const std::string& funcPrefix,
-        const std::string& instance);
+        bool useAccessors);
 
     typedef spi::ObjectSmartPtr<BaseStruct> outer_type; 
 
@@ -604,9 +602,7 @@ private:
         bool asValue,
         bool uuid,
         bool byValue,
-        bool useAccessors,
-        const std::string& funcPrefix,
-        const std::string& instance);
+        bool useAccessors);
 
     /* private accessor methods */
     std::vector<std::string> description() const;
@@ -622,8 +618,6 @@ private:
     bool uuid() const;
     bool byValue() const;
     bool useAccessors() const;
-    std::string funcPrefix() const;
-    std::string instance() const;
 
     /* shared pointer to implementation */
     spi_boost::intrusive_ptr< ::Struct const > inner_value;
@@ -735,9 +729,7 @@ public:
         const DataTypeConstSP& dataType,
         bool asValue,
         const std::vector<ClassPropertyConstSP>& classProperties,
-        bool uuid,
-        const std::string& funcPrefix,
-        const std::string& instance);
+        bool uuid);
 
     typedef spi::ObjectSmartPtr<BaseWrapperClass> outer_type; 
 
@@ -775,9 +767,7 @@ private:
         const DataTypeConstSP& dataType,
         bool asValue,
         const std::vector<ClassPropertyConstSP>& classProperties,
-        bool uuid,
-        const std::string& funcPrefix,
-        const std::string& instance);
+        bool uuid);
 
     /* private accessor methods */
     std::vector<std::string> description() const;
@@ -795,8 +785,6 @@ private:
     bool asValue() const;
     std::vector<ClassPropertyConstSP> classProperties() const;
     bool uuid() const;
-    std::string funcPrefix() const;
-    std::string instance() const;
 
     /* shared pointer to implementation */
     spi_boost::intrusive_ptr< ::WrapperClass const > inner_value;

@@ -62,14 +62,11 @@ StructSP Struct::Make(
     bool                            asValue,
     bool                            uuid,
     bool                            byValue,
-    bool useAccessors,
-    const std::string& funcPrefix,
-    const std::string& instance)
+    bool useAccessors)
 {
     return new Struct(
         description, name, ns, baseClass, noMake, objectName, canPut, noId,
-        isVirtual, asValue, uuid, byValue, useAccessors,
-        funcPrefix, instance);
+        isVirtual, asValue, uuid, byValue, useAccessors);
 }
 
 Struct::Struct(
@@ -85,9 +82,7 @@ Struct::Struct(
     bool                            asValue,
     bool                            uuid,
     bool                            byValue,
-    bool useAccessors,
-    const std::string& funcPrefix,
-    const std::string& instance)
+    bool useAccessors)
     :
     m_description(description),
     m_name(name),
@@ -102,8 +97,6 @@ Struct::Struct(
     m_uuid(uuid),
     m_byValue(byValue),
     m_useAccessors(useAccessors),
-    m_funcPrefix(funcPrefix),
-    m_instance(instance),
     m_attributes(),
     m_methods(),
     m_verbatimStart(),
@@ -231,17 +224,6 @@ void Struct::declareClassFunctions(
     GeneratedOutput& ostr,
     const ServiceDefinitionSP& svc) const
 {
-    if (!m_funcPrefix.empty())
-    {
-        size_t numMethods = m_methods.size();
-        bool ignored = false; // explain
-        DataTypeConstSP instanceType = getDataType(svc, ignored);
-        for (size_t i = 0; i < numMethods; ++i)
-        {
-            declareMethodAsFunction(
-                ostr, svc, m_methods[i], m_name, m_funcPrefix, m_instance, instanceType);
-        }
-    }
 }
 
 bool Struct::declareInClasses() const
@@ -609,19 +591,6 @@ void Struct::implement(
     {
         writeOpenAccessor(ostr, m_classProperties[i], m_name, false, true, true);
     }
-
-    if (!m_funcPrefix.empty())
-    {
-        size_t numMethods = m_methods.size();
-        bool ignored = false; // explain
-        DataTypeConstSP instanceType = getDataType(svc, ignored);
-        for (size_t i = 0; i < numMethods; ++i)
-        {
-            implementMethodAsFunction(
-                ostr, m_methods[i], m_name, m_funcPrefix, m_instance, instanceType);
-        }
-    }
-
 }
 
 void Struct::implementHelper(
@@ -787,7 +756,7 @@ spdoc::ConstructConstSP Struct::getDoc() const
             m_noMake || isAbstract(), m_objectName,
             m_dataType->getDoc(), isDelegate(), m_canPut,
             !!m_dynamicPropertiesCode,
-            m_asValue, m_funcPrefix, m_instance);
+            m_asValue);
     }
     return m_doc;
 }

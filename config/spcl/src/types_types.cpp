@@ -1006,9 +1006,7 @@ BaseStructConstSP BaseStruct::Make(
     bool asValue,
     bool uuid,
     bool byValue,
-    bool useAccessors,
-    const std::string& funcPrefix,
-    const std::string& instance)
+    bool useAccessors)
 {
   SPI_PROFILE("types.BaseStruct.Make");
   types_check_permission();
@@ -1016,7 +1014,7 @@ BaseStructConstSP BaseStruct::Make(
   {
     inner_type self = make_inner(description, name, ns, baseClass, noMake,
         objectName, canPut, noId, isVirtual, asValue, uuid, byValue,
-        useAccessors, funcPrefix, instance);
+        useAccessors);
     return Wrap(self);
   }
   catch (std::exception& e)
@@ -1038,9 +1036,7 @@ BaseStruct::inner_type BaseStruct::make_inner(
     bool o_asValue,
     bool o_uuid,
     bool o_byValue,
-    bool o_useAccessors,
-    const std::string& o_funcPrefix,
-    const std::string& o_instance)
+    bool o_useAccessors)
 {
     spi_boost::intrusive_ptr< ::Class const > baseClass;
 
@@ -1058,12 +1054,10 @@ BaseStruct::inner_type BaseStruct::make_inner(
     const bool& uuid = o_uuid;
     const bool& byValue = o_byValue;
     const bool& useAccessors = o_useAccessors;
-    const std::string& funcPrefix = o_funcPrefix;
-    const std::string& instance = o_instance;
 
     ::StructSP self = ::Struct::Make(
         description, name, ns, baseClass, noMake, objectName, canPut, noId, isVirtual, asValue, 
-        uuid, byValue, useAccessors, funcPrefix, instance);
+        uuid, byValue, useAccessors);
 
     SPI_POST_CONDITION(self->isAbstract());
 
@@ -1206,20 +1200,6 @@ bool BaseStruct::useAccessors() const
     inner_type self = get_inner();
 
     return self->useAccessors();
-}
-
-std::string BaseStruct::funcPrefix() const
-{
-    inner_type self = get_inner();
-
-    return self->funcPrefix();
-}
-
-std::string BaseStruct::instance() const
-{
-    inner_type self = get_inner();
-
-    return self->instance();
 }
 
 /*
@@ -1457,9 +1437,7 @@ BaseWrapperClassConstSP BaseWrapperClass::Make(
     const DataTypeConstSP& dataType,
     bool asValue,
     const std::vector<ClassPropertyConstSP>& classProperties,
-    bool uuid,
-    const std::string& funcPrefix,
-    const std::string& instance)
+    bool uuid)
 {
   SPI_PROFILE("types.BaseWrapperClass.Make");
   types_check_permission();
@@ -1467,7 +1445,7 @@ BaseWrapperClassConstSP BaseWrapperClass::Make(
   {
     inner_type self = make_inner(description, name, ns, innerClass, baseClass,
         isVirtual, noMake, objectName, isDelegate, canPut, noId, dataType,
-        asValue, classProperties, uuid, funcPrefix, instance);
+        asValue, classProperties, uuid);
     return Wrap(self);
   }
   catch (std::exception& e)
@@ -1491,9 +1469,7 @@ BaseWrapperClass::inner_type BaseWrapperClass::make_inner(
     const DataTypeConstSP& o_dataType,
     bool o_asValue,
     const std::vector<ClassPropertyConstSP>& o_classProperties,
-    bool o_uuid,
-    const std::string& o_funcPrefix,
-    const std::string& o_instance)
+    bool o_uuid)
 {
     spi_boost::intrusive_ptr< ::InnerClass const > innerClass;
     spi_boost::intrusive_ptr< ::WrapperClass const > baseClass;
@@ -1522,13 +1498,10 @@ BaseWrapperClass::inner_type BaseWrapperClass::make_inner(
     const bool& noId = o_noId;
     const bool& asValue = o_asValue;
     const bool& uuid = o_uuid;
-    const std::string& funcPrefix = o_funcPrefix;
-    const std::string& instance = o_instance;
 
     ::WrapperClassSP self = ::WrapperClass::Make(
         description, name, ns, innerClass, baseClass, isVirtual,
-        noMake, objectName, isDelegate, canPut, noId, asValue, uuid,
-        funcPrefix, instance);
+        noMake, objectName, isDelegate, canPut, noId, asValue, uuid);
 
     SPI_POST_CONDITION(self->isAbstract());
 
@@ -1711,20 +1684,6 @@ bool BaseWrapperClass::uuid() const
     inner_type self = get_inner();
 
     return self->uuid();
-}
-
-std::string BaseWrapperClass::funcPrefix() const
-{
-    inner_type self = get_inner();
-
-    return self->funcPrefix();
-}
-
-std::string BaseWrapperClass::instance() const
-{
-    inner_type self = get_inner();
-
-    return self->instance();
 }
 
 /*

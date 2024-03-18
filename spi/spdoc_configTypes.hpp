@@ -619,9 +619,7 @@ public:
         bool isDelegate,
         bool canPut,
         bool hasDynamicAttributes,
-        bool asValue,
-        const std::string& funcPrefix,
-        const std::string& instance);
+        bool asValue);
 
     /**
     ************************************************************************
@@ -675,9 +673,7 @@ protected:
         bool isDelegate,
         bool canPut,
         bool hasDynamicAttributes,
-        bool asValue,
-        const std::string& funcPrefix,
-        const std::string& instance);
+        bool asValue);
 
 public:
 
@@ -698,8 +694,6 @@ public:
     const bool canPut;
     const bool hasDynamicAttributes;
     const bool asValue;
-    const std::string funcPrefix;
-    const std::string instance;
 
 public:
     std::string getName() const { return name; } 

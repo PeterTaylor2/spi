@@ -213,9 +213,7 @@ spdoc::ConstructConstSP MapClass::getDoc() const
             false, // isDelegate
             m_canPut,
             true, // hasDynamicAttributes
-            false, // asValue
-            std::string(), // funcPrefix
-            std::string()); // instance
+            false); // asValue
     }
     return m_doc;
 }

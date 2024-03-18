@@ -67,9 +67,7 @@ public:
         bool                            canPut,
         bool                            noId,
         bool                            asValue,
-        bool                            uuid,
-        const std::string&              funcPrefix,
-        const std::string&              instance);
+        bool                            uuid);
 
     void addClassAttribute(const ClassAttributeConstSP& classAttribute);
     void addMethod(const ClassMethodConstSP& method);
@@ -155,9 +153,7 @@ protected:
         bool                            canPut,
         bool                            noId,
         bool                            asValue,
-        bool                            uuid,
-        const std::string&              funcPrefix,
-        const std::string&              instance);
+        bool                            uuid);
 
 private:
     std::vector<std::string>           m_description;
@@ -173,8 +169,6 @@ private:
     bool                               m_noId;
     bool                               m_asValue;
     bool                               m_uuid;
-    std::string                        m_funcPrefix;
-    std::string                        m_instance;
 
 private:
     std::string                        m_verbatimStart;
@@ -214,8 +208,6 @@ public:
     bool noId() const { return m_noId; }
     bool asValue() const { return m_asValue; }
     bool uuid() const { return m_uuid; }
-    const std::string& funcPrefix() const { return m_funcPrefix; }
-    const std::string& instance() const { return m_instance; }
     const DataTypeConstSP& dataType() const { return m_dataType; }
     const std::vector<ClassAttributeConstSP>& classProperties() const { return m_classProperties; }
 

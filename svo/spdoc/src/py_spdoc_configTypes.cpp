@@ -1393,10 +1393,6 @@ static PyGetSetDef Class_properties[] = {
         (void*) "hasDynamicAttributes"},
     {"asValue", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "asValue"},
-    {"funcPrefix", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
-        (void*) "funcPrefix"},
-    {"instance", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
-        (void*) "instance"},
     {NULL} // sentinel
 };
 
@@ -1488,7 +1484,7 @@ static PyTypeObject Class_PyObjectType = {
     0, /*tp_setattro*/
     0, /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT, /*tp_flags*/
-    "Defines a class.\n\n__init__(self, name, ns=None, description=[], baseClassName, attributes=[], properties=[], methods=[], coerceFrom=[], coerceTo=[], isAbstract, noMake, objectName, dataType, isDelegate, canPut, hasDynamicAttributes, asValue=None, funcPrefix=None, instance=None)", /* tp_doc */
+    "Defines a class.\n\n__init__(self, name, ns=None, description=[], baseClassName, attributes=[], properties=[], methods=[], coerceFrom=[], coerceTo=[], isAbstract, noMake, objectName, dataType, isDelegate, canPut, hasDynamicAttributes, asValue=None)", /* tp_doc */
     0, /* tp_traverse */
     0, /* tp_clear */
     0, /* tp_richcompare */

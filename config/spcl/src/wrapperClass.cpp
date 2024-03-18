@@ -62,14 +62,11 @@ WrapperClassSP WrapperClass::Make(
     bool                            canPut,
     bool                            noId,
     bool                            asValue,
-    bool                            uuid,
-    const std::string&              funcPrefix,
-    const std::string&              instance)
+    bool                            uuid)
 {
     return new WrapperClass(
         description, name, ns, innerClass, baseClass, isVirtual, noMake,
-        objectName, isDelegate, canPut, noId, asValue, uuid,
-        funcPrefix, instance);
+        objectName, isDelegate, canPut, noId, asValue, uuid);
 }
 
 WrapperClass::WrapperClass(
@@ -85,9 +82,7 @@ WrapperClass::WrapperClass(
     bool                            canPut,
     bool                            noId,
     bool                            asValue,
-    bool                            uuid,
-    const std::string&              funcPrefix,
-    const std::string&              instance)
+    bool                            uuid)
     :
     m_description(description),
     m_name(name),
@@ -102,8 +97,6 @@ WrapperClass::WrapperClass(
     m_noId(noId),
     m_asValue(asValue),
     m_uuid(uuid),
-    m_funcPrefix(funcPrefix),
-    m_instance(instance),
     m_verbatimConstructor(),
     m_classAttributes(),
     m_methods(),
@@ -248,17 +241,6 @@ void WrapperClass::declareClassFunctions(
     GeneratedOutput& ostr,
     const ServiceDefinitionSP& svc) const
 {
-    if (!m_funcPrefix.empty())
-    {
-        size_t numMethods = m_methods.size();
-        bool ignored = false; // explain
-        DataTypeConstSP instanceType = getDataType(svc, ignored);
-        for (size_t i = 0; i < numMethods; ++i)
-        {
-            declareMethodAsFunction(
-                ostr, svc, m_methods[i], m_name, m_funcPrefix, m_instance, instanceType);
-        }
-    }
 }
 
 bool WrapperClass::declareInClasses() const
@@ -1317,19 +1299,6 @@ void WrapperClass::implementHelper(
              << "spi::ObjectWrapperCacheSP " << m_name << "_Helper::cache("
              << "new spi::ObjectWrapperCache(\"" << m_name << "\"));\n";
     }
-
-    if (!m_funcPrefix.empty())
-    {
-        size_t numMethods = m_methods.size();
-        bool ignored = false; // explain
-        DataTypeConstSP instanceType = getDataType(svc, ignored);
-        for (size_t i = 0; i < numMethods; ++i)
-        {
-            implementMethodAsFunction(
-                ostr, m_methods[i], m_name, m_funcPrefix, m_instance, instanceType);
-        }
-    }
-
 }
 
 void WrapperClass::implementRegistration(
@@ -1401,7 +1370,7 @@ spdoc::ConstructConstSP WrapperClass::getDoc() const
             !m_dataType ? spdoc::DataTypeConstSP() : m_dataType->getDoc(),
             isDelegate(), m_canPut,
             !!m_dynamicPropertiesCode,
-            m_asValue, m_funcPrefix, m_instance);
+            m_asValue);
     }
     return m_doc;
 }
