@@ -146,6 +146,7 @@ public:
     const FunctionConstSP& function() const { return m_function; }
     bool isVirtual() const { return m_isVirtual; }
     bool isDelegate() const { return m_isDelegate; }
+    bool isStatic() const { return m_isStatic; }
 
     void implementDeclaration(
         GeneratedOutput& ostr,

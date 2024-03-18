@@ -343,7 +343,6 @@ class SPI_IMPORT Attribute : public spi::Object
 public:
     static AttributeConstSP Make(
         const DataTypeConstSP& dataType,
-        bool innerConst,
         const std::string& name,
         int arrayDim);
 
@@ -369,13 +368,11 @@ private:
 
     static inner_type make_inner(
         const DataTypeConstSP& dataType,
-        bool innerConst,
         const std::string& name,
         int arrayDim);
 
     /* private accessor methods */
     DataTypeConstSP dataType() const;
-    bool innerConst() const;
     std::string name() const;
     int arrayDim() const;
 
@@ -569,8 +566,7 @@ public:
         bool asValue,
         bool uuid,
         bool byValue,
-        bool useAccessors,
-        const std::string& xlFuncName);
+        bool useAccessors);
 
     typedef spi::ObjectSmartPtr<BaseStruct> outer_type; 
 
@@ -606,8 +602,7 @@ private:
         bool asValue,
         bool uuid,
         bool byValue,
-        bool useAccessors,
-        const std::string& xlFuncName);
+        bool useAccessors);
 
     /* private accessor methods */
     std::vector<std::string> description() const;
@@ -623,7 +618,6 @@ private:
     bool uuid() const;
     bool byValue() const;
     bool useAccessors() const;
-    std::string xlFuncName() const;
 
     /* shared pointer to implementation */
     spi_boost::intrusive_ptr< ::Struct const > inner_value;
@@ -735,8 +729,7 @@ public:
         const DataTypeConstSP& dataType,
         bool asValue,
         const std::vector<ClassPropertyConstSP>& classProperties,
-        bool uuid,
-        const std::string& xlFuncName);
+        bool uuid);
 
     typedef spi::ObjectSmartPtr<BaseWrapperClass> outer_type; 
 
@@ -774,8 +767,7 @@ private:
         const DataTypeConstSP& dataType,
         bool asValue,
         const std::vector<ClassPropertyConstSP>& classProperties,
-        bool uuid,
-        const std::string& xlFuncName);
+        bool uuid);
 
     /* private accessor methods */
     std::vector<std::string> description() const;
@@ -793,7 +785,6 @@ private:
     bool asValue() const;
     std::vector<ClassPropertyConstSP> classProperties() const;
     bool uuid() const;
-    std::string xlFuncName() const;
 
     /* shared pointer to implementation */
     spi_boost::intrusive_ptr< ::WrapperClass const > inner_value;

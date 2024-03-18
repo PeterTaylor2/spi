@@ -619,8 +619,7 @@ public:
         bool isDelegate,
         bool canPut,
         bool hasDynamicAttributes,
-        bool asValue,
-        const std::string& xlFuncName);
+        bool asValue);
 
     /**
     ************************************************************************
@@ -674,8 +673,7 @@ protected:
         bool isDelegate,
         bool canPut,
         bool hasDynamicAttributes,
-        bool asValue,
-        const std::string& xlFuncName);
+        bool asValue);
 
 public:
 
@@ -696,7 +694,6 @@ public:
     const bool canPut;
     const bool hasDynamicAttributes;
     const bool asValue;
-    const std::string xlFuncName;
 
 public:
     std::string getName() const { return name; } 

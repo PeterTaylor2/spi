@@ -101,6 +101,9 @@ public:
     ClassConstSP getBaseClass() const;
     std::vector<CoerceFromConstSP> getCoerceFrom() const;
     bool hasObjectId() const;
+    bool byValue() const;
+
+    std::vector<AttributeConstSP> AllAttributes() const;
 
 protected:
     MapClass(

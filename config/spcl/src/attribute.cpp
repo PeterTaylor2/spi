@@ -46,7 +46,6 @@
 AttributeConstSP Attribute::Make(
     const std::vector<std::string>& description,
     const DataTypeConstSP& dataType,
-    bool innerConst,
     const std::string& name,
     int arrayDim,
     bool isOptional,
@@ -54,28 +53,27 @@ AttributeConstSP Attribute::Make(
 {
     return AttributeConstSP
         (new Attribute(
-            description, dataType, innerConst, name, arrayDim, isOptional,
+            description, dataType, name, arrayDim, isOptional,
             defaultValue));
 }
 
-AttributeConstSP Attribute::InstanceType(const DataTypeConstSP& dataType, bool innerConst)
+AttributeConstSP Attribute::InstanceType(const DataTypeConstSP& dataType)
 {
     return Attribute::Make(
-        std::vector<std::string>(), dataType, innerConst, "self");
+        std::vector<std::string>(), dataType, "self");
 }
 
 AttributeConstSP Attribute::ReturnType(
     const std::vector<std::string>& description,
-    const DataTypeConstSP& dataType, bool innerConst, int arrayDim)
+    const DataTypeConstSP& dataType, int arrayDim)
 {
     return Attribute::Make(
-        description, dataType, innerConst, std::string(), arrayDim);
+        description, dataType, std::string(), arrayDim);
 }
 
 Attribute::Attribute(
     const std::vector<std::string>& description,
     const DataTypeConstSP& dataType,
-    bool innerConst,
     const std::string& name,
     int arrayDim,
     bool isOptional,
@@ -83,7 +81,6 @@ Attribute::Attribute(
     :
     m_description(description),
     m_dataType(dataType),
-    m_innerConst(innerConst),
     m_name(name),
     m_arrayDim(arrayDim),
     m_isOptional(isOptional),
@@ -100,11 +97,6 @@ const std::vector<std::string>& Attribute::description() const
 const DataTypeConstSP& Attribute::dataType() const
 {
     return m_dataType;
-}
-
-bool Attribute::innerConst() const
-{
-    return m_innerConst;
 }
 
 const std::string& Attribute::name() const
@@ -134,7 +126,7 @@ const ConstantConstSP Attribute::defaultValue() const
 
 AttributeConstSP Attribute::rename(const std::string& newName) const
 {
-    return Attribute::Make(m_description, m_dataType, m_innerConst, newName, m_arrayDim,
+    return Attribute::Make(m_description, m_dataType, newName, m_arrayDim,
         m_isOptional, m_defaultValue);
 }
 

@@ -49,7 +49,6 @@ FunctionConstSP Function::Make(
     const std::vector<std::string>&      description,
     const std::vector<std::string>&      returnTypeDescription,
     const DataTypeConstSP&               returnType,
-    bool                                 returnInnerConst,
     int                                  returnArrayDim,
     const std::string&                   name,
     const std::string&                   ns,
@@ -61,7 +60,7 @@ FunctionConstSP Function::Make(
     int                                  cacheSize)
 {
     return new Function(description, returnTypeDescription, returnType,
-        returnInnerConst, returnArrayDim, name, ns, args,
+        returnArrayDim, name, ns, args,
         implementation, noLog, noConvert, excelOptions, cacheSize);
 }
 
@@ -69,7 +68,6 @@ Function::Function(
     const std::vector<std::string>& description,
     const std::vector<std::string>& returnTypeDescription,
     const DataTypeConstSP& returnType,
-    bool                                 returnInnerConst,
     int                                  returnArrayDim,
     const std::string& name,
     const std::string& ns,
@@ -83,7 +81,6 @@ Function::Function(
     m_description(description),
     m_returnTypeDescription(returnTypeDescription),
     m_returnType(returnType),
-    m_returnInnerConst(returnInnerConst),
     m_returnArrayDim(returnArrayDim),
     m_name(name),
     m_ns(ns),
@@ -157,7 +154,7 @@ AttributeConstSP Function::returns() const
 {
     if (!m_returnType)
         return AttributeConstSP();
-    return Attribute::ReturnType(m_returnTypeDescription, m_returnType, m_returnInnerConst, m_returnArrayDim);
+    return Attribute::ReturnType(m_returnTypeDescription, m_returnType, m_returnArrayDim);
 }
 
 void Function::declare(

@@ -72,8 +72,7 @@ public:
         bool                            asValue,
         bool                            uuid,
         bool                            byValue,
-        bool                            useAccessors,
-        const std::string&              xlFuncName);
+        bool                            useAccessors);
 
     void addClassAttribute(const ClassAttributeConstSP& attribute);
     void addMethod(const ClassMethodConstSP& method);
@@ -88,6 +87,9 @@ public:
     // re-implementation of Construct
     int preDeclare(GeneratedOutput& ostr,
                    const ServiceDefinitionSP& svc) const;
+
+    void declareClassFunctions(GeneratedOutput& ostr,
+        const ServiceDefinitionSP& svc) const;
 
     // implementation of construct
     void declare(GeneratedOutput& ostr,
@@ -143,8 +145,7 @@ protected:
         bool                            asValue,
         bool                            uuid,
         bool                            byValue,
-        bool useAccessors,
-        const std::string& xlFuncName);
+        bool useAccessors);
 
 private:
     std::vector<std::string>        m_description;
@@ -160,7 +161,6 @@ private:
     bool                            m_uuid;
     bool                            m_byValue;
     bool                            m_useAccessors;
-    std::string                     m_xlFuncName;
 
     std::vector<AttributeConstSP>   m_attributes;
     std::vector<ClassMethodConstSP> m_methods;
@@ -203,7 +203,6 @@ public:
     bool uuid() const { return m_uuid; }
     bool byValue() const { return m_byValue; }
     bool useAccessors() const { return m_useAccessors; }
-    const std::string& xlFuncName() const { return m_xlFuncName; }
 };
 
 #endif

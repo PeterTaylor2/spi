@@ -213,8 +213,7 @@ spdoc::ConstructConstSP MapClass::getDoc() const
             false, // isDelegate
             m_canPut,
             true, // hasDynamicAttributes
-            false, // asValue
-            std::string()); // xlFuncName
+            false); // asValue
     }
     return m_doc;
 }
@@ -297,4 +296,14 @@ ClassConstSP MapClass::getBaseClass() const
 bool MapClass::hasObjectId() const
 {
     return m_uuid;
+}
+
+bool MapClass::byValue() const
+{
+    return false;
+}
+
+std::vector<AttributeConstSP> MapClass::AllAttributes() const
+{
+    SPI_THROW_RUNTIME_ERROR("AllAttributes not implemented for MapClass");
 }

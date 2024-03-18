@@ -67,8 +67,7 @@ public:
         bool                            canPut,
         bool                            noId,
         bool                            asValue,
-        bool                            uuid,
-        const std::string&              xlFuncName);
+        bool                            uuid);
 
     void addClassAttribute(const ClassAttributeConstSP& classAttribute);
     void addMethod(const ClassMethodConstSP& method);
@@ -92,6 +91,9 @@ public:
 
     int preDeclare(GeneratedOutput& ostr,
                    const ServiceDefinitionSP& svc) const;
+
+    void declareClassFunctions(GeneratedOutput& ostr,
+        const ServiceDefinitionSP& svc) const;
 
     // implementation of Construct
     void declare(GeneratedOutput& ostr,
@@ -131,6 +133,7 @@ public:
     const DataTypeConstSP& getDataType(const ServiceDefinitionSP& svc, bool ignored) const;
     ClassConstSP getBaseClass() const;
     std::vector<CoerceFromConstSP> getCoerceFrom() const;
+    bool byValue() const;
     std::string ObjectName() const;
     std::vector<ClassAttributeConstSP> getBaseClassProperties() const;
     std::vector<AttributeConstSP> AllAttributes() const;
@@ -150,8 +153,7 @@ protected:
         bool                            canPut,
         bool                            noId,
         bool                            asValue,
-        bool                            uuid,
-        const std::string&              xlFuncName);
+        bool                            uuid);
 
 private:
     std::vector<std::string>           m_description;
@@ -167,7 +169,6 @@ private:
     bool                               m_noId;
     bool                               m_asValue;
     bool                               m_uuid;
-    std::string                        m_xlFuncName;
 
 private:
     std::string                        m_verbatimStart;
@@ -207,7 +208,6 @@ public:
     bool noId() const { return m_noId; }
     bool asValue() const { return m_asValue; }
     bool uuid() const { return m_uuid; }
-    const std::string& xlFuncName() const { return m_xlFuncName; }
     const DataTypeConstSP& dataType() const { return m_dataType; }
     const std::vector<ClassAttributeConstSP>& classProperties() const { return m_classProperties; }
 

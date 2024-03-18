@@ -60,23 +60,20 @@ public:
     static AttributeConstSP Make(
         const std::vector<std::string>& description,
         const DataTypeConstSP& dataType,
-        bool innerConst,
         const std::string& name,
         int arrayDim=0,
         bool isOptional=false,
         const ConstantConstSP& defaultValue=Constant::UNDEFINED);
 
     static AttributeConstSP InstanceType(
-        const DataTypeConstSP& dataType,
-        bool innerConst = false);
+        const DataTypeConstSP& dataType);
 
     static AttributeConstSP ReturnType(
         const std::vector<std::string>& description,
-        const DataTypeConstSP& dataType, bool innerConst, int arrayDim);
+        const DataTypeConstSP& dataType, int arrayDim);
 
     const std::vector<std::string>& description() const;
     const DataTypeConstSP& dataType() const;
-    bool innerConst() const;
     const std::string& name() const;
     int arrayDim() const;
     //bool isArray() const;
@@ -94,7 +91,6 @@ protected:
     Attribute(
         const std::vector<std::string>& description,
         const DataTypeConstSP& dataType,
-        bool innerConst,
         const std::string& name,
         int arrayDim,
         bool isOptional,
@@ -103,7 +99,6 @@ protected:
 private:
     std::vector<std::string> m_description;
     DataTypeConstSP          m_dataType;
-    bool                     m_innerConst;
     std::string              m_name;
     int                      m_arrayDim;
     bool                     m_isOptional;

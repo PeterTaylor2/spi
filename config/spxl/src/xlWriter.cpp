@@ -1597,13 +1597,13 @@ void ExcelModule::registerClass(
 {
     bool nameAtEnd = service->nameAtEnd();
     const char* funcNameSep = service->funcNameSep();
-    const std::string& xlClassName = cls->xlFuncName.empty() ? cls->name : cls->xlFuncName;
+    const std::string& xlFuncPrefix = cls->name;
 
     if (!cls->noMake)
     {
         ostr << "\n"
              << "    /* " << makeNamespaceSep(module->ns, funcNameSep)
-             << xlClassName << " */\n"
+             << xlFuncPrefix << " */\n"
              << "    args.clear();\n"
              << "    help.clear();\n";
 
@@ -1644,7 +1644,7 @@ void ExcelModule::registerClass(
             << "_" << makeNamespaceSep(module->ns, "_") << cls->name
             << "\", \"" << service->ns() << funcNameSep
             << makeNamespaceSep(module->ns, funcNameSep)
-            << xlClassName << "\", \"" << service->ns() << "\", args,\n"
+            << xlFuncPrefix << "\", \"" << service->ns() << "\", args,\n"
             << "        \"" << classHelp << "\",\n"
             << "        help);\n";
     }
@@ -1716,7 +1716,7 @@ void ExcelModule::registerClass(
             << "_" << makeNamespaceSep(module->ns, "_") << cls->name << "_"
             << method->function->name << "\", \"" << service->ns()
             << funcNameSep
-            << makeNamespaceSep(module->ns, funcNameSep) << xlClassName
+            << makeNamespaceSep(module->ns, funcNameSep) << xlFuncPrefix
             << funcNameSep << method->function->name << "\", \""
             << service->ns() << "\", args,\n"
             << "        \"" << mHelp << "\",\n"

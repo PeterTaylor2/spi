@@ -1033,15 +1033,14 @@ ClassConstSP Class::Make(
     bool isDelegate,
     bool canPut,
     bool hasDynamicAttributes,
-    bool asValue,
-    const std::string& xlFuncName)
+    bool asValue)
 {
     spdoc_check_permission();
     return ClassConstSP(
         new Class(name, ns, description, baseClassName, attributes,
             properties, methods, coerceFrom, coerceTo, isAbstract, noMake,
             objectName, dataType, isDelegate, canPut, hasDynamicAttributes,
-            asValue, xlFuncName));
+            asValue));
 }
 
 Class::Class(
@@ -1061,8 +1060,7 @@ Class::Class(
     bool isDelegate,
     bool canPut,
     bool hasDynamicAttributes,
-    bool asValue,
-    const std::string& xlFuncName)
+    bool asValue)
     :
     name(name),
     ns(ns),
@@ -1080,8 +1078,7 @@ Class::Class(
     isDelegate(isDelegate),
     canPut(canPut),
     hasDynamicAttributes(hasDynamicAttributes),
-    asValue(asValue),
-    xlFuncName(xlFuncName)
+    asValue(asValue)
 {}
 
 std::vector<std::string> Class::Summary() const

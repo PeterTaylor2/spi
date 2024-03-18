@@ -62,12 +62,11 @@ WrapperClassSP WrapperClass::Make(
     bool                            canPut,
     bool                            noId,
     bool                            asValue,
-    bool                            uuid,
-    const std::string&              xlFuncName)
+    bool                            uuid)
 {
     return new WrapperClass(
         description, name, ns, innerClass, baseClass, isVirtual, noMake,
-        objectName, isDelegate, canPut, noId, asValue, uuid, xlFuncName);
+        objectName, isDelegate, canPut, noId, asValue, uuid);
 }
 
 WrapperClass::WrapperClass(
@@ -83,8 +82,7 @@ WrapperClass::WrapperClass(
     bool                            canPut,
     bool                            noId,
     bool                            asValue,
-    bool                            uuid,
-    const std::string&              xlFuncName)
+    bool                            uuid)
     :
     m_description(description),
     m_name(name),
@@ -99,7 +97,6 @@ WrapperClass::WrapperClass(
     m_noId(noId),
     m_asValue(asValue),
     m_uuid(uuid),
-    m_xlFuncName(xlFuncName),
     m_verbatimConstructor(),
     m_classAttributes(),
     m_methods(),
@@ -238,6 +235,12 @@ int WrapperClass::preDeclare(
     ostr << "\n";
     ostr << "SPI_DECLARE_OBJECT_CLASS(" << m_name << ");";
     return 1;
+}
+
+void WrapperClass::declareClassFunctions(
+    GeneratedOutput& ostr,
+    const ServiceDefinitionSP& svc) const
+{
 }
 
 bool WrapperClass::declareInClasses() const
@@ -1367,7 +1370,7 @@ spdoc::ConstructConstSP WrapperClass::getDoc() const
             !m_dataType ? spdoc::DataTypeConstSP() : m_dataType->getDoc(),
             isDelegate(), m_canPut,
             !!m_dynamicPropertiesCode,
-            m_asValue, m_xlFuncName);
+            m_asValue);
     }
     return m_doc;
 }
@@ -1534,6 +1537,11 @@ bool WrapperClass::isVirtualMethod(const std::string& methodName)
 std::vector<CoerceFromConstSP> WrapperClass::getCoerceFrom() const
 {
     return m_coerceFromVector;
+}
+
+bool WrapperClass::byValue() const
+{
+    return false;
 }
 
 std::string WrapperClass::ObjectName() const

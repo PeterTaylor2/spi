@@ -1669,7 +1669,6 @@ void Class::to_map(
     obj_map->SetBool("canPut", canPut);
     obj_map->SetBool("hasDynamicAttributes", hasDynamicAttributes);
     obj_map->SetBool("asValue", asValue, !public_only && (asValue == false));
-    obj_map->SetString("xlFuncName", xlFuncName, !public_only && (xlFuncName == std::string("")));
 }
 
 spi::ObjectConstSP Class::object_from_map(
@@ -1710,13 +1709,11 @@ spi::ObjectConstSP Class::object_from_map(
         = obj_map->GetBool("hasDynamicAttributes");
     bool asValue
         = obj_map->GetBool("asValue", true, false);
-    const std::string& xlFuncName
-        = obj_map->GetString("xlFuncName", true, "");
 
     return new Class(name, ns, description, baseClassName, attributes,
         properties, methods, coerceFrom, coerceTo, isAbstract, noMake,
         objectName, dataType, isDelegate, canPut, hasDynamicAttributes,
-        asValue, xlFuncName);
+        asValue);
 }
 
 SPI_IMPLEMENT_OBJECT_TYPE(Class, "Class", spdoc_service, true, 0);
@@ -1759,19 +1756,17 @@ spi::Value Class_caller(
         in_context->ValueToBool(in_values[15]);
     bool asValue =
         in_context->ValueToBool(in_values[16], true, false);
-    const std::string& xlFuncName =
-        in_context->ValueToString(in_values[17], true, "");
 
     const ClassConstSP& o_result = spdoc::Class::Make(name, ns, description,
         baseClassName, attributes, properties, methods, coerceFrom, coerceTo,
         isAbstract, noMake, objectName, dataType, isDelegate, canPut,
-        hasDynamicAttributes, asValue, xlFuncName);
+        hasDynamicAttributes, asValue);
     return spi::ObjectConstSP(o_result);
 }
 
 spi::FunctionCaller Class_FunctionCaller = {
     "Class",
-    18,
+    17,
     {
         {"name", spi::ArgType::STRING, "string", false, false, false},
         {"ns", spi::ArgType::STRING, "string", false, true, false},
@@ -1789,8 +1784,7 @@ spi::FunctionCaller Class_FunctionCaller = {
         {"isDelegate", spi::ArgType::BOOL, "bool", false, false, false},
         {"canPut", spi::ArgType::BOOL, "bool", false, false, false},
         {"hasDynamicAttributes", spi::ArgType::BOOL, "bool", false, false, false},
-        {"asValue", spi::ArgType::BOOL, "bool", false, true, false},
-        {"xlFuncName", spi::ArgType::STRING, "string", false, true, false}
+        {"asValue", spi::ArgType::BOOL, "bool", false, true, false}
     },
     Class_caller
 };

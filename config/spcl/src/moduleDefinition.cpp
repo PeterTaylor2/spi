@@ -222,7 +222,10 @@ void ModuleDefinition::writeHeader(
         if (count > 0)
             ostr << "\n";
         for (size_t i = 0; i < m_constructs.size(); ++i)
+        {
             m_constructs[i]->declare(ostr, svc, types);
+            m_constructs[i]->declareClassFunctions(ostr, svc);
+        }
     }
     else
     {
@@ -232,6 +235,7 @@ void ModuleDefinition::writeHeader(
             {
                 m_constructs[i]->declare(ostr, svc, types);
             }
+            m_constructs[i]->declareClassFunctions(ostr, svc);
         }
     }
 
