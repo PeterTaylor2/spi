@@ -31,7 +31,7 @@
 ***************************************************************************
 */
 
-#include "construct.hpp"
+#include "class.hpp"
 
 #include <vector>
 #include <string>

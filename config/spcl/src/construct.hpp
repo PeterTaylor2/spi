@@ -24,7 +24,7 @@
 ***************************************************************************
 ** construct.hpp
 ***************************************************************************
-** Defines the Construct class and virtual sub-classes thereof.
+** Defines the Construct base class
 ***************************************************************************
 */
 
@@ -35,18 +35,10 @@
 #include <spgtools/namespaceManager.hpp>
 
 SPI_DECLARE_RC_CLASS(Construct);
-SPI_DECLARE_RC_CLASS(Class);
-SPI_DECLARE_RC_CLASS(InnerClass);
 SPI_DECLARE_RC_CLASS(ServiceDefinition);
-SPI_DECLARE_RC_CLASS(ModuleDefinition);
-SPI_DECLARE_RC_CLASS(CoerceFrom);
-SPI_DECLARE_RC_CLASS(ClassMethod);
-
-#include "coerceFrom.hpp" // FIXME
 
 SPDOC_BEGIN_NAMESPACE
 SPI_DECLARE_OBJECT_CLASS(Construct);
-SPI_DECLARE_OBJECT_CLASS(Class);
 SPDOC_END_NAMESPACE
 
 /**
@@ -120,51 +112,5 @@ public:
 protected:
     Construct();
 };
-
-/**
- * Defines a class definition.
- *
- * From the outside it looks like a class. There are different implementations
- * inside.
- */
-class Class : public Construct
-{
-public:
-    virtual ~Class() {}
-    virtual std::string getName(bool includeNamespace, const char* sep) const = 0;
-    virtual std::string getObjectName() const = 0;
-    virtual bool isAbstract() const = 0;
-    virtual bool isWrapperClass() const = 0;
-    virtual bool isDelegate() const = 0;
-    virtual bool isVirtualMethod(const std::string& methodName) const = 0;
-    virtual bool hasNonConstMethods() const = 0;
-    virtual const DataTypeConstSP& getDataType(
-        const ServiceDefinitionSP& svc, bool ignored) const = 0;
-    virtual ClassConstSP getBaseClass() const = 0;
-    virtual std::vector<CoerceFromConstSP> getCoerceFrom() const = 0;
-    virtual bool byValue() const = 0;
-
-    virtual std::vector<AttributeConstSP> AllAttributes() const = 0;
-
-    void declareMethodAsFunction(
-        GeneratedOutput& ostr,
-        const ServiceDefinitionSP& svc,
-        const ClassMethodConstSP& method,
-        const std::string& className,
-        const std::string& funcPrefix,
-        const std::string& instance,
-        const DataTypeConstSP& instanceType) const;
-
-    void implementMethodAsFunction(
-        GeneratedOutput& ostr,
-        const ClassMethodConstSP& method,
-        const std::string& className,
-        const std::string& funcPrefix,
-        const std::string& instance,
-        const DataTypeConstSP& instanceType) const;
-
-};
-
-
 
 #endif

@@ -37,6 +37,7 @@
 #include "classMethod.hpp"
 #include <spgtools/texUtils.hpp>
 #include "coerceTo.hpp"
+#include "coerceFrom.hpp"
 
 #include <spi/Service.hpp>
 #include <spi/RuntimeError.hpp>
@@ -754,7 +755,7 @@ CoerceToConstSP parseCoerceTo(
 struct MethodContext
 {
     MethodContext(
-        const ClassConstSP& cls,
+        const ClassSP& cls,
         const ClassConstSP& baseClass,
         bool isVirtual,
         bool isStatic,
@@ -769,7 +770,7 @@ struct MethodContext
         implements()
     {}
 
-    const ClassConstSP cls;
+    ClassSP cls;
     const ClassConstSP baseClass;
     const bool isVirtual;
     const bool isStatic;
@@ -948,6 +949,11 @@ FunctionConstSP parseFunction(
         methodArgs.insert(methodArgs.end(), args.begin(), args.end());
 
         std::ostringstream code;
+        if (!methodContext->isStatic && !methodContext->cls->byValue())
+        {
+            // some defensive code - probably a null pointer doesn't survive to this point
+            code << "    SPI_PRE_CONDITION(" << methodInstance << ");\n";
+        }
         code << "    return ";
         if (methodContext->isStatic)
         {
@@ -978,8 +984,18 @@ FunctionConstSP parseFunction(
             0,
             spi_util::StringSplit(code.str(), "\n"));
 
+        std::vector<std::string> funcDescription(description.begin(), description.end());
+        if (!funcDescription.empty())
+        {
+            funcDescription.push_back("");
+        }
+        funcDescription.push_back(spi_util::StringFormat(
+            "Equivalent to method %s for class %s",
+            name.c_str(),
+            methodContext->cls->getName(true, ".").c_str()));
+        
         FunctionConstSP methodFunc = Function::Make(
-            description,
+            funcDescription,
             returnTypeDescription,
             returnType,
             0,
@@ -992,7 +1008,10 @@ FunctionConstSP parseFunction(
             methodFunctionExcelOptions,
             0); // caching done at lower level
 
-        module->addConstruct(methodFunc);
+        // cannot add directly to module because then the constructs
+        // are not defined in the correct order since cls at this point
+        // has not been added to the list of constructs (since it is incomplete)
+        methodContext->cls->addClassFunction(methodFunc);
     }
 
     return func;
@@ -1140,7 +1159,7 @@ ClassMethodConstSP classMethodKeywordHandler(
     const std::vector<std::string>& description,
     ModuleDefinitionSP& module,
     ServiceDefinitionSP& service,
-    const ClassConstSP& cls,
+    const ClassSP& cls,
     const ClassConstSP& baseClass,
     bool mustImplement,
     bool isVirtual,
@@ -2116,7 +2135,7 @@ void initClassStructOptions(
 
 // given a class (or struct) with defined constructor this creates the corresponding function
 void addConstructorFunction(
-    const ClassConstSP& cls,
+    const ClassSP& cls,
     const std::string& constructor,
     ModuleDefinitionSP& module,
     ServiceDefinitionSP& svc,
@@ -2396,6 +2415,9 @@ void structKeywordHandler(
         {
             addConstructorFunction(type, constructor, module, service, verbose);
         }
+        const std::vector<FunctionConstSP>& classFunctions = type->classFunctions();
+        for (size_t i = 0; i < classFunctions.size(); ++i)
+            module->addConstruct(classFunctions[i]);
     }
 }
 
@@ -2958,6 +2980,9 @@ void classNoWrapHandler(
         {
             addConstructorFunction(type, constructor, module, service, verbose);
         }
+        const std::vector<FunctionConstSP>& classFunctions = type->classFunctions();
+        for (size_t i = 0; i < classFunctions.size(); ++i)
+            module->addConstruct(classFunctions[i]);
     }
 }
 
@@ -3358,6 +3383,9 @@ void classKeywordHandler(
         {
             addConstructorFunction(type, constructor, module, service, verbose);
         }
+        const std::vector<FunctionConstSP>& classFunctions = type->classFunctions();
+        for (size_t i = 0; i < classFunctions.size(); ++i)
+            module->addConstruct(classFunctions[i]);
     }
 }
 

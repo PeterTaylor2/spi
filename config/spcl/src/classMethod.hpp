@@ -35,6 +35,8 @@
 #include <spi/ObjectSmartPtr.hpp>
 #include <spi/spdoc_namespace.hpp>
 
+#include "function.hpp"
+
 SPI_DECLARE_RC_CLASS(DataType);
 SPI_DECLARE_RC_CLASS(Attribute);
 SPI_DECLARE_RC_CLASS(Construct);
