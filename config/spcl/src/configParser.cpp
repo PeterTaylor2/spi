@@ -961,10 +961,10 @@ FunctionConstSP parseFunction(
         {
             code << methodInstance << "->";
         }
-        code << name;
+        code << name << "(";
 
         size_t N = args.size();
-        char* sep = "(";
+        char* sep = "";
         for (size_t i = 0; i < N; ++i)
         {
             code << sep << "\n        " << args[i]->attribute()->name();
@@ -2146,8 +2146,8 @@ void addConstructorFunction(
     int cacheSize = 0;
 
     std::ostringstream code;
-    code << "    return " << cls->getName(true, "::") << "::Make";
-    char* sep = "(";
+    code << "    return " << cls->getName(true, "::") << "::Make(";
+    char* sep = "";
     for (size_t i = 0; i < N; ++i)
     {
         code << sep << "\n        " << attributes[i]->name();
