@@ -86,7 +86,7 @@ Variant::Variant(
         if (m->MapType() == Map::VARIANT)
         {
             // this is a special Map with context & value
-            std::string contextName = m->GetValue("context").getString();
+            std::string contextName = m->GetValue("context").getString(true);
             Value value = m->GetValue("value");
 
             m_context = InputContext::Find(contextName);
@@ -122,7 +122,9 @@ MapConstSP Variant::ToMap() const
 {
     MapSP m(new Map(Map::VARIANT));
 
-    m->SetValue("context", GetContext());
+    const char* context = GetContext();
+    if (context && *context)
+        m->SetValue("context", context);
 
     const Value value = GetValue();
     if (!value.isUndefined())

@@ -78,13 +78,13 @@ public:
     /**
      * Translation between Variant and Map for serialization. Inverse of ToMap method.
      * 
-     * Should only be used when the Map is of type Map::VARIANT - otherwise throws exception.
+     * Should only be used when the Map has className "Variant"
      */
     Variant(const MapConstSP& m);
 
     /**
      * We use this to serialize a Variant which has a context to a two-element
-     * Map with context and value.
+     * Map with context and value and className "Variant"
      *
      * Inverse of Variant(const MapConstSP&) constructor.
      */
