@@ -12,17 +12,19 @@ def command_line(compiler, toolsVersion, platformToolset):
     import sys
     import getopt
 
-    opts,args = getopt.getopt(sys.argv[1:], "x:s:c:t:b:I:",
+    opts,args = getopt.getopt(sys.argv[1:], "x:s:c:t:b:I:f:",
                               ["compiler="])
     configPatterns  = ["*.cfg"]
     servicePatterns = ["*.svc"]
     extraSourceDirs = []
+    configFilters = []
     kwargs = {}
     includePath = []
     for opt in opts:
         if opt[0] == "-c": configPatterns.append(opt[1])
         elif opt[0] == "-s": servicePatterns.append(opt[1])
         elif opt[0] == "-x": extraSourceDirs.append(opt[1])
+        elif opt[0] == "-f": configFilters.append(opt[1])
         elif opt[0] == "-t": kwargs["makefileTarget"] = opt[1]
         elif opt[0] == "-b": kwargs["bin"] = opt[1]
         elif opt[0] == "-I": includePath.append(opt[1])
@@ -40,7 +42,8 @@ def command_line(compiler, toolsVersion, platformToolset):
     projectFileVersion = "UNKNOWN"
 
     make_proj(fileName, name, target, srcDir, configPatterns, servicePatterns,
-               includePath, compiler, toolsVersion, platformToolset, projectFileVersion, extraSourceDirs,
+               includePath, compiler, toolsVersion, platformToolset, projectFileVersion,
+               extraSourceDirs, configFilters,
                **kwargs)
 
 
@@ -85,15 +88,96 @@ def _get_property_groups(platforms, target, makefileTarget, cleanTarget, bin,
                         vsIncludePath, systemIncludes))
     return "\n".join(lines)
 
+def write_filters(filename, filters, toolsVersion, guids):
+    ffn = filename + ".filters"
+    nbFiles = 0
+    for groupName,filterName,files in filters: nbFiles += len(files)
+    if nbFiles == 0 and os.path.isfile(ffn):
+        print("removing %s" % ffn)
+        os.remove(ffn)
+        return
+    
+    try:
+        fp = open(ffn)
+        oldContents = fp.read()
+        fp.close()
+    except: oldContents = ""
+
+    oldLines = oldContents.split("\n")
+    state = None
+    uids = {}
+    for line in oldLines:
+        line = line.strip()
+        if line.startswith("<Filter Include="):
+            state = line.split('"')[1]
+        elif line.startswith("</Filter>"):
+            state = None
+        elif line.startswith("<UniqueIdentifier>") and state is not None:
+            uid = line.split("{")[1].split("}")[0]
+            uids[state] = uid
+
+    newLines = []
+    newLines.append('<?xml version="1.0" encoding="utf-8"?>')
+    newLines.append('<Project ToolsVersion="%s" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">' % toolsVersion)
+
+    started = False
+    for groupName,filterName,files in filters:
+        if len(files) == 0: continue
+        if filterName is None: continue
+        uid = guids[filterName]
+        if not started:
+            newLines.append('  <ItemGroup>')
+            started = True
+        newLines.append('    <Filter Include="%s">' % filterName)
+        newLines.append('      <UniqueIdentifier>{%s}</UniqueIdentifier>' % uid)
+        newLines.append('    </Filter>')
+    if started: newLines.append('  </ItemGroup>')
+
+    for groupName,filterName,files in filters:
+        if len(files) == 0: continue
+        newLines.append('  <ItemGroup>')
+        if filterName is None:
+            for fn in files:
+                newLines.append('    <%s Include="%s" />' % (groupName, fn))
+        else:
+            for fn in files:
+                newLines.append('    <%s Include="%s">' % (groupName,fn))
+                newLines.append('      <Filter>%s</Filter>' % filterName)
+                newLines.append('    </%s>' % groupName)
+        newLines.append('  </ItemGroup>')
+    newLines.append('</Project>')
+    newContents = "\n".join(newLines)
+
+    if oldContents != newContents:
+        print(ffn)
+        fp = open(ffn, "w")
+        fp.write(newContents)
+        fp.close()
+        if len(oldContents):
+            print(ffn + ".bak")
+            fp = open(ffn + ".bak", "w")
+            fp.write(oldContents)
+            fp.close()
+    elif os.path.isfile(ffn + ".bak"):
+        print("removing", (ffn + ".bak"))
+        os.remove(ffn + ".bak")
+
 def make_proj(fileName, name, target, srcDir,
              configPatterns, servicePatterns,
              includePath,
              compiler,
              toolsVersion, platformToolset, projectFileVersion,
              extraSourceDirs,
+             configFilters,
              makefileTarget="target", bin=r"C:\cygwin\bin"):
 
     guids = guidUtils.read_and_write_guids(fileName, ["Project"])
+    allConfigFilters = ["Config Files"]
+    for cf in configFilters:
+        allConfigFilters.append("Config Files\%s" % cf)
+    guids.update(guidUtils.read_and_write_guids(
+        fileName + ".filters", allConfigFilters,
+        gfn = guidUtils.guid_file_name(fileName)))
 
     configFiles  = []
     serviceFiles = []
@@ -146,6 +230,38 @@ def make_proj(fileName, name, target, srcDir,
         fp = open(fileName, "w")
         fp.write(contents)
         fp.close()
+        if len(oldcontents):
+            print(fileName + ".bak")
+            fp = open(fileName + ".bak", "w")
+            fp.write(oldcontents)
+            fp.close()
+    elif os.path.isfile(fileName + ".bak"):
+        print("removing", (fileName + ".bak"))
+        os.remove(fileName + ".bak")         
+    
+    splitConfigFiles = {"": []}
+    for cf in configFilters:
+        splitConfigFiles[cf] = []
+    
+    for ffn in configFiles:
+        for cf in configFilters:
+            scf = "\\%s\\" % cf
+            if scf in ffn:
+                splitConfigFiles[cf].append(ffn)
+                break
+        else:
+            splitConfigFiles[""].append(ffn)
+
+    filters = [("ClCompile", None, serviceFiles)]
+    for cf in splitConfigFiles:
+        fns = splitConfigFiles[cf]
+        if len(fns):
+            nm = "Config Files"
+            if len(cf):
+                nm += "\\%s" % cf
+            filters.append(("ClInclude", nm, fns))
+            
+    write_filters(fileName, filters, toolsVersion, guids)
 
 _template = """\
 <?xml version="1.0" encoding="utf-8"?>

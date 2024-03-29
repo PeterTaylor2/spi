@@ -154,6 +154,15 @@ def write_filters(filename, filters, toolsVersion, guids):
         fp = open(ffn, "w")
         fp.write(newContents)
         fp.close()
+        if len(oldContents):
+            print(ffn + ".bak")
+            fp = open(ffn + ".bak", "w")
+            fp.write(oldContents)
+            fp.close()
+    elif os.path.isfile(ffn + ".bak"):
+        print("removing", (ffn + ".bak"))
+        os.remove(ffn + ".bak")
+
 
 def _get_header_files(headerPatterns, incDir, srcDir, extraHeaderDirs):
     headerFiles = []

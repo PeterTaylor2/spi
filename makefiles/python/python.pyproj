@@ -19,9 +19,10 @@
     <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="copyFiles.py" />
     <Compile Include="copyManifest.py" />
+    <Compile Include="copyRedist.py" />
     <Compile Include="copyVcxproj.py" />
-    <Compile Include="exe2txt.py" />
     <Compile Include="exports2def.py" />
     <Compile Include="guidUtils.py" />
     <Compile Include="installExcel.py" />
@@ -31,6 +32,9 @@
     <Compile Include="makeVcproj16.py" />
     <Compile Include="makeVcproj16Config.py" />
     <Compile Include="makeVcproj16Test.py" />
+    <Compile Include="makeVcproj17.py" />
+    <Compile Include="makeVcproj17Config.py" />
+    <Compile Include="makeVcproj17Test.py" />
     <Compile Include="mergeXML.py" />
     <Compile Include="installPython.py" />
     <Compile Include="makeCopyDebugScript.py" />
@@ -40,6 +44,8 @@
     <Compile Include="makeVcxprojConfig.py" />
     <Compile Include="makeVcxprojTest.py" />
     <Compile Include="rstrip.py" />
+    <Compile Include="translateVS.py" />
+    <Compile Include="updateCsproj.py" />
     <Compile Include="vstools.py" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
