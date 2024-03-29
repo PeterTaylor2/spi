@@ -274,7 +274,8 @@ public:
 
     std::vector<Variant> GetVariantVector(
         const char* name,
-        ValueToObject& mapToObject);
+        ValueToObject& mapToObject,
+        bool optional);
 
     std::vector<ObjectConstSP> GetObjectVector(
         const char* name,
@@ -308,7 +309,8 @@ public:
 
     spi::MatrixData<Variant> GetVariantMatrix(
         const char* name,
-        ValueToObject& mapToObject);
+        ValueToObject& mapToObject,
+        bool optional);
 
     bool Exists(const char* name);
 

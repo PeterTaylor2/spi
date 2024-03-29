@@ -317,7 +317,8 @@ public:
 
     virtual std::vector<Variant> GetVariantVector(
         const char* name,
-        ValueToObject& mapToObject) = 0;
+        ValueToObject& mapToObject,
+        bool optional = false) = 0;
 
     virtual std::vector<ObjectConstSP> GetObjectVector(
         const char* name,
@@ -401,7 +402,8 @@ public:
 
     virtual spi::MatrixData<Variant> GetVariantMatrix(
         const char* name,
-        ValueToObject& mapToObject) = 0;
+        ValueToObject& mapToObject,
+        bool optional = false) = 0;
 
     virtual bool Exists(const char* name) = 0;
 

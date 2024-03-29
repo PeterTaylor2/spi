@@ -624,7 +624,8 @@ std::vector<ObjectConstSP> ObjectMap::GetObjectVector(
 
 std::vector<Variant> ObjectMap::GetVariantVector(
     const char* name,
-    ValueToObject& mapToObject)
+    ValueToObject& mapToObject,
+    bool optional)
 {
     Value value = m_constMap->GetValue(name);
     if (value.isUndefined())
@@ -638,6 +639,8 @@ std::vector<Variant> ObjectMap::GetVariantVector(
     for (size_t i = 0; i < size; ++i)
     {
         Value item = valueArray->getItem(i);
+        if (item.isUndefined() && !optional)
+            SPI_THROW_RUNTIME_ERROR("Value must be defined for element [" << i << "]");
         output.push_back(Variant(item, mapToObject));
     }
     return output;
@@ -720,7 +723,8 @@ MapSP ObjectMap::ExportMap()
 
 spi::MatrixData<Variant> ObjectMap::GetVariantMatrix(
     const char* name,
-    ValueToObject& mapToObject)
+    ValueToObject& mapToObject,
+    bool optional)
 {
     const MatrixData<Value>& tmp = MapGetMatrix<Value>(
         m_constMap, name);
@@ -737,6 +741,10 @@ spi::MatrixData<Variant> ObjectMap::GetVariantMatrix(
         for (size_t j = 0; j < nc; ++j)
         {
             const Value& item = tmp[i][j];
+            if (item.isUndefined() && !optional)
+                SPI_THROW_RUNTIME_ERROR("Value must be defined for element [" << i << " , "
+                    << j << "]");
+
             output[i][j] = Variant(item, mapToObject);
         }
     }

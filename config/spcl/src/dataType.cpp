@@ -799,6 +799,7 @@ std::string DataType::fromMapCode(
             case spdoc::PublicType::CLASS:
             case spdoc::PublicType::MAP:
             case spdoc::PublicType::OBJECT:
+            case spdoc::PublicType::VARIANT:
                 oss << ", true";
                 break;
             default:
