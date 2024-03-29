@@ -419,9 +419,10 @@ std::vector<DateTime> InputContext::ValueToDateTimeVector(
 }
 
 std::vector<Variant> InputContext::ValueToVariantVector(
-    const Value& value) const
+    const Value& value,
+    bool optional) const
 {
-    return ValueToVectorOfType(value, this, ConvertValue<Variant>());
+    return ValueToVectorOfType(value, this, ConvertValue<Variant>(optional));
 }
 
 std::vector<ObjectConstSP> InputContext::ValueToObjectVector(

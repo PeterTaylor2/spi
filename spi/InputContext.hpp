@@ -161,7 +161,8 @@ public:
         const Value& value,
         ObjectType* objectType=0,
         bool optional=false) const;
-    std::vector<Variant> ValueToVariantVector(const Value& value) const;
+    std::vector<Variant> ValueToVariantVector(const Value& value,
+        bool optional=false) const;
 
     template<class T>
     std::vector< typename T::outer_type >
