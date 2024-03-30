@@ -169,6 +169,10 @@ private:
 
     Value               m_value;
     const InputContext* m_context;
+
+    // common code for two of the constructors
+    // returns true if the function did something
+    bool SetFromMap(const MapConstSP& m, bool noThrow);
 };
 
 template<typename T>

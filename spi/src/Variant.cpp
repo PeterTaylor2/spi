@@ -83,17 +83,8 @@ Variant::Variant(
     if (vt == Value::MAP)
     {
         MapConstSP m = value.getMap();
-        if (m->MapType() == Map::VARIANT)
-        {
-            // this is a special Map with context & value
-            std::string contextName = m->GetValue("context").getString(true);
-            Value value = m->GetValue("value");
-
-            m_context = InputContext::Find(contextName);
-            m_value.swap(value);
-
+        if (SetFromMap(m, true))
             return;
-        }
     }
 
     // resolves object maps and object references
@@ -138,21 +129,7 @@ Variant::Variant(const MapConstSP& m)
 m_value(),
 m_context(0)
 {
-    SPI_PRE_CONDITION(m);
-
-    Map::Type mapType = m->MapType();
-    if (mapType == Map::VARIANT)
-    {
-        std::string contextName = m->GetValue("context").getString();
-        Value value = m->GetValue("value");
-
-        m_context = InputContext::Find(contextName);
-        m_value.swap(value);
-    }
-    else
-    {
-        SPI_THROW_RUNTIME_ERROR("Variant(const MapConstSP&) should only be used for Maps of type VARIANT");
-    }
+    SetFromMap(m, false);
 }
 
 Value::Type Variant::ValueType() const
@@ -389,6 +366,29 @@ Value Variant::VectorToValue(const std::vector<spi::Variant>& in)
 Value Variant::MatrixToValue(const spi::MatrixData<Variant>& in)
 {
     return Value(in.ToArray());
+}
+
+bool Variant::SetFromMap(const MapConstSP& m, bool noThrow)
+{
+    SPI_PRE_CONDITION(m);
+
+    Map::Type mapType = m->MapType();
+
+    if (mapType == Map::VARIANT)
+    {
+        std::string contextName = m->GetValue("context").getString(true);
+        Value value = m->GetValue("value");
+
+        m_context = InputContext::Find(contextName);
+        m_value.swap(value);
+
+        return true;
+    }
+
+    if (noThrow)
+        return false; // didn't do anything
+
+    SPI_THROW_RUNTIME_ERROR("Should only be used for Maps of type VARIANT");
 }
 
 SPI_END_NAMESPACE
