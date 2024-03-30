@@ -438,77 +438,49 @@ MatrixData<bool> InputContext::ValueToBoolMatrix(
     const Value& value,
     bool optional) const
 {
-    // FIXME: optional should apply to elements not Matrix
-    if (!optional && value.isUndefined())
-        throw RuntimeError("Undefined Matrix is not optional");
-
-    return ValueToMatrixOfType(value, this, ConvertValue<bool>());
+    return ValueToMatrixOfType(value, this, ConvertValue<bool>(optional));
 }
 
 MatrixData<int> InputContext::ValueToIntMatrix(
     const Value& value,
     bool optional) const
 {
-    // FIXME: optional should apply to elements not Matrix
-    if (!optional && value.isUndefined())
-        throw RuntimeError("Undefined Matrix is not optional");
-
-    return ValueToMatrixOfType(value, this, ConvertValue<int>());
+    return ValueToMatrixOfType(value, this, ConvertValue<int>(optional));
 }
 
 MatrixData<double> InputContext::ValueToDoubleMatrix(
     const Value& value,
     bool optional) const
 {
-    // FIXME: optional should apply to elements not Matrix
-    if (!optional && value.isUndefined())
-        throw RuntimeError("Undefined Matrix is not optional");
-
-    return ValueToMatrixOfType(value, this, ConvertValue<double>());
+    return ValueToMatrixOfType(value, this, ConvertValue<double>(optional));
 }
 
 MatrixData<std::string> InputContext::ValueToStringMatrix(
     const Value& value,
     bool optional) const
 {
-    // FIXME: optional should apply to elements not Matrix
-    if (!optional && value.isUndefined())
-        throw RuntimeError("Undefined Matrix is not optional");
-
-    return ValueToMatrixOfType(value, this, ConvertValue<std::string>());
+    return ValueToMatrixOfType(value, this, ConvertValue<std::string>(optional));
 }
 
 MatrixData<Date> InputContext::ValueToDateMatrix(
     const Value& value,
     bool optional) const
 {
-    // FIXME: optional should apply to elements not Matrix
-    if (!optional && value.isUndefined())
-        throw RuntimeError("Undefined Matrix is not optional");
-
-    return ValueToMatrixOfType(value, this, ConvertValue<Date>());
+    return ValueToMatrixOfType(value, this, ConvertValue<Date>(optional));
 }
 
 MatrixData<DateTime> InputContext::ValueToDateTimeMatrix(
     const Value& value,
     bool optional) const
 {
-    // FIXME: optional should apply to elements not Matrix
-    if (!optional && value.isUndefined())
-        throw RuntimeError("Undefined Matrix is not optional");
-
-    return ValueToMatrixOfType(value, this, ConvertValue<DateTime>());
+    return ValueToMatrixOfType(value, this, ConvertValue<DateTime>(optional));
 }
 
 MatrixData<Variant> InputContext::ValueToVariantMatrix(
     const Value& value,
     bool optional) const
 {
-    // FIXME: optional should apply to elements not Matrix
-    if (!optional && value.isUndefined())
-        throw RuntimeError("Undefined Matrix is not optional");
-
-    return ValueToMatrixOfType(value, this, ConvertValue<Variant>());
+    return ValueToMatrixOfType(value, this, ConvertValue<Variant>(optional));
 }
 
 MatrixData<ObjectConstSP> InputContext::ValueToObjectMatrix(
