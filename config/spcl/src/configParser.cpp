@@ -998,7 +998,7 @@ FunctionConstSP parseFunction(
             funcDescription,
             returnTypeDescription,
             returnType,
-            0,
+            returnArrayDim,
             methodFunction,
             module->moduleNamespace(),
             methodArgs,
