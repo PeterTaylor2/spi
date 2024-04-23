@@ -42,7 +42,7 @@ const char* copyright = "Copyright (C) 2012-2023 Sartorial Programming Ltd.";
 
 static void print_usage(std::ostream& ostr, const std::string& exe, const char* longOptions)
 {
-    ostr << "USAGE: " << exe << " [-w] [-t] [-i <import>] [longOptions] <infile> <outfile> <dirname>\n"
+    ostr << "USAGE: " << exe << " [-w] [-t] [-i <import>] [-s <satellite>] [longOptions] <infile> <outfile> <dirname>\n"
         << "\n"
         << "where longOptions can be as follows:\n\t--"
         << spi_util::StringReplace(longOptions, " ", "\n\t--") << std::endl;
@@ -135,7 +135,7 @@ int main(int argc, char* argv[])
     const char* longOptions = "noGeneratedCodeNotice license licenseFile= backup";
     try
     {
-        spi_util::CommandLine commandLine(argc, argv, "wvi=", longOptions);
+        spi_util::CommandLine commandLine(argc, argv, "wvi=s=", longOptions);
         exe = spi_util::path::basename(commandLine.exeName);
 
         std::string opt;
@@ -153,6 +153,10 @@ int main(int argc, char* argv[])
             else if (opt == "-i")
             {
                 options.imports.push_back(val);
+            }
+            else if (opt == "-s")
+            {
+                options.satellites.push_back(val);
             }
             else if (opt == "--noGeneratedCodeNotice")
             {

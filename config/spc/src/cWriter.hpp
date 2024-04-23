@@ -49,13 +49,15 @@ struct Options
         noGeneratedCodeNotice(false),
         imports(),
         license(),
-        writeBackup()
+        writeBackup(),
+        satellites()
     {}
 
     bool noGeneratedCodeNotice;
     std::vector<std::string> imports;
     std::string license;
     bool writeBackup;
+    std::vector<std::string> satellites;
 };
 
 /**

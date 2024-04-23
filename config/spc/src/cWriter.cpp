@@ -297,8 +297,14 @@ std::string CService::writeSourceFile(const std::string& dirname) const
     ostr << "\n"
         << "#include \"c_dll_" << m_service->name << ".h\"\n"
         << "\n"
-        << "#include \"" << m_service->name << "_dll_service.hpp\"\n"
-        << "\n"
+        << "#include \"" << m_service->name << "_dll_service.hpp\"\n";
+
+    for (size_t i = 0; i < m_options.satellites.size(); ++i)
+    {
+        ostr << "#include \"" << m_options.satellites[i] << "_dll_service.hpp\"\n";
+    }
+
+    ostr << "\n"
         // FIXME: we may need to have a way of deleting this on demand
         << "static spi::ServiceSP g_service;\n";
 
@@ -308,8 +314,14 @@ std::string CService::writeSourceFile(const std::string& dirname) const
         << "    try\n"
         << "    {\n"
         << "        g_service = " << m_service->ns
-        << "::" << m_service->name << "_exported_service();\n"
-        << "    }\n"
+        << "::" << m_service->name << "_start_service();\n";
+
+    for (size_t i = 0; i < m_options.satellites.size(); ++i)
+    {
+        ostr << "        " << m_service->ns << "::" << m_options.satellites[i] << "_start_service();\n";
+    }
+
+    ostr << "    }\n"
         << "    catch (std::exception& e)\n"
         << "    {\n"
         << "        spi_Error_set_function(__FUNCTION__, e.what());\n"
