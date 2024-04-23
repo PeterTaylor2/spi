@@ -165,7 +165,13 @@ int spi_Variant_DateTime(spi_Variant * var, spi_DateTime * dt)
 {
     try
     {
-        SPI_NOT_IMPLEMENTED;
+        if (!var || !dt)
+        {
+            spi_Error_set_function(__FUNCTION__, "NULL inputs");
+            return -1;
+        }
+        *dt = ((spi::Variant*)var)->ToDateTime();
+        return 0;
     }
     catch (std::exception& e)
     {
@@ -222,6 +228,26 @@ int spi_Variant_Int(spi_Variant * var, int * i)
             return -1;
         }
         *i = ((spi::Variant*)var)->ToInt();
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
+}
+
+int spi_Variant_Object(spi_Variant* var, spi_Object** obj)
+{
+    try
+    {
+        if (!var || !obj)
+        {
+            spi_Error_set_function(__FUNCTION__, "NULL inputs");
+            return -1;
+        }
+        spi::ObjectConstSP o = ((spi::Variant*)var)->ToConstObject();
+        *obj = spi::convert_out<spi_Object>(o);
         return 0;
     }
     catch (std::exception& e)
@@ -342,6 +368,26 @@ int spi_Variant_Int_Vector(spi_Variant* var, spi_Int_Vector** i)
         }
         *i = (spi_Int_Vector*)(new std::vector<int>(
             ((spi::Variant*)var)->ToIntVector()));
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
+}
+
+int spi_Variant_Object_Vector(spi_Variant* var, spi_Object_Vector** obj)
+{
+    try
+    {
+        if (!var || !obj)
+        {
+            spi_Error_set_function(__FUNCTION__, "NULL inputs");
+            return -1;
+        }
+        const std::vector<spi::ObjectConstSP>& vec = ((spi::Variant*)var)->ToConstObjectVector();
+        *obj = (spi_Object_Vector*)(new std::vector<spi::ObjectConstSP>(vec));
         return 0;
     }
     catch (std::exception& e)

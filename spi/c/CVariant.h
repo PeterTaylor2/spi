@@ -103,6 +103,11 @@ extern "C"
         int* i);
 
     SPI_C_IMPORT
+    int spi_Variant_Object(
+        spi_Variant* var,
+        spi_Object** obj);
+
+    SPI_C_IMPORT
     int spi_Variant_String_Vector(
         spi_Variant* var,
         spi_String_Vector** str);
@@ -131,6 +136,11 @@ extern "C"
     int spi_Variant_Int_Vector(
         spi_Variant* var,
         spi_Int_Vector** i);
+
+    SPI_C_IMPORT
+    int spi_Variant_Object_Vector(
+        spi_Variant* var,
+        spi_Object_Vector** obj);
 
     SPI_C_IMPORT
     void spi_Variant_Vector_delete(spi_Variant_Vector* v);

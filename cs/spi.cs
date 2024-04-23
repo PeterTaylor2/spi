@@ -225,6 +225,11 @@ namespace SPI
             out int i);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int spi_Variant_Object(
+            IntPtr var,
+            out IntPtr obj);
+
+        [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern int spi_Variant_String_Vector(
             IntPtr var,
             out IntPtr str);
@@ -253,6 +258,12 @@ namespace SPI
         private static extern int spi_Variant_Int_Vector(
             IntPtr var,
             out IntPtr i);
+
+        [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int spi_Variant_Object_Vector(
+            IntPtr var,
+            out IntPtr obj);
+
 
         /* vector functions */
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
@@ -1407,8 +1418,7 @@ namespace SPI
 
             public Variant(System.DateTime dt)
             {
-                // FIXME: why Date and not DateTime?
-                self = spi_Variant_new_Date(DateToCDate(dt));
+                self = spi_Variant_new_DateTime(DateTimeToCDateTime(dt));
                 if (self == IntPtr.Zero)
                     throw ErrorToException();
             }
@@ -1469,11 +1479,10 @@ namespace SPI
 
             static public implicit operator System.DateTime(Variant var)
             {
-                // FIXME: why Date and not DateTime
-                if (spi_Variant_Date(var.self, out int dt) != 0)
+                if (spi_Variant_DateTime(var.self, out double dt) != 0)
                     throw ErrorToException();
 
-                return DateFromCDate(dt);
+                return DateTimeFromCDateTime(dt);
             }
 
             static public implicit operator System.String(Variant var)
@@ -1508,6 +1517,14 @@ namespace SPI
                 return b;
             }
 
+            static public implicit operator spi.Object(Variant var)
+            {
+                if (spi_Variant_Object(var.self, out IntPtr o) != 0)
+                    throw ErrorToException();
+
+                return spi.Object.Wrap(o);
+            }
+
             static public implicit operator System.DateTime[](Variant var)
             {
                 if (spi_Variant_DateTime_Vector(var.self, out IntPtr dt) != 0)
@@ -1519,25 +1536,48 @@ namespace SPI
 
             static public implicit operator System.String[](Variant var)
             {
-                throw new System.Exception("Not implemented");
+                if (spi_Variant_String_Vector(var.self, out IntPtr dt) != 0)
+                    throw ErrorToException();
+
+                PointerHandle h = spi.StringVectorToHandle(dt);
+                return spi.StringVectorToArray(h);
             }
 
             static public implicit operator double[](Variant var)
             {
-                throw new System.Exception("Not implemented");
+                if (spi_Variant_Double_Vector(var.self, out IntPtr dt) != 0)
+                    throw ErrorToException();
+
+                PointerHandle h = spi.DoubleVectorToHandle(dt);
+                return spi.DoubleVectorToArray(h);
             }
 
             static public implicit operator int[](Variant var)
             {
-                throw new System.Exception("Not implemented");
+                if (spi_Variant_Int_Vector(var.self, out IntPtr dt) != 0)
+                    throw ErrorToException();
+
+                PointerHandle h = spi.IntVectorToHandle(dt);
+                return spi.IntVectorToArray(h);
             }
 
             static public implicit operator bool[](Variant var)
             {
-                throw new System.Exception("Not implemented");
+                if (spi_Variant_Bool_Vector(var.self, out IntPtr dt) != 0)
+                    throw ErrorToException();
+
+                PointerHandle h = spi.BoolVectorToHandle(dt);
+                return spi.BoolVectorToArray(h);
             }
 
-            // Array functions not provided yet
+            static public implicit operator Object[](Variant var)
+            {
+                if (spi_Variant_Object_Vector(var.self, out IntPtr dt) != 0)
+                    throw ErrorToException();
+
+                PointerHandle h = spi.ObjectVectorToHandle(dt);
+                return spi.ObjectVectorToArray(h);
+            }
 
             // note that self = spi::Variant*
             private IntPtr self = IntPtr.Zero;
