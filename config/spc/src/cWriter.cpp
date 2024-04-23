@@ -2063,7 +2063,7 @@ std::string CDataType::c_to_cpp(int arrayDim, const std::string& name) const
                 cppName().c_str(), name.c_str());
         }
         case spdoc::PublicType::OBJECT:
-            return spi_util::StringFormat("*(spi::ObjectConstSP*)(%s)", name.c_str());
+            return spi_util::StringFormat("spi::ObjectConstSP((spi::Object*)(%s))", name.c_str());
         case spdoc::PublicType::MAP:
             return spi_util::StringFormat("spi::MapObjectSP((spi::MapObject*)(%s))",
                 name.c_str());
