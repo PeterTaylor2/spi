@@ -222,6 +222,24 @@ std::string StringLower(const std::string& in)
     return CStringLower(in.c_str());
 }
 
+std::string StringClean(const std::string& in, char replacement)
+{
+    size_t N = in.length();
+    std::ostringstream oss;
+
+    for (size_t i = 0; i < N; ++i)
+    {
+        char c = in[i];
+        if (!c)
+            break;
+        if (isprint(c) || iscntrl(c))
+            oss << c;
+        else
+            oss << replacement;
+    }
+    return oss.str();
+}
+
 /**
  * Converts the first character of a string to upper case.
  */

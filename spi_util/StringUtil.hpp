@@ -129,6 +129,12 @@ SPI_UTIL_IMPORT
 std::string StringLower(const std::string& in);
 
 /**
+ * Removes unprintable characters from a string.
+ */
+SPI_UTIL_IMPORT
+std::string StringClean(const std::string& in, char replacement);
+
+/**
  * Converts a string so that its first character is in upper case and
  * the rest is unchanged.
  */
