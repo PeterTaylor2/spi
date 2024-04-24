@@ -319,7 +319,7 @@ namespace SPI
 
         public static PointerHandle IntVectorFromArray(int[] array)
         {
-            int size = array.Length;
+            int size = array is null ? 0 : array.Length;
             IntPtr v = spi_Int_Vector_new(size);
             if (v == IntPtr.Zero)
             {
@@ -391,7 +391,7 @@ namespace SPI
 
         public static PointerHandle DoubleVectorFromArray(double[] array)
         {
-            int size = array.Length;
+            int size = array is null ? 0 : array.Length;
             IntPtr v = spi_Double_Vector_new(size);
             if (v == IntPtr.Zero)
             {
@@ -463,7 +463,7 @@ namespace SPI
 
         public static PointerHandle BoolVectorFromArray(bool[] array)
         {
-            int size = array.Length;
+            int size = array is null ? 0 : array.Length;
             IntPtr v = spi_Bool_Vector_new(size);
             if (v == IntPtr.Zero)
             {
@@ -537,7 +537,7 @@ namespace SPI
 
         public static PointerHandle DateVectorFromArray(System.DateTime[] array)
         {
-            int size = array.Length;
+            int size = array is null ? 0 : array.Length;
             IntPtr v = spi_Date_Vector_new(size);
             if (v == IntPtr.Zero)
             {
@@ -612,7 +612,7 @@ namespace SPI
 
         public static PointerHandle DateTimeVectorFromArray(System.DateTime[] array)
         {
-            int size = array.Length;
+            int size = array is null ? 0 : array.Length;
             IntPtr v = spi_DateTime_Vector_new(size);
             if (v == IntPtr.Zero)
             {
@@ -685,7 +685,7 @@ namespace SPI
 
         public static PointerHandle StringVectorFromArray(string[] array)
         {
-            int size = array.Length;
+            int size = array is null ? 0 : array.Length;
             IntPtr v = spi_String_Vector_new(size);
             if (v == IntPtr.Zero)
             {
@@ -867,8 +867,8 @@ namespace SPI
 
         public static PointerHandle IntMatrixFromArray(int[,] array)
         {
-            int nr = array.GetLength(0);
-            int nc = array.GetLength(1);
+            int nr = array is null ? 0 : array.GetLength(0);
+            int nc = array is null ? 0 : array.GetLength(1);
 
             IntPtr m = spi_Int_Matrix_new(nr, nc);
             if (m == IntPtr.Zero)
@@ -947,8 +947,8 @@ namespace SPI
 
         public static PointerHandle DoubleMatrixFromArray(double[,] array)
         {
-            int nr = array.GetLength(0);
-            int nc = array.GetLength(1);
+            int nr = array is null ? 0 : array.GetLength(0);
+            int nc = array is null ? 0 : array.GetLength(1);
 
             IntPtr m = spi_Double_Matrix_new(nr, nc);
             if (m == IntPtr.Zero)
@@ -1028,8 +1028,8 @@ namespace SPI
 
         public static PointerHandle BoolMatrixFromArray(bool[,] array)
         {
-            int nr = array.GetLength(0);
-            int nc = array.GetLength(1);
+            int nr = array is null ? 0 : array.GetLength(0);
+            int nc = array is null ? 0 : array.GetLength(1);
 
             IntPtr m = spi_Bool_Matrix_new(nr, nc);
             if (m == IntPtr.Zero)
@@ -1110,8 +1110,8 @@ namespace SPI
 
         public static PointerHandle DateMatrixFromArray(System.DateTime[,] array)
         {
-            int nr = array.GetLength(0);
-            int nc = array.GetLength(1);
+            int nr = array is null ? 0 : array.GetLength(0);
+            int nc = array is null ? 0 : array.GetLength(1);
 
             IntPtr m = spi_Date_Matrix_new(nr, nc);
             if (m == IntPtr.Zero)
@@ -1191,8 +1191,8 @@ namespace SPI
 
         public static PointerHandle DateTimeMatrixFromArray(System.DateTime[,] array)
         {
-            int nr = array.GetLength(0);
-            int nc = array.GetLength(1);
+            int nr = array is null ? 0 : array.GetLength(0);
+            int nc = array is null ? 0 : array.GetLength(1);
 
             IntPtr m = spi_DateTime_Matrix_new(nr, nc);
             if (m == IntPtr.Zero)
@@ -1271,8 +1271,8 @@ namespace SPI
 
         public static PointerHandle StringMatrixFromArray(string[,] array)
         {
-            int nr = array.GetLength(0);
-            int nc = array.GetLength(1);
+            int nr = array is null ? 0 : array.GetLength(0);
+            int nc = array is null ? 0 : array.GetLength(1);
 
             IntPtr m = spi_String_Matrix_new(nr, nc);
             if (m == IntPtr.Zero)
@@ -1613,7 +1613,7 @@ namespace SPI
 
         public static PointerHandle VariantVectorFromArray(Variant[] array)
         {
-            int size = array.Length;
+            int size = array is null ? 0 : array.Length;
             IntPtr v = spi_Variant_Vector_new(size);
             if (v == IntPtr.Zero)
             {
@@ -1664,8 +1664,8 @@ namespace SPI
 
         public static PointerHandle VariantMatrixFromArray(Variant[,] array)
         {
-            int nr = array.GetLength(0);
-            int nc = array.GetLength(1);
+            int nr = array is null ? 0 : array.GetLength(0);
+            int nc = array is null ? 0 : array.GetLength(1);
 
             IntPtr v = spi_Variant_Matrix_new(nr,nc);
             if (v == IntPtr.Zero)
@@ -1980,8 +1980,8 @@ namespace SPI
 
         public static PointerHandle ObjectMatrixFromArray(Object[,] array)
         {
-            int nr = array.GetLength(0);
-            int nc = array.GetLength(1);
+            int nr = array is null ? 0 : array.GetLength(0);
+            int nc = array is null ? 0 : array.GetLength(1);
 
             IntPtr v = spi_Object_Matrix_new(nr, nc);
             if (v == IntPtr.Zero)

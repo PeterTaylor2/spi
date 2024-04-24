@@ -129,15 +129,22 @@ void xmlWriteDescription(
 void WriteDefaultValue(
     GeneratedOutput& ostr,
     const spdoc::AttributeConstSP& arg,
-    const spdoc::ServiceConstSP& svc,
-    const std::string& nsGlobal)
+    const CServiceConstSP& service)
 {
-    SPI_PRE_CONDITION(arg->isOptional);
-    SPI_PRE_CONDITION(!arg->isArray());
-    spdoc::ConstantConstSP defaultValue = arg->defaultValue;
+    spdoc::ServiceConstSP svc = service->service();
     spdoc::DataTypeConstSP dataType = arg->dataType;
+    const std::string& nsGlobal = service->nsGlobal();
 
     ostr << " = ";
+
+    if (arg->isArray())
+    {
+        ostr << " null";
+        return;
+    }
+
+    SPI_PRE_CONDITION(arg->isOptional);
+    spdoc::ConstantConstSP defaultValue = arg->defaultValue;
 
     switch (dataType->publicType)
     {
@@ -797,7 +804,7 @@ void CModule::implementFunctionBegin(
     {
         bool isArray = func->inputs[i]->isArray();
         bool isOptional = func->inputs[i]->isOptional;
-        if (isArray || !isOptional)
+        if (!(isArray || isOptional))
             lastMandatory = i + 1;
     }
 
@@ -811,7 +818,7 @@ void CModule::implementFunctionBegin(
 
         if (i >= lastMandatory)
         {
-            WriteDefaultValue(ostr, arg, service->service(), service->nsGlobal());
+            WriteDefaultValue(ostr, arg, service);
         }
 
     }
