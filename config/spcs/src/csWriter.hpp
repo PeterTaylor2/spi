@@ -197,10 +197,9 @@ private:
         size_t indent,
         const std::string& outputClassName) const;
 
-    std::string implementFunctionOutputClass(
+    std::string defineValueTupleOutput(
         GeneratedOutput& ostr,
-        const spdoc::Function* func,
-        size_t indent) const;
+        const spdoc::Function* func) const;
 
     void implementPlatformInvoke(
         GeneratedOutput& ostr,

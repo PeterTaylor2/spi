@@ -765,7 +765,7 @@ void CModule::implementFunction(
     std::string csOutputClass;
     if (!func->returnType)
     {
-        csOutputClass = implementFunctionOutputClass(ostr, func, 0);
+        csOutputClass = defineValueTupleOutput(ostr, func);
         csReturnType = csOutputClass.empty() ? "void" : csOutputClass;
     }
     else
@@ -876,61 +876,37 @@ void CModule::implementFunctionEnd(
             args.push_back(cdt.csi_to_cs(out->arrayDim, out->name));
         }
 
+        // we are returning a value tuple - hence just values within (...)
         ostr << "\n"
-            << spaces << gap << "return new " << outputClassName << "("
+            << spaces << gap << "return ("
             << StringJoin(", ", args) << ");\n";
+
     }
     ostr << spaces << "}\n";
 }
 
-std::string CModule::implementFunctionOutputClass(
+std::string CModule::defineValueTupleOutput(
     GeneratedOutput& ostr,
-    const spdoc::Function* func,
-    size_t indent) const
+    const spdoc::Function* func) const
 {
     if (func->outputs.size() == 0)
         return std::string();
 
     std::ostringstream oss;
-    oss << func->name << "_outputs";
-    std::string outputClassName = oss.str();
 
-    std::string spaces(indent, ' ');
+    oss << "(";
 
-    const char* gap = "    ";
-    ostr << "\n"
-        << spaces << "public struct " << outputClassName << "\n"
-        << spaces << "{\n"
-        << spaces << gap << "public " << outputClassName << "(";
-
-    const char* sep = "\n";
+    const char* gap = "";
     for (size_t i = 0; i < func->outputs.size(); ++i)
     {
         spdoc::AttributeConstSP out = func->outputs[i];
-        ostr << sep << spaces << gap << gap
-            << CDataType(out->dataType, service).csType(out->arrayDim) << " in_" << out->name;
-        sep = ",\n";
+        oss << gap << CDataType(out->dataType, service).csType(out->arrayDim)
+            << " " << service->rename(out->name);
+        gap = ", ";
     }
-    ostr << ")\n"
-        << spaces << gap << "{\n";
+    oss << ")";
 
-    for (size_t i = 0; i < func->outputs.size(); ++i)
-    {
-        spdoc::AttributeConstSP out = func->outputs[i];
-        ostr << spaces << gap << gap << service->rename(out->name) << " = in_" << out->name << ";\n";
-    }
-    ostr << spaces << gap << "}\n\n";
-
-    for (size_t i = 0; i < func->outputs.size(); ++i)
-    {
-        spdoc::AttributeConstSP out = func->outputs[i];
-        ostr << spaces << gap << "public " << CDataType(out->dataType, service).csType(out->arrayDim)
-            << " " << service->rename(out->name) << ";\n";
-    }
-
-    ostr << spaces << "}\n";
-
-    return outputClassName;
+    return oss.str();
 }
 
 void CModule::implementPlatformInvoke(
@@ -1619,7 +1595,7 @@ void CModule::implementClassMethod(
     std::string csOutputClass;
     if (!func->returnType)
     {
-        csOutputClass = implementFunctionOutputClass(ostr, func.get(), 4);
+        csOutputClass = defineValueTupleOutput(ostr, func.get());
         csReturnType = csOutputClass.empty() ? "void" : csOutputClass;
     }
     else
