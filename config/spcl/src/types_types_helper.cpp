@@ -522,18 +522,18 @@ void DataType::to_map(
     if (!public_only)
     {
         obj_map->SetString("name", name);
-        obj_map->SetString("nsService", nsService, !public_only && (nsService == std::string("")));
+        obj_map->SetString("nsService", nsService, !public_only && (nsService.empty()));
         obj_map->SetString("cppName", cppName);
         obj_map->SetString("outerType", outerType);
-        obj_map->SetString("innerType", innerType, !public_only && (innerType == std::string("")));
-        obj_map->SetString("innerRefType", innerRefType, !public_only && (innerRefType == std::string("")));
+        obj_map->SetString("innerType", innerType, !public_only && (innerType.empty()));
+        obj_map->SetString("innerRefType", innerRefType, !public_only && (innerRefType.empty()));
         obj_map->SetString("publicType", publicType);
-        obj_map->SetString("objectName", objectName, !public_only && (objectName == std::string("")));
+        obj_map->SetString("objectName", objectName, !public_only && (objectName.empty()));
         obj_map->SetBool("isClosed", isClosed);
         obj_map->SetBool("noDoc", noDoc);
         obj_map->SetObject("convertIn", convertIn, !public_only && (!convertIn));
-        obj_map->SetString("convertOut", convertOut, !public_only && (convertOut == std::string("")));
-        obj_map->SetString("copyInner", copyInner, !public_only && (copyInner == std::string("")));
+        obj_map->SetString("convertOut", convertOut, !public_only && (convertOut.empty()));
+        obj_map->SetString("copyInner", copyInner, !public_only && (copyInner.empty()));
         obj_map->SetBool("ignored", ignored, !public_only && (ignored == false));
     }
 }
@@ -545,19 +545,19 @@ spi::ObjectConstSP DataType::object_from_map(
     const std::string& name
         = obj_map->GetString("name");
     const std::string& nsService
-        = obj_map->GetString("nsService", true, "");
+        = obj_map->GetString("nsService", true);
     const std::string& cppName
         = obj_map->GetString("cppName");
     const std::string& outerType
         = obj_map->GetString("outerType");
     const std::string& innerType
-        = obj_map->GetString("innerType", true, "");
+        = obj_map->GetString("innerType", true);
     const std::string& innerRefType
-        = obj_map->GetString("innerRefType", true, "");
+        = obj_map->GetString("innerRefType", true);
     PublicType publicType
         = obj_map->GetString("publicType");
     const std::string& objectName
-        = obj_map->GetString("objectName", true, "");
+        = obj_map->GetString("objectName", true);
     bool isClosed
         = obj_map->GetBool("isClosed");
     bool noDoc
@@ -565,9 +565,9 @@ spi::ObjectConstSP DataType::object_from_map(
     const InputConverterConstSP& convertIn
         = obj_map->GetInstance<InputConverter const>("convertIn", value_to_object, true);
     const std::string& convertOut
-        = obj_map->GetString("convertOut", true, "");
+        = obj_map->GetString("convertOut", true);
     const std::string& copyInner
-        = obj_map->GetString("copyInner", true, "");
+        = obj_map->GetString("copyInner", true);
     bool ignored
         = obj_map->GetBool("ignored", true, false);
 
@@ -1261,7 +1261,7 @@ spi::ObjectConstSP BaseStruct::object_from_map(
     bool noMake
         = obj_map->GetBool("noMake");
     const std::string& objectName
-        = obj_map->GetString("objectName", true, "");
+        = obj_map->GetString("objectName", true);
     bool canPut
         = obj_map->GetBool("canPut", true, false);
     bool noId
@@ -1434,7 +1434,7 @@ void InnerClass::to_map(
         obj_map->SetBool("isCached", isCached);
         obj_map->SetBool("isTemplate", isTemplate);
         obj_map->SetBool("byValue", byValue);
-        obj_map->SetString("boolTest", boolTest, !public_only && (boolTest == std::string("")));
+        obj_map->SetString("boolTest", boolTest, !public_only && (boolTest.empty()));
         obj_map->SetBool("allowConst", allowConst, !public_only && (allowConst == false));
     }
 }
@@ -1470,7 +1470,7 @@ spi::ObjectConstSP InnerClass::object_from_map(
     bool byValue
         = obj_map->GetBool("byValue");
     const std::string& boolTest
-        = obj_map->GetString("boolTest", true, "");
+        = obj_map->GetString("boolTest", true);
     bool allowConst
         = obj_map->GetBool("allowConst", true, false);
 
@@ -1661,7 +1661,7 @@ spi::ObjectConstSP BaseWrapperClass::object_from_map(
     bool noMake
         = obj_map->GetBool("noMake");
     const std::string& objectName
-        = obj_map->GetString("objectName", true, "");
+        = obj_map->GetString("objectName", true);
     bool isDelegate
         = obj_map->GetBool("isDelegate");
     bool canPut

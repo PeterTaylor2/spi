@@ -120,7 +120,7 @@ spi::ObjectConstSP DataType::object_from_map(
     bool noDoc
         = obj_map->GetBool("noDoc");
     const std::string& nsService
-        = obj_map->GetString("nsService", true, "");
+        = obj_map->GetString("nsService", true);
     bool objectAsValue
         = obj_map->GetBool("objectAsValue", true, false);
 
@@ -1248,7 +1248,7 @@ void ClassMethod::to_map(
     obj_map->SetBool("isVirtual", isVirtual);
     obj_map->SetBool("isStatic", isStatic);
     obj_map->SetBool("isImplementation", isImplementation);
-    obj_map->SetString("implements", implements, !public_only && (implements == std::string("")));
+    obj_map->SetString("implements", implements, !public_only && (implements.empty()));
 }
 
 spi::ObjectConstSP ClassMethod::object_from_map(
@@ -1266,7 +1266,7 @@ spi::ObjectConstSP ClassMethod::object_from_map(
     bool isImplementation
         = obj_map->GetBool("isImplementation");
     const std::string& implements
-        = obj_map->GetString("implements", true, "");
+        = obj_map->GetString("implements", true);
 
     return new ClassMethod(function, isConst, isVirtual, isStatic,
         isImplementation, implements);
@@ -1653,7 +1653,7 @@ void Class::to_map(
     spi::IObjectMap* obj_map, bool public_only) const
 {
     obj_map->SetString("name", name);
-    obj_map->SetString("ns", ns, !public_only && (ns == std::string("")));
+    obj_map->SetString("ns", ns, !public_only && (ns.empty()));
     obj_map->SetStringVector("description", description);
     obj_map->SetString("baseClassName", baseClassName);
     obj_map->SetInstanceVector<ClassAttribute const>("attributes", attributes);
@@ -1678,7 +1678,7 @@ spi::ObjectConstSP Class::object_from_map(
     const std::string& name
         = obj_map->GetString("name");
     const std::string& ns
-        = obj_map->GetString("ns", true, "");
+        = obj_map->GetString("ns", true);
     const std::vector<std::string>& description
         = obj_map->GetStringVector("description");
     const std::string& baseClassName

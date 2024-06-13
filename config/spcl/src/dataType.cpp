@@ -428,17 +428,20 @@ std::string DataType::toMapCode(
             oss << "Matrix";
         else if (canBeHidden)
         {
-            hideCondition << data << " == ";
             if (valueToHide)
             {
                 std::string code = spi::StringStrip(valueToHide->toCode(m_publicType));
-                if (spi::StringStartsWith(code, "\""))
+                if (code == "std::string()" || code == "\"\"")
                 {
-                    hideCondition << "std::string(" << code << ")";
+                    hideCondition << data << ".empty()";
+                }
+                else if (spi::StringStartsWith(code, "\""))
+                {
+                    hideCondition << data << " == std::string(" << code << ")";
                 }
                 else if (spi::StringStartsWith(code, "std::string"))
                 {
-                    hideCondition << code;
+                    hideCondition << data << " == " << code;
                 }
                 else
                 {
@@ -447,7 +450,7 @@ std::string DataType::toMapCode(
             }
             else
             {
-                hideCondition << "std::string()";
+                SPI_THROW_RUNTIME_ERROR("No valueToHide provided")
             }
         }
         break;
@@ -761,10 +764,16 @@ std::string DataType::fromMapCode(
                 case spdoc::PublicType::CHAR:
                 case spdoc::PublicType::INT:
                 case spdoc::PublicType::DOUBLE:
-                case spdoc::PublicType::STRING:
                 case spdoc::PublicType::ENUM:
                     oss << ", " << defaultValue->toCode(m_publicType);
                     break;
+                case spdoc::PublicType::STRING:
+                {
+                    std::string str = spi_util::StringStrip(defaultValue->toCode(m_publicType));
+                    if (str != "std::string()" && str != "\"\"")
+                        oss << ", " << str;
+                    break;
+                }
                 case spdoc::PublicType::DATE: // FIXME - is this right?
                 case spdoc::PublicType::DATETIME:
                 case spdoc::PublicType::CLASS:
