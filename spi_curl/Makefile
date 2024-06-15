@@ -18,6 +18,7 @@ ifneq ($(G_PLATFORM),win32)
 U_NO_BUILD=1
 else
 U_CFLAGS+=-DWIN32
+U_CFLAGS+=-DUSE_WINDOWS_SSPI -DCMAKE_USE_WINSSL
 endif
 
 # if we wanted to include ZLIB support we could do it as follows:

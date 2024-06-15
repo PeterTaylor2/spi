@@ -200,7 +200,8 @@ void URLReadContentsData(
     bool noProxy,
     int timeout,
     const std::string& post,
-    const std::vector<std::string>& vHeaders)
+    const std::vector<std::string>& vHeaders,
+    bool authenticate)
 {
     SPI_UTIL_PRE_CONDITION(timeout != 0);
 
@@ -246,6 +247,16 @@ void URLReadContentsData(
         errorHandler(curl_easy_setopt(handle, CURLOPT_POSTFIELDSIZE, (long)post.length()));
     }
 
+    if (authenticate)
+    {
+        // Enable HTTP Negotiate (SPNEGO) authentication
+        errorHandler(curl_easy_setopt(handle, CURLOPT_HTTPAUTH, CURLAUTH_NEGOTIATE));
+        // cURL 7 needs an empty username and password for Negotiate authentication to work
+        errorHandler(curl_easy_setopt(handle, CURLOPT_USERNAME, ""));
+        errorHandler(curl_easy_setopt(handle, CURLOPT_PASSWORD, ""));
+    }
+
+
     errorHandler(curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, write_callback));
     errorHandler(curl_easy_setopt(handle, CURLOPT_WRITEDATA, &data));
 
@@ -266,14 +277,15 @@ std::string URLReadContents(
     bool noProxy,
     int timeout,
     const std::string& post,
-    const std::vector<std::string>& headers)
+    const std::vector<std::string>& headers,
+    bool authenticate)
 {
     if (timeout == 0)
         return std::string();
 
     Data data;
 
-    URLReadContentsData(data, url, noProxy, timeout, post, headers);
+    URLReadContentsData(data, url, noProxy, timeout, post, headers, authenticate);
 
     return data.contents();
 }
@@ -283,7 +295,8 @@ URLInfoConstSP URLReadInfo(
     bool noProxy,
     int timeout,
     const std::string& post,
-    const std::vector<std::string>& headers)
+    const std::vector<std::string>& headers,
+    bool authenticate)
 {
     if (timeout == 0)
     {
@@ -293,7 +306,7 @@ URLInfoConstSP URLReadInfo(
 
     Data data;
 
-    URLReadContentsData(data, url, noProxy, timeout, post, headers);
+    URLReadContentsData(data, url, noProxy, timeout, post, headers, authenticate);
 
     return URLInfoConstSP(new URLInfo(data.responseCode, data.contents(), data.headers));
 }
@@ -303,7 +316,8 @@ JSONMapConstSP URLReadContentsJSON(
     bool noProxy,
     int timeout,
     const JSONMapConstSP& jsonPost,
-    const std::vector<std::string>& headers)
+    const std::vector<std::string>& headers,
+    bool authenticate)
 {
     if (timeout == 0)
         return JSONMapConstSP();
@@ -316,7 +330,7 @@ JSONMapConstSP URLReadContentsJSON(
         post = JSONValueToString(JSONValue(jsonPost));
     }
 
-    URLReadContentsData(data, url, noProxy, timeout, post, headers); 
+    URLReadContentsData(data, url, noProxy, timeout, post, headers, authenticate); 
 
     JSONValue jv = JSONParseValue(data.oss);
     return jv.GetMap();

@@ -93,8 +93,8 @@ std::string URLReadContents(
     bool noProxy,
     int timeout,
     const std::string& post = std::string(),
-    const std::vector<std::string>& headers = std::vector<std::string>());
-
+    const std::vector<std::string>& headers = std::vector<std::string>(),
+    bool authenticate = false);
 
 /**
  * Reads the entire contents for the given URL.
@@ -117,8 +117,8 @@ URLInfoConstSP URLReadInfo(
     bool noProxy,
     int timeout,
     const std::string& post = std::string(),
-    const std::vector<std::string>& headers = std::vector<std::string>()
-    );
+    const std::vector<std::string>& headers = std::vector<std::string>(),
+    bool authenticate = false);
 
 /**
  * Reads the entire contents for the given URL.
@@ -140,7 +140,8 @@ JSONMapConstSP URLReadContentsJSON(
     bool noProxy,
     int timeout,
     const JSONMapConstSP& post = JSONMapConstSP(),
-    const std::vector<std::string>& headers = std::vector<std::string>());
+    const std::vector<std::string>& headers = std::vector<std::string>(),
+    bool authenticate = false);
 
 SPI_UTIL_END_NAMESPACE
 
