@@ -37,7 +37,6 @@
 #endif
 
 #include <spi_util/Utils.hpp>
-#include <spi_util/UrlRead.hpp>
 
 #undef SPI_UTIL_CLOCK_EVENTS
 #include <spi_util/ClockUtil.hpp>
