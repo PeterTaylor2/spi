@@ -129,12 +129,9 @@ win64:
 	done
 
 
-vs-translate:
-	$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/translateVS.py spi-vs16.sln spi-vs17.sln
-
-vs-16:
+vs16.sln:
 	$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/translateVS.py --old=17 --new=16 spi-vs17.sln spi-vs16.sln
 
-vs-17:
+vs17.sln:
 	$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/translateVS.py --old=16 --new=17 spi-vs16.sln spi-vs17.sln
 
