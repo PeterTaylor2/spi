@@ -74,38 +74,53 @@ namespace csv
             {
                 // look for the end of the string
                 // allow backslashes to escape out the next character
+                // allow "" to indicate a single quote
                 bool escaped = false;
 
                 std::string str;
                 const char* ptr = work + 1;
-                while ((*ptr != '"' || escaped) && *ptr != '\0')
-                {
-                    const char& c = *ptr;
-                    if (escaped)
-                    {
-                        if (c != '\\' && c != '"')
-                        {
-                            str.push_back('\\');
-                        }
-                        str.push_back(c);
-                        escaped = false;
-                    }
-                    else if (c == '\\')
-                    {
-                        escaped = true;
-                    }
-                    else
-                    {
-                        str.push_back(c);
-                    }
-                    ++ptr;
-                }
-                // the above loop can end with *ptr == '\0' which is an error
-                // or with *ptr = '"' which is good news
-                if (!*ptr)
-                    SPI_UTIL_THROW_RUNTIME_ERROR("Unterminated string " << work);
 
-                SPI_UTIL_POST_CONDITION(*ptr == '"');
+                bool doubleQuote;
+                do
+                {
+                    while ((*ptr != '"' || escaped) && *ptr != '\0')
+                    {
+                        const char& c = *ptr;
+                        if (escaped)
+                        {
+                            if (c != '\\' && c != '"')
+                            {
+                                str.push_back('\\');
+                            }
+                            str.push_back(c);
+                            escaped = false;
+                        }
+                        else if (c == '\\')
+                        {
+                            escaped = true;
+                        }
+                        else
+                        {
+                            str.push_back(c);
+                        }
+                        ++ptr;
+                    }
+
+                    // the above loop can end with *ptr == '\0' which is an error
+                    // or with *ptr = '"' which is good news
+                    if (!*ptr)
+                        SPI_UTIL_THROW_RUNTIME_ERROR("Unterminated string " << work);
+
+                    SPI_UTIL_POST_CONDITION(*ptr == '"');
+                    doubleQuote = (*(ptr + 1) == '"');
+
+                    if (doubleQuote)
+                    {
+                        str.push_back('"');
+                        ++ptr;
+                        ++ptr;
+                    }
+                } while (doubleQuote);
 
                 work = SkipWhiteSpace(ptr + 1);
 
