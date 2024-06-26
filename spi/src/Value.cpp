@@ -449,6 +449,13 @@ void Value::setString(const char* value, bool neverShort)
     }
 }
 
+void Value::setObject(const ObjectConstSP& value)
+{
+    type = Value::OBJECT;
+    anObject = value.get();
+    incRefCount(anObject);
+}
+
 Value& Value::swap(Value &value)
 {
     // Simple bitwise swap

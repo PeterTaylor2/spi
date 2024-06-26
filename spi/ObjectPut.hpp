@@ -58,13 +58,14 @@ ObjectConstSP ObjectPut(
     const ObjectConstSP& obj,
     const char* name,
     const Value& value,
-    const InputContext*             context);
+    const InputContext* context = NULL);
 
+SPI_IMPORT
 ObjectConstSP ObjectPut(
     const ObjectConstSP& obj,
     const std::vector<std::string>& names,
-    const std::vector<Value>&       values,
-    const InputContext*             context);
+    const std::vector<Value>& values,
+    const InputContext* context = NULL);
 
 //class MapObject : public Object
 //{

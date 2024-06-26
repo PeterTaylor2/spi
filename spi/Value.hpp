@@ -63,6 +63,7 @@
 #include "RuntimeError.hpp"
 #include "Object.hpp"
 #include "Map.hpp"
+#include "ObjectSmartPtr.hpp"
 
 #include <vector>
 
@@ -157,6 +158,12 @@ public:
     Value (const char* value, bool isError);
     // Value (Type type);
 
+    template<class T> 
+    Value(const ObjectSmartPtr<T>& obj) : type(Value::UNDEFINED)
+    {
+        setObject(obj);
+    }
+
     // this template uses the Array class - hence it gets implemented in Array.hpp
     template<typename T> Value (const std::vector<T> &value);
     Value(const std::vector<Value>& values);
@@ -212,6 +219,7 @@ public:
 private:
     void freeContents();
     void setString(const char* value, bool neverShort=false);
+    void setObject(const ObjectConstSP& value);
 
 public:
     // unary methods for use within templates
