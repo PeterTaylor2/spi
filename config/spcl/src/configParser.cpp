@@ -419,7 +419,7 @@ std::vector<AttributeConstSP> parseFunctionInputArgs(
     {
         if (funcArgs[i]->isOutput())
             throw spi::RuntimeError("Cannot define parameter %s as an output",
-                funcArgs[i]->attribute()->name());
+                funcArgs[i]->attribute()->name().c_str());
     }
 
     return FunctionAttribute::getAttributeVector(funcArgs);

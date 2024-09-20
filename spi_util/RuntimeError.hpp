@@ -46,7 +46,11 @@ SPI_UTIL_IMPORT
 std::runtime_error RuntimeErrorV(const char* format, va_list args);
 
 SPI_UTIL_IMPORT
-std::runtime_error RuntimeError(const char* format, ...);
+std::runtime_error RuntimeError(const char* format, ...)
+#ifdef __GNUC__
+__attribute__((format(printf,1,2)))
+#endif
+;
 
 SPI_UTIL_IMPORT
 std::runtime_error RuntimeError(std::exception&e, const char* routine);

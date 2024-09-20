@@ -266,7 +266,7 @@ Value ObjectFromURL(
     }
     catch (std::exception& e)
     {
-        throw RuntimeError("%s: Failed to read from URL:\n\t:\n%s",
+        throw RuntimeError("%s: Failed to read from URL:%s\n\t:\n%s",
             __FUNCTION__, url.c_str(), e.what());
     }
 }

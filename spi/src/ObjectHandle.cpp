@@ -118,7 +118,7 @@ namespace
                     count    = StringToInt(handle.substr(pos+1));
                     if (count <= 0)
                     {
-                        throw RuntimeError("");
+                        throw RuntimeError("Count %d in handle %s must be positive", count, handle.c_str());
                     }
                 }
             }

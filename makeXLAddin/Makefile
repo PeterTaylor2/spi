@@ -3,6 +3,8 @@ all:
 U_SPI_HOME=..
 include $(U_SPI_HOME)/makefiles/config/config.mk
 
+ifeq ($(G_PLATFORM),win32)
+
 ifeq ($(DEBUG),0)
 I_CONFIG=Release
 else
@@ -43,4 +45,10 @@ v16.vcxproj:
 v17.vcxproj:
 
 
+
+else
+
+U_NO_BUILD=1
+
+endif
 
