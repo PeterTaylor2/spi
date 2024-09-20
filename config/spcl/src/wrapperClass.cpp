@@ -398,7 +398,7 @@ void WrapperClass::declare(
              << "ConstSP BaseWrap(const " << m_baseClass->m_name
              << "::inner_type& inner";
 
-        if (!m_innerClass->m_isOpen)
+        if (!m_baseClass->m_innerClass->m_isOpen)
             ostr << ", const spi::FunctionConstSP& func";
 
         ostr << ");\n";
@@ -831,6 +831,10 @@ void WrapperClass::implement(
                 << "::BaseWrap(const " << m_baseClass->m_name
                 << "::inner_type& baseInner";
 
+            if (!m_baseClass->m_innerClass->m_isOpen)
+            {
+                ostr << ", const spi::FunctionConstSP& func";
+            }
 
             ostr << ")\n"
                  << "{\n";
@@ -1190,12 +1194,9 @@ void WrapperClass::implementHelper(
              << (m_canPut ? "true" : "false") << ", "
              << coerce_from_value << ");\n";
 
-        if (m_innerClass->m_isOpen)
-        {
-            ostr << "\n"
-                 << "std::vector<" << m_name << "::sub_class_wrapper*> "
-                 << m_name << "::g_sub_class_wrappers;\n";
-        }
+        ostr << "\n"
+             << "std::vector<" << m_name << "::sub_class_wrapper*> "
+             << m_name << "::g_sub_class_wrappers;\n";
 
         // FIXME: abstract classes could have properties
         // but in that case the to_map method of the sub-class will
@@ -1578,7 +1579,12 @@ void WrapperClass::VerifyAndComplete()
     if (m_baseClass)
     {
         SPI_PRE_CONDITION(m_baseClass->isAbstract());
-        SPI_PRE_CONDITION(m_innerClass->m_isOpen == m_baseClass->m_innerClass->m_isOpen);
+        if (m_baseClass->m_innerClass->m_isOpen)
+        {
+            // if the base class is open so must the sub-class be open
+            // however we will allow the sub-class to be open even if the base class is not
+            SPI_PRE_CONDITION(m_innerClass->m_isOpen);
+        }
         SPI_PRE_CONDITION(m_innerClass->m_isShared == m_baseClass->m_innerClass->m_isShared);
         SPI_PRE_CONDITION(m_innerClass->m_isConst == m_baseClass->m_innerClass->m_isConst);
 
