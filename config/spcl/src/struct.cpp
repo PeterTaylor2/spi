@@ -62,11 +62,12 @@ StructSP Struct::Make(
     bool                            asValue,
     bool                            uuid,
     bool                            byValue,
-    bool useAccessors)
+    bool useAccessors,
+    bool incomplete)
 {
     return new Struct(
         description, name, ns, baseClass, noMake, objectName, canPut, noId,
-        isVirtual, asValue, uuid, byValue, useAccessors);
+        isVirtual, asValue, uuid, byValue, useAccessors, incomplete);
 }
 
 Struct::Struct(
@@ -82,7 +83,8 @@ Struct::Struct(
     bool                            asValue,
     bool                            uuid,
     bool                            byValue,
-    bool useAccessors)
+    bool useAccessors,
+    bool incomplete)
     :
     m_description(description),
     m_name(name),
@@ -97,6 +99,7 @@ Struct::Struct(
     m_uuid(uuid),
     m_byValue(byValue),
     m_useAccessors(useAccessors),
+    m_incomplete(incomplete),
     m_attributes(),
     m_methods(),
     m_verbatimStart(),
@@ -772,7 +775,7 @@ const DataTypeConstSP& Struct::getDataType(const ServiceDefinitionSP& svc, bool 
         //
         // in addition name needs to be not previously defined as DataType
 
-        if (svc->getDataType(m_name))
+        if (svc->getDataType(m_name) && !svc->isIncompleteType(m_name))
         {
             throw spi::RuntimeError("DataType %s is already defined",
                                     m_name.c_str());
@@ -842,7 +845,7 @@ const DataTypeConstSP& Struct::getDataType(const ServiceDefinitionSP& svc, bool 
                 m_asValue, ignored);
         }
 
-        svc->addDataType(m_dataType);
+        m_dataType = svc->addDataType(m_dataType, m_incomplete);
     }
     return m_dataType;
 }

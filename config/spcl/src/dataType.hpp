@@ -123,6 +123,7 @@ public:
     bool noDoc() const;
     bool objectAsValue() const;
     bool ignored() const;
+    bool isEqual(const DataTypeConstSP& other) const;
     std::string cppName() const;
     std::string outerValueType() const;
     std::string outerReferenceType() const;

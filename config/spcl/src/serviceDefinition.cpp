@@ -455,10 +455,27 @@ const std::vector<ModuleDefinitionSP>& ServiceDefinition::getModules() const
     return m_modules;
 }
 
-void ServiceDefinition::addDataType(const DataTypeConstSP& dataType)
+DataTypeConstSP ServiceDefinition::addDataType(
+    const DataTypeConstSP& dataType,
+    bool incompleteType)
 {
-    addDataTypeToIndex(dataType);
-    m_dataTypes.push_back(dataType); // only after we tested for duplicates
+    DataTypeConstSP oldType = addDataTypeToIndex(dataType, incompleteType);
+    if (oldType)
+    {
+        if (!incompleteType)
+            m_dataTypes.push_back(oldType);
+        return oldType;
+    }
+
+    if (!incompleteType)
+        m_dataTypes.push_back(dataType);
+
+    return dataType;
+}
+
+std::vector<std::string> ServiceDefinition::incompleteTypes()
+{
+    return std::vector<std::string>(m_incompleteTypes.begin(), m_incompleteTypes.end());
 }
 
 void ServiceDefinition::addPublicDataType(const DataTypeConstSP& dataType)
@@ -501,6 +518,14 @@ DataTypeConstSP ServiceDefinition::getDataType(
         return DataTypeConstSP();
 
     return iter->second;
+}
+
+bool ServiceDefinition::isIncompleteType(const std::string& name) const
+{
+    if (m_incompleteTypes.count(name) > 0)
+        return true;
+    
+    return false;
 }
 
 void ServiceDefinition::addClass(const ClassConstSP& aClass)
@@ -614,6 +639,8 @@ void ServiceDefinition::addServiceInit(const VerbatimConstSP& verbatim)
 
 void ServiceDefinition::VerifyAndComplete()
 {
+    // FIXME: when do we call this function with all these values defined?
+
     m_indexModules.clear();
     for (size_t i = 0; i < m_modules.size(); ++i)
     {
@@ -622,7 +649,7 @@ void ServiceDefinition::VerifyAndComplete()
     m_indexDataTypes.clear();
     for (size_t i = 0; i < m_dataTypes.size(); ++i)
     {
-        addDataTypeToIndex(m_dataTypes[i]);
+        addDataTypeToIndex(m_dataTypes[i], false);
     }
     for (size_t i = 0; i < m_classes.size(); ++i)
     {
@@ -650,13 +677,53 @@ void ServiceDefinition::addModuleToIndex(const ModuleDefinitionSP& module)
     m_indexModules[moduleName] = module;
 }
 
-void ServiceDefinition::addDataTypeToIndex(const DataTypeConstSP& dataType)
+DataTypeConstSP ServiceDefinition::addDataTypeToIndex(
+    const DataTypeConstSP& dataType,
+    bool incompleteType)
 {
     const std::string& dataTypeName = dataType->name();
-    if (getDataType(dataTypeName))
-        throw spi::RuntimeError("DataType name %s already defined",
-                                dataTypeName.c_str());
+    const DataTypeConstSP& other = getDataType(dataTypeName);
+
+    if (other)
+    {
+        bool wasIncompleteType = m_incompleteTypes.count(dataTypeName) > 0;
+        if (!wasIncompleteType)
+        {
+            SPI_THROW_RUNTIME_ERROR("DataType name " << dataTypeName
+                << " already defined (and complete)");
+        }
+
+        bool equivalentType = other->isEqual(dataType);
+
+        if(!equivalentType)
+        {
+            SPI_THROW_RUNTIME_ERROR("DataType name " << dataTypeName
+                << " was defined as incomplete but is not the same");
+        }
+
+        SPI_POST_CONDITION(wasIncompleteType && equivalentType);
+
+        // this is allowed
+
+        // we are also allowed to pre-declare the type more than once
+        // as long as we did it the same each time
+
+        if (!incompleteType)
+        {
+            // we are fully defining the type at this point so remove from
+            // the set of incomplete types
+            m_incompleteTypes.erase(dataTypeName);
+        }
+        return other;
+    }
+
+    // not found previously
     m_indexDataTypes[dataTypeName] = dataType;
+    if (incompleteType)
+    {
+        m_incompleteTypes.insert(dataTypeName);
+    }
+    return DataTypeConstSP(); // since we return the previously defined type
 }
 
 void ServiceDefinition::addClassToIndex(const ClassConstSP& aClass)

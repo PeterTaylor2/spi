@@ -76,6 +76,14 @@ ConfigLexer::Token getTokenOfType(
     const char* function=0);
 
 /*
+* After parsing the options for class or struct (to { or ;) we parse the next token.
+* If it is ";" then the struct or class is marked as incomplete.
+* If it is "{" then we expected the struct or class to be defined at this point.
+*/
+bool getIncompleteStructOrClass(
+    ConfigLexer& lexer);
+
+/*
  * Gets a c++ typename. Returns any tokens arising from lookahead operations.
  *
  * This will handle namespaces and templates. For example

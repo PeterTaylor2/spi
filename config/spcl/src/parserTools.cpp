@@ -267,6 +267,27 @@ ConfigLexer::Token getTokenOfType(
     return token;
 }
 
+bool getIncompleteStructOrClass(ConfigLexer& lexer)
+{
+    ConfigLexer::Token token = lexer.getToken();
+
+    bool incomplete = false;
+    switch (token.type)
+    {
+    case '{':
+        incomplete = false;
+        break;
+    case ';':
+        incomplete = true;
+        break;
+    default:
+        throw spi::RuntimeError("Expecting ';' or '{' - actual was '%s'",
+            token.toString().c_str());
+    }
+
+    return incomplete;
+}
+
 static std::string tokenToCppTypeNamePart(ConfigLexer::Token& token)
 {
     if (token.type == SPI_CONFIG_TOKEN_TYPE_KEYWORD)

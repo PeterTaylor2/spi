@@ -72,7 +72,8 @@ public:
         bool                            asValue,
         bool                            uuid,
         bool                            byValue,
-        bool                            useAccessors);
+        bool                            useAccessors,
+        bool                            incomplete);
 
     void addClassAttribute(const ClassAttributeConstSP& attribute);
     void addMethod(const ClassMethodConstSP& method);
@@ -145,7 +146,8 @@ protected:
         bool                            asValue,
         bool                            uuid,
         bool                            byValue,
-        bool useAccessors);
+        bool useAccessors,
+        bool incomplete);
 
 private:
     std::vector<std::string>        m_description;
@@ -161,6 +163,7 @@ private:
     bool                            m_uuid;
     bool                            m_byValue;
     bool                            m_useAccessors;
+    bool                            m_incomplete;
 
     std::vector<AttributeConstSP>   m_attributes;
     std::vector<ClassMethodConstSP> m_methods;
@@ -203,6 +206,7 @@ public:
     bool uuid() const { return m_uuid; }
     bool byValue() const { return m_byValue; }
     bool useAccessors() const { return m_useAccessors; }
+    bool incomplete() const { return m_incomplete; }
 };
 
 #endif

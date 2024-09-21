@@ -206,6 +206,50 @@ bool DataType::objectAsValue() const
     return m_objectAsValue;
 }
 
+bool DataType::isEqual(const DataTypeConstSP& other) const
+{
+    if (!other) return false;
+
+    const DataType* p = other.get();
+
+    if (p == this) return true;
+
+    if (m_name != p->m_name) return false;
+    if (m_nsService != p->m_nsService) return false;
+    if (m_cppName != p->m_cppName) return false;
+    if (m_outerType != p->m_outerType) return false;
+    if (m_innerType != p->m_innerType) return false;
+    if (m_innerRefType != p->m_innerRefType) return false;
+    if (m_publicType != p->m_publicType) return false;
+    if (m_objectName != p->m_objectName) return false;
+    if (m_isClosed != p->m_isClosed) return false;
+    if (m_isPrimitive != p->m_isPrimitive) return false;
+    if (m_noDoc != p->m_noDoc) return false;
+    if (m_convertIn)
+    {
+        if (!(m_convertIn->isEqual(p->m_convertIn))) return false;
+    }
+    else if (p->m_convertIn)
+    {
+        return false;
+    }
+    if (m_convertOut != p->m_convertOut) return false;
+    if (m_copyInner != p->m_copyInner) return false;
+    if (m_fullName != p->m_fullName) return false;
+    if (m_primitiveType)
+    {
+        if (!(m_primitiveType->isEqual(p->m_primitiveType))) return false;
+    }
+    else if (p->m_primitiveType)
+    {
+        return false;
+    }
+    if (m_objectAsValue != p->m_objectAsValue) return false;
+    if (m_ignored != p->m_ignored) return false;
+
+    return true;
+}
+
 bool DataType::ignored() const
 {
     return m_ignored;

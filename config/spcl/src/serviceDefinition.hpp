@@ -137,11 +137,19 @@ public:
     void addModule(ModuleDefinitionSP& module);
     ModuleDefinitionSP getModule(const std::string& name) const;
     const std::vector<ModuleDefinitionSP>& getModules() const;
-    void addDataType(const DataTypeConstSP& dataType);
+    // some types (struct or class) can have an incomplete definition defined first
+    // in such cases addDataType will return the previous defined DataType
+    // although it will validate that the dataType(s) are equivalent
+    DataTypeConstSP addDataType(const DataTypeConstSP& dataType,
+        bool incompleteType=false);
+    // at the end of the config parser we check to see if there are any incomplete types
+    // in that case we report this as an error
+    std::vector<std::string> incompleteTypes();
     void addPublicDataType(const DataTypeConstSP& dataType);
     DataTypeConstSP getDataType(const std::string& name,
         const std::string& ns=std::string(),
         bool isPublic=false) const;
+    bool isIncompleteType(const std::string& name) const;
     void addStandardDataTypes();
     void setBaseService(const ServiceDefinitionConstSP& service);
     void addClass(const ClassConstSP& aClass);
@@ -264,10 +272,11 @@ private:
     std::vector<std::string> m_includes;
     std::vector<TypesLibraryConstSP> m_importedTypes;
     std::vector<bool> m_publicImports;
+    std::set<std::string> m_incompleteTypes;
 
     void VerifyAndComplete();
     void addModuleToIndex(const ModuleDefinitionSP& module);
-    void addDataTypeToIndex(const DataTypeConstSP& dataType);
+    DataTypeConstSP addDataTypeToIndex(const DataTypeConstSP& dataType, bool incompleteType);
     void addClassToIndex(const ClassConstSP& aClass);
     void addInnerClassToIndex(const InnerClassConstSP& anInnerClass);
     void addInnerClassTemplateToIndex(const InnerClassTemplateConstSP& innerClassTemplate);

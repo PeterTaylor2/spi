@@ -2265,8 +2265,10 @@ void structKeywordHandler(
         initClassStructOptions(defaultOptions, false);
     }
     ParserOptions options;
-    options = parseOptions(lexer, "{", defaultOptions, verbose);
-    getTokenOfType(lexer, '{');
+    options = parseOptions(lexer, "{;", defaultOptions, verbose);
+
+    bool incomplete = getIncompleteStructOrClass(lexer);
+
     bool noMake = getOption(options, "noMake")->getBool();
     bool canPut = getOption(options, "canPut")->getBool();
     bool noId = getOption(options, "noId")->getBool();
@@ -2279,14 +2281,15 @@ void structKeywordHandler(
     StructSP type = Struct::Make(
         description, name, module->moduleNamespace(), baseClass, noMake,
         getOption(options, "objectName")->getString(),
-        canPut, noId, isVirtual, asValue, uuid, byValue, false);
+        canPut, noId, isVirtual, asValue, uuid, byValue, false, incomplete);
 
     // we need to register the type before parsing the contents in order to
     // allow references to itself in the structure definition
 
     type->getDataType(service, ignore);
 
-    // there is of course a strong case for supporting pre-declaration
+    if (incomplete)
+        return;
 
     //token = getTokenOfType(lexer, '{');
 
@@ -2791,8 +2794,8 @@ InnerClassConstSP parseInnerClass(
                                     token.toString().c_str());
 
         //std::string ns = spi::StringJoin("::", namespaceParts);
-        service->addInnerClass(innerClass);
-        module->addInnerClass(innerClass);
+        //service->addInnerClass(innerClass);
+        //module->addInnerClass(innerClass);
     }
     return innerClass;
 }
@@ -2821,7 +2824,6 @@ void classNoWrapHandler(
 
     ClassConstSP baseClass;
 
-
     // implement as Struct except that we use accessors for attributes
     // and specify these as public or private like in WrapperClass
 
@@ -2848,7 +2850,7 @@ void classNoWrapHandler(
 
     ParserOptions options;
     options = parseOptions(lexer, "{", defaultOptions, verbose);
-    getTokenOfType(lexer, '{');
+    bool incomplete = getIncompleteStructOrClass(lexer);
 
     bool noMake = getOption(options, "noMake")->getBool();
     bool canPut = getOption(options, "canPut")->getBool();
@@ -2863,12 +2865,15 @@ void classNoWrapHandler(
         description, className, module->moduleNamespace(),
         baseClass, noMake,
         getOption(options, "objectName")->getString(),
-        canPut, noId, isVirtual, asValue, uuid, byValue, true);
+        canPut, noId, isVirtual, asValue, uuid, byValue, true, incomplete);
 
     // we need to register the type before parsing the contents in order to
     // allow references to itself in the class definition
 
     type->getDataType(service, ignore);
+
+    if (incomplete)
+        return;
 
     token = lexer.getToken();
     while (token.type != '}')
@@ -3137,8 +3142,8 @@ void classKeywordHandler(
     }
 
     ParserOptions options;
-    options = parseOptions(lexer, "{", defaultOptions, verbose);
-    getTokenOfType(lexer, '{');
+    options = parseOptions(lexer, "{;", defaultOptions, verbose);
+    bool incomplete = getIncompleteStructOrClass(lexer);
 
     bool ignore = getOption(options, "ignore")->getBool();
     bool uuid = getOption(options, "uuid")->getBool();
@@ -3158,14 +3163,19 @@ void classKeywordHandler(
         getOption(options, "canPut")->getBool(),
         getOption(options, "noId")->getBool(),
         getOption(options, "asValue")->getBool(),
-        uuid);
+        uuid, incomplete);
 
     // we need to register the type before parsing the contents in order to
     // allow references to itself in the class definition
 
     type->getDataType(service, ignore);
 
-    //token = getTokenOfType(lexer, '{');
+    if (incomplete)
+        return;
+
+    // the inner class is only registered once the class is going to be defined
+    service->addInnerClass(innerClass);
+    module->addInnerClass(innerClass);
 
     token = lexer.getToken();
     while (token.type != '}')
@@ -3955,6 +3965,13 @@ void mainLoop(const std::string& fn,
             }
         }
         token = desc.consume(lexer, verbose);
+    }
+
+    const std::vector<std::string>& incompleteTypes = service->incompleteTypes();
+    if (incompleteTypes.size() > 0)
+    {
+        throw spi::RuntimeError("The following incomplete types were not defined: %s",
+            spi_util::StringJoin(", ", incompleteTypes).c_str());
     }
 }
 

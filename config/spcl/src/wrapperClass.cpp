@@ -62,11 +62,12 @@ WrapperClassSP WrapperClass::Make(
     bool                            canPut,
     bool                            noId,
     bool                            asValue,
-    bool                            uuid)
+    bool                            uuid,
+    bool incomplete)
 {
     return new WrapperClass(
         description, name, ns, innerClass, baseClass, isVirtual, noMake,
-        objectName, isDelegate, canPut, noId, asValue, uuid);
+        objectName, isDelegate, canPut, noId, asValue, uuid, incomplete);
 }
 
 WrapperClass::WrapperClass(
@@ -82,7 +83,8 @@ WrapperClass::WrapperClass(
     bool                            canPut,
     bool                            noId,
     bool                            asValue,
-    bool                            uuid)
+    bool                            uuid,
+    bool incomplete)
     :
     m_description(description),
     m_name(name),
@@ -97,6 +99,7 @@ WrapperClass::WrapperClass(
     m_noId(noId),
     m_asValue(asValue),
     m_uuid(uuid),
+    m_incomplete(incomplete),
     m_verbatimConstructor(),
     m_classAttributes(),
     m_methods(),
@@ -1383,7 +1386,7 @@ const DataTypeConstSP& WrapperClass::getDataType(
     {
         std::string dataTypeName = m_ns.empty() ? m_name : m_ns + "." + m_name;
 
-        if (svc->getDataType(m_name))
+        if (svc->getDataType(m_name) && !svc->isIncompleteType(m_name))
         {
             SPI_THROW_RUNTIME_ERROR("DataType " << dataTypeName << " is already defined");
         }
@@ -1391,6 +1394,7 @@ const DataTypeConstSP& WrapperClass::getDataType(
             m_name :
             m_ns + "::" + m_name;
 
+        // this might be a problem when comparing the data types
         std::string outerTypeName = hasNonConstMethods() ?
             cppName + "SP" :
             cppName + "ConstSP";
@@ -1472,16 +1476,19 @@ const DataTypeConstSP& WrapperClass::getDataType(
             m_asValue,
             ignored);
 
-        svc->addDataType(m_dataType);
+        m_dataType = svc->addDataType(m_dataType, m_incomplete);
 
-        DataTypeConstSP publicDataType = DataType::Make(
-            m_name, m_ns, svc->getNamespace(), cppName, outerType,
-            std::string(), std::string(),
-            spdoc::PublicType::CLASS, m_objectName, false, false,
-            std::string(), std::string(), std::string(), DataTypeConstSP(), false,
-            m_asValue, ignored);
-        publicDataType->setDoc(m_dataType->getDoc());
-        svc->addPublicDataType(publicDataType);
+        if (!m_incomplete)
+        {
+            DataTypeConstSP publicDataType = DataType::Make(
+                m_name, m_ns, svc->getNamespace(), cppName, outerType,
+                std::string(), std::string(),
+                spdoc::PublicType::CLASS, m_objectName, false, false,
+                std::string(), std::string(), std::string(), DataTypeConstSP(), false,
+                m_asValue, ignored);
+            publicDataType->setDoc(m_dataType->getDoc());
+            svc->addPublicDataType(publicDataType);
+        }
     }
     return m_dataType;
 }

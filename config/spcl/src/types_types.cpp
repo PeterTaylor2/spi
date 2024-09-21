@@ -1055,9 +1055,11 @@ BaseStruct::inner_type BaseStruct::make_inner(
     const bool& byValue = o_byValue;
     const bool& useAccessors = o_useAccessors;
 
+    bool incomplete = false;
+
     ::StructSP self = ::Struct::Make(
         description, name, ns, baseClass, noMake, objectName, canPut, noId, isVirtual, asValue, 
-        uuid, byValue, useAccessors);
+        uuid, byValue, useAccessors, incomplete);
 
     SPI_POST_CONDITION(self->isAbstract());
 
@@ -1499,9 +1501,11 @@ BaseWrapperClass::inner_type BaseWrapperClass::make_inner(
     const bool& asValue = o_asValue;
     const bool& uuid = o_uuid;
 
+    bool incomplete = false;
+
     ::WrapperClassSP self = ::WrapperClass::Make(
         description, name, ns, innerClass, baseClass, isVirtual,
-        noMake, objectName, isDelegate, canPut, noId, asValue, uuid);
+        noMake, objectName, isDelegate, canPut, noId, asValue, uuid, incomplete);
 
     SPI_POST_CONDITION(self->isAbstract());
 

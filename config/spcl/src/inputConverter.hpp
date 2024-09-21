@@ -45,7 +45,7 @@ public:
 
     virtual std::string Validation(const std::string& name, bool optional) const = 0;
     virtual std::string Conversion(const std::string& name) const = 0;
-
+    virtual bool isEqual(const InputConverterConstSP& other) const = 0;
     static InputConverterConstSP StringFormat(const std::string& format);
     static InputConverterConstSP Class(const std::string& format);
 };
@@ -56,6 +56,7 @@ public:
     static InputConverterStringFormatConstSP Make(const std::string& format);
     std::string Validation(const std::string& name, bool optional) const;
     std::string Conversion(const std::string& name) const;
+    bool isEqual(const InputConverterConstSP& other) const;
 
 private:
     InputConverterStringFormat(const std::string& format);
@@ -74,6 +75,7 @@ public:
 
     std::string Validation(const std::string& name, bool optional) const;
     std::string Conversion(const std::string& name) const;
+    bool isEqual(const InputConverterConstSP& other) const;
 
 private:
     InputConverterClass(const std::string& format);

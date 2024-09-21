@@ -57,6 +57,18 @@ std::string InputConverterStringFormat::Conversion(const std::string & name) con
     return spi::StringFormat(m_format.c_str(), name.c_str());
 }
 
+bool InputConverterStringFormat::isEqual(const InputConverterConstSP& other) const
+{
+    const InputConverterStringFormat* p =
+        dynamic_cast<const InputConverterStringFormat*>(other.get());
+
+    if (!p) return false;
+
+    if (m_format != p->m_format) return false;
+
+    return true;
+}
+
 InputConverterStringFormat::InputConverterStringFormat(const std::string & format)
     :
     m_format(format)
@@ -84,6 +96,18 @@ std::string InputConverterClass::Conversion(const std::string & name) const
         return name;
 
     return spi::StringFormat(m_format.c_str(), name.c_str());
+}
+
+bool InputConverterClass::isEqual(const InputConverterConstSP& other) const
+{
+    const InputConverterClass* p =
+        dynamic_cast<const InputConverterClass*>(other.get());
+
+    if (!p) return false;
+
+    if (m_format != p->m_format) return false;
+
+    return true;
 }
 
 InputConverterClass::InputConverterClass(const std::string & format)

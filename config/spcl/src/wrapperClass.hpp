@@ -67,7 +67,8 @@ public:
         bool                            canPut,
         bool                            noId,
         bool                            asValue,
-        bool                            uuid);
+        bool                            uuid,
+        bool incomplete);
 
     void addClassAttribute(const ClassAttributeConstSP& classAttribute);
     void addMethod(const ClassMethodConstSP& method);
@@ -142,18 +143,19 @@ public:
 protected:
     WrapperClass(
         const std::vector<std::string>& description,
-        const std::string&              name,
-        const std::string&              ns,
-        const InnerClassConstSP&        innerClass,
-        const WrapperClassConstSP&      baseClass,
+        const std::string& name,
+        const std::string& ns,
+        const InnerClassConstSP& innerClass,
+        const WrapperClassConstSP& baseClass,
         bool                            isVirtual,
         bool                            noMake,
-        const std::string&              objectName,
+        const std::string& objectName,
         bool                            isDelegate,
         bool                            canPut,
         bool                            noId,
         bool                            asValue,
-        bool                            uuid);
+        bool                            uuid,
+        bool incomplete);
 
 private:
     std::vector<std::string>           m_description;
@@ -169,6 +171,7 @@ private:
     bool                               m_noId;
     bool                               m_asValue;
     bool                               m_uuid;
+    bool                               m_incomplete;
 
 private:
     std::string                        m_verbatimStart;
