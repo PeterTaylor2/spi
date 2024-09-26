@@ -47,6 +47,8 @@
 
 #include <spgtools/licenseTools.hpp>
 
+#include <iostream>
+
 using spi_util::StringJoin;
 
 /*

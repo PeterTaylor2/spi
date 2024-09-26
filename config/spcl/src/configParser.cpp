@@ -2643,7 +2643,8 @@ InnerClassConstSP parseInnerClass(
     ConfigLexer& lexer,
     ModuleDefinitionSP& module,
     ServiceDefinitionSP& service,
-    bool verbose)
+    bool verbose,
+    bool& existing)
 {
     ConfigLexer::Token token = getTokenOfType(lexer, '<');
     //if (token.type != '<')
@@ -2654,6 +2655,7 @@ InnerClassConstSP parseInnerClass(
 
     std::string innerName;
     InnerClassConstSP innerClass;
+    existing = false;
 
     token = lexer.getToken();
     if (token.toString() == "typename")
@@ -2666,6 +2668,7 @@ InnerClassConstSP parseInnerClass(
             SPI_THROW_RUNTIME_ERROR("undefined typename " << token.value.aName);
         }
         getTokenOfType(lexer, '>');
+        existing = true;
     }
     else
     {
@@ -3089,7 +3092,8 @@ void classKeywordHandler(
     }
 
     lexer.returnToken(token);
-    InnerClassConstSP innerClass = parseInnerClass(lexer, module, service, verbose);
+    bool existingInner;
+    InnerClassConstSP innerClass = parseInnerClass(lexer, module, service, verbose, existingInner);
 
     token = lexer.getToken();
     if (token.type == ':')
@@ -3174,8 +3178,11 @@ void classKeywordHandler(
         return;
 
     // the inner class is only registered once the class is going to be defined
-    service->addInnerClass(innerClass);
-    module->addInnerClass(innerClass);
+    if (!existingInner)
+    {
+        service->addInnerClass(innerClass);
+        module->addInnerClass(innerClass);
+    }
 
     token = lexer.getToken();
     while (token.type != '}')

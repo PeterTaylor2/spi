@@ -44,6 +44,8 @@
 
 #include <spgtools/licenseTools.hpp>
 
+#include <iostream>
+
 /*
 ***************************************************************************
 ** Implementation of ModuleDefinition
