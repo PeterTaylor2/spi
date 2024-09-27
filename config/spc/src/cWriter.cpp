@@ -448,6 +448,19 @@ void CModule::updatePublicHeaderFile(GeneratedOutput& ostr) const
         << "/* Module: " << module->name << " */\n";
 
     size_t nbConstructs = module->constructs.size();
+
+    for (size_t i = 0; i < nbConstructs; ++i)
+    {
+        spdoc::ConstructConstSP construct = module->constructs[i];
+        const std::string& constructType = construct->getType();
+
+        if (constructType == "CLASS")
+        {
+            CONSTRUCT_CAST(Class, cls, construct);
+            preDeclareClass(ostr, cls);
+        }
+    }
+
     for (size_t i = 0; i < nbConstructs; ++i)
     {
         spdoc::ConstructConstSP construct = module->constructs[i];
@@ -755,7 +768,7 @@ void CModule::declareClassConstructor(
 ** Writer methods for classes
 ***************************************************************************
 */
-void CModule::declareClass(
+void CModule::preDeclareClass(
     GeneratedOutput& ostr,
     const spdoc::Class* cls) const
 {
@@ -765,6 +778,19 @@ void CModule::declareClass(
 
     ostr << "\n"
         << "typedef struct " << cname << " " << cname << ";\n";
+
+    ostr << "\n"
+        << "DECLARE_VECTOR_METHODS(" << cname << ", " << service->import() << ");\n"
+        << "DECLARE_MATRIX_METHODS(" << cname << ", " << service->import() << ");\n";
+}
+
+void CModule::declareClass(
+    GeneratedOutput& ostr,
+    const spdoc::Class* cls) const
+{
+    std::ostringstream oss;
+    oss << service->ns() << "_" << makeNamespaceSep(module->ns, "_") << cls->name;
+    std::string cname = oss.str();
 
     if (!cls->noMake)
     {
@@ -782,10 +808,6 @@ void CModule::declareClass(
         oss2 << service->ns() << "_" << spi_util::StringReplace(cls->baseClassName, ".", "_");
         cBaseClass = oss2.str();
     }
-
-    ostr << "\n"
-        << "DECLARE_VECTOR_METHODS(" << cname << ", " << service->import() << ");\n"
-        << "DECLARE_MATRIX_METHODS(" << cname << ", " << service->import() << ");\n";
 
     ostr << "\n"
         << service->import() << "\n"

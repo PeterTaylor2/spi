@@ -147,6 +147,8 @@ private:
         const spdoc::Class* cls,
         bool implementation = false) const;
 
+    void preDeclareClass(GeneratedOutput& ostr,
+        const spdoc::Class* cls) const;
     void declareClass(GeneratedOutput& ostr,
                       const spdoc::Class* cls) const;
     void declarePrivateClass(GeneratedOutput& ostr,
