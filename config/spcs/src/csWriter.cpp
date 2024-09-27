@@ -876,10 +876,18 @@ void CModule::implementFunctionEnd(
             args.push_back(cdt.csi_to_cs(out->arrayDim, out->name));
         }
 
-        // we are returning a value tuple - hence just values within (...)
-        ostr << "\n"
-            << spaces << gap << "return ("
-            << StringJoin(", ", args) << ");\n";
+        if (args.size() == 1)
+        {
+            ostr << "\n"
+                << spaces << gap << "return " << args[0] << ";\n";
+        }
+        else
+        {
+            // we are returning a value tuple - hence just values within (...)
+            ostr << "\n"
+                << spaces << gap << "return ("
+                << StringJoin(", ", args) << ");\n";
+        }
 
     }
     ostr << spaces << "}\n";
@@ -894,17 +902,25 @@ std::string CModule::defineValueTupleOutput(
 
     std::ostringstream oss;
 
-    oss << "(";
-
-    const char* gap = "";
-    for (size_t i = 0; i < func->outputs.size(); ++i)
+    if (func->outputs.size() == 1)
     {
-        spdoc::AttributeConstSP out = func->outputs[i];
-        oss << gap << CDataType(out->dataType, service).csType(out->arrayDim)
-            << " " << service->rename(out->name);
-        gap = ", ";
+        spdoc::AttributeConstSP out = func->outputs[0];
+        oss << CDataType(out->dataType, service).csType(out->arrayDim);
     }
-    oss << ")";
+    else
+    {
+        oss << "(";
+
+        const char* gap = "";
+        for (size_t i = 0; i < func->outputs.size(); ++i)
+        {
+            spdoc::AttributeConstSP out = func->outputs[i];
+            oss << gap << CDataType(out->dataType, service).csType(out->arrayDim)
+                << " " << service->rename(out->name);
+            gap = ", ";
+        }
+        oss << ")";
+    }
 
     return oss.str();
 }
