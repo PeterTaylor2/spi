@@ -1503,11 +1503,12 @@ BaseWrapperClass::inner_type BaseWrapperClass::make_inner(
 
     bool incomplete = false;
     std::string accessorFormat;
+    std::string propertyFormat;
 
     ::WrapperClassSP self = ::WrapperClass::Make(
         description, name, ns, innerClass, baseClass, isVirtual,
-        noMake, objectName, isDelegate, canPut, noId, asValue, uuid, incomplete,
-        accessorFormat);
+        noMake, objectName, isDelegate, canPut, noId, asValue, uuid,
+        incomplete, accessorFormat, propertyFormat);
 
     SPI_POST_CONDITION(self->isAbstract());
 

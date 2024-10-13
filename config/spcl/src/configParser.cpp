@@ -2131,6 +2131,7 @@ void initClassStructOptions(
     {
         defaultOptions["sharedPtr"] = StringConstant::Make("");
         defaultOptions["accessorFormat"] = StringConstant::Make("");
+        defaultOptions["propertyFormat"] = StringConstant::Make("");
     }
     else
     {
@@ -3173,7 +3174,8 @@ void classKeywordHandler(
         getOption(options, "noId")->getBool(),
         getOption(options, "asValue")->getBool(),
         uuid, incomplete,
-        getOption(options, "accessorFormat")->getString());
+        getOption(options, "accessorFormat")->getString(),
+        getOption(options, "propertyFormat")->getString());
 
     // we need to register the type before parsing the contents in order to
     // allow references to itself in the class definition

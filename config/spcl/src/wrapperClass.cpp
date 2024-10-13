@@ -64,12 +64,13 @@ WrapperClassSP WrapperClass::Make(
     bool                            asValue,
     bool                            uuid,
     bool incomplete,
-    const std::string& accessorFormat)
+    const std::string& accessorFormat,
+    const std::string& propertyFormat)
 {
     return new WrapperClass(
         description, name, ns, innerClass, baseClass, isVirtual, noMake,
         objectName, isDelegate, canPut, noId, asValue, uuid, incomplete,
-        accessorFormat);
+        accessorFormat, propertyFormat);
 }
 
 WrapperClass::WrapperClass(
@@ -87,7 +88,8 @@ WrapperClass::WrapperClass(
     bool                            asValue,
     bool                            uuid,
     bool incomplete,
-    const std::string& accessorFormat)
+    const std::string& accessorFormat,
+    const std::string& propertyFormat)
     :
     m_description(description),
     m_name(name),
@@ -104,6 +106,7 @@ WrapperClass::WrapperClass(
     m_uuid(uuid),
     m_incomplete(incomplete),
     m_accessorFormat(accessorFormat),
+    m_propertyFormat(propertyFormat),
     m_verbatimConstructor(),
     m_classAttributes(),
     m_methods(),
@@ -1040,8 +1043,8 @@ void WrapperClass::implement(
     }
     for (size_t i = 0; i < m_classProperties.size(); ++i)
     {
-        writeOpenAccessor(ostr, m_classProperties[i], m_name, false, !!m_verbatim);
-        writeOpenAccessor(ostr, m_classProperties[i], m_name, true, false);
+        writeOpenAccessor(ostr, m_classProperties[i], m_name, false, !!m_verbatim, false, propertyFormat());
+        writeOpenAccessor(ostr, m_classProperties[i], m_name, true, false, false, propertyFormat());
     }
 
     if (m_dynamicPropertiesCode)
@@ -1590,6 +1593,14 @@ const char* WrapperClass::accessorFormat() const
         return NULL;
 
     return m_accessorFormat.c_str();
+}
+
+const char* WrapperClass::propertyFormat() const
+{
+    if (!m_propertyFormat.empty())
+        return m_propertyFormat.c_str();
+
+    return accessorFormat();
 }
 
 void WrapperClass::VerifyAndComplete()
