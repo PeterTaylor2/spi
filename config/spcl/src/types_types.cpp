@@ -1502,10 +1502,12 @@ BaseWrapperClass::inner_type BaseWrapperClass::make_inner(
     const bool& uuid = o_uuid;
 
     bool incomplete = false;
+    std::string accessorFormat;
 
     ::WrapperClassSP self = ::WrapperClass::Make(
         description, name, ns, innerClass, baseClass, isVirtual,
-        noMake, objectName, isDelegate, canPut, noId, asValue, uuid, incomplete);
+        noMake, objectName, isDelegate, canPut, noId, asValue, uuid, incomplete,
+        accessorFormat);
 
     SPI_POST_CONDITION(self->isAbstract());
 

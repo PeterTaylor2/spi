@@ -687,7 +687,8 @@ void writeOpenAccessor(
     const std::string& className,
     bool innerContext,
     bool hasVerbatim,
-    bool usePropertyName)
+    bool usePropertyName,
+    const char* accessorFormat)
 {
     const std::string& name     = attr->attribute()->name();
     const VerbatimConstSP& code = attr->fromInnerCode();
@@ -695,6 +696,10 @@ void writeOpenAccessor(
     bool noCopy                 = attr->noCopy();
     DataTypeConstSP dataType    = attr->attribute()->dataType();
     int arrayDim = attr->attribute()->arrayDim();
+
+    std::string nameAccessor = accessorFormat ?
+        spi_util::StringFormat(accessorFormat, name.c_str()) :
+        name;
 
     if (!innerContext)
     {
@@ -783,7 +788,7 @@ void writeOpenAccessor(
             if (!code)
             {
                 ostr << "\n"
-                     << "    return self->" << name << ";\n"
+                     << "    return self->" << nameAccessor << ";\n"
                      << "}\n";
             }
             else
@@ -811,7 +816,7 @@ void writeOpenAccessor(
         if (!code)
         {
             ostr << "\n"
-                 << "    return self->" << name << ";\n"
+                 << "    return self->" << nameAccessor << ";\n"
                  << "}\n";
         }
         else

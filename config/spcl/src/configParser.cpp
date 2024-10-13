@@ -2128,9 +2128,14 @@ void initClassStructOptions(
     defaultOptions["constructor"] = StringConstant::Make("");
 
     if (wrapperClass)
+    {
         defaultOptions["sharedPtr"] = StringConstant::Make("");
+        defaultOptions["accessorFormat"] = StringConstant::Make("");
+    }
     else
+    {
         defaultOptions["byValue"] = BoolConstant::Make(false);
+    }
 }
 
 // given a class (or struct) with defined constructor this creates the corresponding function
@@ -3167,7 +3172,8 @@ void classKeywordHandler(
         getOption(options, "canPut")->getBool(),
         getOption(options, "noId")->getBool(),
         getOption(options, "asValue")->getBool(),
-        uuid, incomplete);
+        uuid, incomplete,
+        getOption(options, "accessorFormat")->getString());
 
     // we need to register the type before parsing the contents in order to
     // allow references to itself in the class definition

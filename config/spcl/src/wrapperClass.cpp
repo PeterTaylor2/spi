@@ -63,11 +63,13 @@ WrapperClassSP WrapperClass::Make(
     bool                            noId,
     bool                            asValue,
     bool                            uuid,
-    bool incomplete)
+    bool incomplete,
+    const std::string& accessorFormat)
 {
     return new WrapperClass(
         description, name, ns, innerClass, baseClass, isVirtual, noMake,
-        objectName, isDelegate, canPut, noId, asValue, uuid, incomplete);
+        objectName, isDelegate, canPut, noId, asValue, uuid, incomplete,
+        accessorFormat);
 }
 
 WrapperClass::WrapperClass(
@@ -84,7 +86,8 @@ WrapperClass::WrapperClass(
     bool                            noId,
     bool                            asValue,
     bool                            uuid,
-    bool incomplete)
+    bool incomplete,
+    const std::string& accessorFormat)
     :
     m_description(description),
     m_name(name),
@@ -100,6 +103,7 @@ WrapperClass::WrapperClass(
     m_asValue(asValue),
     m_uuid(uuid),
     m_incomplete(incomplete),
+    m_accessorFormat(accessorFormat),
     m_verbatimConstructor(),
     m_classAttributes(),
     m_methods(),
@@ -1026,8 +1030,8 @@ void WrapperClass::implement(
     {
         if (m_innerClass->m_isOpen)
         {
-            writeOpenAccessor(ostr, m_classAttributes[i], m_name, false, !!m_verbatim);
-            writeOpenAccessor(ostr, m_classAttributes[i], m_name, true, false);
+            writeOpenAccessor(ostr, m_classAttributes[i], m_name, false, !!m_verbatim, false, accessorFormat());
+            writeOpenAccessor(ostr, m_classAttributes[i], m_name, true, false, false, accessorFormat());
         }
         else
         {
@@ -1578,6 +1582,14 @@ void WrapperClass::setVerbatimConstructor(const VerbatimConstSP& verbatimConstru
 void WrapperClass::setDataType(const DataTypeConstSP& dataType)
 {
     m_dataType = dataType;
+}
+
+const char* WrapperClass::accessorFormat() const
+{
+    if (m_accessorFormat.empty())
+        return NULL;
+
+    return m_accessorFormat.c_str();
 }
 
 void WrapperClass::VerifyAndComplete()

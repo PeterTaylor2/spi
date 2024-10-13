@@ -68,7 +68,8 @@ public:
         bool                            noId,
         bool                            asValue,
         bool                            uuid,
-        bool incomplete);
+        bool incomplete,
+        const std::string& accessorFormat);
 
     void addClassAttribute(const ClassAttributeConstSP& classAttribute);
     void addMethod(const ClassMethodConstSP& method);
@@ -155,7 +156,8 @@ protected:
         bool                            noId,
         bool                            asValue,
         bool                            uuid,
-        bool incomplete);
+        bool incomplete,
+        const std::string& accessorFormat);
 
 private:
     std::vector<std::string>           m_description;
@@ -172,6 +174,7 @@ private:
     bool                               m_asValue;
     bool                               m_uuid;
     bool                               m_incomplete;
+    std::string                        m_accessorFormat;
 
 private:
     std::string                        m_verbatimStart;
@@ -216,6 +219,8 @@ public:
 
     void setVerbatimConstructor(const VerbatimConstSP& verbatimConstructor);
     void setDataType(const DataTypeConstSP& dataType);
+
+    const char* accessorFormat() const;
 };
 
 #endif

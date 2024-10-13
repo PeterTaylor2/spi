@@ -178,7 +178,8 @@ void writeOpenAccessor(
     const std::string& className,
     bool innerContext,
     bool hasVerbatim,
-    bool usePropertyName=false);
+    bool usePropertyName=false,
+    const char* accessorFormat=NULL);
 
 void writeClosedAccessor(
     GeneratedOutput& ostr,
