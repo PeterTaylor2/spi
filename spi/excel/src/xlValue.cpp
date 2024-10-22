@@ -613,11 +613,11 @@ void xloperSetFromValue(
             throw RuntimeError("No base name provided");
         }
 
-        if (!noCellName)
-            fullBaseName << "#" << xlCellName();
-
         if (baseNameIndex > 0)
             fullBaseName << "[" << baseNameIndex << "]";
+
+        if (!noCellName)
+            fullBaseName << "#" << xlCellName();
 
         std::string handle = ObjectHandleSave(fullBaseName.str(), in);
         xloperSetFromValue(xloper, Value(handle), false);
