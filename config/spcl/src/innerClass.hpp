@@ -188,7 +188,8 @@ public:
         const std::string& name,
         const std::string& ns,
         const std::string& preDeclaration,
-        const std::string& boolTest);
+        const std::string& boolTest,
+        size_t numArguments);
 
     /**
      * write the pre-declaration statements for the template class
@@ -197,7 +198,7 @@ public:
                     NamespaceManager& nsman) const;
 
     InnerClassConstSP MakeInnerClass(
-        const std::string& T,
+        const std::vector<std::string>& templateArgs,
         const std::string& sharedPtr,
         bool               isShared,
         bool               isConst,
@@ -212,13 +213,15 @@ protected:
         const std::string& name,
         const std::string& ns,
         const std::string& preDeclaration,
-        const std::string& boolTest);
+        const std::string& boolTest,
+        size_t numArguments);
 
 private:
     std::string m_name;
     std::string m_ns;
     std::string m_preDeclaration;
     std::string m_boolTest;
+    size_t m_numArguments;
     std::string m_fullName;
 
     void VerifyAndComplete();

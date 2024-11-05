@@ -279,21 +279,24 @@ InnerClassTemplateConstSP InnerClassTemplate::Make(
     const std::string& name,
     const std::string& ns,
     const std::string& preDeclaration,
-    const std::string& boolTest)
+    const std::string& boolTest,
+    size_t numArguments)
 {
-    return new InnerClassTemplate(name, ns, preDeclaration, boolTest);
+    return new InnerClassTemplate(name, ns, preDeclaration, boolTest, numArguments);
 }
 
 InnerClassTemplate::InnerClassTemplate(
     const std::string& name,
     const std::string& ns,
     const std::string& preDeclaration,
-    const std::string& boolTest)
+    const std::string& boolTest,
+    size_t numArguments)
     :
     m_name(name),
     m_ns(ns),
     m_preDeclaration(preDeclaration),
-    m_boolTest(boolTest)
+    m_boolTest(boolTest),
+    m_numArguments(numArguments)
 {
     VerifyAndComplete();
 }
@@ -312,6 +315,7 @@ void InnerClassTemplate::preDeclare(GeneratedOutput& ostr,
 void InnerClassTemplate::VerifyAndComplete()
 {
     SPI_PRE_CONDITION(!m_name.empty());
+    SPI_PRE_CONDITION(m_numArguments > 0);
 
     std::ostringstream ostr;
 
@@ -320,7 +324,7 @@ void InnerClassTemplate::VerifyAndComplete()
 }
 
 InnerClassConstSP InnerClassTemplate::MakeInnerClass(
-    const std::string& T,
+    const std::vector<std::string>& templateArgs,
     const std::string& sharedPtr,
     bool               isShared,
     bool               isConst,
@@ -330,7 +334,16 @@ InnerClassConstSP InnerClassTemplate::MakeInnerClass(
     bool               byValue,
     bool               allowConst) const
 {
-    std::string typeName = spi::StringFormat("%s< %s >", m_name.c_str(), T.c_str());
+    if (templateArgs.size() != m_numArguments)
+    {
+        throw spi::RuntimeError("Mis-match between template arguments and expected");
+    }
+
+    std::string typeName = spi::StringFormat(
+        "%s< %s >",
+        m_name.c_str(),
+        spi_util::StringJoin(", ", templateArgs).c_str());
+
     return InnerClass::Make(typeName, m_ns, "", "", "", sharedPtr,
         isShared, isConst, isOpen, isStruct, isCached, true, byValue,
         byValue && m_boolTest.empty() ? "true" : m_boolTest, allowConst);

@@ -2004,18 +2004,49 @@ void templateKeywordHandler(
     // available for use as a template within an inner class definition
     //
     // template is given as read
+
     ConfigLexer::Token token;
 
+    std::vector<std::string> templateArguments;
+    std::vector<std::string> templateKeywords;
+
     getTokenOfType(lexer, '<');
-    token = getTokenOfType(lexer, SPI_CONFIG_TOKEN_TYPE_KEYWORD, "class or typename");
-    std::string classOrTypename = token.value.aKeyword;
-    if (classOrTypename != "class" && classOrTypename != "typename")
+
+    // token = getTokenOfType(lexer, SPI_CONFIG_TOKEN_TYPE_KEYWORD, "class or typename");
+
+    while (true)
     {
-        throw spi::RuntimeError("Expecting class or typename for template definition");
+        token = lexer.getToken();
+
+        std::string keyword;
+        if (token.type == SPI_CONFIG_TOKEN_TYPE_KEYWORD)
+        {
+            keyword = token.value.aKeyword;
+        }
+        if (keyword != "class" && keyword != "typename")
+        {
+            throw spi::RuntimeError("Expecting class or typename for template definition");
+        }
+        token = getTokenOfType(lexer, SPI_CONFIG_TOKEN_TYPE_NAME);
+        templateKeywords.push_back(keyword);
+        templateArguments.push_back(token.value.aName);
+        token = lexer.getToken();
+        if (token.type == '>')
+            break;
+
+        if (token.type != ',')
+        {
+            throw spi::RuntimeError("Expecting ',' or '>'");
+        }
     }
-    token = getTokenOfType(lexer, SPI_CONFIG_TOKEN_TYPE_NAME);
-    std::string templateArgument = token.value.aName;
-    getTokenOfType(lexer, '>');
+
+    // do we allow empty template arguments?
+    // for the moment no
+
+    if (templateArguments.size() == 0)
+    {
+        throw spi::RuntimeError("No template arguments defined");
+    }
 
     token = getTokenOfType(lexer, SPI_CONFIG_TOKEN_TYPE_KEYWORD, "class or struct");
     std::string classOrStruct = token.value.aKeyword;
@@ -2043,16 +2074,25 @@ void templateKeywordHandler(
     std::string preDeclaration;
     splitCppTypeName(fullName, name, ns);
 
+    size_t N = templateArguments.size();
+
     if (ns != "std")
     {
         std::ostringstream oss;
-        oss << "template <" << classOrTypename << " " << templateArgument << "> "
-            << classOrStruct << " " << name << ";";
+        oss << "template <";
+        for (size_t i = 0; i < N; ++i)
+        {
+            if (i > 0)
+                oss << ", ";
+
+            oss << templateKeywords[i] << " " << templateArguments[i];
+        }
+        oss << "> " << classOrStruct << " " << name << ";";
         preDeclaration = oss.str();
     }
 
     InnerClassTemplateConstSP innerClassTemplate = InnerClassTemplate::Make(
-        name, ns, preDeclaration, boolTest);
+        name, ns, preDeclaration, boolTest, N);
 
     service->addInnerClassTemplate(innerClassTemplate);
     module->addInnerClassTemplate(innerClassTemplate);
@@ -2757,13 +2797,26 @@ InnerClassConstSP parseInnerClass(
         //}
         token = lexer.getToken();
         bool byValue = false;
+        std::vector<std::string> templateArgs;
         if (token.type == '<')
         {
             std::string templateArg = getCppTypeName(lexer, true);
+            templateArgs.push_back(templateArg);
             token = lexer.getToken();
+
+            while (token.type == ',')
+            {
+                templateArg = getCppTypeName(lexer, true);
+                templateArgs.push_back(templateArg);
+                token = lexer.getToken();
+            }
+
             if (token.type != '>')
+            {
                 throw spi::RuntimeError("Expecting '>' actual was %s",
                     token.toString().c_str());
+            }
+
             token = lexer.getToken();
 
             InnerClassTemplateConstSP innerClassTemplate = service->getInnerClassTemplate(fullInnerName);
@@ -2777,7 +2830,8 @@ InnerClassConstSP parseInnerClass(
                 byValue = true;
                 token = lexer.getToken();
             }
-            innerClass = innerClassTemplate->MakeInnerClass(templateArg,
+
+            innerClass = innerClassTemplate->MakeInnerClass(templateArgs,
                 sharedPtr, isShared, isConst, isOpen, isStruct, isCached, byValue, allowConst);
         }
         else
@@ -2798,9 +2852,11 @@ InnerClassConstSP parseInnerClass(
                 isShared, isConst, isOpen, isStruct, isCached, false, byValue, boolTest, allowConst);
         }
 
-        if (token.type != '>')
-            throw spi::RuntimeError("Expecting '>' actual was %s",
-                                    token.toString().c_str());
+        //if (token.type != '>')
+        //{
+        //    throw spi::RuntimeError("Expecting '>' actual was %s",
+        //        token.toString().c_str());
+        //}
 
         //std::string ns = spi::StringJoin("::", namespaceParts);
         //service->addInnerClass(innerClass);
