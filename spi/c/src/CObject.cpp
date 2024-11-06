@@ -26,6 +26,7 @@
 #include "Error.h"
 
 #include "Helper.hpp"
+#include <spi/ObjectHandle.hpp>
 
 /*
 **************************************************************************
@@ -179,6 +180,146 @@ spi_Variant* spi_Object_get_value(spi_Object* self, const char * name)
     {
         spi_Error_set_function(__FUNCTION__, e.what());
         return nullptr;
+    }
+}
+
+int spi_Object_handle_save(
+    const char* baseName,
+    spi_Object* obj,
+    spi_Bool noCount,
+    char** handle)
+{
+    try
+    {
+        if (!baseName || !obj || !handle)
+            SPI_THROW_RUNTIME_ERROR("Null inputs");
+
+        const std::string& cHandle = spi::ObjectHandleSave(
+            baseName,
+            (spi::Object*)obj,
+            noCount == SPI_TRUE);
+
+        *handle = spi_String_copy(cHandle.c_str());
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
+}
+
+int spi_Object_handle_find(
+    const char* handle,
+    spi_Object** obj)
+{
+    try
+    {
+        if (!handle || !obj)
+            SPI_THROW_RUNTIME_ERROR("Null inputs");
+
+        *obj = spi::convert_out<spi_Object>(spi::ObjectHandleFind(handle));
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
+}
+
+int spi_Object_handle_free_all(int* count)
+{
+    try
+    {
+        if (!count)
+            SPI_THROW_RUNTIME_ERROR("Null inputs");
+        
+        *count = spi::ObjectHandleFreeAll();
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
+}
+
+int spi_Object_handle_count(
+    const char* className,
+    int* count)
+{
+    try
+    {
+        if (!className || !count)
+            SPI_THROW_RUNTIME_ERROR("Null inputs");
+
+        *count = spi::ObjectHandleCount(className);
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
+}
+
+int spi_Object_handle_free(const char* handle)
+{
+    try
+    {
+        if (!handle)
+            SPI_THROW_RUNTIME_ERROR("Null inputs");
+
+        spi::ObjectHandleFree(handle);
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
+
+}
+
+int spi_Object_handle_list(
+    const char* baseName,
+    const char* className,
+    spi_String_Vector** handles)
+{
+    try
+    {
+        if (!baseName || !className || !handles)
+            SPI_THROW_RUNTIME_ERROR("Null inputs");
+
+        *handles = (spi_String_Vector*)(new std::vector<std::string>(
+            spi::ObjectHandleList(baseName, className)));
+
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
+}
+
+int spi_Object_handle_class_name(const char* handle, char** className)
+{
+    try
+    {
+        if (!handle || !className)
+            SPI_THROW_RUNTIME_ERROR("Null inputs");
+
+        std::string cClassName = spi::ObjectHandleClassName(handle);
+        *className = spi_String_copy(cClassName.c_str());
+
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
     }
 }
 

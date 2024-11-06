@@ -172,6 +172,42 @@ namespace SPI
             IntPtr self,
             string name);
 
+        [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int spi_Object_handle_save(
+            string baseName,
+            IntPtr obj,
+            bool noCount,
+            out string handle);
+
+        [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int spi_Object_handle_find(
+            string handle,
+            out IntPtr obj);
+
+        [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int spi_Object_handle_free_all(
+            out int count);
+
+        [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int spi_Object_handle_count(
+            string className,
+            out int count);
+
+        [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int spi_Object_handle_free(
+            string handle);
+
+        [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int spi_Object_handle_list(
+            string baseName,
+            string className,
+            out IntPtr handles);
+
+        [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int spi_Object_handle_class_name(
+            string handle,
+            out string className);
+
         /* Variant functions */
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern void spi_Variant_delete(IntPtr self);
@@ -1461,7 +1497,7 @@ namespace SPI
             public void Dispose()
             {
                 Dispose(true);
-                GC.SuppressFinalize(true);
+                GC.SuppressFinalize(this);
             }
 
             public Variant(IntPtr in_self)
@@ -1714,7 +1750,7 @@ namespace SPI
             public void Dispose()
             {
                 Dispose(true);
-                GC.SuppressFinalize(true);
+                GC.SuppressFinalize(this);
             }
 
             public delegate Object class_wrapper(IntPtr self);
@@ -1898,6 +1934,77 @@ namespace SPI
             protected IntPtr self = IntPtr.Zero;
         }
 
+        // functions dealing with string object handles
+        public static System.String ObjectHandleSave(
+            System.String baseName,
+            Object obj,
+            bool noCount = false)
+        {
+            if (spi_Object_handle_save(baseName, Object.get_inner(obj), noCount, out string handle) != 0)
+            {
+                throw ErrorToException();
+            }
+            return handle;
+        }
+
+        public static Object ObjectHandleFind(
+            System.String handle)
+        {
+            if (spi_Object_handle_find(handle, out IntPtr obj) != 0)
+            {
+                throw ErrorToException();
+            }
+            return Object.Wrap(obj);
+        }
+
+        public static int ObjectHandleFreeAll()
+        {
+            if (spi_Object_handle_free_all(out int count) != 0)
+            {
+                throw ErrorToException();
+            }
+            return count;
+        }
+
+        public static int ObjectHandleCount(
+            System.String className)
+        {
+            if (spi_Object_handle_count(className, out int count) != 0)
+            {
+                throw ErrorToException();
+            }
+            return count;
+        }
+
+        public static void ObjectHandleFree(
+            System.String handle)
+        {
+            if (spi_Object_handle_free(handle) != 0)
+            {
+                throw ErrorToException();
+            }
+        }
+
+        public static string[] ObjectHandleList(
+            System.String baseName = "",
+            System.String className = "")
+        {
+            if (spi_Object_handle_list(baseName, className, out IntPtr handles) != 0)
+            {
+                throw ErrorToException();
+            }
+            return spi.StringVectorToArray(spi.StringVectorToHandle(handles));
+        }
+
+        public static string ObjectHandleClassName(
+            string handle)
+        {
+            if (spi_Object_handle_class_name(handle, out string className) != 0)
+            {
+                throw ErrorToException();
+            }
+            return className;
+        }
 
         public static PointerHandle ObjectVectorToHandle(IntPtr v)
         {

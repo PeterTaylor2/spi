@@ -34,6 +34,7 @@
 #include <stddef.h>
 #include "CVector.h"
 #include "CMatrix.h"
+#include "CString.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -79,6 +80,43 @@ extern "C"
     spi_Variant* spi_Object_get_value(
         spi_Object* self,
         const char* name);
+
+    /* Object handle functions */
+    SPI_C_IMPORT
+    int spi_Object_handle_save(
+        const char* baseName,
+        spi_Object* obj,
+        spi_Bool noCount,
+        char** handle);
+
+    SPI_C_IMPORT
+    int spi_Object_handle_find(
+        const char* handle,
+        spi_Object** obj);
+
+    SPI_C_IMPORT
+    int spi_Object_handle_free_all(
+        int *count);
+
+    SPI_C_IMPORT
+    int spi_Object_handle_count(
+        const char* className,
+        int* count);
+
+    SPI_C_IMPORT
+    int spi_Object_handle_free(
+        const char* handle);
+
+    SPI_C_IMPORT
+    int spi_Object_handle_list(
+        const char* baseName,
+        const char* className,
+        spi_String_Vector** handles);
+
+    SPI_C_IMPORT
+    int spi_Object_handle_class_name(
+        const char* handle,
+        char** className);
 
     DECLARE_VECTOR_METHODS(spi_Object, SPI_C_IMPORT);
     DECLARE_MATRIX_METHODS(spi_Object, SPI_C_IMPORT);
