@@ -1220,7 +1220,7 @@ void CModule::implementClass(
             << "    try\n"
             << "    {\n"
             << "        " << cdt.cppType(0) << " out = \n"
-            << "            (*(" << cppname << "*)(self))->operator " << cdt.cppType(0) << "();\n"
+            << "            ((" << cpptype << "*)self)->operator " << cdt.cppType(0) << "();\n"
             << "        return " << cdt.cpp_to_c(0, "out") << ";\n"
             << "    }\n"
             << "    catch (std::exception& e)\n"
