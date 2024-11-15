@@ -328,6 +328,10 @@ const MapConstSP& Object::get_public_map() const
 Value Object::get_value(const std::string & name) const
 {
     const MapConstSP& m = get_public_map();
+    if (name.empty())
+    {
+        return m->FieldNames();
+    }
     return m->GetValue(name);
 }
 
@@ -631,7 +635,7 @@ Value ObjectGet(const Object* obj, const char* name)
     Value value = obj->get_value(name);
     if (value.isUndefined())
     {
-        throw RuntimeError("ObjectGet: %s is undefined in object of type %s",
+        throw RuntimeError("ObjectGet: '%s' is undefined in object of type %s",
             name, classname);
     }
     return value;
