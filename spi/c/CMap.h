@@ -43,6 +43,7 @@ extern "C"
 #endif
 
     typedef struct spi_Map spi_Map;
+    typedef struct spi_Object spi_Object;
 
     /* Map functions */
     SPI_C_IMPORT
@@ -50,6 +51,9 @@ extern "C"
 
     DECLARE_VECTOR_METHODS(spi_Map, SPI_C_IMPORT);
     DECLARE_MATRIX_METHODS(spi_Map, SPI_C_IMPORT);
+
+    SPI_C_IMPORT
+    spi_Map* spi_Map_dynamic_cast(spi_Object* obj);
 
 #ifdef __cplusplus
 }

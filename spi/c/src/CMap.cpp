@@ -36,6 +36,12 @@ void spi_Map_delete(spi_Map* item)
     intrusive_ptr_release((spi::MapObject*)item);
 }
 
+spi_Map* spi_Map_dynamic_cast(spi_Object* obj)
+{
+    const spi::MapObject* out = dynamic_cast<const spi::MapObject*>((const spi::Object*)obj);
+    return (spi_Map*)out;
+}
+
 void spi_Map_Vector_delete(spi_Map_Vector* v)
 {
     spi::Vector_delete<spi::MapObject>(v);

@@ -1759,6 +1759,7 @@ namespace SPI
             static Object()
             {
                 zz_class_wrappers = new System.Collections.Generic.Dictionary<string, class_wrapper>();
+                zz_class_wrappers.Add("Map", spi.Map.Wrap);
             }
 
             public static void zz_register_class_wrapper(string name, class_wrapper wrapper)
@@ -2111,7 +2112,9 @@ namespace SPI
             return h;
         }
 
-
+        /* Map functions */
+        [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr spi_Map_dynamic_cast(IntPtr o);
 
         public class Map : spi.Object
         {
@@ -2122,6 +2125,10 @@ namespace SPI
             {
                 if (self == IntPtr.Zero)
                     return null;
+
+                self = spi_Map_dynamic_cast(self);
+                if (self == IntPtr.Zero)
+                    throw new Exception("self is not an instance of Map");
 
                 Map obj = new Map();
                 obj.set_inner(self);
