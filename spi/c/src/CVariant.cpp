@@ -122,6 +122,27 @@ spi_Variant* spi_Variant_new_Int(int i)
     }
 }
 
+int spi_Variant_type(spi_Variant* var, char** vt)
+{
+    try
+    {
+        if (!var || !vt)
+        {
+            spi_Error_set_function(__FUNCTION__, "NULL inputs");
+            return -1;
+        }
+        spi::Value::Type valueType = ((spi::Variant*)var)->ValueType();
+        *vt = spi_String_copy(spi::Value::TypeToString(valueType));
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
+    return 0;
+}
+
 int spi_Variant_String(spi_Variant * var, char ** str)
 {
     try

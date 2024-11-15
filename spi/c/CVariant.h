@@ -73,6 +73,11 @@ extern "C"
     spi_Variant* spi_Variant_new_Int(int i);
 
     SPI_C_IMPORT
+    int spi_Variant_type(
+        spi_Variant* var,
+        char** vt);
+
+    SPI_C_IMPORT
     int spi_Variant_String(
         spi_Variant* var,
         char** str);
