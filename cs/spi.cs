@@ -1606,7 +1606,7 @@ namespace SPI
                 return spi.BoolVectorToArray(h);
             }
 
-            static public implicit operator Object[](Variant var)
+            static public implicit operator spi.Object[](Variant var)
             {
                 if (spi_Variant_Object_Vector(var.self, out IntPtr dt) != 0)
                     throw ErrorToException();
@@ -1753,7 +1753,7 @@ namespace SPI
                 GC.SuppressFinalize(this);
             }
 
-            public delegate Object class_wrapper(IntPtr self);
+            public delegate spi.Object class_wrapper(IntPtr self);
             public static System.Collections.Generic.Dictionary<string, class_wrapper> zz_class_wrappers;
 
             static Object()
@@ -1766,7 +1766,7 @@ namespace SPI
                 zz_class_wrappers.Add(name, wrapper);
             }
 
-            public static Object Wrap(IntPtr self)
+            public static spi.Object Wrap(IntPtr self)
             {
                 if (self == IntPtr.Zero)
                     return null;
@@ -1781,7 +1781,7 @@ namespace SPI
                 }
                 catch
                 {
-                    Object obj = new Object();
+                    spi.Object obj = new spi.Object();
                     obj.set_inner(self);
                     return obj;
                 }
@@ -1835,18 +1835,18 @@ namespace SPI
             }
 
             /// <summary>
-            /// De-serializes the string to an Object
+            /// De-serializes the string to an spi.Object
             /// </summary>
             /// <param name="str">
             /// The serialized object string, as created by the to_string method.
             /// </param>
             /// <returns></returns>
-            public static Object from_string(System.String str)
+            public static spi.Object from_string(System.String str)
             {
                 IntPtr inner = spi_Object_from_string(str);
                 if (inner == IntPtr.Zero)
                     throw spi.ErrorToException();
-                return Object.Wrap(inner);
+                return spi.Object.Wrap(inner);
             }
 
             /// <summary>
@@ -1873,18 +1873,18 @@ namespace SPI
             }
 
             /// <summary>
-            /// De-serializes the object stored on file to an Object
+            /// De-serializes the object stored on file to an spi.Object
             /// </summary>
             /// <param name="filename">
             /// The filename containing the serialized object, e.g. as created by the to_file method.
             /// </param>
             /// <returns></returns>
-            public static Object from_file(System.String filename)
+            public static spi.Object from_file(System.String filename)
             {
                 IntPtr inner = spi_Object_from_file(filename);
                 if (inner == IntPtr.Zero)
                     throw spi.ErrorToException();
-                return Object.Wrap(inner);
+                return spi.Object.Wrap(inner);
             }
 
             /// <summary>
@@ -1922,7 +1922,7 @@ namespace SPI
                 this.self = self;
             }
 
-            public static IntPtr get_inner(Object o)
+            public static IntPtr get_inner(spi.Object o)
             {
                 if (o == null)
                     return IntPtr.Zero;
@@ -1937,24 +1937,24 @@ namespace SPI
         // functions dealing with string object handles
         public static System.String ObjectHandleSave(
             System.String baseName,
-            Object obj,
+            spi.Object obj,
             bool noCount = false)
         {
-            if (spi_Object_handle_save(baseName, Object.get_inner(obj), noCount, out string handle) != 0)
+            if (spi_Object_handle_save(baseName, spi.Object.get_inner(obj), noCount, out string handle) != 0)
             {
                 throw ErrorToException();
             }
             return handle;
         }
 
-        public static Object ObjectHandleFind(
+        public static spi.Object ObjectHandleFind(
             System.String handle)
         {
             if (spi_Object_handle_find(handle, out IntPtr obj) != 0)
             {
                 throw ErrorToException();
             }
-            return Object.Wrap(obj);
+            return spi.Object.Wrap(obj);
         }
 
         public static int ObjectHandleFreeAll()
@@ -2011,7 +2011,7 @@ namespace SPI
             return new PointerHandle(v, spi_Object_Vector_delete);
         }
 
-        public static Object[] ObjectVectorToArray(PointerHandle h)
+        public static spi.Object[] ObjectVectorToArray(PointerHandle h)
         {
             IntPtr v = h.get_inner();
             int size;
@@ -2020,7 +2020,7 @@ namespace SPI
                 throw ErrorToException();
             }
 
-            Object[] array = new Object[size];
+            spi.Object[] array = new spi.Object[size];
 
             for (int i = 0; i < size; ++i)
             {
@@ -2028,13 +2028,13 @@ namespace SPI
                 {
                     throw ErrorToException();
                 }
-                array[i] = Object.Wrap(item);
+                array[i] = spi.Object.Wrap(item);
             }
 
             return array;
         }
 
-        public static PointerHandle ObjectVectorFromArray(Object[] array)
+        public static PointerHandle ObjectVectorFromArray(spi.Object[] array)
         {
             int size = array.Length;
             IntPtr v = spi_Object_Vector_new(size);
@@ -2060,7 +2060,7 @@ namespace SPI
             return new PointerHandle(v, spi_Object_Matrix_delete);
         }
 
-        public static Object[,] ObjectMatrixToArray(PointerHandle h)
+        public static spi.Object[,] ObjectMatrixToArray(PointerHandle h)
         {
             IntPtr v = h.get_inner();
             if (spi_Object_Matrix_size(v, out int nr, out int nc) != 0)
@@ -2068,7 +2068,7 @@ namespace SPI
                 throw ErrorToException();
             }
 
-            Object[,] array = new Object[nr, nc];
+            spi.Object[,] array = new spi.Object[nr, nc];
 
             for (int i = 0; i < nr; ++i)
             {
@@ -2078,14 +2078,14 @@ namespace SPI
                     {
                         throw ErrorToException();
                     }
-                    array[i, j] = Object.Wrap(item);
+                    array[i, j] = spi.Object.Wrap(item);
                 }
             }
 
             return array;
         }
 
-        public static PointerHandle ObjectMatrixFromArray(Object[,] array)
+        public static PointerHandle ObjectMatrixFromArray(spi.Object[,] array)
         {
             int nr = array is null ? 0 : array.GetLength(0);
             int nc = array is null ? 0 : array.GetLength(1);
@@ -2113,7 +2113,7 @@ namespace SPI
 
 
 
-        public class Map : Object
+        public class Map : spi.Object
         {
             protected Map() { }
 
