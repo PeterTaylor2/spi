@@ -23,6 +23,7 @@
 #include "Error.h"
 
 #include "Helper.hpp"
+#include "CString.h"
 
 #include <stdarg.h>
 #include <spi_util/StringUtil.hpp>
@@ -66,8 +67,8 @@ void spi_Error_set_format(const char* format, ...)
     g_last_error = result;
 }
 
-const char* spi_Error_get()
+char* spi_Error_get()
 {
-    return g_last_error.c_str();
+    return spi_String_copy(g_last_error.c_str());
 }
 

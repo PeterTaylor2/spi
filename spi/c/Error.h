@@ -48,7 +48,7 @@ extern "C"
     void spi_Error_set_format(const char* format, ...);
 
     SPI_C_IMPORT
-    const char* spi_Error_get();
+    char* spi_Error_get();
 
 
 #ifdef __cplusplus
