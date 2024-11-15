@@ -334,7 +334,7 @@ spi_Object_Vector* spi_Object_Vector_new(int N)
 }
 
 int spi_Object_Vector_item(
-    spi_Object_Vector* v,
+    const spi_Object_Vector* v,
     int i,
     spi_Object** item)
 {
@@ -350,7 +350,7 @@ int spi_Object_Vector_set_item(
 }
 
 int spi_Object_Vector_size(
-    spi_Object_Vector* v,
+    const spi_Object_Vector* v,
     int* size)
 {
     return spi::Vector_size<spi::Object>(v, size);
@@ -367,7 +367,7 @@ spi_Object_Matrix* spi_Object_Matrix_new(int nr, int nc)
 }
 
 int spi_Object_Matrix_item(
-    spi_Object_Matrix* m,
+    const spi_Object_Matrix* m,
     int i, int j,
     spi_Object** item)
 {
@@ -383,7 +383,7 @@ int spi_Object_Matrix_set_item(
 }
 
 int spi_Object_Matrix_size(
-    spi_Object_Matrix* m,
+    const spi_Object_Matrix* m,
     int* nr, int* nc)
 {
     return spi::Matrix_size<spi::Object>(m, nr, nc);

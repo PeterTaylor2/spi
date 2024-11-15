@@ -118,8 +118,59 @@ extern "C"
         const char* handle,
         char** className);
 
-    DECLARE_VECTOR_METHODS(spi_Object, SPI_C_IMPORT);
-    DECLARE_MATRIX_METHODS(spi_Object, SPI_C_IMPORT);
+    /* vector functions */
+    typedef struct spi_Object_Vector spi_Object_Vector;
+
+    SPI_C_IMPORT
+    void spi_Object_Vector_delete(spi_Object_Vector* v);
+
+    SPI_C_IMPORT
+    spi_Object_Vector* spi_Object_Vector_new(
+        int N);
+
+    SPI_C_IMPORT
+    int spi_Object_Vector_item(
+        const spi_Object_Vector* v,
+        int i,
+        spi_Object** item /*(O)*/);
+
+    SPI_C_IMPORT
+    int spi_Object_Vector_set_item(
+        spi_Object_Vector* v,
+        int i,
+        spi_Object* item);
+
+    SPI_C_IMPORT
+    int spi_Object_Vector_size(
+        const spi_Object_Vector* v,
+        int* size /*(O)*/);
+
+    /* matrix functions */
+    typedef struct spi_Object_Matrix spi_Object_Matrix;
+
+    SPI_C_IMPORT
+    void spi_Object_Matrix_delete(spi_Object_Matrix* m);
+
+    SPI_C_IMPORT
+    spi_Object_Matrix* spi_Object_Matrix_new(int nr, int nc);
+
+    SPI_C_IMPORT
+    int spi_Object_Matrix_item(
+        const spi_Object_Matrix* m,
+        int i, int j,
+        spi_Object** item);
+
+    SPI_C_IMPORT
+    int spi_Object_Matrix_set_item(
+        spi_Object_Matrix* m,
+        int i, int j,
+        spi_Object* item);
+
+    SPI_C_IMPORT
+    int spi_Object_Matrix_size(
+        const spi_Object_Matrix* m,
+        int* nr, int* nc);
+
 
 #ifdef __cplusplus
 }
