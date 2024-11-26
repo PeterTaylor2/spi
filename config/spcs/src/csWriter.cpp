@@ -538,10 +538,16 @@ const spdoc::ServiceConstSP& CService::service() const
     return m_service;
 }
 
-std::string CService::rename(const std::string& name) const
+std::string CService::rename(const std::string& name, bool fieldName) const
 {
     if (m_exclusions.count(name) == 0)
+    {
+        if (fieldName && m_options.csNamingStyle)
+        {
+            return spi_util::StringCap(name);
+        }
         return name;
+    }
 
     //std::cout << "Renaming " << name << " as " << name << "_\n";
     return name + "_";
@@ -560,6 +566,11 @@ const std::string& CService::license() const
 bool CService::writeBackup() const
 {
     return m_options.writeBackup;
+}
+
+bool CService::csNamingStyle() const
+{
+    return m_options.csNamingStyle;
 }
 
 /*
@@ -814,7 +825,7 @@ void CModule::implementFunctionBegin(
         ostr << sep << spaces << gap;
         sep = ",\n";
         ostr << CDataType(arg->dataType, service).csType(arg->arrayDim) << " "
-            << service->rename(arg->name);
+            << service->rename(arg->name, true);
 
         if (i >= lastMandatory)
         {
@@ -865,7 +876,7 @@ void CModule::implementFunctionEnd(
             spdoc::AttributeConstSP out = func->outputs[i];
             CDataType cdt(out->dataType, service);
 
-            std::string captureOutput = cdt.c_to_csi(out->arrayDim, service->rename(out->name));
+            std::string captureOutput = cdt.c_to_csi(out->arrayDim, service->rename(out->name, true));
 
             if (!captureOutput.empty())
             {
@@ -916,7 +927,7 @@ std::string CModule::defineValueTupleOutput(
         {
             spdoc::AttributeConstSP out = func->outputs[i];
             oss << gap << CDataType(out->dataType, service).csType(out->arrayDim)
-                << " " << service->rename(out->name);
+                << " " << service->rename(out->name, true);
             gap = ", ";
         }
         oss << ")";
@@ -939,7 +950,7 @@ void CModule::implementPlatformInvoke(
     {
         const spdoc::AttributeConstSP& arg = func->inputs[i];
         std::string convertedArg = CDataType(arg->dataType, service).cs_to_c(
-            arg->arrayDim, service->rename(arg->name));
+            arg->arrayDim, arg->name);
 
         ostr << sep << newline << convertedArg;
         sep = ",";
@@ -1002,7 +1013,7 @@ void CModule::implementClass(
             ostr << sep;
             sep = sep2;
             ostr << CDataType(attr->dataType, service).csiType(attr->arrayDim) << " "
-                << service->rename(attr->name);
+                << service->rename(attr->name, true);
         }
 
         ostr << ");\n";
@@ -1070,7 +1081,7 @@ void CModule::implementClass(
         ostr << "\n"
             << service->csDllImport() << "\n"
             << "private static extern IntPtr " << funcName.str() << "(\n"
-            << "    " << CDataType(dt, service).csiType(arrayDim) << " " << service->rename(cfa->name) << ");\n";
+            << "    " << CDataType(dt, service).csiType(arrayDim) << " " << service->rename(cfa->name, true) << ");\n";
 
         cfFuncNames.push_back(funcName.str());
     }
@@ -1122,7 +1133,7 @@ void CModule::implementClass(
                 << "private static extern int " << cname << "_get_" << attr->name << "(\n"
                 << "    IntPtr self,\n"
                 << "    out " << CDataType(attr->dataType, service).csiType(attr->arrayDim)
-                << " " << service->rename(attr->name) << ");\n";
+                << " " << service->rename(attr->name, true) << ");\n";
         }
     }
 
@@ -1135,7 +1146,7 @@ void CModule::implementClass(
             << "private static extern int " << cname << "_get_" << prop->name << "(\n"
             << "    IntPtr self,\n"
             << "    out " << CDataType(prop->dataType, service).csiType(prop->arrayDim)
-            << " " << service->rename(prop->name) << ");\n";
+            << " " << service->rename(prop->name, true) << ");\n";
     }
 
     if (cls->canPut)
@@ -1150,7 +1161,7 @@ void CModule::implementClass(
                     << "private static extern IntPtr " << cname << "_set_" << attr->name << "(\n"
                     << "    IntPtr self,\n"
                     << "    " << CDataType(attr->dataType, service).csiType(attr->arrayDim)
-                    << " " << service->rename(attr->name) << ");\n";
+                    << " " << service->rename(attr->name, true) << ");\n";
             }
         }
     }
@@ -1192,7 +1203,7 @@ void CModule::implementClass(
             const spdoc::ClassAttributeConstSP& attr = cls->attributes[i];
             ostr << sep;
             sep = sep2;
-            ostr << CDataType(attr->dataType, service).csType(attr->arrayDim) << " " << service->rename(attr->name);
+            ostr << CDataType(attr->dataType, service).csType(attr->arrayDim) << " " << service->rename(attr->name, true);
         }
         ostr << ")\n"
             << "    {\n";
@@ -1281,7 +1292,7 @@ void CModule::implementClass(
             ostr << "    static public implicit operator " << cls->name << "(";
         }
 
-        ostr << cdt.csType(cfa->arrayDim) << " " << service->rename(cfa->name) << ")\n"
+        ostr << cdt.csType(cfa->arrayDim) << " " << service->rename(cfa->name, true) << ")\n"
             << "    {\n"
             << "        IntPtr inner = " << cfFuncNames[i] << "("
             << cdt.cs_to_c(arrayDim, cfa->name) << ");\n"
@@ -1549,7 +1560,7 @@ void CModule::implementProperty(
     ostr << "\n";
     xmlWriteDescription(ostr, "summary", "", "    ", attr->description);
     std::string New = isOverride ? "new " : "";
-    ostr << "    public " << New << cdt.csType(attr->arrayDim) << " " << service->rename(attr->name) << "\n"
+    ostr << "    public " << New << cdt.csType(attr->arrayDim) << " " << service->rename(attr->name, true) << "\n"
         << "    {\n"
         << "        get\n"
         << "        {\n"
@@ -1625,7 +1636,7 @@ void CModule::implementClassMethod(
     if (method->isStatic)
         ostr << "static ";
 
-    ostr << csReturnType << " " << service->rename(func->name) << "(";
+    ostr << csReturnType << " " << service->rename(func->name, false) << "(";
 
     implementFunctionBegin(ostr, func.get(), 4);
 
@@ -1665,7 +1676,7 @@ void CModule::declarePlatformInvokeArgs(
         const spdoc::AttributeConstSP& arg = func->inputs[i];
         ostr << sep;
         sep = sep2;
-        ostr << CDataType(arg->dataType, service).csiType(arg->arrayDim) << " " << service->rename(arg->name);
+        ostr << CDataType(arg->dataType, service).csiType(arg->arrayDim) << " " << service->rename(arg->name, true);
     }
 
     if (func->returnType)
@@ -1682,7 +1693,7 @@ void CModule::declarePlatformInvokeArgs(
         ostr << sep;
         sep = ",\n    ";
         ostr << "out "
-            << CDataType(out->dataType, service).csiType(out->arrayDim) << " " << service->rename(out->name);
+            << CDataType(out->dataType, service).csiType(out->arrayDim) << " " << service->rename(out->name, true);
     }
 
     ostr << ");\n";
@@ -2071,24 +2082,24 @@ std::string CDataType::cs_to_c(int arrayDim, const std::string& name) const
         case spdoc::PublicType::STRING:
             break;
         case spdoc::PublicType::DATE:
-            oss << "spi.DateToCDate(" << service->rename(name) << ")";
+            oss << "spi.DateToCDate(" << service->rename(name, true) << ")";
             break;
         case spdoc::PublicType::DATETIME:
-            oss << "spi.DateTimeToCDateTime(" << service->rename(name) << ")";
+            oss << "spi.DateTimeToCDateTime(" << service->rename(name, true) << ")";
             break;
         case spdoc::PublicType::CLASS:
-            oss << csType(0) << ".get_inner(" << service->rename(name) << ")";
+            oss << csType(0) << ".get_inner(" << service->rename(name, true) << ")";
             break;
         case spdoc::PublicType::OBJECT:
-            oss << "spi.Object.get_inner(" << service->rename(name) << ")";
+            oss << "spi.Object.get_inner(" << service->rename(name, true) << ")";
             break;
         case spdoc::PublicType::ENUM:
             break;
         case spdoc::PublicType::MAP:
-            oss << "spi.Map.get_inner(" << service->rename(name) << ")";
+            oss << "spi.Map.get_inner(" << service->rename(name, true) << ")";
             break;
         case spdoc::PublicType::VARIANT:
-            oss << "spi.Variant.get_inner(" << service->rename(name) << ")";
+            oss << "spi.Variant.get_inner(" << service->rename(name, true) << ")";
             break;
         default:
             oss << "// " << __FUNCTION__ << " Scalars not implemented for " <<
@@ -2099,32 +2110,32 @@ std::string CDataType::cs_to_c(int arrayDim, const std::string& name) const
         switch (publicType)
         {
         case spdoc::PublicType::INT:
-            oss << "spi.IntVectorFromArray(" << service->rename(name) << ").get_inner()";
+            oss << "spi.IntVectorFromArray(" << service->rename(name, true) << ").get_inner()";
             break;
         case spdoc::PublicType::BOOL:
-            oss << "spi.BoolVectorFromArray(" << service->rename(name) << ").get_inner()";
+            oss << "spi.BoolVectorFromArray(" << service->rename(name, true) << ").get_inner()";
             break;
         case spdoc::PublicType::DOUBLE:
-            oss << "spi.DoubleVectorFromArray(" << service->rename(name) << ").get_inner()";
+            oss << "spi.DoubleVectorFromArray(" << service->rename(name, true) << ").get_inner()";
             break;
         case spdoc::PublicType::STRING:
-            oss << "spi.StringVectorFromArray(" << service->rename(name) << ").get_inner()";
+            oss << "spi.StringVectorFromArray(" << service->rename(name, true) << ").get_inner()";
             break;
         case spdoc::PublicType::DATE:
-            oss << "spi.DateVectorFromArray(" << service->rename(name) << ").get_inner()";
+            oss << "spi.DateVectorFromArray(" << service->rename(name, true) << ").get_inner()";
             break;
         case spdoc::PublicType::DATETIME:
-            oss << "spi.DateTimeVectorFromArray(" << service->rename(name) << ").get_inner()";
+            oss << "spi.DateTimeVectorFromArray(" << service->rename(name, true) << ").get_inner()";
             break;
         case spdoc::PublicType::ENUM:
         case spdoc::PublicType::CLASS:
-            oss << forArrayTranslations(csType(0)) << "_VectorFromArray(" << service->rename(name) << ").get_inner()";
+            oss << forArrayTranslations(csType(0)) << "_VectorFromArray(" << service->rename(name, true) << ").get_inner()";
             break;
         case spdoc::PublicType::VARIANT:
-            oss << "spi.VariantVectorFromArray(" << service->rename(name) << ").get_inner()";
+            oss << "spi.VariantVectorFromArray(" << service->rename(name, true) << ").get_inner()";
             break;
         case spdoc::PublicType::OBJECT:
-            oss << "spi.ObjectVectorFromArray(" << service->rename(name) << ").get_inner()";
+            oss << "spi.ObjectVectorFromArray(" << service->rename(name, true) << ").get_inner()";
             break;
         case spdoc::PublicType::MAP:
         case spdoc::PublicType::CHAR:
@@ -2137,32 +2148,32 @@ std::string CDataType::cs_to_c(int arrayDim, const std::string& name) const
         switch (publicType)
         {
         case spdoc::PublicType::BOOL:
-            oss << "spi.BoolMatrixFromArray(" << service->rename(name) << ").get_inner()";
+            oss << "spi.BoolMatrixFromArray(" << service->rename(name, true) << ").get_inner()";
             break;
         case spdoc::PublicType::INT:
-            oss << "spi.IntMatrixFromArray(" << service->rename(name) << ").get_inner()";
+            oss << "spi.IntMatrixFromArray(" << service->rename(name, true) << ").get_inner()";
             break;
         case spdoc::PublicType::DOUBLE:
-            oss << "spi.DoubleMatrixFromArray(" << service->rename(name) << ").get_inner()";
+            oss << "spi.DoubleMatrixFromArray(" << service->rename(name, true) << ").get_inner()";
             break;
         case spdoc::PublicType::STRING:
-            oss << "spi.StringMatrixFromArray(" << service->rename(name) << ").get_inner()";
+            oss << "spi.StringMatrixFromArray(" << service->rename(name, true) << ").get_inner()";
             break;
         case spdoc::PublicType::DATE:
-            oss << "spi.DateMatrixFromArray(" << service->rename(name) << ").get_inner()";
+            oss << "spi.DateMatrixFromArray(" << service->rename(name, true) << ").get_inner()";
             break;
         case spdoc::PublicType::DATETIME:
-            oss << "spi.DateTimeMatrixFromArray(" << service->rename(name) << ").get_inner()";
+            oss << "spi.DateTimeMatrixFromArray(" << service->rename(name, true) << ").get_inner()";
             break;
         case spdoc::PublicType::VARIANT:
-            oss << "spi.VariantMatrixFromArray(" << service->rename(name) << ").get_inner()";
+            oss << "spi.VariantMatrixFromArray(" << service->rename(name, true) << ").get_inner()";
             break;
         case spdoc::PublicType::ENUM:
         case spdoc::PublicType::CLASS:
-            oss << forArrayTranslations(csType(0)) << "_MatrixFromArray(" << service->rename(name) << ").get_inner()";
+            oss << forArrayTranslations(csType(0)) << "_MatrixFromArray(" << service->rename(name, true) << ").get_inner()";
             break;
         case spdoc::PublicType::OBJECT:
-            oss << "spi.ObjectMatrixFromArray(" << service->rename(name) << ").get_inner()";
+            oss << "spi.ObjectMatrixFromArray(" << service->rename(name, true) << ").get_inner()";
             break;
         case spdoc::PublicType::MAP:
         case spdoc::PublicType::CHAR:
@@ -2177,7 +2188,7 @@ std::string CDataType::cs_to_c(int arrayDim, const std::string& name) const
 
     std::string conversion = oss.str();
     if (conversion.empty())
-        return service->rename(name);
+        return service->rename(name, true);
 
     return conversion;
 }

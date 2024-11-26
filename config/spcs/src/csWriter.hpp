@@ -48,12 +48,14 @@ struct Options
         :
         noGeneratedCodeNotice(false),
         license(),
-        writeBackup()
+        writeBackup(),
+        csNamingStyle()
     {}
 
     bool noGeneratedCodeNotice;
     std::string license;
     bool writeBackup;
+    bool csNamingStyle;
 };
 
 struct Usage
@@ -98,8 +100,9 @@ public:
     bool noGeneratedCodeNotice() const;
     const std::string& license() const;
     bool writeBackup() const;
+    bool csNamingStyle() const;
 
-    std::string rename(const std::string& name) const;
+    std::string rename(const std::string& name, bool fieldName) const;
 
 protected:
     CService(
