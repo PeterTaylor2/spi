@@ -37,6 +37,7 @@ static std::string g_last_error;
 */
 void spi_Error_set(const char* err)
 {
+    SPI_C_LOCK_GUARD;
     if (err)
         g_last_error = err;
     else
@@ -45,6 +46,7 @@ void spi_Error_set(const char* err)
 
 void spi_Error_set_function(const char* func, const char* err)
 {
+    SPI_C_LOCK_GUARD;
     if (func && err)
     {
         spi_Error_set_format("%s: %s", func, err);
@@ -57,6 +59,7 @@ void spi_Error_set_function(const char* func, const char* err)
 
 void spi_Error_set_format(const char* format, ...)
 {
+    SPI_C_LOCK_GUARD;
     va_list args;
     va_start(args, format);
 
@@ -69,6 +72,7 @@ void spi_Error_set_format(const char* format, ...)
 
 char* spi_Error_get()
 {
+    SPI_C_LOCK_GUARD;
     return spi_String_copy(g_last_error.c_str());
 }
 

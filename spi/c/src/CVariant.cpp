@@ -34,11 +34,13 @@
 
 void spi_Variant_delete(spi_Variant * var)
 {
+    SPI_C_LOCK_GUARD;
     delete ((spi::Variant*) var);
 }
 
 spi_Variant* spi_Variant_new_String(const char * str)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         spi::Variant* var = new spi::Variant(str);
@@ -53,6 +55,7 @@ spi_Variant* spi_Variant_new_String(const char * str)
 
 spi_Variant* spi_Variant_new_Date(spi_Date dt)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         spi::Variant* var = new spi::Variant(spi::Date(dt));
@@ -67,6 +70,7 @@ spi_Variant* spi_Variant_new_Date(spi_Date dt)
 
 spi_Variant* spi_Variant_new_DateTime(spi_DateTime dt)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         SPI_THROW_RUNTIME_ERROR("Constructor of Variant from DateTime not supported");
@@ -82,6 +86,7 @@ spi_Variant* spi_Variant_new_DateTime(spi_DateTime dt)
 
 spi_Variant* spi_Variant_new_Double(double d)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         spi::Variant* var = new spi::Variant(d);
@@ -96,6 +101,7 @@ spi_Variant* spi_Variant_new_Double(double d)
 
 spi_Variant* spi_Variant_new_Bool(spi_Bool b)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         spi::Variant* var = new spi::Variant(b);
@@ -110,6 +116,7 @@ spi_Variant* spi_Variant_new_Bool(spi_Bool b)
 
 spi_Variant* spi_Variant_new_Int(int i)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         spi::Variant* var = new spi::Variant(i);
@@ -124,6 +131,7 @@ spi_Variant* spi_Variant_new_Int(int i)
 
 int spi_Variant_type(spi_Variant* var, char** vt)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         if (!var || !vt)
@@ -145,6 +153,7 @@ int spi_Variant_type(spi_Variant* var, char** vt)
 
 int spi_Variant_String(spi_Variant * var, char ** str)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         if (!var || !str)
@@ -165,6 +174,7 @@ int spi_Variant_String(spi_Variant * var, char ** str)
 
 int spi_Variant_Date(spi_Variant * var, spi_Date * dt)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         if (!var || !dt)
@@ -184,6 +194,7 @@ int spi_Variant_Date(spi_Variant * var, spi_Date * dt)
 
 int spi_Variant_DateTime(spi_Variant * var, spi_DateTime * dt)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         if (!var || !dt)
@@ -203,6 +214,7 @@ int spi_Variant_DateTime(spi_Variant * var, spi_DateTime * dt)
 
 int spi_Variant_Double(spi_Variant * var, double * d)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         if (!var || !d)
@@ -222,6 +234,7 @@ int spi_Variant_Double(spi_Variant * var, double * d)
 
 int spi_Variant_Bool(spi_Variant * var, spi_Bool * b)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         if (!var || !b)
@@ -241,6 +254,7 @@ int spi_Variant_Bool(spi_Variant * var, spi_Bool * b)
 
 int spi_Variant_Int(spi_Variant * var, int * i)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         if (!var || !i)
@@ -260,6 +274,7 @@ int spi_Variant_Int(spi_Variant * var, int * i)
 
 int spi_Variant_Object(spi_Variant* var, spi_Object** obj)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         if (!var || !obj)
@@ -280,6 +295,7 @@ int spi_Variant_Object(spi_Variant* var, spi_Object** obj)
 
 int spi_Variant_String_Vector(spi_Variant* var, spi_String_Vector** str)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         if (!var || !str)
@@ -300,6 +316,7 @@ int spi_Variant_String_Vector(spi_Variant* var, spi_String_Vector** str)
 
 int spi_Variant_Date_Vector(spi_Variant* var, spi_Date_Vector** dt)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         if (!var || !dt)
@@ -320,6 +337,7 @@ int spi_Variant_Date_Vector(spi_Variant* var, spi_Date_Vector** dt)
 
 int spi_Variant_DateTime_Vector(spi_Variant* var, spi_DateTime_Vector** dt)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         if (!var || !dt)
@@ -340,6 +358,7 @@ int spi_Variant_DateTime_Vector(spi_Variant* var, spi_DateTime_Vector** dt)
 
 int spi_Variant_Double_Vector(spi_Variant* var, spi_Double_Vector** d)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         if (!var || !d)
@@ -360,6 +379,7 @@ int spi_Variant_Double_Vector(spi_Variant* var, spi_Double_Vector** d)
 
 int spi_Variant_Bool_Vector(spi_Variant* var, spi_Bool_Vector** b)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         if (!var || !b)
@@ -380,6 +400,7 @@ int spi_Variant_Bool_Vector(spi_Variant* var, spi_Bool_Vector** b)
 
 int spi_Variant_Int_Vector(spi_Variant* var, spi_Int_Vector** i)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         if (!var || !i)
@@ -400,6 +421,7 @@ int spi_Variant_Int_Vector(spi_Variant* var, spi_Int_Vector** i)
 
 int spi_Variant_Object_Vector(spi_Variant* var, spi_Object_Vector** obj)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         if (!var || !obj)
@@ -420,6 +442,7 @@ int spi_Variant_Object_Vector(spi_Variant* var, spi_Object_Vector** obj)
 
 void spi_Variant_Vector_delete(spi_Variant_Vector* c)
 {
+    SPI_C_LOCK_GUARD;
     if (c)
     {
         auto cpp = (std::vector<spi::ObjectConstSP>*)(c);
@@ -429,6 +452,7 @@ void spi_Variant_Vector_delete(spi_Variant_Vector* c)
 
 void spi_Variant_Matrix_delete(spi_Variant_Matrix* c)
 {
+    SPI_C_LOCK_GUARD;
     if (c)
     {
         auto cpp = (spi::MatrixData<spi::ObjectConstSP>*)(c);
@@ -438,6 +462,7 @@ void spi_Variant_Matrix_delete(spi_Variant_Matrix* c)
 
 spi_Variant_Vector* spi_Variant_Vector_new(int N)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         auto out = new std::vector<spi::ObjectConstSP>(to_size_t(N));
@@ -452,6 +477,7 @@ spi_Variant_Vector* spi_Variant_Vector_new(int N)
 
 spi_Variant_Matrix* spi_Variant_Matrix_new(int nr, int nc)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         auto out = new spi::MatrixData<spi::ObjectConstSP>(to_size_t(nr), to_size_t(nc));
@@ -469,6 +495,7 @@ int spi_Variant_Vector_item(
     int ii,
     spi_Variant** item)
 {
+    SPI_C_LOCK_GUARD;
     if (!v || !item)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -499,6 +526,7 @@ int spi_Variant_Vector_set_item(
     int ii,
     spi_Variant* item)
 {
+    SPI_C_LOCK_GUARD;
     if (!v)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -535,6 +563,7 @@ int spi_Variant_Vector_size(
     const spi_Variant_Vector* v,
     int* size)
 {
+    SPI_C_LOCK_GUARD;
     if (!v || !size)
     {
         spi_Error_set_function(__FUNCTION__, "NULL inputs");
@@ -551,6 +580,7 @@ int spi_Variant_Matrix_item(
     int ir, int ic,
     spi_Variant** item)
 {
+    SPI_C_LOCK_GUARD;
     if (!m || !item)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -582,6 +612,7 @@ int spi_Variant_Matrix_set_item(
     int ir, int ic,
     spi_Variant* item)
 {
+    SPI_C_LOCK_GUARD;
     if (!m)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -619,6 +650,7 @@ int spi_Variant_Matrix_size(
     const spi_Variant_Matrix* m,
     int* nr, int* nc)
 {
+    SPI_C_LOCK_GUARD;
     if (!nr || !nc)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");

@@ -11,6 +11,7 @@ U_INCLUDES=-I$(U_SPI_HOME)
 U_TARGET=spi-c
 U_VCPROJ=spi-c-dll
 U_CFLAGS=-DSPI_C_EXPORT
+U_CFLAGS+=$(G_SPI_C_CFLAGS)
 U_FORCE_REBUILD=Makefile $(U_SPI_HOME)/makefiles/version.mk
 
 ifeq ($(G_PLATFORM),win32)

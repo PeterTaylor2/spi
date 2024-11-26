@@ -34,6 +34,7 @@
 */
 char* spi_String_copy(const char * str)
 {
+    SPI_C_LOCK_GUARD;
     if (!str)
     {
         spi_Error_set_function(__FUNCTION__, "NULL inputs");
@@ -53,12 +54,14 @@ char* spi_String_copy(const char * str)
 
 void spi_String_delete(char * str)
 {
+    SPI_C_LOCK_GUARD;
     if (str)
         free(str);
 }
 
 void spi_String_Vector_delete(spi_String_Vector* c)
 {
+    SPI_C_LOCK_GUARD;
     if (c)
     {
         auto cpp = (std::vector<std::string>*)(c);
@@ -68,6 +71,7 @@ void spi_String_Vector_delete(spi_String_Vector* c)
 
 void spi_String_Matrix_delete(spi_String_Matrix* c)
 {
+    SPI_C_LOCK_GUARD;
     if (c)
     {
         auto cpp = (spi::MatrixData<std::string>*)(c);
@@ -77,6 +81,7 @@ void spi_String_Matrix_delete(spi_String_Matrix* c)
 
 spi_String_Vector* spi_String_Vector_new(int N)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         auto out = new std::vector<std::string>(to_size_t(N));
@@ -91,6 +96,7 @@ spi_String_Vector* spi_String_Vector_new(int N)
 
 spi_String_Matrix* spi_String_Matrix_new(int nr, int nc)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         auto out = new spi::MatrixData<std::string>(to_size_t(nr), to_size_t(nc));
@@ -108,6 +114,7 @@ int spi_String_Vector_item(
     int ii,
     char** item)
 {
+    SPI_C_LOCK_GUARD;
     if (!v || !item)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -138,6 +145,7 @@ int spi_String_Vector_set_item(
     int ii,
     const char* item)
 {
+    SPI_C_LOCK_GUARD;
     if (!v)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -174,6 +182,7 @@ int spi_String_Vector_size(
     const spi_String_Vector* v,
     int* size)
 {
+    SPI_C_LOCK_GUARD;
     if (!v || !size)
     {
         spi_Error_set_function(__FUNCTION__, "NULL inputs");
@@ -190,6 +199,7 @@ int spi_String_Matrix_item(
     int ir, int ic,
     char** item)
 {
+    SPI_C_LOCK_GUARD;
     if (!m || !item)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -221,6 +231,7 @@ int spi_String_Matrix_set_item(
     int ir, int ic,
     const char* item)
 {
+    SPI_C_LOCK_GUARD;
     if (!m)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -258,6 +269,7 @@ int spi_String_Matrix_size(
     const spi_String_Matrix* m,
     int* nr, int* nc)
 {
+    SPI_C_LOCK_GUARD;
     if (!nr || !nc)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");

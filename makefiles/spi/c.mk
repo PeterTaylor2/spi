@@ -30,6 +30,7 @@ U_FORCE_REBUILD+=$(U_SPI_HOME)/makefiles/version.mk
 U_TARGET?=$(U_SERVICE)-c
 U_VCPROJ?=$(U_SERVICE)-c
 U_CFLAGS+=-D$(U_DECLSPEC)_C_EXPORT
+U_CFLAGS+=$(G_SPI_C_CFLAGS)
 U_DEBUG_CFLAGS+=-DSPI_DEBUG
 
 include $(U_SPI_HOME)/makefiles/version.mk

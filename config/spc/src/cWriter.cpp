@@ -295,6 +295,8 @@ std::string CService::writeSourceFile(const std::string& dirname) const
         writeGeneratedCodeNotice(ostr, filename);
 
     ostr << "\n"
+        << "#include <spi/c/c_spi.hpp>\n"
+        << "\n"
         << "#include \"c_dll_" << m_service->name << ".h\"\n"
         << "\n"
         << "#include \"" << m_service->name << "_dll_service.hpp\"\n";
@@ -311,6 +313,7 @@ std::string CService::writeSourceFile(const std::string& dirname) const
     ostr << "\n"
         << "int init_" << m_service->ns << "(void)\n"
         << "{\n"
+        << "    SPI_C_LOCK_GUARD;"
         << "    try\n"
         << "    {\n"
         << "        g_service = " << m_service->ns
@@ -337,6 +340,7 @@ std::string CService::writeSourceFile(const std::string& dirname) const
             << "    const char* filename,\n"
             << "    const char* options)\n"
             << "{\n"
+            << "    SPI_C_LOCK_GUARD;\n"
             << "    try\n"
             << "    {\n"
             << "        if (!filename)\n"
@@ -363,6 +367,7 @@ std::string CService::writeSourceFile(const std::string& dirname) const
         ostr << "\n"
             << "int " << m_service->ns << "_stop_logging()\n"
             << "{\n"
+            << "    SPI_C_LOCK_GUARD;\n"
             << "    try\n"
             << "    {\n"
             << "        SPI_PRE_CONDITION(g_service);\n"
@@ -642,6 +647,7 @@ void CModule::implementFunction(
     const char* sep2 = ",\n    ";
 
     ostr << "{\n"
+        << "    SPI_C_LOCK_GUARD;\n"
         << "    try\n"
         << "    {\n";
 
@@ -955,6 +961,7 @@ void CModule::implementClass(
     {
         declareClassConstructor(ostr, cls, true);
         ostr << "{\n"
+            << "    SPI_C_LOCK_GUARD;\n"
             << "    try\n"
             << "    {\n"
             << "        " << cppname << " self = " << cpptype << "::Make(";
@@ -998,12 +1005,14 @@ void CModule::implementClass(
     ostr << "\n"
         << "void " << cname << "_Vector_delete(" << cname << "_Vector* v)\n"
         << "{\n"
+        << "    SPI_C_LOCK_GUARD;\n"
         << "    spi::Vector_delete<" << cpptype << ">(v);\n"
         << "}\n";
 
     ostr << "\n"
         << cname << "_Vector* " << cname << "_Vector_new(int N)\n"
         << "{\n"
+        << "    SPI_C_LOCK_GUARD;\n"
         << "    return spi::Vector_new<" << cpptype << ", " << cname << "_Vector>(N);\n"
         << "}\n";
 
@@ -1038,12 +1047,14 @@ void CModule::implementClass(
     ostr << "\n"
         << "void " << cname << "_Matrix_delete(" << cname << "_Matrix* m)\n"
         << "{\n"
+        << "    SPI_C_LOCK_GUARD;\n"
         << "    spi::Matrix_delete<" << cpptype << ">(m);\n"
         << "}\n";
 
     ostr << "\n"
         << cname << "_Matrix* " << cname << "_Matrix_new(int nr, int nc)\n"
         << "{\n"
+        << "    SPI_C_LOCK_GUARD;\n"
         << "    return spi::Matrix_new<" << cpptype << ", " << cname << "_Matrix>(nr, nc);\n"
         << "}\n";
 
@@ -1078,6 +1089,7 @@ void CModule::implementClass(
     ostr << "\n"
         << cname << "* " << cname << "_dynamic_cast(spi_Object* o)\n"
         << "{\n"
+        << "    SPI_C_LOCK_GUARD;\n"
         << "    const " << cpptype << "* out = dynamic_cast<const " << cpptype << "*>"
         << "((const spi::Object*)o);\n"
         << "    return (" << cname << "*)out;\n"
@@ -1088,6 +1100,7 @@ void CModule::implementClass(
         << "    spi_Object* o,\n"
         << "    " << cname << "** item)\n"
         << "{\n"
+        << "    SPI_C_LOCK_GUARD;\n"
         << "    if (!item)\n"
         << "    {\n"
         << "        spi_Error_set_function(__FUNCTION__, \"NULL pointer\");\n"
@@ -1117,6 +1130,7 @@ void CModule::implementClass(
     ostr << "\n"
         << cname << "* " << cname << "_from_string(const char* objectString)\n"
         << "{\n"
+        << "    SPI_C_LOCK_GUARD;\n"
         << "    try\n"
         << "    {\n"
         << "        if (!objectString)\n"
@@ -1137,6 +1151,7 @@ void CModule::implementClass(
         << "\n"
         << cname << "* " << cname << "_from_file(const char* filename)\n"
         << "{\n"
+        << "    SPI_C_LOCK_GUARD;\n"
         << "    try\n"
         << "    {\n"
         << "        if (!filename)\n"
@@ -1187,6 +1202,7 @@ void CModule::implementClass(
             << "    " << CFunctionArg(cfa) << ")\n";
 
         ostr << "{\n"
+            << "    SPI_C_LOCK_GUARD;\n"
             << "    try\n"
             << "    {\n"
             << "        return spi::convert_out<" << cname << ">(\n"
@@ -1217,6 +1233,7 @@ void CModule::implementClass(
             << "    " << cname << "* self)\n";
 
         ostr << "{\n"
+            << "    SPI_C_LOCK_GUARD;\n"
             << "    try\n"
             << "    {\n"
             << "        " << cdt.cppType(0) << " out = \n"
@@ -1254,6 +1271,7 @@ void CModule::implementClass(
                 << "    " << CFunctionArg(attr, true) << ")\n";
 
             ostr << "{\n"
+                << "    SPI_C_LOCK_GUARD;\n"
                 << "    try\n"
                 << "    {\n"
                 << "        if (!self || !" << attr->name << ")\n"
@@ -1288,6 +1306,7 @@ void CModule::implementClass(
             << "    " << CFunctionArg(prop, true) << ")\n";
 
         ostr << "{\n"
+            << "    SPI_C_LOCK_GUARD;\n"
             << "    try\n"
             << "    {\n"
             << "        if (!self || !" << prop->name << ")\n"
@@ -1324,6 +1343,7 @@ void CModule::implementClass(
                     << "    " << CFunctionArg(attr, false) << ")\n";
 
                 ostr << "{\n"
+                    << "    SPI_C_LOCK_GUARD;\n"
                     << "    try\n"
                     << "    {\n"
                     << "        if (!self)\n"
@@ -1429,6 +1449,7 @@ void CModule::implementClassMethod(
 
     declareClassMethod(ostr, cls, method, true);
     ostr << "{\n"
+        << "    SPI_C_LOCK_GUARD;\n"
         << "    try\n"
         << "    {\n";
 
@@ -1619,6 +1640,7 @@ void CModule::implementEnum(GeneratedOutput & ostr,
     ostr << "\n"
         << "int " << cname << "_from_string(char* str, " << cname << "* value)\n"
         << "{\n"
+        << "    SPI_C_LOCK_GUARD;\n"
         << "    try\n"
         << "    {\n"
         << "        if (!str || !value)\n"
@@ -1638,6 +1660,7 @@ void CModule::implementEnum(GeneratedOutput & ostr,
         << "\n"
         << "int " << cname << "_to_string(" << cname << " value, char** str)\n"
         << "{\n"
+        << "    SPI_C_LOCK_GUARD;\n"
         << "    try\n"
         << "    {\n"
         << "        if (!str)\n"
@@ -1659,6 +1682,7 @@ void CModule::implementEnum(GeneratedOutput & ostr,
     ostr << "\n"
         << "void " << cname << "_Vector_delete(" << cname << "_Vector* c)\n"
         << "{\n"
+        << "    SPI_C_LOCK_GUARD;\n"
         << "    if (c)\n"
         << "    {\n"
         << "        auto cpp = (std::vector<" << cppname << ">*)(c);\n"
@@ -1669,6 +1693,7 @@ void CModule::implementEnum(GeneratedOutput & ostr,
     ostr << "\n"
         << cname << "_Vector* " << cname << "_Vector_new(int N)\n"
         << "{\n"
+        << "    SPI_C_LOCK_GUARD;"
         << "    try\n"
         << "    {\n"
         << "        auto out = new std::vector<" << cppname << ">(to_size_t(N));\n"
@@ -1761,6 +1786,7 @@ void CModule::implementEnum(GeneratedOutput & ostr,
     ostr << "\n"
         << "void " << cname << "_Matrix_delete(" << cname << "_Matrix* c)\n"
         << "{\n"
+        << "    SPI_C_LOCK_GUARD;\n"
         << "    if (c)\n"
         << "    {\n"
         << "        auto cpp = (spi::MatrixData<" << cppname << ">*)(c);\n"
@@ -1771,6 +1797,7 @@ void CModule::implementEnum(GeneratedOutput & ostr,
     ostr << "\n"
         << cname << "_Matrix* " << cname << "_Matrix_new(int nr, int nc)\n"
         << "{\n"
+        << "    SPI_C_LOCK_GUARD;\n"
         << "    try\n"
         << "    {\n"
         << "        auto out = new spi::MatrixData<" << cppname << ">(to_size_t(nr), to_size_t(nc));\n"

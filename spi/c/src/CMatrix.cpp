@@ -33,6 +33,7 @@
 */
 void spi_Int_Matrix_delete(spi_Int_Matrix* c)
 {
+    SPI_C_LOCK_GUARD;
     if (c)
     {
         auto cpp = (spi::MatrixData<int>*)(c);
@@ -42,6 +43,7 @@ void spi_Int_Matrix_delete(spi_Int_Matrix* c)
 
 spi_Int_Matrix* spi_Int_Matrix_new(int nr, int nc)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         auto out = new spi::MatrixData<int>(to_size_t(nr), to_size_t(nc));
@@ -60,6 +62,7 @@ int spi_Int_Matrix_item(
     int ir, int ic,
     int* item)
 {
+    SPI_C_LOCK_GUARD;
     if (!m || !item)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -91,6 +94,7 @@ int spi_Int_Matrix_set_item(
     int ir, int ic,
     int item)
 {
+    SPI_C_LOCK_GUARD;
     if (!m)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -121,6 +125,7 @@ int spi_Int_Matrix_size(
     const spi_Int_Matrix* m,
     int* nr, int* nc)
 {
+    SPI_C_LOCK_GUARD;
     if (!nr || !nc)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -155,6 +160,7 @@ int spi_Int_Matrix_size(
 */
 void spi_Double_Matrix_delete(spi_Double_Matrix* c)
 {
+    SPI_C_LOCK_GUARD;
     if (c)
     {
         auto cpp = (spi::MatrixData<double>*)(c);
@@ -164,6 +170,7 @@ void spi_Double_Matrix_delete(spi_Double_Matrix* c)
 
 spi_Double_Matrix* spi_Double_Matrix_new(int nr, int nc)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         auto out = new spi::MatrixData<double>(to_size_t(nr), to_size_t(nc));
@@ -181,6 +188,7 @@ int spi_Double_Matrix_item(
     int ir, int ic,
     double* item)
 {
+    SPI_C_LOCK_GUARD;
     if (!m || !item)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -212,6 +220,7 @@ int spi_Double_Matrix_set_item(
     int ir, int ic,
     double item)
 {
+    SPI_C_LOCK_GUARD;
     if (!m)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -242,6 +251,7 @@ int spi_Double_Matrix_size(
     const spi_Double_Matrix* m,
     int* nr, int* nc)
 {
+    SPI_C_LOCK_GUARD;
     if (!nr || !nc)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -276,6 +286,7 @@ int spi_Double_Matrix_size(
 */
 void spi_Bool_Matrix_delete(spi_Bool_Matrix* c)
 {
+    SPI_C_LOCK_GUARD;
     if (c)
     {
         auto cpp = (spi::MatrixData<bool>*)(c);
@@ -285,6 +296,7 @@ void spi_Bool_Matrix_delete(spi_Bool_Matrix* c)
 
 spi_Bool_Matrix* spi_Bool_Matrix_new(int nr, int nc)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         auto out = new spi::MatrixData<bool>(to_size_t(nr), to_size_t(nc));
@@ -302,6 +314,7 @@ int spi_Bool_Matrix_item(
     int ir, int ic,
     spi_Bool* item)
 {
+    SPI_C_LOCK_GUARD;
     if (!m || !item)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -333,6 +346,7 @@ int spi_Bool_Matrix_set_item(
     int ir, int ic,
     spi_Bool item)
 {
+    SPI_C_LOCK_GUARD;
     if (!m)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -363,6 +377,7 @@ int spi_Bool_Matrix_size(
     const spi_Bool_Matrix* m,
     int* nr, int* nc)
 {
+    SPI_C_LOCK_GUARD;
     if (!nr || !nc)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -395,6 +410,7 @@ int spi_Instance_Matrix_item(
     int r, int c,
     spi_Instance** item)
 {
+    SPI_C_LOCK_GUARD;
     if (!m || !item)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -421,6 +437,7 @@ int spi_Instance_Matrix_set_item(
     int r, int c,
     spi_Instance* item)
 {
+    SPI_C_LOCK_GUARD;
     if (!m)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -444,6 +461,7 @@ int spi_Instance_Matrix_size(
     const spi_Instance_Matrix* m,
     int* nr, int* nc)
 {
+    SPI_C_LOCK_GUARD;
     if (!nr || !nc)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -475,6 +493,7 @@ int spi_Enum_Matrix_item(
     int r, int c,
     int* item)
 {
+    SPI_C_LOCK_GUARD;
     if (!m || !item)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -502,6 +521,7 @@ int spi_Enum_Matrix_set_item(
     int r, int c,
     int item)
 {
+    SPI_C_LOCK_GUARD;
     if (!m)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -525,6 +545,7 @@ int spi_Enum_Matrix_size(
     const spi_Enum_Matrix* m,
     int* nr, int* nc)
 {
+    SPI_C_LOCK_GUARD;
     if (!nr || !nc)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");

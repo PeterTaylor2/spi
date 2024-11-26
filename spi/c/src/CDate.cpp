@@ -34,6 +34,7 @@
 int spi_Date_from_YMD(
     int year, int month, int day, spi_Date* date)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         *date = spi::Date(year, month, day);
@@ -49,6 +50,7 @@ int spi_Date_from_YMD(
 int spi_Date_YMD(
     spi_Date date, int* year, int* month, int* day)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         auto cpp = spi::Date(date);
@@ -64,6 +66,7 @@ int spi_Date_YMD(
 
 void spi_Date_Vector_delete(spi_Date_Vector* c)
 {
+    SPI_C_LOCK_GUARD;
     if (c)
     {
         auto cpp = (std::vector<spi::Date>*)(c);
@@ -73,6 +76,7 @@ void spi_Date_Vector_delete(spi_Date_Vector* c)
 
 void spi_Date_Matrix_delete(spi_Date_Matrix* c)
 {
+    SPI_C_LOCK_GUARD;
     if (c)
     {
         auto cpp = (spi::MatrixData<spi::Date>*)(c);
@@ -82,6 +86,7 @@ void spi_Date_Matrix_delete(spi_Date_Matrix* c)
 
 spi_Date_Vector* spi_Date_Vector_new(int N)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         auto out = new std::vector<spi::Date>(to_size_t(N));
@@ -96,6 +101,7 @@ spi_Date_Vector* spi_Date_Vector_new(int N)
 
 spi_Date_Matrix* spi_Date_Matrix_new(int nr, int nc)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         auto out = new spi::MatrixData<spi::Date>(to_size_t(nr), to_size_t(nc));
@@ -113,6 +119,7 @@ int spi_Date_Vector_item(
     int ii,
     spi_Date* item)
 {
+    SPI_C_LOCK_GUARD;
     if (!v || !item)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -143,6 +150,7 @@ int spi_Date_Vector_set_item(
     int ii,
     spi_Date item)
 {
+    SPI_C_LOCK_GUARD;
     if (!v)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -172,6 +180,7 @@ int spi_Date_Vector_size(
     const spi_Date_Vector* v,
     int* size)
 {
+    SPI_C_LOCK_GUARD;
     if (!v || !size)
     {
         spi_Error_set_function(__FUNCTION__, "NULL inputs");
@@ -188,6 +197,7 @@ int spi_Date_Matrix_item(
     int ir, int ic,
     spi_Date* item)
 {
+    SPI_C_LOCK_GUARD;
     if (!m || !item)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -219,6 +229,7 @@ int spi_Date_Matrix_set_item(
     int ir, int ic,
     spi_Date item)
 {
+    SPI_C_LOCK_GUARD;
     if (!m)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -249,6 +260,7 @@ int spi_Date_Matrix_size(
     const spi_Date_Matrix* m,
     int* nr, int* nc)
 {
+    SPI_C_LOCK_GUARD;
     if (!nr || !nc)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");

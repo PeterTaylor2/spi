@@ -33,8 +33,23 @@
 
 #include <spi/spi.hpp>
 #include <spi_util/Utils.hpp>
+#include "DeclSpec.h"
+#include <mutex>
+
+#ifndef SPI_C_MULTI_THREAD
+
+#define SPI_C_LOCK_GUARD std::lock_guard<std::recursive_mutex> _lock_guard(spi::g_lock_guard)
+
+#else
+
+#define SPI_C_LOCK_GUARD
+
+#endif
 
 SPI_BEGIN_NAMESPACE
+
+SPI_C_IMPORT
+extern std::recursive_mutex g_lock_guard;
 
 // returns the raw pointer from an intrusive shared pointer with the reference count
 // incremented by one - hence the consumer of the raw pointer is responsible for

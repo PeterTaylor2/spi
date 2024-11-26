@@ -33,6 +33,7 @@
 */
 void spi_Int_Vector_delete(spi_Int_Vector* c)
 {
+    SPI_C_LOCK_GUARD;
     if (c)
     {
         auto cpp = (std::vector<int>*)(c);
@@ -42,6 +43,7 @@ void spi_Int_Vector_delete(spi_Int_Vector* c)
 
 spi_Int_Vector* spi_Int_Vector_new(int N)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         auto out = new std::vector<int>(to_size_t(N));
@@ -59,6 +61,7 @@ int spi_Int_Vector_item(
     int ii,
     int* item)
 {
+    SPI_C_LOCK_GUARD;
     if (!v || !item)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -89,6 +92,7 @@ int spi_Int_Vector_set_item(
     int ii,
     int item)
 {
+    SPI_C_LOCK_GUARD;
     if (!v)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -118,6 +122,7 @@ int spi_Int_Vector_size(
     const spi_Int_Vector* v,
     int* size)
 {
+    SPI_C_LOCK_GUARD;
     if (!v || !size)
     {
         spi_Error_set_function(__FUNCTION__, "NULL inputs");
@@ -136,6 +141,7 @@ int spi_Int_Vector_size(
 */
 void spi_Double_Vector_delete(spi_Double_Vector* c)
 {
+    SPI_C_LOCK_GUARD;
     if (c)
     {
         auto cpp = (std::vector<double>*)(c);
@@ -145,6 +151,7 @@ void spi_Double_Vector_delete(spi_Double_Vector* c)
 
 spi_Double_Vector* spi_Double_Vector_new(int N)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         auto out = new std::vector<double>(to_size_t(N));
@@ -162,6 +169,7 @@ int spi_Double_Vector_item(
     int ii,
     double* item)
 {
+    SPI_C_LOCK_GUARD;
     if (!v || !item)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -192,6 +200,7 @@ int spi_Double_Vector_set_item(
     int ii,
     double item)
 {
+    SPI_C_LOCK_GUARD;
     if (!v)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -221,6 +230,7 @@ int spi_Double_Vector_size(
     const spi_Double_Vector* v,
     int* size)
 {
+    SPI_C_LOCK_GUARD;
     if (!v || !size)
     {
         spi_Error_set_function(__FUNCTION__, "NULL inputs");
@@ -240,6 +250,7 @@ int spi_Double_Vector_size(
 */
 void spi_Bool_Vector_delete(spi_Bool_Vector* c)
 {
+    SPI_C_LOCK_GUARD;
     if (c)
     {
         auto cpp = (std::vector<bool>*)(c);
@@ -249,6 +260,7 @@ void spi_Bool_Vector_delete(spi_Bool_Vector* c)
 
 spi_Bool_Vector* spi_Bool_Vector_new(int N)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         auto out = new std::vector<bool>(to_size_t(N));
@@ -266,6 +278,7 @@ int spi_Bool_Vector_item(
     int ii,
     spi_Bool* item)
 {
+    SPI_C_LOCK_GUARD;
     if (!v || !item)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -296,6 +309,7 @@ int spi_Bool_Vector_set_item(
     int ii,
     spi_Bool item)
 {
+    SPI_C_LOCK_GUARD;
     if (!v)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -325,6 +339,7 @@ int spi_Bool_Vector_size(
     const spi_Bool_Vector* v,
     int* size)
 {
+    SPI_C_LOCK_GUARD;
     if (!v || !size)
     {
         spi_Error_set_function(__FUNCTION__, "NULL inputs");
@@ -341,6 +356,7 @@ int spi_Instance_Vector_item(
     int i,
     spi_Instance** item)
 {
+    SPI_C_LOCK_GUARD;
     if (!v || !item)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -367,6 +383,7 @@ int spi_Instance_Vector_set_item(
     int i,
     spi_Instance* item)
 {
+    SPI_C_LOCK_GUARD;
     if (!v)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -390,6 +407,7 @@ int spi_Instance_Vector_size(
     const spi_Instance_Vector* v,
     int* size)
 {
+    SPI_C_LOCK_GUARD;
     if (!v || !size)
     {
         spi_Error_set_function(__FUNCTION__, "NULL inputs");
@@ -405,6 +423,7 @@ int spi_Enum_Vector_item(
     int i,
     int* item)
 {
+    SPI_C_LOCK_GUARD;
     if (!v || !item)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -431,6 +450,7 @@ int spi_Enum_Vector_set_item(
     int i,
     int item)
 {
+    SPI_C_LOCK_GUARD;
     if (!v)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -453,6 +473,7 @@ int spi_Enum_Vector_size(
     const spi_Enum_Vector* v,
     int* size)
 {
+    SPI_C_LOCK_GUARD;
     if (!v || !size)
     {
         spi_Error_set_function(__FUNCTION__, "NULL inputs");

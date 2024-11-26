@@ -35,11 +35,13 @@
 */
 void spi_Object_delete(spi_Object* item)
 {
+    SPI_C_LOCK_GUARD;
     intrusive_ptr_release((spi::Object*)item);
 }
 
 int spi_Object_get_object_id(spi_Object* item, char** objectId)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         if (!item || !objectId)
@@ -59,6 +61,7 @@ int spi_Object_get_object_id(spi_Object* item, char** objectId)
 
 int spi_Object_get_class_name(spi_Object* item, char** className)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         if (!item || !className)
@@ -82,6 +85,7 @@ int spi_Object_to_string(
     const char* options,
     char** str)
 {
+    SPI_C_LOCK_GUARD;
     if (!self || !str)
     {
         spi_Error_set_function(__FUNCTION__, "NULL inputs");
@@ -107,6 +111,7 @@ int spi_Object_to_file(
     const char* format,
     const char* options)
 {
+    SPI_C_LOCK_GUARD;
     if (!self || !filename)
     {
         spi_Error_set_function(__FUNCTION__, "NULL inputs");
@@ -127,6 +132,7 @@ int spi_Object_to_file(
 
 spi_Object* spi_Object_from_string(const char* str)
 {
+    SPI_C_LOCK_GUARD;
     if (!str)
     {
         spi_Error_set_function(__FUNCTION__, "NULL inputs");
@@ -149,6 +155,7 @@ spi_Object* spi_Object_from_string(const char* str)
 
 spi_Object* spi_Object_from_file(const char* filename)
 {
+    SPI_C_LOCK_GUARD;
     if (!filename)
     {
         spi_Error_set_function(__FUNCTION__, "NULL inputs");
@@ -171,6 +178,7 @@ spi_Object* spi_Object_from_file(const char* filename)
 
 spi_Variant* spi_Object_get_value(spi_Object* self, const char * name)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         spi::Value value = spi::ObjectGet(((spi::Object*)self), name);
@@ -189,6 +197,7 @@ int spi_Object_handle_save(
     spi_Bool noCount,
     char** handle)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         if (!baseName || !obj || !handle)
@@ -213,6 +222,7 @@ int spi_Object_handle_find(
     const char* handle,
     spi_Object** obj)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         if (!handle || !obj)
@@ -230,6 +240,7 @@ int spi_Object_handle_find(
 
 int spi_Object_handle_free_all(int* count)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         if (!count)
@@ -249,6 +260,7 @@ int spi_Object_handle_count(
     const char* className,
     int* count)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         if (!className || !count)
@@ -266,6 +278,7 @@ int spi_Object_handle_count(
 
 int spi_Object_handle_free(const char* handle)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         if (!handle)
@@ -287,6 +300,7 @@ int spi_Object_handle_list(
     const char* className,
     spi_String_Vector** handles)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         if (!baseName || !className || !handles)
@@ -306,6 +320,7 @@ int spi_Object_handle_list(
 
 int spi_Object_handle_class_name(const char* handle, char** className)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         if (!handle || !className)
@@ -325,11 +340,13 @@ int spi_Object_handle_class_name(const char* handle, char** className)
 
 void spi_Object_Vector_delete(spi_Object_Vector* v)
 {
+    SPI_C_LOCK_GUARD;
     spi::Vector_delete<spi::Object>(v);
 }
 
 spi_Object_Vector* spi_Object_Vector_new(int N)
 {
+    SPI_C_LOCK_GUARD;
     return spi::Vector_new<spi::Object, spi_Object_Vector>(N);
 }
 
@@ -346,6 +363,7 @@ int spi_Object_Vector_set_item(
     int i,
     spi_Object* item)
 {
+    SPI_C_LOCK_GUARD;
     return spi::Vector_set_item<spi::Object>(v, i, item);
 }
 
@@ -353,16 +371,19 @@ int spi_Object_Vector_size(
     const spi_Object_Vector* v,
     int* size)
 {
+    SPI_C_LOCK_GUARD;
     return spi::Vector_size<spi::Object>(v, size);
 }
 
 void spi_Object_Matrix_delete(spi_Object_Matrix* m)
 {
+    SPI_C_LOCK_GUARD;
     spi::Matrix_delete<spi::Object>(m);
 }
 
 spi_Object_Matrix* spi_Object_Matrix_new(int nr, int nc)
 {
+    SPI_C_LOCK_GUARD;
     return spi::Matrix_new<spi::Object, spi_Object_Matrix>(nr, nc);
 }
 
@@ -371,6 +392,7 @@ int spi_Object_Matrix_item(
     int i, int j,
     spi_Object** item)
 {
+    SPI_C_LOCK_GUARD;
     return spi::Matrix_item<spi::Object>(m, i, j, item);
 }
 
@@ -379,6 +401,7 @@ int spi_Object_Matrix_set_item(
     int i, int j,
     spi_Object* item)
 {
+    SPI_C_LOCK_GUARD;
     return spi::Matrix_set_item<spi::Object>(m, i, j, item);
 }
 
@@ -386,6 +409,7 @@ int spi_Object_Matrix_size(
     const spi_Object_Matrix* m,
     int* nr, int* nc)
 {
+    SPI_C_LOCK_GUARD;
     return spi::Matrix_size<spi::Object>(m, nr, nc);
 }
 

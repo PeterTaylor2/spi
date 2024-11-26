@@ -33,22 +33,26 @@
 */
 void spi_Map_delete(spi_Map* item)
 {
+    SPI_C_LOCK_GUARD;
     intrusive_ptr_release((spi::MapObject*)item);
 }
 
 spi_Map* spi_Map_dynamic_cast(spi_Object* obj)
 {
+    SPI_C_LOCK_GUARD;
     const spi::MapObject* out = dynamic_cast<const spi::MapObject*>((const spi::Object*)obj);
     return (spi_Map*)out;
 }
 
 void spi_Map_Vector_delete(spi_Map_Vector* v)
 {
+    SPI_C_LOCK_GUARD;
     spi::Vector_delete<spi::MapObject>(v);
 }
 
 spi_Map_Vector* spi_Map_Vector_new(int N)
 {
+    SPI_C_LOCK_GUARD;
     return spi::Vector_new<spi::MapObject, spi_Map_Vector>(N);
 }
 
@@ -57,6 +61,7 @@ int spi_Map_Vector_item(
     int i,
     spi_Map** item)
 {
+    SPI_C_LOCK_GUARD;
     return spi::Vector_item<spi::MapObject>(v, i, item);
 }
 
@@ -65,6 +70,7 @@ int spi_Map_Vector_set_item(
     int i,
     spi_Map* item)
 {
+    SPI_C_LOCK_GUARD;
     return spi::Vector_set_item<spi::MapObject>(v, i, item);
 }
 
@@ -72,16 +78,19 @@ int spi_Map_Vector_size(
     spi_Map_Vector* v,
     int* size)
 {
+    SPI_C_LOCK_GUARD;
     return spi::Vector_size<spi::MapObject>(v, size);
 }
 
 void spi_Map_Matrix_delete(spi_Map_Matrix* m)
 {
+    SPI_C_LOCK_GUARD;
     spi::Matrix_delete<spi::MapObject>(m);
 }
 
 spi_Map_Matrix* spi_Map_Matrix_new(int nr, int nc)
 {
+    SPI_C_LOCK_GUARD;
     return spi::Matrix_new<spi::MapObject, spi_Map_Matrix>(nr, nc);
 }
 
@@ -90,6 +99,7 @@ int spi_Map_Matrix_item(
     int i, int j,
     spi_Map** item)
 {
+    SPI_C_LOCK_GUARD;
     return spi::Matrix_item<spi::MapObject>(m, i, j, item);
 }
 
@@ -98,6 +108,7 @@ int spi_Map_Matrix_set_item(
     int i, int j,
     spi_Map* item)
 {
+    SPI_C_LOCK_GUARD;
     return spi::Matrix_set_item<spi::MapObject>(m, i, j, item);
 }
 
@@ -105,5 +116,6 @@ int spi_Map_Matrix_size(
     spi_Map_Matrix* m,
     int* nr, int* nc)
 {
+    SPI_C_LOCK_GUARD;
     return spi::Matrix_size<spi::MapObject>(m, nr, nc);
 }
