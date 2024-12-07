@@ -355,6 +355,7 @@ int spi_Object_Vector_item(
     int i,
     spi_Object** item)
 {
+    SPI_C_LOCK_GUARD;
     return spi::Vector_item<spi::Object>(v, i, item);
 }
 

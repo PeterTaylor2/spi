@@ -313,7 +313,7 @@ std::string CService::writeSourceFile(const std::string& dirname) const
     ostr << "\n"
         << "int init_" << m_service->ns << "(void)\n"
         << "{\n"
-        << "    SPI_C_LOCK_GUARD;"
+        << "    SPI_C_LOCK_GUARD;\n"
         << "    try\n"
         << "    {\n"
         << "        g_service = " << m_service->ns
