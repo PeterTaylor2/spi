@@ -139,7 +139,7 @@ void WriteDefaultValue(
 
     if (arg->isArray())
     {
-        ostr << " null";
+        ostr << "null";
         return;
     }
 
@@ -573,6 +573,11 @@ bool CService::csNamingStyle() const
     return m_options.csNamingStyle;
 }
 
+bool CService::nullable() const
+{
+    return m_options.nullable;
+}
+
 /*
 ***************************************************************************
 ** Implementation of CModule
@@ -781,7 +786,7 @@ void CModule::implementFunction(
     }
     else
     {
-        csReturnType = CDataType(func->returnType, service).csType(func->returnArrayDim);
+        csReturnType = CDataType(func->returnType, service).csType(func->returnArrayDim, service->nullable());
     }
 
     /*
@@ -824,7 +829,7 @@ void CModule::implementFunctionBegin(
         const spdoc::AttributeConstSP& arg = func->inputs[i];
         ostr << sep << spaces << gap;
         sep = ",\n";
-        ostr << CDataType(arg->dataType, service).csType(arg->arrayDim) << " "
+        ostr << CDataType(arg->dataType, service).csType(arg->arrayDim, arg->isOptional && service->nullable()) << " "
             << service->rename(arg->name, true);
 
         if (i >= lastMandatory)
@@ -916,7 +921,8 @@ std::string CModule::defineValueTupleOutput(
     if (func->outputs.size() == 1)
     {
         spdoc::AttributeConstSP out = func->outputs[0];
-        oss << CDataType(out->dataType, service).csType(out->arrayDim);
+        bool isOptional = out->arrayDim == 0 && service->nullable();
+        oss << CDataType(out->dataType, service).csType(out->arrayDim, isOptional);
     }
     else
     {
@@ -926,7 +932,8 @@ std::string CModule::defineValueTupleOutput(
         for (size_t i = 0; i < func->outputs.size(); ++i)
         {
             spdoc::AttributeConstSP out = func->outputs[i];
-            oss << gap << CDataType(out->dataType, service).csType(out->arrayDim)
+            bool isOptional = out->arrayDim == 0 && service->nullable();
+            oss << gap << CDataType(out->dataType, service).csType(out->arrayDim, isOptional)
                 << " " << service->rename(out->name, true);
             gap = ", ";
         }
@@ -993,6 +1000,8 @@ void CModule::implementClass(
     std::string cname = oss.str();
     bool hasBaseClass = !cls->baseClassName.empty();
     bool hasEmptyConstructor = false;
+
+    const char* nullable = service->nullable() ? "?" : "";
 
     //Usage usage = service->usage(cls->dataType->name);
 
@@ -1166,7 +1175,7 @@ void CModule::implementClass(
         }
     }
 
-    std::string Base("spi.Object");
+    std::string Base("spi.SpiObject");
     
     if (!cls->baseClassName.empty())
     {
@@ -1203,7 +1212,7 @@ void CModule::implementClass(
             const spdoc::ClassAttributeConstSP& attr = cls->attributes[i];
             ostr << sep;
             sep = sep2;
-            ostr << CDataType(attr->dataType, service).csType(attr->arrayDim) << " " << service->rename(attr->name, true);
+            ostr << CDataType(attr->dataType, service).csType(attr->arrayDim, attr->isOptional && service->nullable()) << " " << service->rename(attr->name, true);
         }
         ostr << ")\n"
             << "    {\n";
@@ -1251,9 +1260,9 @@ void CModule::implementClass(
     ostr << "\n"
         << "    ///<summary>Coerce from object - validated downcast</summary>\n";
     std::string New = cls->baseClassName.empty() ? "" : "new ";
-    ostr << "    static public " << New << cls->name << " Coerce(spi.Object obj)\n"
+    ostr << "    static public " << New << cls->name << " Coerce(spi.SpiObject" << nullable << " obj)\n"
         << "    {\n"
-        << "        if (" << cname << "_coerce_from_object(spi.Object.get_inner(obj), out IntPtr inner) != 0)\n"
+        << "        if (" << cname << "_coerce_from_object(spi.SpiObject.get_inner(obj), out IntPtr inner) != 0)\n"
         << "        {\n"
         << "            throw spi.ErrorToException();\n"
         << "        }\n"
@@ -1292,7 +1301,7 @@ void CModule::implementClass(
             ostr << "    static public implicit operator " << cls->name << "(";
         }
 
-        ostr << cdt.csType(cfa->arrayDim) << " " << service->rename(cfa->name, true) << ")\n"
+        ostr << cdt.csType(cfa->arrayDim, false) << " " << service->rename(cfa->name, true) << ")\n"
             << "    {\n"
             << "        IntPtr inner = " << cfFuncNames[i] << "("
             << cdt.cs_to_c(arrayDim, cfa->name) << ");\n"
@@ -1312,7 +1321,7 @@ void CModule::implementClass(
 
         ostr << "\n";
         xmlWriteDescription(ostr, "summary", "", "    ", ct->description);
-        ostr << "    public static implicit operator " << dt->nsService << "." << dt->name << "(" << cls->name << " self)\n"
+        ostr << "    public static implicit operator " << dt->nsService << "." << dt->name << "(" << cls->name << nullable << " self)\n"
             << "    {\n"
             << "        IntPtr inner = " << cname << "_coerce_to_"
             << StringReplace(dt->name, ".", "_") << "(self.self);\n"
@@ -1397,18 +1406,18 @@ void CModule::implementClass(
         const char* New = cls->baseClassName.empty() ? "" : "new ";
 
         ostr << "\n"
-            << "    public " << New << "delegate " << cls->name << " sub_class_wrapper(IntPtr self); \n"
+            << "    public " << New << "delegate " << cls->name << nullable << " sub_class_wrapper(IntPtr self); \n"
             << "    public " << New << "static System.Collections.Generic.List<sub_class_wrapper> zz_sub_class_wrappers; \n";
 
         ostr << "\n"
-            << "    public new static " << cls->name << " Wrap(IntPtr self)\n"
+            << "    public new static " << cls->name << nullable << " Wrap(IntPtr self)\n"
             << "    {\n"
             << "        if (self == IntPtr.Zero)\n"
             << "            return null;\n"
             << "\n"
             << "        foreach(var wrapper in zz_sub_class_wrappers)\n"
             << "        {\n"
-            << "            " << cls->name << " obj = wrapper(self);\n"
+            << "            " << cls->name << nullable << " obj = wrapper(self);\n"
             << "            if (obj != null)\n"
             << "                return obj;\n"
             << "        }\n"
@@ -1419,7 +1428,7 @@ void CModule::implementClass(
     {
         // for a non-abstract class we just wrap (checking that we have the right type)
         ostr << "\n"
-            << "    public new static " << cls->name << " Wrap(IntPtr self)\n"
+            << "    public new static " << cls->name << nullable << " Wrap(IntPtr self)\n"
             << "    {\n"
             << "        if (self == IntPtr.Zero)\n"
             << "            return null;\n"
@@ -1446,7 +1455,7 @@ void CModule::implementClass(
         const char* newBaseWrap = baseClass->baseClassName.empty() ? "" : "new ";
 
         ostr << "\n"
-            << "    public " << newBaseWrap << "static " << baseClass->ServiceNamespace() << "." << cls->baseClassName << " BaseWrap(IntPtr self)\n"
+            << "    public " << newBaseWrap << "static " << baseClass->ServiceNamespace() << "." << cls->baseClassName << nullable << " BaseWrap(IntPtr self)\n"
             << "    {\n"
             << "        if (self == IntPtr.Zero)\n"
             << "            return null;\n"
@@ -1462,7 +1471,7 @@ void CModule::implementClass(
     ostr << "\n"
         << "    static " << cls->name << "()\n"
         << "    {\n"
-        << "        spi.Object.zz_register_class_wrapper(\"";
+        << "        spi.SpiObject.zz_register_class_wrapper(\"";
     if (!cls->ns.empty())
         ostr << cls->ns << ".";
     ostr << cls->ObjectName() << "\", Wrap);\n";
@@ -1500,9 +1509,9 @@ void CModule::implementClass(
         << "    return new spi.PointerHandle(v, " << cname << "_Vector_delete);\n"
         << "}\n"
         << "\n"
-        << "public static spi.PointerHandle zz_" << cls->name << "_VectorFromArray(" << cls->name << "[] array)\n"
+        << "public static spi.PointerHandle zz_" << cls->name << "_VectorFromArray(" << cls->name << "[]? array)\n"
         << "{\n"
-        << "    int size = array.Length;\n"
+        << "    int size = array is null ? 0 : array.Length;\n"
         << "    IntPtr v = " << cname << "_Vector_new(size);\n"
         << "    if (v == IntPtr.Zero)\n"
         << "    {\n"
@@ -1513,7 +1522,7 @@ void CModule::implementClass(
         << ""
         << "    for (int i = 0; i < size; ++i)\n"
         << "    {\n"
-        << "        if (spi_Instance_Vector_set_item(v, i, spi.Object.get_inner(array[i])) != 0)\n"
+        << "        if (spi_Instance_Vector_set_item(v, i, spi.SpiObject.get_inner(array[i])) != 0)\n"
         << "        {\n"
         << "            throw spi.ErrorToException();\n"
         << "        }\n"
@@ -1560,7 +1569,7 @@ void CModule::implementProperty(
     ostr << "\n";
     xmlWriteDescription(ostr, "summary", "", "    ", attr->description);
     std::string New = isOverride ? "new " : "";
-    ostr << "    public " << New << cdt.csType(attr->arrayDim) << " " << service->rename(attr->name, true) << "\n"
+    ostr << "    public " << New << cdt.csType(attr->arrayDim, false) << " " << service->rename(attr->name, true) << "\n"
         << "    {\n"
         << "        get\n"
         << "        {\n"
@@ -1627,7 +1636,8 @@ void CModule::implementClassMethod(
     }
     else
     {
-        csReturnType = CDataType(func->returnType, service).csType(func->returnArrayDim);
+        bool isOptional = func->returnArrayDim == 0 && service->nullable();
+        csReturnType = CDataType(func->returnType, service).csType(func->returnArrayDim, isOptional);
     }
 
     implementFunctionSummary(ostr, func.get(), 4);
@@ -1764,9 +1774,9 @@ void CModule::implementEnum(
         << "}\n"
         << "\n"
         << "public static spi.PointerHandle zz_" << enumType->name << "_VectorFromArray("
-        << enumType->name << "[] array)\n"
+        << enumType->name << "[]? array)\n"
         << "{\n"
-        << "    int size = array.Length;\n"
+        << "    int size = array is null ? 0 : array.Length;\n"
         << "    IntPtr v = " << cname << "_Vector_new(size);\n"
         << "    if (v == IntPtr.Zero)\n"
         << "    {\n"
@@ -1984,7 +1994,7 @@ std::string CDataType::csiType(int arrayDim) const
 
 }
 
-std::string CDataType::csType(int arrayDim) const
+std::string CDataType::csType(int arrayDim, bool isOptional) const
 {
     std::string scalarType;
     std::ostringstream oss;
@@ -2013,18 +2023,27 @@ std::string CDataType::csType(int arrayDim) const
         scalarType = "System.DateTime";
         break;
     case spdoc::PublicType::ENUM:
-    case spdoc::PublicType::CLASS:
         oss << /* service->nsGlobal() << "." << */ dataType->nsService << "." << dataType->name;
         scalarType = oss.str();
         break;
+    case spdoc::PublicType::CLASS:
+        oss << /* service->nsGlobal() << "." << */ dataType->nsService << "." << dataType->name;
+        if (isOptional && arrayDim == 0)
+            oss << "?";
+        scalarType = oss.str();
+        break;
     case spdoc::PublicType::OBJECT:
-        scalarType = "spi.Object";
+        scalarType = "spi.SpiObject";
+        if (isOptional && arrayDim == 0)
+            scalarType += "?";
         break;
     case spdoc::PublicType::MAP:
-        scalarType = "spi.Map";
+        scalarType = "spi.SpiMap";
+        if (isOptional && arrayDim == 0)
+            scalarType += "?";
         break;
     case spdoc::PublicType::VARIANT:
-        scalarType = "spi.Variant";
+        scalarType = "spi.SpiVariant";
         break;
     default:
         SPI_THROW_RUNTIME_ERROR("Scalars not implemented for " <<
@@ -2036,9 +2055,9 @@ std::string CDataType::csType(int arrayDim) const
     case 0:
         return scalarType;
     case 1:
-        return scalarType + "[]";
+        return scalarType + "[]?";
     case 2:
-        return scalarType + "[,]";
+        return scalarType + "[,]?";
     default:
         SPI_THROW_RUNTIME_ERROR("ArrayDim " << arrayDim << " out of range [0,2]");
     }
@@ -2088,18 +2107,18 @@ std::string CDataType::cs_to_c(int arrayDim, const std::string& name) const
             oss << "spi.DateTimeToCDateTime(" << service->rename(name, true) << ")";
             break;
         case spdoc::PublicType::CLASS:
-            oss << csType(0) << ".get_inner(" << service->rename(name, true) << ")";
+            oss << csType(0, false) << ".get_inner(" << service->rename(name, true) << ")";
             break;
         case spdoc::PublicType::OBJECT:
-            oss << "spi.Object.get_inner(" << service->rename(name, true) << ")";
+            oss << "spi.SpiObject.get_inner(" << service->rename(name, true) << ")";
             break;
         case spdoc::PublicType::ENUM:
             break;
         case spdoc::PublicType::MAP:
-            oss << "spi.Map.get_inner(" << service->rename(name, true) << ")";
+            oss << "spi.SpiMap.get_inner(" << service->rename(name, true) << ")";
             break;
         case spdoc::PublicType::VARIANT:
-            oss << "spi.Variant.get_inner(" << service->rename(name, true) << ")";
+            oss << "spi.SpiVariant.get_inner(" << service->rename(name, true) << ")";
             break;
         default:
             oss << "// " << __FUNCTION__ << " Scalars not implemented for " <<
@@ -2129,13 +2148,13 @@ std::string CDataType::cs_to_c(int arrayDim, const std::string& name) const
             break;
         case spdoc::PublicType::ENUM:
         case spdoc::PublicType::CLASS:
-            oss << forArrayTranslations(csType(0)) << "_VectorFromArray(" << service->rename(name, true) << ").get_inner()";
+            oss << forArrayTranslations(csType(0, false)) << "_VectorFromArray(" << service->rename(name, true) << ").get_inner()";
             break;
         case spdoc::PublicType::VARIANT:
-            oss << "spi.VariantVectorFromArray(" << service->rename(name, true) << ").get_inner()";
+            oss << "spi.SpiVariantVectorFromArray(" << service->rename(name, true) << ").get_inner()";
             break;
         case spdoc::PublicType::OBJECT:
-            oss << "spi.ObjectVectorFromArray(" << service->rename(name, true) << ").get_inner()";
+            oss << "spi.SpiObjectVectorFromArray(" << service->rename(name, true) << ").get_inner()";
             break;
         case spdoc::PublicType::MAP:
         case spdoc::PublicType::CHAR:
@@ -2166,14 +2185,14 @@ std::string CDataType::cs_to_c(int arrayDim, const std::string& name) const
             oss << "spi.DateTimeMatrixFromArray(" << service->rename(name, true) << ").get_inner()";
             break;
         case spdoc::PublicType::VARIANT:
-            oss << "spi.VariantMatrixFromArray(" << service->rename(name, true) << ").get_inner()";
+            oss << "spi.SpiVariantMatrixFromArray(" << service->rename(name, true) << ").get_inner()";
             break;
         case spdoc::PublicType::ENUM:
         case spdoc::PublicType::CLASS:
-            oss << forArrayTranslations(csType(0)) << "_MatrixFromArray(" << service->rename(name, true) << ").get_inner()";
+            oss << forArrayTranslations(csType(0, false)) << "_MatrixFromArray(" << service->rename(name, true) << ").get_inner()";
             break;
         case spdoc::PublicType::OBJECT:
-            oss << "spi.ObjectMatrixFromArray(" << service->rename(name, true) << ").get_inner()";
+            oss << "spi.SpiObjectMatrixFromArray(" << service->rename(name, true) << ").get_inner()";
             break;
         case spdoc::PublicType::MAP:
         case spdoc::PublicType::CHAR:
@@ -2256,13 +2275,13 @@ std::string CDataType::c_to_csi(int arrayDim, const std::string& name) const
             break;
         case spdoc::PublicType::ENUM:
         case spdoc::PublicType::CLASS:
-            oss << "var o_" << name << " = " << forArrayTranslations(csType(0)) << "_VectorToHandle(c_" << name << ")";
+            oss << "var o_" << name << " = " << forArrayTranslations(csType(0, false)) << "_VectorToHandle(c_" << name << ")";
             break;
         case spdoc::PublicType::VARIANT:
-            oss << "var o_" << name << " = spi.VariantVectorToHandle(c_" << name << ")";
+            oss << "var o_" << name << " = spi.SpiVariantVectorToHandle(c_" << name << ")";
             break;
         case spdoc::PublicType::OBJECT:
-            oss << "var o_" << name << " = spi.ObjectVectorToHandle(c_" << name << ")";
+            oss << "var o_" << name << " = spi.SpiObjectVectorToHandle(c_" << name << ")";
             break;
         case spdoc::PublicType::MAP:
         default:
@@ -2293,13 +2312,13 @@ std::string CDataType::c_to_csi(int arrayDim, const std::string& name) const
             break;
         case spdoc::PublicType::ENUM:
         case spdoc::PublicType::CLASS:
-            oss << "var o_" << name << " = " << forArrayTranslations(csType(0)) << "_MatrixToHandle(c_" << name << ")";
+            oss << "var o_" << name << " = " << forArrayTranslations(csType(0, false)) << "_MatrixToHandle(c_" << name << ")";
             break;
         case spdoc::PublicType::VARIANT:
-            oss << "var o_" << name << " = spi.VariantMatrixToHandle(c_" << name << ")";
+            oss << "var o_" << name << " = spi.SpiVariantMatrixToHandle(c_" << name << ")";
             break;
         case spdoc::PublicType::OBJECT:
-            oss << "var o_" << name << " = spi.ObjectMatrixToHandle(c_" << name << ")";
+            oss << "var o_" << name << " = spi.SpiObjectMatrixToHandle(c_" << name << ")";
             break;
         case spdoc::PublicType::MAP:
         default:
@@ -2345,13 +2364,13 @@ std::string CDataType::csi_to_cs(int arrayDim, const std::string& name) const
             oss << service->nsGlobal() << "." << dataType->nsService << "." << dataType->name << ".Wrap(c_" << name << ")";
             break;
         case spdoc::PublicType::OBJECT:
-            oss << "spi.Object.Wrap(c_" << name << ")";
+            oss << "spi.SpiObject.Wrap(c_" << name << ")";
             break;
         case spdoc::PublicType::MAP:
-            oss << "spi.Map.Wrap(c_" << name << ")";
+            oss << "spi.SpiMap.Wrap(c_" << name << ")";
             break;
         case spdoc::PublicType::VARIANT:
-            oss << "new spi.Variant(c_" << name << ")";
+            oss << "new spi.SpiVariant(c_" << name << ")";
             break;
         default:
             oss << "// " << __FUNCTION__ << " Scalars not implemented for " <<
@@ -2380,14 +2399,14 @@ std::string CDataType::csi_to_cs(int arrayDim, const std::string& name) const
             oss << "spi.DateTimeVectorToArray(o_" << name << ")";
             break;
         case spdoc::PublicType::VARIANT:
-            oss << "spi.VariantVectorToArray(o_" << name << ")";
+            oss << "spi.SpiVariantVectorToArray(o_" << name << ")";
             break;
         case spdoc::PublicType::ENUM:
         case spdoc::PublicType::CLASS:
-            oss << forArrayTranslations(csType(0)) << "_VectorToArray(o_" << name << ")";
+            oss << forArrayTranslations(csType(0, false)) << "_VectorToArray(o_" << name << ")";
             break;
         case spdoc::PublicType::OBJECT:
-            oss << "spi.ObjectVectorToArray(o_" << name << ")";
+            oss << "spi.SpiObjectVectorToArray(o_" << name << ")";
             break;
         case spdoc::PublicType::MAP:
         default:
@@ -2417,14 +2436,14 @@ std::string CDataType::csi_to_cs(int arrayDim, const std::string& name) const
             oss << "spi.DateTimeMatrixToArray(o_" << name << ")";
             break;
         case spdoc::PublicType::VARIANT:
-            oss << "spi.VariantMatrixToArray(o_" << name << ")";
+            oss << "spi.SpiVariantMatrixToArray(o_" << name << ")";
             break;
         case spdoc::PublicType::ENUM:
         case spdoc::PublicType::CLASS:
-            oss << forArrayTranslations(csType(0)) << "_MatrixToArray(o_" << name << ")";
+            oss << forArrayTranslations(csType(0, false)) << "_MatrixToArray(o_" << name << ")";
             break;
         case spdoc::PublicType::OBJECT:
-            oss << "spi.ObjectMatrixToArray(o_" << name << ")";
+            oss << "spi.SpiObjectMatrixToArray(o_" << name << ")";
             break;
         case spdoc::PublicType::MAP:
         default:

@@ -49,13 +49,15 @@ struct Options
         noGeneratedCodeNotice(false),
         license(),
         writeBackup(),
-        csNamingStyle()
+        csNamingStyle(),
+        nullable()
     {}
 
     bool noGeneratedCodeNotice;
     std::string license;
     bool writeBackup;
     bool csNamingStyle;
+    bool nullable;
 };
 
 struct Usage
@@ -101,6 +103,7 @@ public:
     const std::string& license() const;
     bool writeBackup() const;
     bool csNamingStyle() const;
+    bool nullable() const;
 
     std::string rename(const std::string& name, bool fieldName) const;
 
@@ -226,7 +229,7 @@ public:
     std::string csiType(int arrayDim) const;
 
     // type used in the C# interface
-    std::string csType(int arrayDim) const;
+    std::string csType(int arrayDim, bool isOptional) const;
 
     // converts from either C# type from the interface or internal type to c-type
     std::string cs_to_c(int arrayDim, const std::string& name) const;

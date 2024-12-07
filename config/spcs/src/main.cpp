@@ -154,7 +154,7 @@ int main(int argc, char* argv[])
 
     Options options;
 
-    const char* longOptions = "noGeneratedCodeNotice noTidyUp license licenseFile= backup csNamingStyle";
+    const char* longOptions = "noGeneratedCodeNotice noTidyUp license licenseFile= backup csNamingStyle nullable";
     try
     {
         spi_util::CommandLine commandLine(argc, argv, "wvx=", longOptions);
@@ -199,6 +199,10 @@ int main(int argc, char* argv[])
             else if (opt == "--csNamingStyle")
             {
                 options.csNamingStyle = true;
+            }
+            else if (opt == "--nullable")
+            {
+                options.nullable = true;
             }
             else
             {
