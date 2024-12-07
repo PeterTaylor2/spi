@@ -34,6 +34,18 @@
 #include <spi/spi.hpp>
 #include <spi_util/Utils.hpp>
 #include "DeclSpec.h"
+
+#ifdef _MSC_VER
+
+// for the reason for this mysterious macro see
+// https://stackoverflow.com/questions/78598141/first-stdmutexlock-crashes-in-application-built-with-latest-visual-studio
+
+#if _MSC_VER < 1942
+#define _DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR
+#endif
+
+#endif
+
 #include <mutex>
 
 #ifndef SPI_C_MULTI_THREAD
@@ -60,6 +72,7 @@ extern std::recursive_mutex g_lock_guard;
 template<class T>
 T* RawPointer(const spi_boost::intrusive_ptr<T>& o)
 {
+    SPI_C_LOCK_GUARD;
     T* p = o.get();
     intrusive_ptr_add_ref(p);
     return p;
@@ -68,6 +81,7 @@ T* RawPointer(const spi_boost::intrusive_ptr<T>& o)
 template<class T>
 const T* RawPointer(const spi::ObjectSmartPtr<T>& o)
 {
+    SPI_C_LOCK_GUARD;
     const T* p = o.get();
     intrusive_ptr_add_ref(p);
     return p;
@@ -76,6 +90,7 @@ const T* RawPointer(const spi::ObjectSmartPtr<T>& o)
 template<class T, typename U>
 typename T::outer_type convert_in(const U* p)
 {
+    SPI_C_LOCK_GUARD;
     if (!p)
         return typename T::outer_type();
     return typename T::outer_type((T*)p);
@@ -84,6 +99,7 @@ typename T::outer_type convert_in(const U* p)
 template<typename U, class T>
 U* convert_out(const T& o)
 {
+    SPI_C_LOCK_GUARD;
     return (U*)(spi::RawPointer(o));
 }
 
@@ -157,6 +173,7 @@ struct Enum
 template<class OC, typename VT>
 void Vector_delete(VT* v)
 {
+    SPI_C_LOCK_GUARD;
     if (v)
     {
         delete ((std::vector < typename OC::outer_type>*)(v));
@@ -166,6 +183,7 @@ void Vector_delete(VT* v)
 template<class OC, typename VT>
 VT* Vector_new(int N)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         return (VT*)(new std::vector<typename OC::outer_type>(spi_util::IntegerCast<size_t>(N)));
@@ -180,6 +198,7 @@ VT* Vector_new(int N)
 template<class OC, typename VT, typename ST>
 int Vector_item(VT* v, int i, ST** item)
 {
+    SPI_C_LOCK_GUARD;
     if (!v || !item)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -201,6 +220,7 @@ int Vector_item(VT* v, int i, ST** item)
 template<class OC, typename VT, typename ST>
 int Vector_set_item(VT* v, int i, ST* item)
 {
+    SPI_C_LOCK_GUARD;
     if (!v)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -222,6 +242,7 @@ int Vector_set_item(VT* v, int i, ST* item)
 template<class OC, typename VT>
 int Vector_size(VT* v, int* size)
 {
+    SPI_C_LOCK_GUARD;
     if (!v || !size)
     {
         spi_Error_set_function(__FUNCTION__, "NULL inputs");
@@ -234,6 +255,7 @@ int Vector_size(VT* v, int* size)
 template<class OC, typename MT>
 void Matrix_delete(MT* m)
 {
+    SPI_C_LOCK_GUARD;
     if (m)
     {
         delete (spi::MatrixData<typename OC::outer_type>*)(m);
@@ -243,6 +265,7 @@ void Matrix_delete(MT* m)
 template<class OC, typename MT>
 MT* Matrix_new(int nr, int nc)
 {
+    SPI_C_LOCK_GUARD;
     try
     {
         return (MT*)(new spi::MatrixData<typename OC::outer_type>(
@@ -259,6 +282,7 @@ MT* Matrix_new(int nr, int nc)
 template<class OC, typename MT, typename ST>
 int Matrix_item(MT* m, int i, int j, ST** item)
 {
+    SPI_C_LOCK_GUARD;
     if (!m || !item)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -283,6 +307,7 @@ int Matrix_item(MT* m, int i, int j, ST** item)
 template<class OC, typename MT, typename ST>
 int Matrix_set_item(MT* m, int i, int j, ST* item)
 {
+    SPI_C_LOCK_GUARD;
     if (!m)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
@@ -306,6 +331,7 @@ int Matrix_set_item(MT* m, int i, int j, ST* item)
 template<class OC, typename MT>
 int Matrix_size(MT* m, int* nr, int* nc)
 {
+    SPI_C_LOCK_GUARD;
     if (!nr || !nc)
     {
         spi_Error_set_function(__FUNCTION__, "NULL pointer");
