@@ -1447,44 +1447,44 @@ namespace SPI
             out int nr,
             out int nc);
 
-        public class Variant : IDisposable
+        public class SpiVariant : IDisposable
         {
-            public Variant(string str)
+            public SpiVariant(string str)
             {
                 self = spi_Variant_new_String(str);
                 if (self == IntPtr.Zero)
                     throw ErrorToException();
             }
 
-            public Variant(System.DateTime dt)
+            public SpiVariant(System.DateTime dt)
             {
                 self = spi_Variant_new_DateTime(DateTimeToCDateTime(dt));
                 if (self == IntPtr.Zero)
                     throw ErrorToException();
             }
 
-            public Variant(double d)
+            public SpiVariant(double d)
             {
                 self = spi_Variant_new_Double(d);
                 if (self == IntPtr.Zero)
                     throw ErrorToException();
             }
 
-            public Variant(bool b)
+            public SpiVariant(bool b)
             {
                 self = spi_Variant_new_Bool(b);
                 if (self == IntPtr.Zero)
                     throw ErrorToException();
             }
 
-            public Variant(int i)
+            public SpiVariant(int i)
             {
                 self = spi_Variant_new_Int(i);
                 if (self == IntPtr.Zero)
                     throw ErrorToException();
             }
 
-            ~Variant()
+            ~SpiVariant()
             {
                 Dispose(false);
             }
@@ -1504,12 +1504,12 @@ namespace SPI
                 GC.SuppressFinalize(this);
             }
 
-            public Variant(IntPtr in_self)
+            public SpiVariant(IntPtr in_self)
             {
                 self = in_self;
             }
 
-            public static IntPtr get_inner(Variant v)
+            public static IntPtr get_inner(SpiVariant v)
             {
                 if (v == null)
                     return IntPtr.Zero;
@@ -1526,7 +1526,7 @@ namespace SPI
                 return vt;
             }
 
-            static public implicit operator System.DateTime(Variant var)
+            static public implicit operator System.DateTime(SpiVariant var)
             {
                 if (spi_Variant_DateTime(var.self, out double dt) != 0)
                     throw ErrorToException();
@@ -1534,7 +1534,7 @@ namespace SPI
                 return DateTimeFromCDateTime(dt);
             }
 
-            static public implicit operator System.String(Variant var)
+            static public implicit operator System.String(SpiVariant var)
             {
                 if (spi_Variant_String(var.self, out string str) != 0)
                     throw ErrorToException();
@@ -1542,7 +1542,7 @@ namespace SPI
                 return str;
             }
 
-            static public implicit operator double(Variant var)
+            static public implicit operator double(SpiVariant var)
             {
                 if (spi_Variant_Double(var.self, out double d) != 0)
                     throw ErrorToException();
@@ -1550,7 +1550,7 @@ namespace SPI
                 return d;
             }
 
-            static public implicit operator int(Variant var)
+            static public implicit operator int(SpiVariant var)
             {
                 if (spi_Variant_Int(var.self, out int i) != 0)
                     throw ErrorToException();
@@ -1558,7 +1558,7 @@ namespace SPI
                 return i;
             }
 
-            static public implicit operator bool(Variant var)
+            static public implicit operator bool(SpiVariant var)
             {
                 if (spi_Variant_Bool(var.self, out bool b) != 0)
                     throw ErrorToException();
@@ -1566,15 +1566,15 @@ namespace SPI
                 return b;
             }
 
-            static public implicit operator spi.Object(Variant var)
+            static public implicit operator SpiObject(SpiVariant var)
             {
                 if (spi_Variant_Object(var.self, out IntPtr o) != 0)
                     throw ErrorToException();
 
-                return spi.Object.Wrap(o);
+                return SpiObject.Wrap(o);
             }
 
-            static public implicit operator System.DateTime[](Variant var)
+            static public implicit operator System.DateTime[](SpiVariant var)
             {
                 if (spi_Variant_DateTime_Vector(var.self, out IntPtr dt) != 0)
                     throw ErrorToException();
@@ -1583,7 +1583,7 @@ namespace SPI
                 return spi.DateTimeVectorToArray(h);
             }
 
-            static public implicit operator System.String[](Variant var)
+            static public implicit operator System.String[](SpiVariant var)
             {
                 if (spi_Variant_String_Vector(var.self, out IntPtr dt) != 0)
                     throw ErrorToException();
@@ -1592,7 +1592,7 @@ namespace SPI
                 return spi.StringVectorToArray(h);
             }
 
-            static public implicit operator double[](Variant var)
+            static public implicit operator double[](SpiVariant var)
             {
                 if (spi_Variant_Double_Vector(var.self, out IntPtr dt) != 0)
                     throw ErrorToException();
@@ -1601,7 +1601,7 @@ namespace SPI
                 return spi.DoubleVectorToArray(h);
             }
 
-            static public implicit operator int[](Variant var)
+            static public implicit operator int[](SpiVariant var)
             {
                 if (spi_Variant_Int_Vector(var.self, out IntPtr dt) != 0)
                     throw ErrorToException();
@@ -1610,7 +1610,7 @@ namespace SPI
                 return spi.IntVectorToArray(h);
             }
 
-            static public implicit operator bool[](Variant var)
+            static public implicit operator bool[](SpiVariant var)
             {
                 if (spi_Variant_Bool_Vector(var.self, out IntPtr dt) != 0)
                     throw ErrorToException();
@@ -1619,25 +1619,25 @@ namespace SPI
                 return spi.BoolVectorToArray(h);
             }
 
-            static public implicit operator spi.Object[](Variant var)
+            static public implicit operator SpiObject[](SpiVariant var)
             {
                 if (spi_Variant_Object_Vector(var.self, out IntPtr dt) != 0)
                     throw ErrorToException();
 
-                PointerHandle h = spi.ObjectVectorToHandle(dt);
-                return spi.ObjectVectorToArray(h);
+                PointerHandle h = spi.SpiObjectVectorToHandle(dt);
+                return spi.SpiObjectVectorToArray(h);
             }
 
             // note that self = spi::Variant*
             private IntPtr self = IntPtr.Zero;
         }
 
-        public static PointerHandle VariantVectorToHandle(IntPtr v)
+        public static PointerHandle SpiVariantVectorToHandle(IntPtr v)
         {
             return new PointerHandle(v, spi_Variant_Vector_delete);
         }
 
-        public static Variant[] VariantVectorToArray(PointerHandle h)
+        public static SpiVariant[] SpiVariantVectorToArray(PointerHandle h)
         {
             IntPtr v = h.get_inner();
             int size;
@@ -1646,7 +1646,7 @@ namespace SPI
                 throw ErrorToException();
             }
 
-            Variant[] array = new Variant[size];
+            SpiVariant[] array = new SpiVariant[size];
 
             for (int i = 0; i < size; ++i)
             {
@@ -1654,13 +1654,13 @@ namespace SPI
                 {
                     throw ErrorToException();
                 }
-                array[i] = new Variant(item);
+                array[i] = new SpiVariant(item);
             }
 
             return array;
         }
 
-        public static PointerHandle VariantVectorFromArray(Variant[] array)
+        public static PointerHandle SpiVariantVectorFromArray(SpiVariant[] array)
         {
             int size = array is null ? 0 : array.Length;
             IntPtr v = spi_Variant_Vector_new(size);
@@ -1672,7 +1672,7 @@ namespace SPI
 
             for (int i = 0; i < size; ++i)
             {
-                if (spi_Variant_Vector_set_item(v, i, spi.Variant.get_inner(array[i])) != 0)
+                if (spi_Variant_Vector_set_item(v, i, SpiVariant.get_inner(array[i])) != 0)
                 {
                     throw ErrorToException();
                 }
@@ -1681,12 +1681,12 @@ namespace SPI
             return h;
         }
 
-        public static PointerHandle VariantMatrixToHandle(IntPtr v)
+        public static PointerHandle SpiVariantMatrixToHandle(IntPtr v)
         {
             return new PointerHandle(v, spi_Variant_Matrix_delete);
         }
 
-        public static Variant[,] VariantMatrixToArray(PointerHandle h)
+        public static SpiVariant[,] SpiVariantMatrixToArray(PointerHandle h)
         {
             IntPtr v = h.get_inner();
             if (spi_Variant_Matrix_size(v, out int nr, out int nc) != 0)
@@ -1694,7 +1694,7 @@ namespace SPI
                 throw ErrorToException();
             }
 
-            Variant[,] array = new Variant[nr, nc];
+            SpiVariant[,] array = new SpiVariant[nr, nc];
 
             for (int i = 0; i < nr; ++i)
             {
@@ -1704,14 +1704,14 @@ namespace SPI
                     {
                         throw ErrorToException();
                     }
-                    array[i,j] = new Variant(item);
+                    array[i,j] = new SpiVariant(item);
                 }
             }
 
             return array;
         }
 
-        public static PointerHandle VariantMatrixFromArray(Variant[,] array)
+        public static PointerHandle SpiVariantMatrixFromArray(SpiVariant[,] array)
         {
             int nr = array is null ? 0 : array.GetLength(0);
             int nc = array is null ? 0 : array.GetLength(1);
@@ -1727,7 +1727,7 @@ namespace SPI
             {
                 for (int j = 0; j < nc; ++j)
                 {
-                    if (spi_Variant_Matrix_set_item(v, i, j, spi.Variant.get_inner(array[i,j])) != 0)
+                    if (spi_Variant_Matrix_set_item(v, i, j, SpiVariant.get_inner(array[i,j])) != 0)
                     {
                         throw ErrorToException();
                     }
@@ -1741,12 +1741,12 @@ namespace SPI
         // to have one constructor which takes ownership and another which increments
         // the reference count?
 
-        public class Object : IDisposable
+        public class SpiObject : IDisposable
         {
-            protected Object()
+            protected SpiObject()
             {}
 
-            ~Object()
+            ~SpiObject()
             {
                 Dispose(false);
             }
@@ -1766,13 +1766,13 @@ namespace SPI
                 GC.SuppressFinalize(this);
             }
 
-            public delegate spi.Object class_wrapper(IntPtr self);
+            public delegate SpiObject class_wrapper(IntPtr self);
             public static System.Collections.Generic.Dictionary<string, class_wrapper> zz_class_wrappers;
 
-            static Object()
+            static SpiObject()
             {
                 zz_class_wrappers = new System.Collections.Generic.Dictionary<string, class_wrapper>();
-                zz_class_wrappers.Add("Map", spi.Map.Wrap);
+                zz_class_wrappers.Add("Map", SpiMap.Wrap);
             }
 
             public static void zz_register_class_wrapper(string name, class_wrapper wrapper)
@@ -1780,7 +1780,7 @@ namespace SPI
                 zz_class_wrappers.Add(name, wrapper);
             }
 
-            public static spi.Object Wrap(IntPtr self)
+            public static SpiObject Wrap(IntPtr self)
             {
                 if (self == IntPtr.Zero)
                     return null;
@@ -1795,7 +1795,7 @@ namespace SPI
                 }
                 catch
                 {
-                    spi.Object obj = new spi.Object();
+                    SpiObject obj = new SpiObject();
                     obj.set_inner(self);
                     return obj;
                 }
@@ -1855,12 +1855,12 @@ namespace SPI
             /// The serialized object string, as created by the to_string method.
             /// </param>
             /// <returns></returns>
-            public static spi.Object from_string(System.String str)
+            public static SpiObject from_string(System.String str)
             {
                 IntPtr inner = spi_Object_from_string(str);
                 if (inner == IntPtr.Zero)
                     throw spi.ErrorToException();
-                return spi.Object.Wrap(inner);
+                return SpiObject.Wrap(inner);
             }
 
             /// <summary>
@@ -1893,12 +1893,12 @@ namespace SPI
             /// The filename containing the serialized object, e.g. as created by the to_file method.
             /// </param>
             /// <returns></returns>
-            public static spi.Object from_file(System.String filename)
+            public static SpiObject from_file(System.String filename)
             {
                 IntPtr inner = spi_Object_from_file(filename);
                 if (inner == IntPtr.Zero)
                     throw spi.ErrorToException();
-                return spi.Object.Wrap(inner);
+                return SpiObject.Wrap(inner);
             }
 
             /// <summary>
@@ -1909,13 +1909,13 @@ namespace SPI
             /// Variant value - you can then use implicit type conversions to
             /// convert to the actual type, e.g. int numItems = o.get_value("numItems")
             /// </returns>
-            public Variant get_value(System.String name)
+            public SpiVariant get_value(System.String name)
             {
                 IntPtr value = spi_Object_get_value(self, name);
                 if (value == IntPtr.Zero)
                     throw ErrorToException();
 
-                return new Variant(value);
+                return new SpiVariant(value);
             }
 
             protected void set_inner(IntPtr self)
@@ -1936,7 +1936,7 @@ namespace SPI
                 this.self = self;
             }
 
-            public static IntPtr get_inner(spi.Object o)
+            public static IntPtr get_inner(SpiObject o)
             {
                 if (o == null)
                     return IntPtr.Zero;
@@ -1951,24 +1951,24 @@ namespace SPI
         // functions dealing with string object handles
         public static System.String ObjectHandleSave(
             System.String baseName,
-            spi.Object obj,
+            SpiObject obj,
             bool noCount = false)
         {
-            if (spi_Object_handle_save(baseName, spi.Object.get_inner(obj), noCount, out string handle) != 0)
+            if (spi_Object_handle_save(baseName, SpiObject.get_inner(obj), noCount, out string handle) != 0)
             {
                 throw ErrorToException();
             }
             return handle;
         }
 
-        public static spi.Object ObjectHandleFind(
+        public static SpiObject ObjectHandleFind(
             System.String handle)
         {
             if (spi_Object_handle_find(handle, out IntPtr obj) != 0)
             {
                 throw ErrorToException();
             }
-            return spi.Object.Wrap(obj);
+            return SpiObject.Wrap(obj);
         }
 
         public static int ObjectHandleFreeAll()
@@ -2020,12 +2020,12 @@ namespace SPI
             return className;
         }
 
-        public static PointerHandle ObjectVectorToHandle(IntPtr v)
+        public static PointerHandle SpiObjectVectorToHandle(IntPtr v)
         {
             return new PointerHandle(v, spi_Object_Vector_delete);
         }
 
-        public static spi.Object[] ObjectVectorToArray(PointerHandle h)
+        public static SpiObject[] SpiObjectVectorToArray(PointerHandle h)
         {
             IntPtr v = h.get_inner();
             int size;
@@ -2034,7 +2034,7 @@ namespace SPI
                 throw ErrorToException();
             }
 
-            spi.Object[] array = new spi.Object[size];
+            SpiObject[] array = new SpiObject[size];
 
             for (int i = 0; i < size; ++i)
             {
@@ -2042,13 +2042,13 @@ namespace SPI
                 {
                     throw ErrorToException();
                 }
-                array[i] = spi.Object.Wrap(item);
+                array[i] = SpiObject.Wrap(item);
             }
 
             return array;
         }
 
-        public static PointerHandle ObjectVectorFromArray(spi.Object[] array)
+        public static PointerHandle SpiObjectVectorFromArray(SpiObject[] array)
         {
             int size = array.Length;
             IntPtr v = spi_Object_Vector_new(size);
@@ -2060,7 +2060,7 @@ namespace SPI
 
             for (int i = 0; i < size; ++i)
             {
-                if (spi_Object_Vector_set_item(v, i, spi.Object.get_inner(array[i])) != 0)
+                if (spi_Object_Vector_set_item(v, i, SpiObject.get_inner(array[i])) != 0)
                 {
                     throw ErrorToException();
                 }
@@ -2069,12 +2069,12 @@ namespace SPI
             return h;
         }
 
-        public static PointerHandle ObjectMatrixToHandle(IntPtr v)
+        public static PointerHandle SpiObjectMatrixToHandle(IntPtr v)
         {
             return new PointerHandle(v, spi_Object_Matrix_delete);
         }
 
-        public static spi.Object[,] ObjectMatrixToArray(PointerHandle h)
+        public static SpiObject[,] SpiObjectMatrixToArray(PointerHandle h)
         {
             IntPtr v = h.get_inner();
             if (spi_Object_Matrix_size(v, out int nr, out int nc) != 0)
@@ -2082,7 +2082,7 @@ namespace SPI
                 throw ErrorToException();
             }
 
-            spi.Object[,] array = new spi.Object[nr, nc];
+            SpiObject[,] array = new SpiObject[nr, nc];
 
             for (int i = 0; i < nr; ++i)
             {
@@ -2092,14 +2092,14 @@ namespace SPI
                     {
                         throw ErrorToException();
                     }
-                    array[i, j] = spi.Object.Wrap(item);
+                    array[i, j] = SpiObject.Wrap(item);
                 }
             }
 
             return array;
         }
 
-        public static PointerHandle ObjectMatrixFromArray(spi.Object[,] array)
+        public static PointerHandle SpiObjectMatrixFromArray(SpiObject[,] array)
         {
             int nr = array is null ? 0 : array.GetLength(0);
             int nc = array is null ? 0 : array.GetLength(1);
@@ -2115,7 +2115,7 @@ namespace SPI
             {
                 for (int j = 0; j < nc; ++j)
                 {
-                    if (spi_Object_Matrix_set_item(v, i, j, spi.Object.get_inner(array[i, j])) != 0)
+                    if (spi_Object_Matrix_set_item(v, i, j, SpiObject.get_inner(array[i, j])) != 0)
                     {
                         throw ErrorToException();
                     }
@@ -2129,12 +2129,12 @@ namespace SPI
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr spi_Map_dynamic_cast(IntPtr o);
 
-        public class Map : spi.Object
+        public class SpiMap : SpiObject
         {
-            protected Map() { }
+            protected SpiMap() { }
 
             // self should be spi::MapObject*
-            public new static Map Wrap(IntPtr self)
+            public new static SpiMap Wrap(IntPtr self)
             {
                 if (self == IntPtr.Zero)
                     return null;
@@ -2143,7 +2143,7 @@ namespace SPI
                 if (self == IntPtr.Zero)
                     throw new Exception("self is not an instance of Map");
 
-                Map obj = new Map();
+                SpiMap obj = new SpiMap();
                 obj.set_inner(self);
                 return obj;
             }

@@ -363,11 +363,14 @@ namespace SPI
             }
             PointerHandle h = new PointerHandle(v, spi_Int_Vector_delete);
 
-            for (int i = 0; i < size; ++i)
+            if (array is not null)
             {
-                if (spi_Int_Vector_set_item(v, i, array[i]) != 0)
+                for (int i = 0; i < size; ++i)
                 {
-                    throw ErrorToException();
+                    if (spi_Int_Vector_set_item(v, i, array[i]) != 0)
+                    {
+                        throw ErrorToException();
+                    }
                 }
             }
 
@@ -435,11 +438,14 @@ namespace SPI
             }
             PointerHandle h = new PointerHandle(v, spi_Double_Vector_delete);
 
-            for (int i = 0; i < size; ++i)
+            if (array is not null)
             {
-                if (spi_Double_Vector_set_item(v, i, array[i]) != 0)
+                for (int i = 0; i < size; ++i)
                 {
-                    throw ErrorToException();
+                    if (spi_Double_Vector_set_item(v, i, array[i]) != 0)
+                    {
+                        throw ErrorToException();
+                    }
                 }
             }
 
@@ -507,12 +513,15 @@ namespace SPI
             }
             PointerHandle h = new PointerHandle(v, spi_Bool_Vector_delete);
 
-            for (int i = 0; i < size; ++i)
+            if (array is not null)
             {
-                if (spi_Bool_Vector_set_item(v, i, array[i]) != 0)
+                for (int i = 0; i < size; ++i)
                 {
-                    spi_Bool_Vector_delete(v);
-                    throw ErrorToException();
+                    if (spi_Bool_Vector_set_item(v, i, array[i]) != 0)
+                    {
+                        spi_Bool_Vector_delete(v);
+                        throw ErrorToException();
+                    }
                 }
             }
 
@@ -581,12 +590,16 @@ namespace SPI
             }
 
             PointerHandle h = new PointerHandle(v, spi_Date_Vector_delete);
-            for (int i = 0; i < size; ++i)
+
+            if (array is not null)
             {
-                int cdate = DateToCDate(array[i]);
-                if (spi_Date_Vector_set_item(v, i, cdate) != 0)
+                for (int i = 0; i < size; ++i)
                 {
-                    throw ErrorToException();
+                    int cdate = DateToCDate(array[i]);
+                    if (spi_Date_Vector_set_item(v, i, cdate) != 0)
+                    {
+                        throw ErrorToException();
+                    }
                 }
             }
 
@@ -656,12 +669,16 @@ namespace SPI
             }
 
             PointerHandle h = new PointerHandle(v, spi_DateTime_Vector_delete);
-            for (int i = 0; i < size; ++i)
+
+            if (array is not null)
             {
-                double cdate = DateTimeToCDateTime(array[i]);
-                if (spi_DateTime_Vector_set_item(v, i, cdate) != 0)
+                for (int i = 0; i < size; ++i)
                 {
-                    throw ErrorToException();
+                    double cdate = DateTimeToCDateTime(array[i]);
+                    if (spi_DateTime_Vector_set_item(v, i, cdate) != 0)
+                    {
+                        throw ErrorToException();
+                    }
                 }
             }
 
@@ -729,11 +746,14 @@ namespace SPI
             }
             PointerHandle h = new PointerHandle(v, spi_String_Vector_delete);
 
-            for (int i = 0; i < size; ++i)
+            if (array is not null)
             {
-                if (spi_String_Vector_set_item(v, i, array[i]) != 0)
+                for (int i = 0; i < size; ++i)
                 {
-                    throw ErrorToException();
+                    if (spi_String_Vector_set_item(v, i, array[i]) != 0)
+                    {
+                        throw ErrorToException();
+                    }
                 }
             }
 
@@ -913,13 +933,16 @@ namespace SPI
             }
             PointerHandle h = new PointerHandle(m, spi_Int_Matrix_delete);
 
-            for (int i = 0; i < nr; ++i)
+            if (array is not null)
             {
-                for (int j = 0; j < nc; ++j)
+                for (int i = 0; i < nr; ++i)
                 {
-                    if (spi_Int_Matrix_set_item(m, i, j, array[i, j]) != 0)
+                    for (int j = 0; j < nc; ++j)
                     {
-                        throw ErrorToException();
+                        if (spi_Int_Matrix_set_item(m, i, j, array[i, j]) != 0)
+                        {
+                            throw ErrorToException();
+                        }
                     }
                 }
             }
@@ -993,13 +1016,16 @@ namespace SPI
             }
             PointerHandle h = new PointerHandle(m, spi_Double_Matrix_delete);
 
-            for (int i = 0; i < nr; ++i)
+            if (array is not null)
             {
-                for (int j = 0; j < nc; ++j)
+                for (int i = 0; i < nr; ++i)
                 {
-                    if (spi_Double_Matrix_set_item(m, i, j, array[i, j]) != 0)
+                    for (int j = 0; j < nc; ++j)
                     {
-                        throw ErrorToException();
+                        if (spi_Double_Matrix_set_item(m, i, j, array[i, j]) != 0)
+                        {
+                            throw ErrorToException();
+                        }
                     }
                 }
             }
@@ -1074,13 +1100,16 @@ namespace SPI
             }
             PointerHandle h = new PointerHandle(m, spi_Bool_Matrix_delete);
 
-            for (int i = 0; i < nr; ++i)
+            if (array is not null)
             {
-                for (int j = 0; j < nc; ++j)
+                for (int i = 0; i < nr; ++i)
                 {
-                    if (spi_Bool_Matrix_set_item(m, i, j, array[i, j] ? 1 : 0) != 0)
+                    for (int j = 0; j < nc; ++j)
                     {
-                        throw ErrorToException();
+                        if (spi_Bool_Matrix_set_item(m, i, j, array[i, j] ? 1 : 0) != 0)
+                        {
+                            throw ErrorToException();
+                        }
                     }
                 }
             }
@@ -1156,13 +1185,16 @@ namespace SPI
             }
             PointerHandle h = new PointerHandle(m, spi_Date_Matrix_delete);
 
-            for (int i = 0; i < nr; ++i)
+            if (array is not null)
             {
-                for (int j = 0; j < nc; ++j)
+                for (int i = 0; i < nr; ++i)
                 {
-                    if (spi_Date_Matrix_set_item(m, i, j, spi.DateToCDate(array[i, j])) != 0)
+                    for (int j = 0; j < nc; ++j)
                     {
-                        throw ErrorToException();
+                        if (spi_Date_Matrix_set_item(m, i, j, spi.DateToCDate(array[i, j])) != 0)
+                        {
+                            throw ErrorToException();
+                        }
                     }
                 }
             }
@@ -1237,13 +1269,16 @@ namespace SPI
             }
             PointerHandle h = new PointerHandle(m, spi_DateTime_Matrix_delete);
 
-            for (int i = 0; i < nr; ++i)
+            if (array is not null)
             {
-                for (int j = 0; j < nc; ++j)
+                for (int i = 0; i < nr; ++i)
                 {
-                    if (spi_DateTime_Matrix_set_item(m, i, j, spi.DateTimeToCDateTime(array[i, j])) != 0)
+                    for (int j = 0; j < nc; ++j)
                     {
-                        throw ErrorToException();
+                        if (spi_DateTime_Matrix_set_item(m, i, j, spi.DateTimeToCDateTime(array[i, j])) != 0)
+                        {
+                            throw ErrorToException();
+                        }
                     }
                 }
             }
@@ -1317,13 +1352,16 @@ namespace SPI
             }
             PointerHandle h = new PointerHandle(m, spi_String_Matrix_delete);
 
-            for (int i = 0; i < nr; ++i)
+            if (array is not null)
             {
-                for (int j = 0; j < nc; ++j)
+                for (int i = 0; i < nr; ++i)
                 {
-                    if (spi_String_Matrix_set_item(m, i, j, array[i, j]) != 0)
+                    for (int j = 0; j < nc; ++j)
                     {
-                        throw ErrorToException();
+                        if (spi_String_Matrix_set_item(m, i, j, array[i, j]) != 0)
+                        {
+                            throw ErrorToException();
+                        }
                     }
                 }
             }
@@ -1566,7 +1604,7 @@ namespace SPI
                 return b;
             }
 
-            static public implicit operator SpiObject(SpiVariant var)
+            static public implicit operator SpiObject?(SpiVariant var)
             {
                 if (spi_Variant_Object(var.self, out IntPtr o) != 0)
                     throw ErrorToException();
@@ -1619,7 +1657,7 @@ namespace SPI
                 return spi.BoolVectorToArray(h);
             }
 
-            static public implicit operator SpiObject[](SpiVariant var)
+            static public implicit operator SpiObject?[](SpiVariant var)
             {
                 if (spi_Variant_Object_Vector(var.self, out IntPtr dt) != 0)
                     throw ErrorToException();
@@ -1670,11 +1708,14 @@ namespace SPI
             }
             PointerHandle h = new PointerHandle(v, spi_Variant_Vector_delete);
 
-            for (int i = 0; i < size; ++i)
+            if (array is not null)
             {
-                if (spi_Variant_Vector_set_item(v, i, SpiVariant.get_inner(array[i])) != 0)
+                for (int i = 0; i < size; ++i)
                 {
-                    throw ErrorToException();
+                    if (spi_Variant_Vector_set_item(v, i, SpiVariant.get_inner(array[i])) != 0)
+                    {
+                        throw ErrorToException();
+                    }
                 }
             }
 
@@ -1723,13 +1764,16 @@ namespace SPI
             }
             PointerHandle h = new PointerHandle(v, spi_Variant_Matrix_delete);
 
-            for (int i = 0; i < nr; ++i)
+            if (array is not null)
             {
-                for (int j = 0; j < nc; ++j)
+                for (int i = 0; i < nr; ++i)
                 {
-                    if (spi_Variant_Matrix_set_item(v, i, j, SpiVariant.get_inner(array[i,j])) != 0)
+                    for (int j = 0; j < nc; ++j)
                     {
-                        throw ErrorToException();
+                        if (spi_Variant_Matrix_set_item(v, i, j, SpiVariant.get_inner(array[i, j])) != 0)
+                        {
+                            throw ErrorToException();
+                        }
                     }
                 }
             }
@@ -1766,7 +1810,7 @@ namespace SPI
                 GC.SuppressFinalize(this);
             }
 
-            public delegate SpiObject? class_wrapper(IntPtr self);
+            public delegate SpiObject class_wrapper(IntPtr self);
             public static System.Collections.Generic.Dictionary<string, class_wrapper> zz_class_wrappers;
 
             static SpiObject()
@@ -1780,10 +1824,18 @@ namespace SPI
                 zz_class_wrappers.Add(name, wrapper);
             }
 
-            public static SpiObject Wrap(IntPtr self)
+            public static SpiObject? Wrap(IntPtr self)
             {
                 if (self == IntPtr.Zero)
                     return null;
+
+                return SpiObject.WrapNonZero(self);
+            }
+
+            public static SpiObject WrapNonZero(IntPtr self)
+            {
+                if (self == IntPtr.Zero)
+                    throw new Exception("WrapNonZero cannot wrap a null pointer");
 
                 if (spi_Object_get_class_name(self, out string className) != 0)
                     throw spi.ErrorToException();
@@ -1801,7 +1853,7 @@ namespace SPI
                 }
             }
 
-            public string object_id
+            public string? object_id
             {
                 get
                 {
@@ -1815,7 +1867,7 @@ namespace SPI
                 }
             }
 
-            public string typename
+            public string? typename
             {
                 get
                 {
@@ -1855,7 +1907,7 @@ namespace SPI
             /// The serialized object string, as created by the to_string method.
             /// </param>
             /// <returns></returns>
-            public static SpiObject from_string(System.String str)
+            public static SpiObject? from_string(System.String str)
             {
                 IntPtr inner = spi_Object_from_string(str);
                 if (inner == IntPtr.Zero)
@@ -1893,7 +1945,7 @@ namespace SPI
             /// The filename containing the serialized object, e.g. as created by the to_file method.
             /// </param>
             /// <returns></returns>
-            public static SpiObject from_file(System.String filename)
+            public static SpiObject? from_file(System.String filename)
             {
                 IntPtr inner = spi_Object_from_file(filename);
                 if (inner == IntPtr.Zero)
@@ -1961,7 +2013,7 @@ namespace SPI
             return handle;
         }
 
-        public static SpiObject ObjectHandleFind(
+        public static SpiObject? ObjectHandleFind(
             System.String handle)
         {
             if (spi_Object_handle_find(handle, out IntPtr obj) != 0)
@@ -2025,7 +2077,7 @@ namespace SPI
             return new PointerHandle(v, spi_Object_Vector_delete);
         }
 
-        public static SpiObject[] SpiObjectVectorToArray(PointerHandle h)
+        public static SpiObject?[] SpiObjectVectorToArray(PointerHandle h)
         {
             IntPtr v = h.get_inner();
             int size;
@@ -2034,7 +2086,7 @@ namespace SPI
                 throw ErrorToException();
             }
 
-            SpiObject[] array = new SpiObject[size];
+            SpiObject?[] array = new SpiObject[size];
 
             for (int i = 0; i < size; ++i)
             {
@@ -2050,7 +2102,7 @@ namespace SPI
 
         public static PointerHandle SpiObjectVectorFromArray(SpiObject[]? array)
         {
-            int size = array.Length;
+            int size = array is null ? 0 : array.Length;
             IntPtr v = spi_Object_Vector_new(size);
             if (v == IntPtr.Zero)
             {
@@ -2058,23 +2110,26 @@ namespace SPI
             }
             PointerHandle h = new PointerHandle(v, spi_Object_Vector_delete);
 
-            for (int i = 0; i < size; ++i)
+            if (array is not null)
             {
-                if (spi_Object_Vector_set_item(v, i, SpiObject.get_inner(array[i])) != 0)
+                for (int i = 0; i < size; ++i)
                 {
-                    throw ErrorToException();
+                    if (spi_Object_Vector_set_item(v, i, SpiObject.get_inner(array[i])) != 0)
+                    {
+                        throw ErrorToException();
+                    }
                 }
             }
 
             return h;
         }
 
-        public static PointerHandle ObjectMatrixToHandle(IntPtr v)
+        public static PointerHandle SpiObjectMatrixToHandle(IntPtr v)
         {
             return new PointerHandle(v, spi_Object_Matrix_delete);
         }
 
-        public static SpiObject[,] ObjectMatrixToArray(PointerHandle h)
+        public static SpiObject?[,] SpiObjectMatrixToArray(PointerHandle h)
         {
             IntPtr v = h.get_inner();
             if (spi_Object_Matrix_size(v, out int nr, out int nc) != 0)
@@ -2082,7 +2137,7 @@ namespace SPI
                 throw ErrorToException();
             }
 
-            SpiObject[,] array = new SpiObject[nr, nc];
+            SpiObject?[,] array = new SpiObject[nr, nc];
 
             for (int i = 0; i < nr; ++i)
             {
@@ -2099,7 +2154,7 @@ namespace SPI
             return array;
         }
 
-        public static PointerHandle ObjectMatrixFromArray(SpiObject[,]? array)
+        public static PointerHandle SpiObjectMatrixFromArray(SpiObject[,]? array)
         {
             int nr = array is null ? 0 : array.GetLength(0);
             int nc = array is null ? 0 : array.GetLength(1);
@@ -2111,13 +2166,16 @@ namespace SPI
             }
             PointerHandle h = new PointerHandle(v, spi_Object_Matrix_delete);
 
-            for (int i = 0; i < nr; ++i)
+            if (array is not null)
             {
-                for (int j = 0; j < nc; ++j)
+                for (int i = 0; i < nr; ++i)
                 {
-                    if (spi_Object_Matrix_set_item(v, i, j, SpiObject.get_inner(array[i, j])) != 0)
+                    for (int j = 0; j < nc; ++j)
                     {
-                        throw ErrorToException();
+                        if (spi_Object_Matrix_set_item(v, i, j, SpiObject.get_inner(array[i, j])) != 0)
+                        {
+                            throw ErrorToException();
+                        }
                     }
                 }
             }
@@ -2137,7 +2195,7 @@ namespace SPI
             public new static SpiMap Wrap(IntPtr self)
             {
                 if (self == IntPtr.Zero)
-                    return null;
+                    throw new Exception("Attempt to wrap null pointer");
 
                 self = spi_Map_dynamic_cast(self);
                 if (self == IntPtr.Zero)

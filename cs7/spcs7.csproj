@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{7790439D-D444-44E8-A76D-60EA2DB751DE}</ProjectGuid>
+    <ProjectGuid>{B6D63DB5-24B9-46E7-A46C-2062BA8751E8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>SPI</RootNamespace>
     <AssemblyName>spcs</AssemblyName>
