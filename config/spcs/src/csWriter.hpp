@@ -235,7 +235,8 @@ public:
     std::string cs_to_c(int arrayDim, const std::string& name) const;
 
     std::string c_to_csi(int arrayDim, const std::string& name) const;
-    std::string csi_to_cs(int arrayDim, const std::string& name) const;
+    std::string csi_to_cs(int arrayDim, const std::string& name,
+        bool isOptional) const;
 
 private:
 

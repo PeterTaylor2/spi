@@ -786,7 +786,7 @@ void CModule::implementFunction(
     }
     else
     {
-        csReturnType = CDataType(func->returnType, service).csType(func->returnArrayDim, service->nullable());
+        csReturnType = CDataType(func->returnType, service).csType(func->returnArrayDim, func->optionalReturnType);
     }
 
     /*
@@ -829,7 +829,7 @@ void CModule::implementFunctionBegin(
         const spdoc::AttributeConstSP& arg = func->inputs[i];
         ostr << sep << spaces << gap;
         sep = ",\n";
-        ostr << CDataType(arg->dataType, service).csType(arg->arrayDim, arg->isOptional && service->nullable()) << " "
+        ostr << CDataType(arg->dataType, service).csType(arg->arrayDim, arg->isOptional) << " "
             << service->rename(arg->name, true);
 
         if (i >= lastMandatory)
@@ -851,6 +851,8 @@ void CModule::implementFunctionEnd(
     std::string spaces(indent, ' ');
     std::string gap(4, ' ');
 
+    bool isNullable = service->nullable() && func->optionalReturnType;
+
     if (func->returnType)
     {
         SPI_PRE_CONDITION(func->outputs.size() == 0);
@@ -866,7 +868,7 @@ void CModule::implementFunctionEnd(
 
         ostr << "\n"
             << spaces << gap << "return "
-            << CDataType(func->returnType, service).csi_to_cs(func->returnArrayDim, "out")
+            << CDataType(func->returnType, service).csi_to_cs(func->returnArrayDim, "out", func->optionalReturnType)
             << ";\n";
     }
     else if (func->outputs.size() == 0)
@@ -889,7 +891,7 @@ void CModule::implementFunctionEnd(
                     << spaces << gap << captureOutput << ";\n";
             }
 
-            args.push_back(cdt.csi_to_cs(out->arrayDim, out->name));
+            args.push_back(cdt.csi_to_cs(out->arrayDim, out->name, out->isOptional));
         }
 
         if (args.size() == 1)
@@ -921,8 +923,7 @@ std::string CModule::defineValueTupleOutput(
     if (func->outputs.size() == 1)
     {
         spdoc::AttributeConstSP out = func->outputs[0];
-        bool isOptional = out->arrayDim == 0 && service->nullable();
-        oss << CDataType(out->dataType, service).csType(out->arrayDim, isOptional);
+        oss << CDataType(out->dataType, service).csType(out->arrayDim, out->isOptional);
     }
     else
     {
@@ -932,8 +933,7 @@ std::string CModule::defineValueTupleOutput(
         for (size_t i = 0; i < func->outputs.size(); ++i)
         {
             spdoc::AttributeConstSP out = func->outputs[i];
-            bool isOptional = out->arrayDim == 0 && service->nullable();
-            oss << gap << CDataType(out->dataType, service).csType(out->arrayDim, isOptional)
+            oss << gap << CDataType(out->dataType, service).csType(out->arrayDim, out->isOptional)
                 << " " << service->rename(out->name, true);
             gap = ", ";
         }
@@ -1002,6 +1002,7 @@ void CModule::implementClass(
     bool hasEmptyConstructor = false;
 
     const char* nullable = service->nullable() ? "?" : "";
+    const char* nullableWrap = service->nullable() ? "WrapNonZero" : "Wrap";
 
     //Usage usage = service->usage(cls->dataType->name);
 
@@ -1212,7 +1213,7 @@ void CModule::implementClass(
             const spdoc::ClassAttributeConstSP& attr = cls->attributes[i];
             ostr << sep;
             sep = sep2;
-            ostr << CDataType(attr->dataType, service).csType(attr->arrayDim, attr->isOptional && service->nullable()) << " " << service->rename(attr->name, true);
+            ostr << CDataType(attr->dataType, service).csType(attr->arrayDim, attr->isOptional) << " " << service->rename(attr->name, true);
         }
         ostr << ")\n"
             << "    {\n";
@@ -1266,7 +1267,7 @@ void CModule::implementClass(
         << "        {\n"
         << "            throw spi.ErrorToException();\n"
         << "        }\n"
-        << "        return " << cls->name << ".Wrap(inner);\n"
+        << "        return " << cls->name << "." << nullableWrap << "(inner); \n"
         << "    }\n";
 
     // coerceFrom as implicit operator cast where possible - otherwise use static Coerce method
@@ -1309,7 +1310,7 @@ void CModule::implementClass(
             << "        if (inner == IntPtr.Zero)\n"
             << "            throw spi.ErrorToException();\n"
             << "\n"
-            << "        return " << cls->name << ".Wrap(inner);\n"
+            << "        return " << cls->name << "." << nullableWrap << "(inner); \n"
             << "    }\n";
     }
 
@@ -1321,15 +1322,15 @@ void CModule::implementClass(
 
         ostr << "\n";
         xmlWriteDescription(ostr, "summary", "", "    ", ct->description);
-        ostr << "    public static implicit operator " << dt->nsService << "." << dt->name << "(" << cls->name << nullable << " self)\n"
+        ostr << "    public static implicit operator " << dt->nsService << "." << dt->name << "(" << cls->name << " self)\n"
             << "    {\n"
             << "        IntPtr inner = " << cname << "_coerce_to_"
-            << StringReplace(dt->name, ".", "_") << "(self.self);\n"
+            << StringReplace(dt->name, ".", "_") << "(spi.SpiObject.get_inner(self));\n"
             << "\n"
             << "        if (inner == IntPtr.Zero)\n"
             << "            throw spi.ErrorToException();\n"
             << "\n"
-            << "        return " << dt->nsService << "." << dt->name << ".Wrap(inner);\n"
+            << "        return " << dt->nsService << "." << dt->name << "." << nullableWrap << "(inner); \n"
             << "    }\n";
     }
 
@@ -1341,7 +1342,7 @@ void CModule::implementClass(
          << "        IntPtr inner = " << cname << "_from_string(objectString);\n"
          << "        if (inner == IntPtr.Zero)\n"
          << "            throw spi.ErrorToException();\n"
-         << "        return " << cls->name << ".Wrap(inner);\n"
+         << "        return " << cls->name << "." << nullableWrap << "(inner); \n"
          << "    }\n"
          << "\n"
          << "    static public new " << cls->name << " from_file(string filename)\n"
@@ -1349,7 +1350,7 @@ void CModule::implementClass(
          << "        IntPtr inner = " << cname << "_from_file(filename);\n"
          << "        if (inner == IntPtr.Zero)\n"
          << "            throw spi.ErrorToException();\n"
-         << "        return " << cls->name << ".Wrap(inner);\n"
+         << "        return " << cls->name << "." << nullableWrap << "(inner);\n"
          << "    }\n";
     
     for (size_t i = 0; i < cls->methods.size(); ++i)
@@ -1409,38 +1410,94 @@ void CModule::implementClass(
             << "    public " << New << "delegate " << cls->name << nullable << " sub_class_wrapper(IntPtr self); \n"
             << "    public " << New << "static System.Collections.Generic.List<sub_class_wrapper> zz_sub_class_wrappers; \n";
 
-        ostr << "\n"
-            << "    public new static " << cls->name << nullable << " Wrap(IntPtr self)\n"
-            << "    {\n"
-            << "        if (self == IntPtr.Zero)\n"
-            << "            return null;\n"
-            << "\n"
-            << "        foreach(var wrapper in zz_sub_class_wrappers)\n"
-            << "        {\n"
-            << "            " << cls->name << nullable << " obj = wrapper(self);\n"
-            << "            if (obj != null)\n"
-            << "                return obj;\n"
-            << "        }\n"
-            << "        throw new Exception(\"self is not a sub-class of " << cls->name << "\");\n"
-            << "    }\n";
+        if (service->nullable())
+        {
+            ostr << "\n"
+                << "    public new static " << cls->name << nullable << " Wrap(IntPtr self)\n"
+                << "    {\n"
+                << "        if (self == IntPtr.Zero)\n"
+                << "            return null;\n"
+                << "        return WrapNonZero(self);\n"
+                << "    }\n";
+            ostr << "\n"
+                << "    public new static " << cls->name << " WrapNonZero(IntPtr self)\n"
+                << "    {\n"
+                << "        if (self == IntPtr.Zero)\n"
+                << "            throw new Exception(\"self cannot be Zero\");\n"
+                << "\n"
+                << "        foreach(var wrapper in zz_sub_class_wrappers)\n"
+                << "        {\n"
+                << "            " << cls->name << "? obj = wrapper(self);\n"
+                << "            if (obj != null)\n"
+                << "                return obj;\n"
+                << "        }\n"
+                << "        throw new Exception(\"self is not a sub-class of " << cls->name << "\");\n"
+                << "    }\n";
+        }
+        else
+        {
+            ostr << "\n"
+                << "    public new static " << cls->name << " Wrap(IntPtr self)\n"
+                << "    {\n"
+                << "        if (self == IntPtr.Zero)\n"
+                << "            return null;\n"
+                << "\n"
+                << "        foreach(var wrapper in zz_sub_class_wrappers)\n"
+                << "        {\n"
+                << "            " << cls->name << nullable << " obj = wrapper(self);\n"
+                << "            if (obj != null)\n"
+                << "                return obj;\n"
+                << "        }\n"
+                << "        throw new Exception(\"self is not a sub-class of " << cls->name << "\");\n"
+                << "    }\n";
+        }
     }
     else
     {
         // for a non-abstract class we just wrap (checking that we have the right type)
-        ostr << "\n"
-            << "    public new static " << cls->name << nullable << " Wrap(IntPtr self)\n"
-            << "    {\n"
-            << "        if (self == IntPtr.Zero)\n"
-            << "            return null;\n"
-            << "\n"
-            << "        self = " << cname << "_dynamic_cast(self);\n"
-            << "        if (self == IntPtr.Zero)\n"
-            << "            throw new Exception(\"self is not an instance of " << cls->name << "\");\n"
-            << "\n"
-            << "        " << cls->name << " obj = new " << cls->name << "();\n"
-            << "        obj.set_inner(self);\n"
-            << "        return obj;\n"
-            << "    }\n";
+        if (service->nullable())
+        {
+            ostr << "\n"
+                << "    public new static " << cls->name << "? Wrap(IntPtr self)\n"
+                << "    {\n"
+                << "        if (self == IntPtr.Zero)\n"
+                << "            return null;\n"
+                << "\n"
+                << "        return WrapNonZero(self);\n"
+                << "    }\n";
+
+            ostr << "\n"
+                << "    public new static " << cls->name << " WrapNonZero(IntPtr self)\n"
+                << "    {\n"
+                << "        if (self == IntPtr.Zero)\n"
+                << "            throw new Exception(\"self cannot be Zero\");\n"
+                << "\n"
+                << "        self = " << cname << "_dynamic_cast(self);\n"
+                << "        if (self == IntPtr.Zero)\n"
+                << "            throw new Exception(\"self is not an instance of " << cls->name << "\");\n"
+                << "\n"
+                << "        " << cls->name << " obj = new " << cls->name << "();\n"
+                << "        obj.set_inner(self);\n"
+                << "        return obj;\n"
+                << "    }\n";
+        }
+        else
+        {
+            ostr << "\n"
+                << "    public new static " << cls->name << " Wrap(IntPtr self)\n"
+                << "    {\n"
+                << "        if (self == IntPtr.Zero)\n"
+                << "            return null;\n"
+                << "\n"
+                << "        self = " << cname << "_dynamic_cast(self);\n"
+                << "        if (self == IntPtr.Zero)\n"
+                << "            throw new Exception(\"self is not an instance of " << cls->name << "\");\n"
+                << "\n"
+                << "        " << cls->name << " obj = new " << cls->name << "();\n"
+                << "        obj.set_inner(self);\n"
+                << "        return obj;\n"
+                << "    }\n";
+        }
     }
 
     spdoc::ClassConstSP baseClass;
@@ -1474,7 +1531,8 @@ void CModule::implementClass(
         << "        spi.SpiObject.zz_register_class_wrapper(\"";
     if (!cls->ns.empty())
         ostr << cls->ns << ".";
-    ostr << cls->ObjectName() << "\", Wrap);\n";
+
+    ostr << cls->ObjectName() << "\", " << nullableWrap << ");\n";
 
     if (cls->isAbstract)
     {
@@ -1509,7 +1567,7 @@ void CModule::implementClass(
         << "    return new spi.PointerHandle(v, " << cname << "_Vector_delete);\n"
         << "}\n"
         << "\n"
-        << "public static spi.PointerHandle zz_" << cls->name << "_VectorFromArray(" << cls->name << "[]? array)\n"
+        << "public static spi.PointerHandle zz_" << cls->name << "_VectorFromArray(" << cls->name << "[]" << nullable << " array)\n"
         << "{\n"
         << "    int size = array is null ? 0 : array.Length;\n"
         << "    IntPtr v = " << cname << "_Vector_new(size);\n"
@@ -1520,11 +1578,14 @@ void CModule::implementClass(
         << "\n"
         << "    spi.PointerHandle h = new spi.PointerHandle(v, " << cname << "_Vector_delete);\n"
         << ""
-        << "    for (int i = 0; i < size; ++i)\n"
+        << "    if (!(array is null))\n"
         << "    {\n"
-        << "        if (spi_Instance_Vector_set_item(v, i, spi.SpiObject.get_inner(array[i])) != 0)\n"
+        << "        for (int i = 0; i < size; ++i)\n"
         << "        {\n"
-        << "            throw spi.ErrorToException();\n"
+        << "            if (spi_Instance_Vector_set_item(v, i, spi.SpiObject.get_inner(array[i])) != 0)\n"
+        << "            {\n"
+        << "                throw spi.ErrorToException();\n"
+        << "            }\n"
         << "        }\n"
         << "    }\n"
         << "\n"
@@ -1532,7 +1593,7 @@ void CModule::implementClass(
         << "}\n";
 
     ostr << "\n"
-        << "public static " << cls->name << "[] zz_" << cls->name << "_VectorToArray(spi.PointerHandle h)\n"
+        << "public static " << cls->name << nullable << "[] zz_" << cls->name << "_VectorToArray(spi.PointerHandle h)\n"
         << "{\n"
         << "    IntPtr v = h.get_inner();\n"
         << "    int size;\n"
@@ -1541,7 +1602,7 @@ void CModule::implementClass(
         << "        throw spi.ErrorToException();\n"
         << "    }\n"
         << "\n"
-        << "    " << cls->name << "[] array = new " << cls->name << "[size];\n"
+        << "    " << cls->name << nullable << "[] array = new " << cls->name << "[size];\n"
         << "    for (int i = 0; i < size; ++i)\n"
         << "    {\n"
         << "        if (spi_Instance_Vector_item(v, i, out IntPtr item) != 0)\n"
@@ -1569,7 +1630,7 @@ void CModule::implementProperty(
     ostr << "\n";
     xmlWriteDescription(ostr, "summary", "", "    ", attr->description);
     std::string New = isOverride ? "new " : "";
-    ostr << "    public " << New << cdt.csType(attr->arrayDim, false) << " " << service->rename(attr->name, true) << "\n"
+    ostr << "    public " << New << cdt.csType(attr->arrayDim, attr->isOptional) << " " << service->rename(attr->name, true) << "\n"
         << "    {\n"
         << "        get\n"
         << "        {\n"
@@ -1586,7 +1647,7 @@ void CModule::implementProperty(
         ostr << "            " << captureOutput << ";\n\n";
     }
 
-    ostr << "            return " << cdt.csi_to_cs(attr->arrayDim, attr->name) << ";\n"
+    ostr << "            return " << cdt.csi_to_cs(attr->arrayDim, attr->name, attr->isOptional) << ";\n"
         << "        }\n";
 
     if (canPut)
@@ -1636,8 +1697,7 @@ void CModule::implementClassMethod(
     }
     else
     {
-        bool isOptional = func->returnArrayDim == 0 && service->nullable();
-        csReturnType = CDataType(func->returnType, service).csType(func->returnArrayDim, isOptional);
+        csReturnType = CDataType(func->returnType, service).csType(func->returnArrayDim, false);
     }
 
     implementFunctionSummary(ostr, func.get(), 4);
@@ -1721,6 +1781,8 @@ void CModule::implementEnum(
     xmlWriteDescription(ostr, "summary", "", "", enumType->description);
     ostr << "public enum " << enumType->name << " {";
 
+    const char* nullable = service->nullable() ? "?" : "";
+
     const char* sep = "\n";
     for (size_t i = 0; i < enumType->enumerands.size(); ++i)
     {
@@ -1774,7 +1836,7 @@ void CModule::implementEnum(
         << "}\n"
         << "\n"
         << "public static spi.PointerHandle zz_" << enumType->name << "_VectorFromArray("
-        << enumType->name << "[]? array)\n"
+        << enumType->name << "[]" << nullable << " array)\n"
         << "{\n"
         << "    int size = array is null ? 0 : array.Length;\n"
         << "    IntPtr v = " << cname << "_Vector_new(size);\n"
@@ -1785,11 +1847,14 @@ void CModule::implementEnum(
         << "\n"
         << "    spi.PointerHandle h = new spi.PointerHandle(v, " << cname << "_Vector_delete);\n"
         << ""
-        << "    for (int i = 0; i < size; ++i)\n"
+        << "    if (!(array is null))\n"
         << "    {\n"
-        << "        if (spi_Enum_Vector_set_item(v, i, (int)array[i]) != 0)\n"
+        << "        for (int i = 0; i < size; ++i)\n"
         << "        {\n"
-        << "            throw spi.ErrorToException();\n"
+        << "            if (spi_Enum_Vector_set_item(v, i, (int)array[i]) != 0)\n"
+        << "            {\n"
+        << "                throw spi.ErrorToException();\n"
+        << "            }\n"
         << "        }\n"
         << "    }\n"
         << "\n"
@@ -1999,6 +2064,8 @@ std::string CDataType::csType(int arrayDim, bool isOptional) const
     std::string scalarType;
     std::ostringstream oss;
 
+    const char* nullable = service->nullable() ? "?" : "";
+
     switch (publicType)
     {
     case spdoc::PublicType::BOOL:
@@ -2029,18 +2096,18 @@ std::string CDataType::csType(int arrayDim, bool isOptional) const
     case spdoc::PublicType::CLASS:
         oss << /* service->nsGlobal() << "." << */ dataType->nsService << "." << dataType->name;
         if (isOptional && arrayDim == 0)
-            oss << "?";
+            oss << nullable;
         scalarType = oss.str();
         break;
     case spdoc::PublicType::OBJECT:
         scalarType = "spi.SpiObject";
         if (isOptional && arrayDim == 0)
-            scalarType += "?";
+            scalarType += nullable;
         break;
     case spdoc::PublicType::MAP:
         scalarType = "spi.SpiMap";
         if (isOptional && arrayDim == 0)
-            scalarType += "?";
+            scalarType += nullable;
         break;
     case spdoc::PublicType::VARIANT:
         scalarType = "spi.SpiVariant";
@@ -2055,9 +2122,9 @@ std::string CDataType::csType(int arrayDim, bool isOptional) const
     case 0:
         return scalarType;
     case 1:
-        return scalarType + "[]?";
+        return scalarType + "[]" + nullable;
     case 2:
-        return scalarType + "[,]?";
+        return scalarType + "[,]" + nullable;
     default:
         SPI_THROW_RUNTIME_ERROR("ArrayDim " << arrayDim << " out of range [0,2]");
     }
@@ -2333,9 +2400,16 @@ std::string CDataType::c_to_csi(int arrayDim, const std::string& name) const
     return oss.str();
 }
 
-std::string CDataType::csi_to_cs(int arrayDim, const std::string& name) const
+std::string CDataType::csi_to_cs(
+    int arrayDim,
+    const std::string& name,
+    bool isOptional) const
 {
     std::ostringstream oss;
+
+    // nullableWrap only applies to publicType CLASS
+    const char* nullableWrap = (service->nullable() && !isOptional) ?
+        "WrapNonZero" : "Wrap";
 
     switch (arrayDim)
     {
@@ -2361,7 +2435,8 @@ std::string CDataType::csi_to_cs(int arrayDim, const std::string& name) const
         case spdoc::PublicType::ENUM:
             break;
         case spdoc::PublicType::CLASS:
-            oss << service->nsGlobal() << "." << dataType->nsService << "." << dataType->name << ".Wrap(c_" << name << ")";
+            oss << service->nsGlobal() << "." << dataType->nsService << "."
+                << dataType->name << "." << nullableWrap << "(c_" << name << ")";
             break;
         case spdoc::PublicType::OBJECT:
             oss << "spi.SpiObject.Wrap(c_" << name << ")";
