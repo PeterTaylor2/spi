@@ -228,7 +228,7 @@ def get_import_property_sheets(platforms):
         name = platform[0]
         for debug in ["Release", "Debug"]:
             lines.append("  <ImportGroup Condition=\"'$(Configuration)|$(Platform)'=='%s|%s'\" Label=\"PropertySheets\">" % (debug, name))
-            lines.append("    <Import Project=\"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props\" Condition=\"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')\" Label=\"LocalAppDataPlatform\" />")
+            lines.append("    <Import Project=\"$(UserRootDir)\\Microsoft.Cpp.$(Platform).user.props\" Condition=\"exists('$(UserRootDir)\\Microsoft.Cpp.$(Platform).user.props')\" Label=\"LocalAppDataPlatform\" />")
             lines.append("  </ImportGroup>")
     return "\n".join(lines)
 
@@ -267,9 +267,9 @@ def _get_property_groups(platforms, makefileTarget, cleanTarget, compiler, defau
             debugFlag = " DEBUG=1" if debug == "Debug" else ""
             dn = "win%s\\%s" % (bits, debug)
             condition = "'$(Configuration)|$(Platform)'=='%s|%s'" % (debug,name)
-            lines.append("    <OutDir Condition=\"%s\">%s\</OutDir>" % (
+            lines.append("    <OutDir Condition=\"%s\">%s\\</OutDir>" % (
                     condition, dn))
-            lines.append("    <IntDir Condition=\"%s\">%s\</IntDir>" % (
+            lines.append("    <IntDir Condition=\"%s\">%s\\</IntDir>" % (
                     condition, dn))
             lines.append("    <NMakeBuildCommandLine Condition=\"%s\">%s %s VS_BUILD=1 COMPILER=%s BITS=%s%s</NMakeBuildCommandLine>" % (
                     condition, parallelMake, makefileTarget, compiler, bits, debugFlag))
@@ -390,9 +390,9 @@ _template = """\
     <ProjectName>%(name)s</ProjectName>
     <Keyword>MakeFileProj</Keyword>
   </PropertyGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <Import Project="$(VCTargetsPath)\\Microsoft.Cpp.Default.props" />
 %(propertyConfigurations)s
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <Import Project="$(VCTargetsPath)\\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
 %(importPropertySheets)s
@@ -403,7 +403,7 @@ _template = """\
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>
 %(itemGroupFiles)s
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="$(VCTargetsPath)\\Microsoft.Cpp.targets" />
 </Project>
 """
 
