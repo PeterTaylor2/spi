@@ -1111,8 +1111,7 @@ void writeVerbatim(
 
 std::string writeCallToInnerFunction(
     GeneratedOutput& ostr,
-    const DataTypeConstSP& returnType,
-    int returnArrayDim,
+    const AttributeConstSP& returns,
     bool noConvert,
     const std::vector<AttributeConstSP>& inputs,
     const std::vector<AttributeConstSP>& outputs,
@@ -1122,7 +1121,7 @@ std::string writeCallToInnerFunction(
     const char* translationPrefix = noConvert ? "" : "i_";
     if (outputs.size() > 0)
     {
-        SPI_PRE_CONDITION(!returnType);
+        SPI_PRE_CONDITION(!returns);
 
         std::vector<AttributeConstSP> args(inputs);
         args.insert(args.end(), outputs.begin(), outputs.end());
@@ -1188,7 +1187,7 @@ std::string writeCallToInnerFunction(
         //ostr << gap;
         return std::string();
     }
-    else if (!returnType)
+    else if (!returns)
     {
         ostr << "    " << caller;
         writeArgsCall(ostr, true, inputs, caller.length() + 4, 8,
@@ -1196,8 +1195,12 @@ std::string writeCallToInnerFunction(
         ostr << ";\n";
         return std::string();
     }
-    else if (returnArrayDim > 0)
+    else if (returns->arrayDim() > 0)
     {
+        const int& returnArrayDim = returns->arrayDim();
+        const DataTypeConstSP& returnType = returns->dataType();
+        bool checkNonNull = returns->checkNonNull();
+
         std::string oDecl = returnType->outerArrayType(returnArrayDim);
         std::string iDecl = returnType->innerArrayType(returnArrayDim);
         const std::string& decl = noConvert ? oDecl : iDecl;
@@ -1205,6 +1208,31 @@ std::string writeCallToInnerFunction(
         writeArgsCall(ostr, true, inputs,
             caller.length() + decl.length() + 23, 8, translationPrefix);
         ostr << ";\n";
+        if (checkNonNull)
+        {
+            switch (returnArrayDim)
+            {
+            case 2:
+                ostr << "    {\n"
+                    << "      size_t nr = i_result.Rows();\n"
+                    << "      size_t nc = i_result.Cols();\n"
+                    << "      for (size_t i = 0; i < nr; ++i)\n"
+                    << "        for (size_t j = 0; j < nc; ++j)\n"
+                    << "        {\n"
+                    << "          if (!i_result[i][j])\n"
+                    << "            SPI_THROW_RUNTIME_ERROR(\"Null pointer returned @(\" << i << \",\" << j << \");\"\n"
+                    << "        }\n"
+                    << "    }\n";
+                break;
+            case 1:
+                ostr << "    for (size_t i_ = 0; i_ < i_result.size(); ++i_)\n"
+                    << "     {\n"
+                    << "        if (!i_result[i_])\n"
+                    << "            SPI_THROW_RUNTIME_ERROR(\"Null pointer returned @(\" << i_ << \");\"\n"
+                    << "     }\n";
+            }
+        }
+
         if (!noConvert && returnType->needsTranslation())
         {
             switch(returnArrayDim)
@@ -1236,6 +1264,9 @@ std::string writeCallToInnerFunction(
     }
     else
     {
+        const DataTypeConstSP& returnType = returns->dataType();
+        bool checkNonNull = returns->checkNonNull();
+
         // because we are setting the value via the return from a function
         // we can use reference types here rather than value types
         std::string decl = noConvert ?
@@ -1254,6 +1285,12 @@ std::string writeCallToInnerFunction(
         writeArgsCall(ostr, true, inputs,
             caller.length() + decl.length() + 16, 8, translationPrefix);
         ostr << ";\n";
+
+        if (checkNonNull)
+        {
+            ostr << "    if (!i_result)\n"
+                << "        SPI_THROW_RUNTIME_ERROR(\"Null pointer returned\");\n";
+        }
 
         if (!noConvert && returnType->needsTranslation())
         {

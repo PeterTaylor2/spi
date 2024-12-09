@@ -70,7 +70,9 @@ public:
 
     static AttributeConstSP ReturnType(
         const std::vector<std::string>& description,
-        const DataTypeConstSP& dataType, int arrayDim);
+        const DataTypeConstSP& dataType,
+        int arrayDim,
+        bool isOptional);
 
     const std::vector<std::string>& description() const;
     const DataTypeConstSP& dataType() const;
@@ -86,6 +88,8 @@ public:
     std::string innerType() const;
     std::string outerType() const;
     bool needsTranslation() const;
+
+    bool checkNonNull() const;
 
 protected:
     Attribute(

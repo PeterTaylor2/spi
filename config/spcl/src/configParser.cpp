@@ -819,6 +819,7 @@ FunctionConstSP parseFunction(
     ConfigLexer::Token token = returnTypeDescParser.consume(lexer, verbose);
 
     bool returnInnerConst = false;
+    bool optionalReturnType = false;
     if (token.toString() == "const")
     {
         returnInnerConst = true;
@@ -827,6 +828,13 @@ FunctionConstSP parseFunction(
 
     DataTypeConstSP returnType = parseDataType(
         token, lexer, module, service, true);
+
+    token = lexer.getToken();
+    if (token.type == '?')
+        optionalReturnType = true;
+    else
+        lexer.returnToken(token);
+
     int returnArrayDim = parseArrayDim(lexer);
 
     token = getTokenOfType(lexer, SPI_CONFIG_TOKEN_TYPE_NAME, "Name");
@@ -925,7 +933,8 @@ FunctionConstSP parseFunction(
         getOption(options, "noLog")->getBool(),
         getOption(options, "noConvert")->getBool(),
         excelOptions,
-        getOption(options, "cache")->getInt());
+        getOption(options, "cache")->getInt(),
+        optionalReturnType);
 
     if (func->hasIgnored())
     {
@@ -1006,7 +1015,8 @@ FunctionConstSP parseFunction(
             true, // noLog - leave this to the actual method
             true, // noConvert - we are calling at the outer level so don't convert
             methodFunctionExcelOptions,
-            0); // caching done at lower level
+            0, // caching done at lower level
+            optionalReturnType); 
 
         // cannot add directly to module because then the constructs
         // are not defined in the correct order since cls at this point
@@ -2190,6 +2200,8 @@ void addConstructorFunction(
     if (constructor.empty())
         return;
 
+    bool optionalReturnType = false;
+
     std::vector<AttributeConstSP> attributes = cls->AllAttributes();
     std::vector<FunctionAttributeConstSP> funcAttributes;
     funcAttributes.reserve(attributes.size());
@@ -2238,7 +2250,8 @@ void addConstructorFunction(
         noLog,
         noConvert,
         excelOptions,
-        cacheSize);
+        cacheSize,
+        optionalReturnType);
 
     module->addConstruct(func);
 }

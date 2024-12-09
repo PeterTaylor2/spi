@@ -687,6 +687,8 @@ static PyGetSetDef Function_properties[] = {
         (void*) "outputs"},
     {"excelOptions", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "excelOptions"},
+    {"optionalReturnType", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
+        (void*) "optionalReturnType"},
     {NULL} // sentinel
 };
 
@@ -703,6 +705,32 @@ PyObject* py_spdoc_Function_returnsObject(PyObject* self, PyObject* args, PyObje
     {
         if (!func)
             func = get_function_caller("Function.returnsObject");
+
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
+        spi::Value output = spi::CallInContext(func, iv, get_input_context());
+        return spi::pyoFromValue(output);
+    }
+    catch (spi::PyException&)
+    {
+        return NULL;
+    }
+    catch (std::exception &e)
+    {
+        return spi::pyExceptionHandler(e.what());
+    }
+    catch (...)
+    {
+        return spi::pyExceptionHandler("Unknown exception");
+    }
+}
+
+PyObject* py_spdoc_Function_returns(PyObject* self, PyObject* args, PyObject* kwargs)
+{
+    static spi::FunctionCaller* func = 0;
+    try
+    {
+        if (!func)
+            func = get_function_caller("Function.returns");
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -752,6 +780,8 @@ static PyMethodDef Function_methods[] = {
         "Coerce Function from arbitrary value"},
     {"returnsObject", (PyCFunction)py_spdoc_Function_returnsObject, METH_VARARGS | METH_KEYWORDS,
         "returnsObject(self)\n\nDoes this Function return an object or not?"},
+    {"returns", (PyCFunction)py_spdoc_Function_returns, METH_VARARGS | METH_KEYWORDS,
+        "returns(self)\n\nWhat does function return (as an attribute)"},
     {"objectCount", (PyCFunction)py_spdoc_Function_objectCount, METH_VARARGS | METH_KEYWORDS,
         "objectCount(self)\n\nHow many objects does this function return?"},
     {NULL, NULL, 0, NULL} // sentinel
@@ -778,7 +808,7 @@ static PyTypeObject Function_PyObjectType = {
     0, /*tp_setattro*/
     0, /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT, /*tp_flags*/
-    "Defines a function.\n\n__init__(self, name, description=[], returnTypeDescription=[], returnType, returnArrayDim, inputs=[], outputs=[], excelOptions=[])", /* tp_doc */
+    "Defines a function.\n\n__init__(self, name, description=[], returnTypeDescription=[], returnType, returnArrayDim, inputs=[], outputs=[], excelOptions=[], optionalReturnType=None)", /* tp_doc */
     0, /* tp_traverse */
     0, /* tp_clear */
     0, /* tp_richcompare */

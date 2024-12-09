@@ -351,6 +351,7 @@ DataTypeConstSP DataType::Make(
     PublicType publicType,
     const std::string& objectName,
     bool isClosed,
+    bool innerByValue,
     bool noDoc,
     const InputConverterConstSP& convertIn,
     const std::string& convertOut,
@@ -362,8 +363,8 @@ DataTypeConstSP DataType::Make(
   try
   {
     inner_type self = make_inner(name, nsService, cppName, outerType,
-        innerType, innerRefType, publicType, objectName, isClosed, noDoc,
-        convertIn, convertOut, copyInner, ignored);
+        innerType, innerRefType, publicType, objectName, isClosed,
+        innerByValue, noDoc, convertIn, convertOut, copyInner, ignored);
     return Wrap(self);
   }
   catch (std::exception& e)
@@ -382,6 +383,7 @@ DataType::inner_type DataType::make_inner(
     PublicType o_publicType,
     const std::string& o_objectName,
     bool o_isClosed,
+    bool o_innerByValue,
     bool o_noDoc,
     const InputConverterConstSP& o_convertIn,
     const std::string& o_convertOut,
@@ -402,6 +404,7 @@ DataType::inner_type DataType::make_inner(
     const std::string& innerRefType = o_innerRefType;
     const std::string& objectName = o_objectName;
     const bool& isClosed = o_isClosed;
+    const bool& innerByValue = o_innerByValue;
     const bool& noDoc = o_noDoc;
     const std::string& convertOut = o_convertOut;
     const std::string& copyInner = o_copyInner;
@@ -411,7 +414,7 @@ DataType::inner_type DataType::make_inner(
     // them back together
     ::DataTypeConstSP self = ::DataType::Make(
         name, "", nsService, cppName, outerType, innerType, innerRefType, publicType, 
-        objectName, isClosed, noDoc, convertIn, convertOut, copyInner,
+        objectName, isClosed, innerByValue, noDoc, convertIn, convertOut, copyInner,
         ::DataTypeConstSP(), false, false, ignored);
 
     return self;
@@ -516,6 +519,13 @@ bool DataType::isClosed() const
     inner_type self = get_inner();
 
     return self->isClosed();
+}
+
+bool DataType::innerByValue() const
+{
+    inner_type self = get_inner();
+
+    return self->innerByValue();
 }
 
 bool DataType::noDoc() const

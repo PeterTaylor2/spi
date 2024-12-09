@@ -65,10 +65,28 @@ AttributeConstSP Attribute::InstanceType(const DataTypeConstSP& dataType)
 
 AttributeConstSP Attribute::ReturnType(
     const std::vector<std::string>& description,
-    const DataTypeConstSP& dataType, int arrayDim)
+    const DataTypeConstSP& dataType,
+    int arrayDim,
+    bool isOptional)
 {
+    if (isOptional)
+    {
+        switch (dataType->publicType())
+        {
+        case spdoc::PublicType::CLASS:
+        case spdoc::PublicType::MAP:
+        case spdoc::PublicType::OBJECT:
+            // optional is supported
+            break;
+        default:
+            SPI_THROW_RUNTIME_ERROR("optional return not supported for " <<
+                dataType->publicType().to_string());
+            break;
+        }
+    }
+
     return Attribute::Make(
-        description, dataType, std::string(), arrayDim);
+        description, dataType, std::string(), arrayDim, isOptional);
 }
 
 Attribute::Attribute(
@@ -156,6 +174,26 @@ std::string Attribute::outerType() const
 bool Attribute::needsTranslation() const
 {
     return m_dataType->needsTranslation();
+}
+
+bool Attribute::checkNonNull() const
+{
+    // do we need to check for a non-null pointer value
+    //
+    // this is only the case if the PublicType implies a pointer
+    // and if the value is not optional
+    //
+    // typically this is a test for an output
+    switch (m_dataType->publicType())
+    {
+    case spdoc::PublicType::CLASS:
+        return !m_isOptional && !m_dataType->innerByValue();
+    case spdoc::PublicType::MAP:
+    case spdoc::PublicType::OBJECT:
+        return !m_isOptional;
+    default:
+        return false;
+    }
 }
 
 

@@ -443,12 +443,13 @@ FunctionConstSP Function::Make(
     int returnArrayDim,
     const std::vector<AttributeConstSP>& inputs,
     const std::vector<AttributeConstSP>& outputs,
-    const std::vector<std::string>& excelOptions)
+    const std::vector<std::string>& excelOptions,
+    bool optionalReturnType)
 {
     spdoc_check_permission();
     return FunctionConstSP(
         new Function(name, description, returnTypeDescription, returnType,
-            returnArrayDim, inputs, outputs, excelOptions));
+            returnArrayDim, inputs, outputs, excelOptions, optionalReturnType));
 }
 
 Function::Function(
@@ -459,7 +460,8 @@ Function::Function(
     int returnArrayDim,
     const std::vector<AttributeConstSP>& inputs,
     const std::vector<AttributeConstSP>& outputs,
-    const std::vector<std::string>& excelOptions)
+    const std::vector<std::string>& excelOptions,
+    bool optionalReturnType)
     :
     name(name),
     description(description),
@@ -468,7 +470,8 @@ Function::Function(
     returnArrayDim(returnArrayDim),
     inputs(inputs),
     outputs(outputs),
-    excelOptions(excelOptions)
+    excelOptions(excelOptions),
+    optionalReturnType(optionalReturnType)
 {}
 
 /*
@@ -504,6 +507,39 @@ bool Function_Helper::returnsObject(
     if (self->objectCount() > 0)
         return true;
     return false;
+}
+
+/*
+****************************************************************************
+* What does function return (as an attribute)
+****************************************************************************
+*/
+
+AttributeConstSP Function::returns() const
+{
+  bool isLogging = spdoc_begin_function();
+  SPI_PROFILE("spdoc.Function.returns");
+  try
+  {
+    FunctionConstSP self(this);
+    const AttributeConstSP& i_result = Function_Helper::returns(self);
+
+    spdoc_end_function();
+
+    return i_result;
+  }
+  catch (std::exception& e)
+  { throw spdoc_catch_exception(isLogging, "Function.returns", e); }
+  catch (...)
+  { throw spdoc_catch_all(isLogging, "Function.returns"); }
+}
+
+AttributeConstSP Function_Helper::returns(
+    const FunctionConstSP& in_self)
+{
+    const Function* self = in_self.get();
+
+    return self->returns();
 }
 
 /*

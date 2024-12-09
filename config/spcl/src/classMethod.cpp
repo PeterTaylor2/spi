@@ -544,7 +544,7 @@ void ClassMethod::implement(
 
         std::string caller = implementHelperCaller(ostr, className);
         std::string output = writeCallToInnerFunction(
-            ostr, m_function->m_returnType, m_function->m_returnArrayDim,
+            ostr, m_function->returns(),
             m_function->m_noConvert, inputs, m_function->m_outputs, caller, false);
 
         if (!m_function->m_noLog)

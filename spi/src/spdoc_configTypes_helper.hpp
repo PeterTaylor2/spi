@@ -76,6 +76,8 @@ class Function_Helper
 public:
     static bool returnsObject(
         const FunctionConstSP& self);
+    static AttributeConstSP returns(
+        const FunctionConstSP& self);
     static int objectCount(
         const FunctionConstSP& self);
     static std::vector<std::string> Summary(

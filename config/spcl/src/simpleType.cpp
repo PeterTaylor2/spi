@@ -240,13 +240,13 @@ const DataTypeConstSP& SimpleType::getDataType(
 
         m_dataType = DataType::Make(
             m_name, m_ns, "", outerType, outerType, innerType, innerType,
-            m_publicType, "", false, m_noDoc,
+            m_publicType, "", false, false, m_noDoc,
             convertInFormat, convertOutFormat, "", primitiveType, false, false, ignored);
         svc->addDataType(m_dataType);
 
         DataTypeConstSP publicDataType = DataType::Make(
             m_name, m_ns, "", outerType, outerType,
-            "", "", m_publicType, "", false, m_noDoc);
+            "", "", m_publicType, "", false, false, m_noDoc);
 
         if (!m_noDoc)
             publicDataType->setDoc(m_dataType->getDoc());

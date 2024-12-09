@@ -332,7 +332,8 @@ public:
         int returnArrayDim,
         const std::vector<AttributeConstSP>& inputs,
         const std::vector<AttributeConstSP>& outputs,
-        const std::vector<std::string>& excelOptions);
+        const std::vector<std::string>& excelOptions,
+        bool optionalReturnType);
 
     /**
     ************************************************************************
@@ -340,6 +341,13 @@ public:
     ************************************************************************
     */
     bool returnsObject() const;
+
+    /**
+    ************************************************************************
+    * What does function return (as an attribute)
+    ************************************************************************
+    */
+    AttributeConstSP returns() const;
 
     /**
     ************************************************************************
@@ -376,7 +384,8 @@ protected:
         int returnArrayDim,
         const std::vector<AttributeConstSP>& inputs,
         const std::vector<AttributeConstSP>& outputs,
-        const std::vector<std::string>& excelOptions);
+        const std::vector<std::string>& excelOptions,
+        bool optionalReturnType);
 
 public:
 
@@ -388,6 +397,7 @@ public:
     const std::vector<AttributeConstSP> inputs;
     const std::vector<AttributeConstSP> outputs;
     const std::vector<std::string> excelOptions;
+    const bool optionalReturnType;
 
 public:
     std::string getName() const { return name; } 

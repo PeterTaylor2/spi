@@ -846,6 +846,7 @@ void Function::to_map(
     obj_map->SetInstanceVector<Attribute const>("inputs", inputs);
     obj_map->SetInstanceVector<Attribute const>("outputs", outputs);
     obj_map->SetStringVector("excelOptions", excelOptions);
+    obj_map->SetBool("optionalReturnType", optionalReturnType, !public_only && (optionalReturnType == false));
 }
 
 spi::ObjectConstSP Function::object_from_map(
@@ -868,9 +869,11 @@ spi::ObjectConstSP Function::object_from_map(
         = obj_map->GetInstanceVector<Attribute const>("outputs", value_to_object);
     const std::vector<std::string>& excelOptions
         = obj_map->GetStringVector("excelOptions");
+    bool optionalReturnType
+        = obj_map->GetBool("optionalReturnType", true, false);
 
     return new Function(name, description, returnTypeDescription, returnType,
-        returnArrayDim, inputs, outputs, excelOptions);
+        returnArrayDim, inputs, outputs, excelOptions, optionalReturnType);
 }
 
 SPI_IMPLEMENT_OBJECT_TYPE(Function, "Function", spdoc_service, true, 0);
@@ -895,16 +898,18 @@ spi::Value Function_caller(
         in_context->ValueToInstanceVector<Attribute const>(in_values[6]);
     std::vector<std::string> excelOptions =
         in_context->ValueToStringVector(in_values[7]);
+    bool optionalReturnType =
+        in_context->ValueToBool(in_values[8], true, false);
 
     const FunctionConstSP& o_result = spdoc::Function::Make(name, description,
         returnTypeDescription, returnType, returnArrayDim, inputs, outputs,
-        excelOptions);
+        excelOptions, optionalReturnType);
     return spi::ObjectConstSP(o_result);
 }
 
 spi::FunctionCaller Function_FunctionCaller = {
     "Function",
-    8,
+    9,
     {
         {"name", spi::ArgType::STRING, "string", false, false, false},
         {"description", spi::ArgType::STRING, "string", true, false, false},
@@ -913,7 +918,8 @@ spi::FunctionCaller Function_FunctionCaller = {
         {"returnArrayDim", spi::ArgType::INT, "int", false, false, false},
         {"inputs", spi::ArgType::OBJECT, "Attribute", true, false, false},
         {"outputs", spi::ArgType::OBJECT, "Attribute", true, false, false},
-        {"excelOptions", spi::ArgType::STRING, "string", true, false, false}
+        {"excelOptions", spi::ArgType::STRING, "string", true, false, false},
+        {"optionalReturnType", spi::ArgType::BOOL, "bool", false, true, false}
     },
     Function_caller
 };
@@ -940,6 +946,29 @@ spi::FunctionCaller Function_returnsObject_FunctionCaller = {
 
 spi::ObjectType Function_returnsObject_FunctionObjectType =
     spi::FunctionObjectType("spdoc.Function.returnsObject");
+
+spi::Value Function_returns_caller(
+    const spi::InputContext*       in_context,
+    const std::vector<spi::Value>& in_values)
+{
+    const FunctionConstSP& self =
+        in_context->ValueToInstance<Function const>(in_values[0]);
+
+    const AttributeConstSP& o_result = self->returns();
+    return spi::ObjectConstSP(o_result);
+}
+
+spi::FunctionCaller Function_returns_FunctionCaller = {
+    "Function.returns",
+    1,
+    {
+        {"self", spi::ArgType::OBJECT, "Function", false, false, false}
+    },
+    Function_returns_caller
+};
+
+spi::ObjectType Function_returns_FunctionObjectType =
+    spi::FunctionObjectType("spdoc.Function.returns");
 
 spi::Value Function_objectCount_caller(
     const spi::InputContext*       in_context,
@@ -2391,6 +2420,8 @@ void configTypes_register_object_types(const spi::ServiceSP& svc)
     svc->add_function_caller(&Function_FunctionCaller);
     svc->add_object_type(&Function_returnsObject_FunctionObjectType);
     svc->add_function_caller(&Function_returnsObject_FunctionCaller);
+    svc->add_object_type(&Function_returns_FunctionObjectType);
+    svc->add_function_caller(&Function_returns_FunctionCaller);
     svc->add_object_type(&Function_objectCount_FunctionObjectType);
     svc->add_function_caller(&Function_objectCount_FunctionCaller);
     svc->add_object_type(&Enumerand::object_type);

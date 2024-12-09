@@ -68,6 +68,8 @@ PyObject* py_spdoc_Function_Coerce(PyObject* self, PyObject* args);
 
 PyObject* py_spdoc_Function_returnsObject(PyObject* self, PyObject* args, PyObject* kwargs);
 
+PyObject* py_spdoc_Function_returns(PyObject* self, PyObject* args, PyObject* kwargs);
+
 PyObject* py_spdoc_Function_objectCount(PyObject* self, PyObject* args, PyObject* kwargs);
 
 PyObject* py_spdoc_Enumerand_Coerce(PyObject* self, PyObject* args);

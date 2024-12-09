@@ -225,8 +225,7 @@ void writeVerbatim(
 // I can foresee problems with functions using output variables
 std::string writeCallToInnerFunction(
     GeneratedOutput& ostr,
-    const DataTypeConstSP& returnType,
-    int returnArrayDim,
+    const AttributeConstSP& returns,
     bool noConvert,
     const std::vector<AttributeConstSP>& inputs,
     const std::vector<AttributeConstSP>& outputs,

@@ -57,11 +57,13 @@ FunctionConstSP Function::Make(
     bool                                 noLog,
     bool                                 noConvert,
     const std::vector<std::string>&      excelOptions,
-    int                                  cacheSize)
+    int                                  cacheSize,
+    bool                                 optionalReturnType)
 {
     return new Function(description, returnTypeDescription, returnType,
         returnArrayDim, name, ns, args,
-        implementation, noLog, noConvert, excelOptions, cacheSize);
+        implementation, noLog, noConvert, excelOptions, cacheSize,
+        optionalReturnType);
 }
 
 Function::Function(
@@ -75,8 +77,9 @@ Function::Function(
     const VerbatimConstSP& implementation,
     bool                                 noLog,
     bool                                 noConvert,
-    const std::vector<std::string>& in_excelOptions,
-    int                                  cacheSize)
+    const std::vector<std::string>& excelOptions,
+    int                                  cacheSize,
+    bool                                 optionalReturnType)
     :
     m_description(description),
     m_returnTypeDescription(returnTypeDescription),
@@ -91,7 +94,8 @@ Function::Function(
     m_noConvert(noConvert),
     m_excelOptions(),
     m_cacheSize(cacheSize),
-    m_hasIgnored()
+    m_hasIgnored(),
+    m_optionalReturnType(optionalReturnType)
 {
     SPI_PRE_CONDITION(cacheSize >= 0);
 
@@ -124,9 +128,9 @@ Function::Function(
             "returnType must be void if outputs are defined");
     }
 
-    for (size_t i = 0; i < in_excelOptions.size(); ++i)
+    for (size_t i = 0; i < excelOptions.size(); ++i)
     {
-        const std::string& excelOption = in_excelOptions[i];
+        const std::string& excelOption = excelOptions[i];
 
         if (excelOption.empty())
             continue;
@@ -141,6 +145,32 @@ Function::Function(
 
         m_excelOptions.push_back(excelOption);
     }
+
+    if (m_optionalReturnType)
+    {
+        if (!m_returnType)
+        {
+            SPI_THROW_RUNTIME_ERROR("Cannot return optional void!");
+        }
+        switch (m_returnType->publicType())
+        {
+        case spdoc::PublicType::MAP:
+        case spdoc::PublicType::OBJECT:
+            break; // always allowed
+
+        case spdoc::PublicType::CLASS:
+            if (m_returnType->innerByValue())
+            {
+                SPI_THROW_RUNTIME_ERROR("Function cannot return optional type for " <<
+                    m_returnType->name());
+            }
+            break; // otherwise allowed
+
+        default:
+            SPI_THROW_RUNTIME_ERROR("Function cannot return optional type for " <<
+                m_returnType->publicType().to_string());
+        }
+    }
 }
 
 const std::string Function::fullName() const
@@ -154,7 +184,11 @@ AttributeConstSP Function::returns() const
 {
     if (!m_returnType)
         return AttributeConstSP();
-    return Attribute::ReturnType(m_returnTypeDescription, m_returnType, m_returnArrayDim);
+    return Attribute::ReturnType(
+        m_returnTypeDescription,
+        m_returnType,
+        m_returnArrayDim,
+        m_optionalReturnType);
 }
 
 void Function::declare(
@@ -379,7 +413,7 @@ void Function::implement(
 
     std::string caller = m_name + "_Helper";
     std::string output = writeCallToInnerFunction(
-        ostr, m_returnType, m_returnArrayDim, m_noConvert,
+        ostr, returns(), m_noConvert,
         m_inputs, m_outputs, caller, false);
 
     if (!m_noLog)
@@ -516,7 +550,8 @@ spdoc::ConstructConstSP Function::getDoc() const
             m_returnArrayDim,
             docInputs,
             docOutputs,
-            m_excelOptions);
+            m_excelOptions,
+            m_optionalReturnType);
     }
     return m_doc;
 }

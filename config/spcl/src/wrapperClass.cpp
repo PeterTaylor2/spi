@@ -1474,6 +1474,7 @@ const DataTypeConstSP& WrapperClass::getDataType(
             m_innerClass->getCppType(), m_innerClass->getCppRefType(),
             spdoc::PublicType::CLASS, m_objectName,
             !m_innerClass->m_isOpen,
+            m_innerClass->m_byValue,
             false,
             InputConverter::Class(convertIn),
             convertOut,
@@ -1490,7 +1491,7 @@ const DataTypeConstSP& WrapperClass::getDataType(
             DataTypeConstSP publicDataType = DataType::Make(
                 m_name, m_ns, svc->getNamespace(), cppName, outerType,
                 std::string(), std::string(),
-                spdoc::PublicType::CLASS, m_objectName, false, false,
+                spdoc::PublicType::CLASS, m_objectName, false, false, false,
                 std::string(), std::string(), std::string(), DataTypeConstSP(), false,
                 m_asValue, ignored);
             publicDataType->setDoc(m_dataType->getDoc());
