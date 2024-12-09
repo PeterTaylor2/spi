@@ -252,6 +252,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config-build", "config-buil
 		makefiles\config\config-build\win64_32.mk = makefiles\config\config-build\win64_32.mk
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cversion", "makefiles\cversion\cversion.v16.vcxproj", "{87AEDBD4-A1E3-4BA8-AA7B-61E7370CFDCF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -484,6 +486,14 @@ Global
 		{251BD000-4DE2-48FF-939C-BF51D09AD9A2}.Release|x64.Build.0 = Release|x64
 		{251BD000-4DE2-48FF-939C-BF51D09AD9A2}.Release|x86.ActiveCfg = Release|Win32
 		{251BD000-4DE2-48FF-939C-BF51D09AD9A2}.Release|x86.Build.0 = Release|Win32
+		{87AEDBD4-A1E3-4BA8-AA7B-61E7370CFDCF}.Debug|x64.ActiveCfg = Debug|x64
+		{87AEDBD4-A1E3-4BA8-AA7B-61E7370CFDCF}.Debug|x64.Build.0 = Debug|x64
+		{87AEDBD4-A1E3-4BA8-AA7B-61E7370CFDCF}.Debug|x86.ActiveCfg = Debug|Win32
+		{87AEDBD4-A1E3-4BA8-AA7B-61E7370CFDCF}.Debug|x86.Build.0 = Debug|Win32
+		{87AEDBD4-A1E3-4BA8-AA7B-61E7370CFDCF}.Release|x64.ActiveCfg = Release|x64
+		{87AEDBD4-A1E3-4BA8-AA7B-61E7370CFDCF}.Release|x64.Build.0 = Release|x64
+		{87AEDBD4-A1E3-4BA8-AA7B-61E7370CFDCF}.Release|x86.ActiveCfg = Release|Win32
+		{87AEDBD4-A1E3-4BA8-AA7B-61E7370CFDCF}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
