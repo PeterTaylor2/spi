@@ -196,9 +196,9 @@ _template = """\
     <ProjectName>%(name)s</ProjectName>
     <Keyword>MakeFileProj</Keyword>
   </PropertyGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <Import Project="$(VCTargetsPath)\\Microsoft.Cpp.Default.props" />
 %(propertyConfigurations)s
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <Import Project="$(VCTargetsPath)\\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
 %(importPropertySheets)s
@@ -211,7 +211,7 @@ _template = """\
   <ItemGroup>
 %(allFiles)s
   </ItemGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="$(VCTargetsPath)\\Microsoft.Cpp.targets" />
 </Project>
 """
 

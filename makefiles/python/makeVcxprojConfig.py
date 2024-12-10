@@ -174,7 +174,7 @@ def make_proj(fileName, name, target, srcDir,
     guids = guidUtils.read_and_write_guids(fileName, ["Project"])
     allConfigFilters = ["Config Files"]
     for cf in configFilters:
-        allConfigFilters.append("Config Files\%s" % cf)
+        allConfigFilters.append("Config Files\\%s" % cf)
     guids.update(guidUtils.read_and_write_guids(
         fileName + ".filters", allConfigFilters,
         gfn = guidUtils.guid_file_name(fileName)))
@@ -275,9 +275,9 @@ _template = """\
     <ProjectName>%(name)s</ProjectName>
     <Keyword>MakeFileProj</Keyword>
   </PropertyGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <Import Project="$(VCTargetsPath)\\Microsoft.Cpp.Default.props" />
 %(propertyConfigurations)s
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <Import Project="$(VCTargetsPath)\\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
 %(importPropertySheets)s
@@ -294,7 +294,7 @@ _template = """\
   <ItemGroup>
 %(configFiles)s
   </ItemGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="$(VCTargetsPath)\\Microsoft.Cpp.targets" />
 </Project>
 """
 
