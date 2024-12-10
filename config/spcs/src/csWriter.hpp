@@ -229,7 +229,8 @@ public:
     std::string csiType(int arrayDim) const;
 
     // type used in the C# interface
-    std::string csType(int arrayDim, bool isOptional) const;
+    // if the parameter is being used as an input to a function we may wish to mark arrays as optional
+    std::string csType(int arrayDim, bool isOptional, bool inputArg=false) const;
 
     // converts from either C# type from the interface or internal type to c-type
     std::string cs_to_c(int arrayDim, const std::string& name) const;

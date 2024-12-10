@@ -1824,18 +1824,18 @@ namespace SPI
                 zz_class_wrappers.Add(name, wrapper);
             }
 
-            public static SpiObject? Wrap(IntPtr self)
+            public static SpiObject? WrapNullable(IntPtr self)
             {
                 if (self == IntPtr.Zero)
                     return null;
 
-                return SpiObject.WrapNonZero(self);
+                return SpiObject.Wrap(self);
             }
 
-            public static SpiObject WrapNonZero(IntPtr self)
+            public static SpiObject Wrap(IntPtr self)
             {
                 if (self == IntPtr.Zero)
-                    throw new Exception("WrapNonZero cannot wrap a null pointer");
+                    throw new Exception("SpiObject.Wrap cannot wrap a null pointer");
 
                 if (spi_Object_get_class_name(self, out string className) != 0)
                     throw spi.ErrorToException();
@@ -1853,12 +1853,12 @@ namespace SPI
                 }
             }
 
-            public string? object_id
+            public string object_id
             {
                 get
                 {
                     if (self == IntPtr.Zero)
-                        return null;
+                        throw new Exception("Cannot return object_id for a null pointer");
 
                     if (spi_Object_get_object_id(self, out string objectId) != 0)
                         throw spi.ErrorToException();
@@ -1907,7 +1907,7 @@ namespace SPI
             /// The serialized object string, as created by the to_string method.
             /// </param>
             /// <returns></returns>
-            public static SpiObject? from_string(System.String str)
+            public static SpiObject from_string(System.String str)
             {
                 IntPtr inner = spi_Object_from_string(str);
                 if (inner == IntPtr.Zero)
@@ -1945,7 +1945,7 @@ namespace SPI
             /// The filename containing the serialized object, e.g. as created by the to_file method.
             /// </param>
             /// <returns></returns>
-            public static SpiObject? from_file(System.String filename)
+            public static SpiObject from_file(System.String filename)
             {
                 IntPtr inner = spi_Object_from_file(filename);
                 if (inner == IntPtr.Zero)
@@ -2013,7 +2013,7 @@ namespace SPI
             return handle;
         }
 
-        public static SpiObject? ObjectHandleFind(
+        public static SpiObject ObjectHandleFind(
             System.String handle)
         {
             if (spi_Object_handle_find(handle, out IntPtr obj) != 0)
@@ -2077,7 +2077,59 @@ namespace SPI
             return new PointerHandle(v, spi_Object_Vector_delete);
         }
 
-        public static SpiObject?[] SpiObjectVectorToArray(PointerHandle h)
+        public static SpiObject[] SpiObjectVectorToArray(PointerHandle h)
+        {
+            IntPtr v = h.get_inner();
+            int size;
+            if (spi_Object_Vector_size(v, out size) != 0)
+            {
+                throw ErrorToException();
+            }
+
+            SpiObject[] array = new SpiObject[size];
+
+            for (int i = 0; i < size; ++i)
+            {
+                if (spi_Object_Vector_item(v, i, out IntPtr item) != 0)
+                {
+                    throw ErrorToException();
+                }
+                array[i] = SpiObject.Wrap(item); // will detect null items
+            }
+
+            return array;
+        }
+
+        public static PointerHandle SpiObjectVectorFromArray(SpiObject[]? array)
+        {
+            int size = array is null ? 0 : array.Length;
+            IntPtr v = spi_Object_Vector_new(size);
+            if (v == IntPtr.Zero)
+            {
+                throw ErrorToException();
+            }
+            PointerHandle h = new PointerHandle(v, spi_Object_Vector_delete);
+
+            if (array is not null)
+            {
+                for (int i = 0; i < size; ++i)
+                {
+                    IntPtr item = SpiObject.get_inner(array[i]);
+                    if (item == IntPtr.Zero)
+                    {
+                        throw new Exception("Null pointer in input array");
+                    }
+                    if (spi_Object_Vector_set_item(v, i, item) != 0)
+                    {
+                        throw ErrorToException();
+                    }
+                }
+            }
+
+            return h;
+        }
+
+        public static SpiObject?[] SpiObjectNullableVectorToArray(PointerHandle h)
         {
             IntPtr v = h.get_inner();
             int size;
@@ -2094,13 +2146,13 @@ namespace SPI
                 {
                     throw ErrorToException();
                 }
-                array[i] = SpiObject.Wrap(item);
+                array[i] = SpiObject.WrapNullable(item);
             }
 
             return array;
         }
 
-        public static PointerHandle SpiObjectVectorFromArray(SpiObject[]? array)
+        public static PointerHandle SpiObjectNullableVectorFromArray(SpiObject[]? array)
         {
             int size = array is null ? 0 : array.Length;
             IntPtr v = spi_Object_Vector_new(size);

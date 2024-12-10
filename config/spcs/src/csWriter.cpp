@@ -829,7 +829,7 @@ void CModule::implementFunctionBegin(
         const spdoc::AttributeConstSP& arg = func->inputs[i];
         ostr << sep << spaces << gap;
         sep = ",\n";
-        ostr << CDataType(arg->dataType, service).csType(arg->arrayDim, arg->isOptional) << " "
+        ostr << CDataType(arg->dataType, service).csType(arg->arrayDim, arg->isOptional, true) << " "
             << service->rename(arg->name, true);
 
         if (i >= lastMandatory)
@@ -1002,7 +1002,6 @@ void CModule::implementClass(
     bool hasEmptyConstructor = false;
 
     const char* nullable = service->nullable() ? "?" : "";
-    const char* nullableWrap = service->nullable() ? "WrapNonZero" : "Wrap";
 
     //Usage usage = service->usage(cls->dataType->name);
 
@@ -1213,7 +1212,7 @@ void CModule::implementClass(
             const spdoc::ClassAttributeConstSP& attr = cls->attributes[i];
             ostr << sep;
             sep = sep2;
-            ostr << CDataType(attr->dataType, service).csType(attr->arrayDim, attr->isOptional) << " " << service->rename(attr->name, true);
+            ostr << CDataType(attr->dataType, service).csType(attr->arrayDim, attr->isOptional, true) << " " << service->rename(attr->name, true);
         }
         ostr << ")\n"
             << "    {\n";
@@ -1267,7 +1266,7 @@ void CModule::implementClass(
         << "        {\n"
         << "            throw spi.ErrorToException();\n"
         << "        }\n"
-        << "        return " << cls->name << "." << nullableWrap << "(inner); \n"
+        << "        return " << cls->name << ".Wrap(inner); \n"
         << "    }\n";
 
     // coerceFrom as implicit operator cast where possible - otherwise use static Coerce method
@@ -1310,7 +1309,7 @@ void CModule::implementClass(
             << "        if (inner == IntPtr.Zero)\n"
             << "            throw spi.ErrorToException();\n"
             << "\n"
-            << "        return " << cls->name << "." << nullableWrap << "(inner); \n"
+            << "        return " << cls->name << ".Wrap(inner); \n"
             << "    }\n";
     }
 
@@ -1330,7 +1329,7 @@ void CModule::implementClass(
             << "        if (inner == IntPtr.Zero)\n"
             << "            throw spi.ErrorToException();\n"
             << "\n"
-            << "        return " << dt->nsService << "." << dt->name << "." << nullableWrap << "(inner); \n"
+            << "        return " << dt->nsService << "." << dt->name << ".Wrap(inner); \n"
             << "    }\n";
     }
 
@@ -1342,7 +1341,7 @@ void CModule::implementClass(
          << "        IntPtr inner = " << cname << "_from_string(objectString);\n"
          << "        if (inner == IntPtr.Zero)\n"
          << "            throw spi.ErrorToException();\n"
-         << "        return " << cls->name << "." << nullableWrap << "(inner); \n"
+         << "        return " << cls->name << ".Wrap(inner); \n"
          << "    }\n"
          << "\n"
          << "    static public new " << cls->name << " from_file(string filename)\n"
@@ -1350,7 +1349,7 @@ void CModule::implementClass(
          << "        IntPtr inner = " << cname << "_from_file(filename);\n"
          << "        if (inner == IntPtr.Zero)\n"
          << "            throw spi.ErrorToException();\n"
-         << "        return " << cls->name << "." << nullableWrap << "(inner);\n"
+         << "        return " << cls->name << ".Wrap(inner);\n"
          << "    }\n";
     
     for (size_t i = 0; i < cls->methods.size(); ++i)
@@ -1406,6 +1405,8 @@ void CModule::implementClass(
 
         const char* New = cls->baseClassName.empty() ? "" : "new ";
 
+        // the sub-class wrappers are the BaseWrap static method of the derived class
+        // and can return a null pointer without throwing an exception
         ostr << "\n"
             << "    public " << New << "delegate " << cls->name << nullable << " sub_class_wrapper(IntPtr self); \n"
             << "    public " << New << "static System.Collections.Generic.List<sub_class_wrapper> zz_sub_class_wrappers; \n";
@@ -1413,14 +1414,15 @@ void CModule::implementClass(
         if (service->nullable())
         {
             ostr << "\n"
-                << "    public new static " << cls->name << nullable << " Wrap(IntPtr self)\n"
+                << "    public new static " << cls->name << nullable << " WrapNullable(IntPtr self)\n"
                 << "    {\n"
                 << "        if (self == IntPtr.Zero)\n"
                 << "            return null;\n"
-                << "        return WrapNonZero(self);\n"
+                << "        return Wrap(self);\n"
                 << "    }\n";
+
             ostr << "\n"
-                << "    public new static " << cls->name << " WrapNonZero(IntPtr self)\n"
+                << "    public new static " << cls->name << " Wrap(IntPtr self)\n"
                 << "    {\n"
                 << "        if (self == IntPtr.Zero)\n"
                 << "            throw new Exception(\"self cannot be Zero\");\n"
@@ -1458,19 +1460,19 @@ void CModule::implementClass(
         if (service->nullable())
         {
             ostr << "\n"
-                << "    public new static " << cls->name << "? Wrap(IntPtr self)\n"
+                << "    public new static " << cls->name << "? WrapNullable(IntPtr self)\n"
                 << "    {\n"
                 << "        if (self == IntPtr.Zero)\n"
                 << "            return null;\n"
                 << "\n"
-                << "        return WrapNonZero(self);\n"
+                << "        return Wrap(self);\n"
                 << "    }\n";
 
             ostr << "\n"
-                << "    public new static " << cls->name << " WrapNonZero(IntPtr self)\n"
+                << "    public new static " << cls->name << " Wrap(IntPtr self)\n"
                 << "    {\n"
                 << "        if (self == IntPtr.Zero)\n"
-                << "            throw new Exception(\"self cannot be Zero\");\n"
+                << "            throw new Exception(\"" << cls->name << ".Wrap cannot wrap null pointer\");\n"
                 << "\n"
                 << "        self = " << cname << "_dynamic_cast(self);\n"
                 << "        if (self == IntPtr.Zero)\n"
@@ -1511,6 +1513,7 @@ void CModule::implementClass(
         baseClass = service->service()->getClass(cls->baseClassName);
         const char* newBaseWrap = baseClass->baseClassName.empty() ? "" : "new ";
 
+        // BaseWrap can return a null pointer without throwing an exception
         ostr << "\n"
             << "    public " << newBaseWrap << "static " << baseClass->ServiceNamespace() << "." << cls->baseClassName << nullable << " BaseWrap(IntPtr self)\n"
             << "    {\n"
@@ -1521,6 +1524,7 @@ void CModule::implementClass(
             << "        if (self == IntPtr.Zero)\n"
             << "            return null;\n"
             << "\n"
+            // Note that Wrap will do another dynamic_cast (unfortunately)
             << "        return Wrap(self);\n"
             << "    }\n";
     }
@@ -1532,7 +1536,7 @@ void CModule::implementClass(
     if (!cls->ns.empty())
         ostr << cls->ns << ".";
 
-    ostr << cls->ObjectName() << "\", " << nullableWrap << ");\n";
+    ostr << cls->ObjectName() << "\", Wrap);\n";
 
     if (cls->isAbstract)
     {
@@ -1565,9 +1569,15 @@ void CModule::implementClass(
         << "public static spi.PointerHandle zz_" << cls->name << "_VectorToHandle(IntPtr v)\n"
         << "{\n"
         << "    return new spi.PointerHandle(v, " << cname << "_Vector_delete);\n"
-        << "}\n"
-        << "\n"
-        << "public static spi.PointerHandle zz_" << cls->name << "_VectorFromArray(" << cls->name << "[]" << nullable << " array)\n"
+        << "}\n";
+
+    if (service->nullable())
+    {
+        // the first two versions of VectorFromArray and VectorToArray handle the case that elements of the array cannot be null
+        // on input the array itself is declared to be nullable
+
+        ostr << "\n"
+        << "public static spi.PointerHandle zz_" << cls->name << "_VectorFromArray(" << cls->name << "[]?" << " array)\n"
         << "{\n"
         << "    int size = array is null ? 0 : array.Length;\n"
         << "    IntPtr v = " << cname << "_Vector_new(size);\n"
@@ -1582,7 +1592,10 @@ void CModule::implementClass(
         << "    {\n"
         << "        for (int i = 0; i < size; ++i)\n"
         << "        {\n"
-        << "            if (spi_Instance_Vector_set_item(v, i, spi.SpiObject.get_inner(array[i])) != 0)\n"
+        << "            IntPtr item = spi.SpiObject.get_inner(array[i]);\n"
+        << "            if (item == IntPtr.Zero)\n"
+        << "                throw new Exception(\"Null pointer in array\");\n"
+        << "            if (spi_Instance_Vector_set_item(v, i, item) != 0)\n"
         << "            {\n"
         << "                throw spi.ErrorToException();\n"
         << "            }\n"
@@ -1593,7 +1606,7 @@ void CModule::implementClass(
         << "}\n";
 
     ostr << "\n"
-        << "public static " << cls->name << nullable << "[] zz_" << cls->name << "_VectorToArray(spi.PointerHandle h)\n"
+        << "public static " << cls->name << "[] zz_" << cls->name << "_VectorToArray(spi.PointerHandle h)\n"
         << "{\n"
         << "    IntPtr v = h.get_inner();\n"
         << "    int size;\n"
@@ -1602,19 +1615,125 @@ void CModule::implementClass(
         << "        throw spi.ErrorToException();\n"
         << "    }\n"
         << "\n"
-        << "    " << cls->name << nullable << "[] array = new " << cls->name << "[size];\n"
+        << "    " << cls->name << "[] array = new " << cls->name << "[size];\n"
         << "    for (int i = 0; i < size; ++i)\n"
         << "    {\n"
         << "        if (spi_Instance_Vector_item(v, i, out IntPtr item) != 0)\n"
         << "        {\n"
         << "            throw spi.ErrorToException();\n"
         << "        }\n"
+        << "        if (item == IntPtr.Zero)\n"
+        << "            throw new Exception(\"Null pointer in array\");\n"
         << "        array[i] = " << cls->name << ".Wrap(item);\n"
         << "    }\n"
         << "    return array;\n"
         << "}\n";
 
+        // the second two versions of VectorFromArray and VectorToArray handle the case that elements of the array can be null
+        // on input the array itself is declared to be nullable
+        ostr << "\n"
+            << "public static spi.PointerHandle zz_" << cls->name << "_Nullable_VectorFromArray(" << cls->name << "?[]?" << " array)\n"
+            << "{\n"
+            << "    int size = array is null ? 0 : array.Length;\n"
+            << "    IntPtr v = " << cname << "_Vector_new(size);\n"
+            << "    if (v == IntPtr.Zero)\n"
+            << "    {\n"
+            << "        throw spi.ErrorToException();\n"
+            << "    }\n"
+            << "\n"
+            << "    spi.PointerHandle h = new spi.PointerHandle(v, " << cname << "_Vector_delete);\n"
+            << ""
+            << "    if (!(array is null))\n"
+            << "    {\n"
+            << "        for (int i = 0; i < size; ++i)\n"
+            << "        {\n"
+            // no need to test array[i] for null
+            << "            if (spi_Instance_Vector_set_item(v, i, spi.SpiObject.get_inner(array[i])) != 0)\n"
+            << "            {\n"
+            << "                throw spi.ErrorToException();\n"
+            << "            }\n"
+            << "        }\n"
+            << "    }\n"
+            << "\n"
+            << "    return h;\n"
+            << "}\n";
 
+        ostr << "\n"
+            << "public static " << cls->name << "?[] zz_" << cls->name << "_Nullable_VectorToArray(spi.PointerHandle h)\n"
+            << "{\n"
+            << "    IntPtr v = h.get_inner();\n"
+            << "    int size;\n"
+            << "    if (spi_Instance_Vector_size(v, out size) != 0)\n"
+            << "    {\n"
+            << "        throw spi.ErrorToException();\n"
+            << "    }\n"
+            << "\n"
+            << "    " << cls->name << "?[] array = new " << cls->name << "[size];\n"
+            << "    for (int i = 0; i < size; ++i)\n"
+            << "    {\n"
+            << "        if (spi_Instance_Vector_item(v, i, out IntPtr item) != 0)\n"
+            << "        {\n"
+            << "            throw spi.ErrorToException();\n"
+            << "        }\n"
+            // no need to test for null so we use .WrapNullable instead of .Wrap
+            << "        array[i] = " << cls->name << ".WrapNullable(item);\n"
+            << "    }\n"
+            << "    return array;\n"
+            << "}\n";
+    }
+    else
+    {
+        // we ignore nullability
+        ostr << "\n"
+            << "public static spi.PointerHandle zz_" << cls->name << "_VectorFromArray(" << cls->name << "[]" << " array)\n"
+            << "{\n"
+            << "    int size = array is null ? 0 : array.Length;\n"
+            << "    IntPtr v = " << cname << "_Vector_new(size);\n"
+            << "    if (v == IntPtr.Zero)\n"
+            << "    {\n"
+            << "        throw spi.ErrorToException();\n"
+            << "    }\n"
+            << "\n"
+            << "    spi.PointerHandle h = new spi.PointerHandle(v, " << cname << "_Vector_delete);\n"
+            << ""
+            << "    if (!(array is null))\n"
+            << "    {\n"
+            << "        for (int i = 0; i < size; ++i)\n"
+            << "        {\n"
+            << "            if (spi_Instance_Vector_set_item(v, i, spi.SpiObject.get_inner(array[i])) != 0)\n"
+            << "            {\n"
+            << "                throw spi.ErrorToException();\n"
+            << "            }\n"
+            << "        }\n"
+            << "    }\n"
+            << "\n"
+            << "    return h;\n"
+            << "}\n";
+
+        ostr << "\n"
+            << "public static " << cls->name << "[] zz_" << cls->name << "_VectorToArray(spi.PointerHandle h)\n"
+            << "{\n"
+            << "    IntPtr v = h.get_inner();\n"
+            << "    int size;\n"
+            << "    if (spi_Instance_Vector_size(v, out size) != 0)\n"
+            << "    {\n"
+            << "        throw spi.ErrorToException();\n"
+            << "    }\n"
+            << "\n"
+            << "    " << cls->name << "[] array = new " << cls->name << "[size];\n"
+            << "    for (int i = 0; i < size; ++i)\n"
+            << "    {\n"
+            << "        if (spi_Instance_Vector_item(v, i, out IntPtr item) != 0)\n"
+            << "        {\n"
+            << "            throw spi.ErrorToException();\n"
+            << "        }\n"
+            << "        array[i] = " << cls->name << ".Wrap(item);\n"
+            << "    }\n"
+            << "    return array;\n"
+            << "}\n";
+    }
+
+    // FIXME: add Matrix functions for each class
 }
 
 void CModule::implementProperty(
@@ -2059,12 +2178,13 @@ std::string CDataType::csiType(int arrayDim) const
 
 }
 
-std::string CDataType::csType(int arrayDim, bool isOptional) const
+std::string CDataType::csType(int arrayDim, bool isOptional, bool inputArg) const
 {
     std::string scalarType;
     std::ostringstream oss;
 
     const char* nullable = service->nullable() ? "?" : "";
+    const char* optionalArray = (service->nullable() && inputArg) ? "?" : "";
 
     switch (publicType)
     {
@@ -2122,9 +2242,9 @@ std::string CDataType::csType(int arrayDim, bool isOptional) const
     case 0:
         return scalarType;
     case 1:
-        return scalarType + "[]" + nullable;
+        return scalarType + "[]" + optionalArray;
     case 2:
-        return scalarType + "[,]" + nullable;
+        return scalarType + "[,]" + optionalArray;
     default:
         SPI_THROW_RUNTIME_ERROR("ArrayDim " << arrayDim << " out of range [0,2]");
     }
@@ -2407,10 +2527,6 @@ std::string CDataType::csi_to_cs(
 {
     std::ostringstream oss;
 
-    // nullableWrap only applies to publicType CLASS
-    const char* nullableWrap = (service->nullable() && !isOptional) ?
-        "WrapNonZero" : "Wrap";
-
     switch (arrayDim)
     {
     case 0: // scalars
@@ -2436,7 +2552,7 @@ std::string CDataType::csi_to_cs(
             break;
         case spdoc::PublicType::CLASS:
             oss << service->nsGlobal() << "." << dataType->nsService << "."
-                << dataType->name << "." << nullableWrap << "(c_" << name << ")";
+                << dataType->name << ".Wrap(c_" << name << ")";
             break;
         case spdoc::PublicType::OBJECT:
             oss << "spi.SpiObject.Wrap(c_" << name << ")";
