@@ -513,6 +513,8 @@ ReplayLogConstSP ReplayLog::Read(
     const spi_boost::intrusive_ptr< SPI_NAMESPACE::ReplayLog >& i_result = ReplayLog_Helper::Read(
         infilename);
     ReplayLogConstSP o_result = ReplayLog::Wrap(i_result);
+    if (!o_result)
+        SPI_THROW_RUNTIME_ERROR("Null pointer returned");
 
     replay_end_function();
 

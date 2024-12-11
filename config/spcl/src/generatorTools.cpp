@@ -1208,7 +1208,47 @@ std::string writeCallToInnerFunction(
         writeArgsCall(ostr, true, inputs,
             caller.length() + decl.length() + 23, 8, translationPrefix);
         ostr << ";\n";
-        if (checkNonNull)
+
+        if (!noConvert && returnType->needsTranslation())
+        {
+            switch (returnArrayDim)
+            {
+            case 2:
+                ostr << "    " << oDecl << " o_result;\n"
+                    << "    {\n"
+                    << "      size_t nr = i_result.Rows();\n"
+                    << "      size_t nc = i_result.Cols();\n"
+                    << "      o_result.Resize(nr, nc);\n"
+                    << "      for (size_t i = 0; i < nr; ++i)\n"
+                    << "        for (size_t j = 0; j < nc; ++j)\n"
+                    << "        {\n"
+                    << "          o_result[i][j] = "
+                    << returnType->translateInner("i_result[i][j]") << ";\n";
+                if (checkNonNull)
+                {
+                    ostr << "          if (!o_result[i][j])\n"
+                        << "            SPI_THROW_RUNTIME_ERROR(\"Null pointer returned @(\" << i << \",\" << j << \"));\"\n";
+                }
+                ostr << "        }\n"
+                    << "    }\n";
+                break;
+            case 1:
+                ostr << "    " << oDecl << " o_result;\n"
+                    << "    for (size_t i_ = 0; i_ < i_result.size(); ++i_)\n"
+                    << "    {\n" // strictly speaking only needed if checkNonNull
+                    << "        o_result.push_back("
+                    << returnType->translateInner("i_result[i_]") << ");\n";
+                if (checkNonNull)
+                {
+                    ostr << "        if (!o_result[i_])\n"
+                        << "            SPI_THROW_RUNTIME_ERROR(\"Null pointer returned @(\" << i_ << \")\");\n";
+                }
+                ostr << "    }\n";
+                break;
+            }
+            return "o_result";
+        }
+        else if (checkNonNull)
         {
             switch (returnArrayDim)
             {
@@ -1220,7 +1260,7 @@ std::string writeCallToInnerFunction(
                     << "        for (size_t j = 0; j < nc; ++j)\n"
                     << "        {\n"
                     << "          if (!i_result[i][j])\n"
-                    << "            SPI_THROW_RUNTIME_ERROR(\"Null pointer returned @(\" << i << \",\" << j << \");\"\n"
+                    << "            SPI_THROW_RUNTIME_ERROR(\"Null pointer returned @(\" << i << \",\" << j << \"));\"\n"
                     << "        }\n"
                     << "    }\n";
                 break;
@@ -1228,39 +1268,11 @@ std::string writeCallToInnerFunction(
                 ostr << "    for (size_t i_ = 0; i_ < i_result.size(); ++i_)\n"
                     << "     {\n"
                     << "        if (!i_result[i_])\n"
-                    << "            SPI_THROW_RUNTIME_ERROR(\"Null pointer returned @(\" << i_ << \");\"\n"
+                    << "            SPI_THROW_RUNTIME_ERROR(\"Null pointer returned @(\" << i_ << \")\");\n"
                     << "     }\n";
             }
         }
-
-        if (!noConvert && returnType->needsTranslation())
-        {
-            switch(returnArrayDim)
-            {
-            case 2:
-                ostr << "    " << oDecl << " o_result;\n"
-                     << "    {\n"
-                     << "      size_t nr = i_result.Rows();\n"
-                     << "      size_t nc = i_result.Cols();\n"
-                     << "      o_result.Resize(nr, nc);\n"
-                     << "      for (size_t i = 0; i < nr; ++i)\n"
-                     << "        for (size_t j = 0; j < nc; ++j)\n"
-                     << "          o_result[i][j] = "
-                     << returnType->translateInner("i_result[i][j]") << ";\n"
-                     << "    }\n";
-                break;
-            case 1:
-                ostr << "    " << oDecl << " o_result;\n"
-                     << "    for (size_t i_ = 0; i_ < i_result.size(); ++i_)\n"
-                     << "        o_result.push_back("
-                     << returnType->translateInner("i_result[i_]") << ");\n";
-            }
-            return "o_result";
-        }
-        else
-        {
-            return "i_result";
-        }
+        return "i_result";
     }
     else
     {
@@ -1286,17 +1298,21 @@ std::string writeCallToInnerFunction(
             caller.length() + decl.length() + 16, 8, translationPrefix);
         ostr << ";\n";
 
-        if (checkNonNull)
-        {
-            ostr << "    if (!i_result)\n"
-                << "        SPI_THROW_RUNTIME_ERROR(\"Null pointer returned\");\n";
-        }
-
         if (!noConvert && returnType->needsTranslation())
         {
             ostr << "    " << returnType->outerValueType() << " o_result = "
                  << returnType->translateInner("i_result") << ";\n";
+            if (checkNonNull)
+            {
+                ostr << "    if (!o_result)\n"
+                    << "        SPI_THROW_RUNTIME_ERROR(\"Null pointer returned\");\n";
+            }
             return "o_result";
+        }
+        if (checkNonNull)
+        {
+            ostr << "    if (!i_result)\n"
+                << "        SPI_THROW_RUNTIME_ERROR(\"Null pointer returned\");\n";
         }
         return "i_result";
     }

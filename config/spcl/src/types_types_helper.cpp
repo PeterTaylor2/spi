@@ -513,7 +513,6 @@ void DataType::to_map(
     PublicType publicType = this->publicType();
     const std::string& objectName = this->objectName();
     bool isClosed = this->isClosed();
-    bool innerByValue = this->innerByValue();
     bool noDoc = this->noDoc();
     const InputConverterConstSP& convertIn = this->convertIn();
     const std::string& convertOut = this->convertOut();
@@ -531,7 +530,6 @@ void DataType::to_map(
         obj_map->SetString("publicType", publicType);
         obj_map->SetString("objectName", objectName, !public_only && (objectName.empty()));
         obj_map->SetBool("isClosed", isClosed);
-        obj_map->SetBool("innerByValue", innerByValue);
         obj_map->SetBool("noDoc", noDoc);
         obj_map->SetObject("convertIn", convertIn, !public_only && (!convertIn));
         obj_map->SetString("convertOut", convertOut, !public_only && (convertOut.empty()));
@@ -562,8 +560,6 @@ spi::ObjectConstSP DataType::object_from_map(
         = obj_map->GetString("objectName", true);
     bool isClosed
         = obj_map->GetBool("isClosed");
-    bool innerByValue
-        = obj_map->GetBool("innerByValue");
     bool noDoc
         = obj_map->GetBool("noDoc");
     const InputConverterConstSP& convertIn
@@ -576,8 +572,8 @@ spi::ObjectConstSP DataType::object_from_map(
         = obj_map->GetBool("ignored", true, false);
 
     return DataType::Make(name, nsService, cppName, outerType, innerType,
-        innerRefType, publicType, objectName, isClosed, innerByValue, noDoc,
-        convertIn, convertOut, copyInner, ignored);
+        innerRefType, publicType, objectName, isClosed, noDoc, convertIn,
+        convertOut, copyInner, ignored);
 }
 
 SPI_IMPLEMENT_OBJECT_TYPE(DataType, "DataType", types_service, false, 0);
@@ -604,29 +600,26 @@ spi::Value DataType_caller(
         in_context->ValueToString(in_values[7], true, "");
     bool isClosed =
         in_context->ValueToBool(in_values[8]);
-    bool innerByValue =
-        in_context->ValueToBool(in_values[9]);
     bool noDoc =
-        in_context->ValueToBool(in_values[10]);
+        in_context->ValueToBool(in_values[9]);
     const InputConverterConstSP& convertIn =
-        in_context->ValueToInstance<InputConverter const>(in_values[11], true);
+        in_context->ValueToInstance<InputConverter const>(in_values[10], true);
     const std::string& convertOut =
-        in_context->ValueToString(in_values[12], true, "");
+        in_context->ValueToString(in_values[11], true, "");
     const std::string& copyInner =
-        in_context->ValueToString(in_values[13], true, "");
+        in_context->ValueToString(in_values[12], true, "");
     bool ignored =
-        in_context->ValueToBool(in_values[14], true, false);
+        in_context->ValueToBool(in_values[13], true, false);
 
     const DataTypeConstSP& o_result = types::DataType::Make(name, nsService,
         cppName, outerType, innerType, innerRefType, publicType, objectName,
-        isClosed, innerByValue, noDoc, convertIn, convertOut, copyInner,
-        ignored);
+        isClosed, noDoc, convertIn, convertOut, copyInner, ignored);
     return spi::ObjectConstSP(o_result);
 }
 
 spi::FunctionCaller DataType_FunctionCaller = {
     "DataType",
-    15,
+    14,
     {
         {"name", spi::ArgType::STRING, "string", false, false, false},
         {"nsService", spi::ArgType::STRING, "string", false, true, false},
@@ -637,7 +630,6 @@ spi::FunctionCaller DataType_FunctionCaller = {
         {"publicType", spi::ArgType::ENUM, "PublicType", false, false, false},
         {"objectName", spi::ArgType::STRING, "string", false, true, false},
         {"isClosed", spi::ArgType::BOOL, "bool", false, false, false},
-        {"innerByValue", spi::ArgType::BOOL, "bool", false, false, false},
         {"noDoc", spi::ArgType::BOOL, "bool", false, false, false},
         {"convertIn", spi::ArgType::OBJECT, "InputConverter", false, true, false},
         {"convertOut", spi::ArgType::STRING, "string", false, true, false},

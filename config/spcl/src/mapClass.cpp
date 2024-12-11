@@ -239,7 +239,7 @@ const DataTypeConstSP& MapClass::getDataType(const ServiceDefinitionSP& svc, boo
         m_dataType = DataType::Make(
             m_name, m_ns, svc->getNamespace(), cppName, outerType, 
             std::string(), std::string(),
-            spdoc::PublicType::CLASS, "", false, false, false, "", "", "", DataTypeConstSP(),
+            spdoc::PublicType::CLASS, "", false, false, "", "", "", DataTypeConstSP(),
             false, false, ignored);
         svc->addDataType(m_dataType);
     }

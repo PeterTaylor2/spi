@@ -271,7 +271,6 @@ public:
         PublicType publicType,
         const std::string& objectName,
         bool isClosed,
-        bool innerByValue,
         bool noDoc,
         const InputConverterConstSP& convertIn,
         const std::string& convertOut,
@@ -308,7 +307,6 @@ private:
         PublicType publicType,
         const std::string& objectName,
         bool isClosed,
-        bool innerByValue,
         bool noDoc,
         const InputConverterConstSP& convertIn,
         const std::string& convertOut,
@@ -325,7 +323,6 @@ private:
     PublicType publicType() const;
     std::string objectName() const;
     bool isClosed() const;
-    bool innerByValue() const;
     bool noDoc() const;
     InputConverterConstSP convertIn() const;
     std::string convertOut() const;

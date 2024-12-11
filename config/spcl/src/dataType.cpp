@@ -55,7 +55,6 @@ DataTypeConstSP DataType::Make(
     spdoc::PublicType      publicType,
     const std::string&     objectName,
     bool                   isClosed,
-    bool                   innerByValue,
     bool                   noDoc,
     const InputConverterConstSP& convertIn,
     const std::string&     convertOut,
@@ -69,7 +68,7 @@ DataTypeConstSP DataType::Make(
 
     return DataTypeConstSP(new DataType(
         fullName, nsService, cppName, outerType, innerType, innerRefType,
-        publicType, objectName, isClosed, innerByValue, isPrimitive, noDoc,
+        publicType, objectName, isClosed, isPrimitive, noDoc,
         convertIn, convertOut, copyInner, primitiveType, objectAsValue, ignored));
 }
 
@@ -84,7 +83,6 @@ DataTypeConstSP DataType::Make(
     spdoc::PublicType      publicType,
     const std::string&     objectName,
     bool                   isClosed,
-    bool                   innerByValue,
     bool                   noDoc,
     const std::string&     convertIn,
     const std::string&     convertOut,
@@ -98,7 +96,7 @@ DataTypeConstSP DataType::Make(
 
     return DataTypeConstSP(new DataType(
         fullName, nsService, cppName, outerType, innerType, innerRefType,
-        publicType, objectName, isClosed, innerByValue, isPrimitive, noDoc,
+        publicType, objectName, isClosed, isPrimitive, noDoc,
         convertIn.empty() ? InputConverterConstSP() : InputConverter::StringFormat(convertIn),
         convertOut, copyInner, primitiveType, objectAsValue, ignored));
 }
@@ -115,7 +113,6 @@ DataTypeConstSP DataType::MakePrimitive(
     std::string innerRefType;
     std::string objectName;
     bool isClosed = false;
-    bool innerByValue = false;
     bool isPrimitive = true;
     bool noDoc = true;
     InputConverterConstSP convertIn;
@@ -132,7 +129,7 @@ DataTypeConstSP DataType::MakePrimitive(
 
     return DataTypeConstSP(
         new DataType(name, nsService, cppType, cppType, innerType, innerRefType, publicType,
-                     objectName, isClosed, innerByValue, isPrimitive, noDoc,
+                     objectName, isClosed, isPrimitive, noDoc,
                      convertIn, convertOut));
 }
 
@@ -146,7 +143,6 @@ DataType::DataType(
     spdoc::PublicType publicType,
     const std::string& objectName,
     bool isClosed,
-    bool innerByValue,
     bool isPrimitive,
     bool noDoc,
     const InputConverterConstSP& convertIn,
@@ -165,7 +161,6 @@ DataType::DataType(
     m_publicType(publicType),
     m_objectName(objectName),
     m_isClosed(isClosed),
-    m_innerByValue(innerByValue),
     m_isPrimitive(isPrimitive),
     m_noDoc(noDoc),
     m_convertIn(convertIn),
@@ -175,11 +170,11 @@ DataType::DataType(
     m_objectAsValue(objectAsValue),
     m_ignored(ignored)
 {
-    if (m_isClosed || m_innerByValue)
+    if (m_isClosed)
     {
         if (m_publicType != spdoc::PublicType::CLASS)
         {
-            SPI_THROW_RUNTIME_ERROR("isClosed or innerByValue can only be used for CLASS");
+            SPI_THROW_RUNTIME_ERROR("isClosed can only be used for CLASS");
         }
     }
 }
@@ -202,11 +197,6 @@ bool DataType::needsTranslation() const
 bool DataType::isClosed() const
 {
     return m_isClosed;
-}
-
-bool DataType::innerByValue() const
-{
-    return m_innerByValue;
 }
 
 bool DataType::isPrimitive() const

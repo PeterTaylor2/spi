@@ -463,7 +463,7 @@ const DataTypeConstSP& Enum::dataType(const ServiceDefinitionSP& svc, bool ignor
 
         m_dataType = DataType::Make(m_name, m_ns, svc->getNamespace(),
             outerType, outerType,
-            innerType, innerType, spdoc::PublicType::ENUM, "", false, false,
+            innerType, innerType, spdoc::PublicType::ENUM, "", false,
             false, convertIn, convertOut,
             std::string(), DataTypeConstSP(), false, false, ignored);
 
@@ -473,7 +473,7 @@ const DataTypeConstSP& Enum::dataType(const ServiceDefinitionSP& svc, bool ignor
         {
             DataTypeConstSP publicDataType = DataType::Make(
                 m_name, m_ns, svc->getNamespace(), outerType, outerType, "", "",
-                spdoc::PublicType::ENUM, "", false, false, false);
+                spdoc::PublicType::ENUM, "", false, false);
 
             publicDataType->setDoc(m_dataType->getDoc());
 

@@ -82,7 +82,6 @@ public:
         spdoc::PublicType publicType,
         const std::string& objectName,
         bool isClosed, // only for CLASS
-        bool innerByValue, // only for CLASS
         bool noDoc,
         const InputConverterConstSP& convertIn,
         const std::string& convertOut = std::string(),
@@ -103,7 +102,6 @@ public:
         spdoc::PublicType publicType,
         const std::string& objectName,
         bool isClosed, // only for CLASS
-        bool innerByValue, // only for CLASS
         bool noDoc,
         const std::string& convertIn = std::string(),
         const std::string& convertOut = std::string(),
@@ -121,7 +119,6 @@ public:
     const std::string& nsService() const;
     bool needsTranslation() const;
     bool isClosed() const;
-    bool innerByValue() const;
     bool isPrimitive() const;
     bool noDoc() const;
     bool objectAsValue() const;
@@ -195,7 +192,6 @@ protected:
         spdoc::PublicType publicType,
         const std::string& objectName,
         bool isClosed, // only for CLASS
-        bool innerByValue, // only for CLASS
         bool isPrimitive,
         bool noDoc,
         const InputConverterConstSP& convertIn,
@@ -215,7 +211,6 @@ private:
     spdoc::PublicType m_publicType;
     std::string m_objectName;
     bool m_isClosed;
-    bool m_innerByValue;
     bool m_isPrimitive;
     bool m_noDoc;
     InputConverterConstSP m_convertIn;

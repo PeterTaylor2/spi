@@ -187,7 +187,6 @@ bool Attribute::checkNonNull() const
     switch (m_dataType->publicType())
     {
     case spdoc::PublicType::CLASS:
-        return !m_isOptional && !m_dataType->innerByValue();
     case spdoc::PublicType::MAP:
     case spdoc::PublicType::OBJECT:
         return !m_isOptional;

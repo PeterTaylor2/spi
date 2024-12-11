@@ -827,7 +827,7 @@ const DataTypeConstSP& Struct::getDataType(const ServiceDefinitionSP& svc, bool 
                 m_name, m_ns, svc->getNamespace(), cppName, cppName,
                 std::string(), std::string(),
                 spdoc::PublicType::CLASS, m_objectName,
-                false, true, false,
+                false, false,
                 InputConverter::Class(std::string()),
                 std::string(), std::string(),
                 DataTypeConstSP(), false,
@@ -839,7 +839,7 @@ const DataTypeConstSP& Struct::getDataType(const ServiceDefinitionSP& svc, bool 
             m_dataType = DataType::Make(
                 m_name, m_ns, svc->getNamespace(), cppName, outerType,
                 std::string(), std::string(),
-                spdoc::PublicType::CLASS, m_objectName, false, false, false,
+                spdoc::PublicType::CLASS, m_objectName, false, false,
                 InputConverter::Class(std::string()),
                 std::string(), std::string(), DataTypeConstSP(), false,
                 m_asValue, ignored);

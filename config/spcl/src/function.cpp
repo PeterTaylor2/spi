@@ -156,15 +156,8 @@ Function::Function(
         {
         case spdoc::PublicType::MAP:
         case spdoc::PublicType::OBJECT:
-            break; // always allowed
-
         case spdoc::PublicType::CLASS:
-            if (m_returnType->innerByValue())
-            {
-                SPI_THROW_RUNTIME_ERROR("Function cannot return optional type for " <<
-                    m_returnType->name());
-            }
-            break; // otherwise allowed
+            break; // always allowed
 
         default:
             SPI_THROW_RUNTIME_ERROR("Function cannot return optional type for " <<
