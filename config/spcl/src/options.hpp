@@ -36,6 +36,7 @@ struct Options
     std::string license;
     std::string outputDir;
     bool writeBackup;
+    bool checkNonNull;
 };
 
 #endif

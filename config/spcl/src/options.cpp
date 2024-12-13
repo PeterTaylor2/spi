@@ -29,7 +29,8 @@ Options::Options()
     noTidyup(false),
     sessionLogging(false),
     license(),
-    writeBackup(false)
+    writeBackup(false),
+    checkNonNull(false)
 {
 }
 

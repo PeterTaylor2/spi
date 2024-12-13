@@ -1199,7 +1199,7 @@ std::string writeCallToInnerFunction(
     {
         const int& returnArrayDim = returns->arrayDim();
         const DataTypeConstSP& returnType = returns->dataType();
-        bool checkNonNull = returns->checkNonNull();
+        bool checkNonNull = g_options.checkNonNull && returns->checkNonNull();
 
         std::string oDecl = returnType->outerArrayType(returnArrayDim);
         std::string iDecl = returnType->innerArrayType(returnArrayDim);
@@ -1277,7 +1277,7 @@ std::string writeCallToInnerFunction(
     else
     {
         const DataTypeConstSP& returnType = returns->dataType();
-        bool checkNonNull = returns->checkNonNull();
+        bool checkNonNull = g_options.checkNonNull && returns->checkNonNull();
 
         // because we are setting the value via the return from a function
         // we can use reference types here rather than value types
