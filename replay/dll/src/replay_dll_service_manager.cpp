@@ -43,7 +43,7 @@ static std::string g_time_out_error;
 
 static spi::ServiceSP MakeService()
 {
-    spi::ServiceSP svc = spi::Service::Make("replay", "spi_replay");
+    spi::ServiceSP svc = spi::Service::Make("replay", "spi_replay", "1.0.0.0");
     g_is_logging = svc->is_logging_flag();
 
     map_register_object_types(svc);
