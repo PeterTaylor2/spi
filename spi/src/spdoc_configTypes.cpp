@@ -523,8 +523,6 @@ AttributeConstSP Function::returns() const
   {
     FunctionConstSP self(this);
     const AttributeConstSP& i_result = Function_Helper::returns(self);
-    if (!i_result)
-        SPI_THROW_RUNTIME_ERROR("Null pointer returned");
 
     spdoc_end_function();
 
@@ -1595,8 +1593,6 @@ EnumConstSP Service::getEnum(
   {
     ServiceConstSP self(this);
     const EnumConstSP& i_result = Service_Helper::getEnum(self, name);
-    if (!i_result)
-        SPI_THROW_RUNTIME_ERROR("Null pointer returned");
 
     spdoc_end_function();
 
@@ -1728,8 +1724,6 @@ ClassConstSP Service::getClass(
   {
     ServiceConstSP self(this);
     const ClassConstSP& i_result = Service_Helper::getClass(self, className);
-    if (!i_result)
-        SPI_THROW_RUNTIME_ERROR("Null pointer returned");
 
     spdoc_end_function();
 
