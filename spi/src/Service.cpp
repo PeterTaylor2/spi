@@ -154,7 +154,10 @@ void CommonRuntime::start_logging(const char* filename, const char* options)
         svc->set_logging(true);
         const std::string& serviceNamespace = svc->get_namespace();
         if (serviceNamespace.length() > 0)
-            m_logStream << "# Service: " << serviceNamespace << std::endl;
+        {
+            m_logStream << "# Service: " << serviceNamespace
+                << " " << svc->get_version() << std::endl;
+        }
     }
 }
 
@@ -801,6 +804,11 @@ const std::string& Service::get_name() const
 const std::string& Service::get_namespace() const
 {
     return m_namespace;
+}
+
+const std::string& Service::get_version() const
+{
+    return m_version;
 }
 
 bool Service::is_common_service() const

@@ -210,6 +210,7 @@ public:
     // information methods
     const std::string& get_name() const;
     const std::string& get_namespace() const;
+    const std::string& get_version() const;
     bool is_common_service() const;
 
 private:
