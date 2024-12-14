@@ -511,7 +511,7 @@ bool Function_Helper::returnsObject(
 
 /*
 ****************************************************************************
-* What does function return (as an attribute)
+* What does the function return (as an attribute)
 ****************************************************************************
 */
 

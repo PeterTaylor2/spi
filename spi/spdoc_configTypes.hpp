@@ -344,7 +344,7 @@ public:
 
     /**
     ************************************************************************
-    * What does function return (as an attribute)
+    * What does the function return (as an attribute)
     ************************************************************************
     */
     AttributeConstSP returns() const;

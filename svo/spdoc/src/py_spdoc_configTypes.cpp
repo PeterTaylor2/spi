@@ -781,7 +781,7 @@ static PyMethodDef Function_methods[] = {
     {"returnsObject", (PyCFunction)py_spdoc_Function_returnsObject, METH_VARARGS | METH_KEYWORDS,
         "returnsObject(self)\n\nDoes this Function return an object or not?"},
     {"returns", (PyCFunction)py_spdoc_Function_returns, METH_VARARGS | METH_KEYWORDS,
-        "returns(self)\n\nWhat does function return (as an attribute)"},
+        "returns(self)\n\nWhat does the function return (as an attribute)"},
     {"objectCount", (PyCFunction)py_spdoc_Function_objectCount, METH_VARARGS | METH_KEYWORDS,
         "objectCount(self)\n\nHow many objects does this function return?"},
     {NULL, NULL, 0, NULL} // sentinel
