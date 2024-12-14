@@ -44,7 +44,7 @@ static std::string g_time_out_error;
 
 static spi::ServiceSP MakeService()
 {
-    spi::ServiceSP svc = spi::Service::Make("spdoc", "spdoc");
+    spi::ServiceSP svc = spi::Service::Make("spdoc", "spdoc", "1.0.0.0");
     g_is_logging = svc->is_logging_flag();
 
     publicType_register_object_types(svc);

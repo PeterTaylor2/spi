@@ -1384,7 +1384,7 @@ void ServiceDefinition::writeServiceSource(
     else
     {
         ostr << "    spi::ServiceSP svc = spi::Service::Make(\"" << m_name
-             << "\", \"" << m_namespace << "\");\n";
+            << "\", \"" << m_namespace << "\", \"" << m_version.versionString() << "\");\n";
     }
     ostr << "    g_is_logging = svc->is_logging_flag();\n";
 

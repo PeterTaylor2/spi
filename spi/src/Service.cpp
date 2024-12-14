@@ -314,9 +314,10 @@ ObjectType* CommonRuntime::get_object_type(const std::string& className) const
 
 ServiceSP Service::Make(
     const char* name,
-    const char* ns)
+    const char* ns,
+    const char* version)
 {
-    return ServiceSP(new Service(name, ns));
+    return ServiceSP(new Service(name, ns, version));
 }
 
 ServiceSP Service::Make(
@@ -343,11 +344,13 @@ ServiceSP Service::CommonService()
 
 Service::Service(
     const char* name,
-    const char* ns)
+    const char* ns,
+    const char* version)
     :
     m_commonService(false),
     m_name(name),
     m_namespace(ns),
+    m_version(version),
     m_typeRegistry(),
     m_functions(),
     m_enums(),
@@ -365,6 +368,7 @@ Service::Service(
     m_commonService(false),
     m_name(name),
     m_namespace(svc->m_namespace),
+    m_version(svc->m_version),
     m_typeRegistry(),
     m_functions(svc->m_functions),
     m_enums(svc->m_enums),

@@ -127,7 +127,8 @@ public:
     // other services)
     static ServiceSP Make(
         const char* name,
-        const char* ns);
+        const char* ns,
+        const char* version);
     // constructs a service using an existing service as a base
     // the namespace must be the same for all services linked in this manner
     static ServiceSP Make(
@@ -212,13 +213,14 @@ public:
     bool is_common_service() const;
 
 private:
-    Service(const char* name, const char* ns);
+    Service(const char* name, const char* ns, const char* version);
     Service(const char* name, const ServiceSP& svc);
     Service();
 
     bool                   m_commonService;
     const std::string      m_name;
     const std::string      m_namespace;
+    const std::string      m_version;
     ObjectType::Registry m_typeRegistry;
     std::map<std::string, FunctionCaller*> m_functions;
     std::map<std::string, EnumInfo*> m_enums;
