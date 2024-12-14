@@ -1810,18 +1810,18 @@ namespace SPI
                 GC.SuppressFinalize(this);
             }
 
-            public delegate SpiObject class_wrapper(IntPtr self);
-            public static System.Collections.Generic.Dictionary<string, class_wrapper> zz_class_wrappers;
+            public delegate SpiObject _class_wrapper(IntPtr self);
+            public static System.Collections.Generic.Dictionary<string, _class_wrapper> _class_wrappers;
 
             static SpiObject()
             {
-                zz_class_wrappers = new System.Collections.Generic.Dictionary<string, class_wrapper>();
-                zz_class_wrappers.Add("Map", SpiMap.Wrap);
+                _class_wrappers = new System.Collections.Generic.Dictionary<string, _class_wrapper>();
+                _class_wrappers.Add("Map", SpiMap.Wrap);
             }
 
-            public static void zz_register_class_wrapper(string name, class_wrapper wrapper)
+            public static void _register_class_wrapper(string name, _class_wrapper wrapper)
             {
-                zz_class_wrappers.Add(name, wrapper);
+                _class_wrappers.Add(name, wrapper);
             }
 
             public static SpiObject? WrapNullable(IntPtr self)
@@ -1842,7 +1842,7 @@ namespace SPI
 
                 try
                 {
-                    class_wrapper wrapper = zz_class_wrappers[className];
+                    _class_wrapper wrapper = _class_wrappers[className];
                     return wrapper(self);
                 }
                 catch

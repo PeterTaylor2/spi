@@ -1408,8 +1408,8 @@ void CModule::implementClass(
         // the sub-class wrappers are the BaseWrap static method of the derived class
         // and can return a null pointer without throwing an exception
         ostr << "\n"
-            << "    public " << New << "delegate " << cls->name << nullable << " sub_class_wrapper(IntPtr self); \n"
-            << "    public " << New << "static System.Collections.Generic.List<sub_class_wrapper> zz_sub_class_wrappers; \n";
+            << "    public " << New << "delegate " << cls->name << nullable << " _sub_class_wrapper(IntPtr self); \n"
+            << "    public " << New << "static System.Collections.Generic.List<_sub_class_wrapper> _sub_class_wrappers; \n";
 
         if (service->nullable())
         {
@@ -1427,7 +1427,7 @@ void CModule::implementClass(
                 << "        if (self == IntPtr.Zero)\n"
                 << "            throw new Exception(\"self cannot be Zero\");\n"
                 << "\n"
-                << "        foreach(var wrapper in zz_sub_class_wrappers)\n"
+                << "        foreach(var wrapper in _sub_class_wrappers)\n"
                 << "        {\n"
                 << "            " << cls->name << "? obj = wrapper(self);\n"
                 << "            if (obj != null)\n"
@@ -1444,7 +1444,7 @@ void CModule::implementClass(
                 << "        if (self == IntPtr.Zero)\n"
                 << "            return null;\n"
                 << "\n"
-                << "        foreach(var wrapper in zz_sub_class_wrappers)\n"
+                << "        foreach(var wrapper in _sub_class_wrappers)\n"
                 << "        {\n"
                 << "            " << cls->name << nullable << " obj = wrapper(self);\n"
                 << "            if (obj != null)\n"
@@ -1532,7 +1532,7 @@ void CModule::implementClass(
     ostr << "\n"
         << "    static " << cls->name << "()\n"
         << "    {\n"
-        << "        spi.SpiObject.zz_register_class_wrapper(\"";
+        << "        spi.SpiObject._register_class_wrapper(\"";
     if (!cls->ns.empty())
         ostr << cls->ns << ".";
 
@@ -1541,13 +1541,13 @@ void CModule::implementClass(
     if (cls->isAbstract)
     {
         ostr << "        "
-            << "zz_sub_class_wrappers = new System.Collections.Generic.List<sub_class_wrapper>();\n";
+            << "_sub_class_wrappers = new System.Collections.Generic.List<_sub_class_wrapper>();\n";
     }
 
     if (!cls->baseClassName.empty())
     {
         ostr << "        " << baseClass->ServiceNamespace() << "."
-            << cls->baseClassName << ".zz_sub_class_wrappers.Add("
+            << cls->baseClassName << "._sub_class_wrappers.Add("
             << cls->name << ".BaseWrap);\n";
     }
 
@@ -1566,7 +1566,7 @@ void CModule::implementClass(
     ostr << "}\n";
 
     ostr << "\n"
-        << "public static spi.PointerHandle zz_" << cls->name << "_VectorToHandle(IntPtr v)\n"
+        << "public static spi.PointerHandle _" << cls->name << "_VectorToHandle(IntPtr v)\n"
         << "{\n"
         << "    return new spi.PointerHandle(v, " << cname << "_Vector_delete);\n"
         << "}\n";
@@ -1577,7 +1577,7 @@ void CModule::implementClass(
         // on input the array itself is declared to be nullable
 
         ostr << "\n"
-        << "public static spi.PointerHandle zz_" << cls->name << "_VectorFromArray(" << cls->name << "[]?" << " array)\n"
+        << "public static spi.PointerHandle _" << cls->name << "_VectorFromArray(" << cls->name << "[]?" << " array)\n"
         << "{\n"
         << "    int size = array is null ? 0 : array.Length;\n"
         << "    IntPtr v = " << cname << "_Vector_new(size);\n"
@@ -1606,7 +1606,7 @@ void CModule::implementClass(
         << "}\n";
 
     ostr << "\n"
-        << "public static " << cls->name << "[] zz_" << cls->name << "_VectorToArray(spi.PointerHandle h)\n"
+        << "public static " << cls->name << "[] _" << cls->name << "_VectorToArray(spi.PointerHandle h)\n"
         << "{\n"
         << "    IntPtr v = h.get_inner();\n"
         << "    int size;\n"
@@ -1632,7 +1632,7 @@ void CModule::implementClass(
         // the second two versions of VectorFromArray and VectorToArray handle the case that elements of the array can be null
         // on input the array itself is declared to be nullable
         ostr << "\n"
-            << "public static spi.PointerHandle zz_" << cls->name << "_Nullable_VectorFromArray(" << cls->name << "?[]?" << " array)\n"
+            << "public static spi.PointerHandle _" << cls->name << "_Nullable_VectorFromArray(" << cls->name << "?[]?" << " array)\n"
             << "{\n"
             << "    int size = array is null ? 0 : array.Length;\n"
             << "    IntPtr v = " << cname << "_Vector_new(size);\n"
@@ -1659,7 +1659,7 @@ void CModule::implementClass(
             << "}\n";
 
         ostr << "\n"
-            << "public static " << cls->name << "?[] zz_" << cls->name << "_Nullable_VectorToArray(spi.PointerHandle h)\n"
+            << "public static " << cls->name << "?[] _" << cls->name << "_Nullable_VectorToArray(spi.PointerHandle h)\n"
             << "{\n"
             << "    IntPtr v = h.get_inner();\n"
             << "    int size;\n"
@@ -1685,7 +1685,7 @@ void CModule::implementClass(
     {
         // we ignore nullability
         ostr << "\n"
-            << "public static spi.PointerHandle zz_" << cls->name << "_VectorFromArray(" << cls->name << "[]" << " array)\n"
+            << "public static spi.PointerHandle _" << cls->name << "_VectorFromArray(" << cls->name << "[]" << " array)\n"
             << "{\n"
             << "    int size = array is null ? 0 : array.Length;\n"
             << "    IntPtr v = " << cname << "_Vector_new(size);\n"
@@ -1711,7 +1711,7 @@ void CModule::implementClass(
             << "}\n";
 
         ostr << "\n"
-            << "public static " << cls->name << "[] zz_" << cls->name << "_VectorToArray(spi.PointerHandle h)\n"
+            << "public static " << cls->name << "[] _" << cls->name << "_VectorToArray(spi.PointerHandle h)\n"
             << "{\n"
             << "    IntPtr v = h.get_inner();\n"
             << "    int size;\n"
@@ -1949,12 +1949,12 @@ void CModule::implementEnum(
         << "private static extern IntPtr " << cname << "_Vector_new(int size);\n";
 
     ostr << "\n"
-        << "public static spi.PointerHandle zz_" << enumType->name << "_VectorToHandle(IntPtr v)\n"
+        << "public static spi.PointerHandle _" << enumType->name << "_VectorToHandle(IntPtr v)\n"
         << "{\n"
         << "    return new spi.PointerHandle(v, " << cname << "_Vector_delete);\n"
         << "}\n"
         << "\n"
-        << "public static spi.PointerHandle zz_" << enumType->name << "_VectorFromArray("
+        << "public static spi.PointerHandle _" << enumType->name << "_VectorFromArray("
         << enumType->name << "[]" << nullable << " array)\n"
         << "{\n"
         << "    int size = array is null ? 0 : array.Length;\n"
@@ -1980,7 +1980,7 @@ void CModule::implementEnum(
         << "    return h;\n"
         << "}\n"
         << "\n"
-        << "public static " << enumType->name << "[] zz_" << enumType->name
+        << "public static " << enumType->name << "[] _" << enumType->name
         << "_VectorToArray(spi.PointerHandle h)\n"
         << "{\n"
         << "    IntPtr v = h.get_inner();\n"
@@ -2011,12 +2011,12 @@ void CModule::implementEnum(
         << "    int nr, int nc);\n";
  
     ostr << "\n"
-        << "public static spi.PointerHandle zz_" << enumType->name << "_MatrixToHandle(IntPtr v)\n"
+        << "public static spi.PointerHandle _" << enumType->name << "_MatrixToHandle(IntPtr v)\n"
         << "{\n"
         << "    return new spi.PointerHandle(v, " << cname << "_Matrix_delete);\n"
         << "}\n" 
         << "\n"
-        << "public static spi.PointerHandle zz_" << enumType->name << "_MatrixFromArray("
+        << "public static spi.PointerHandle _" << enumType->name << "_MatrixFromArray("
         << enumType->name << "[,] array)\n"
         << "{\n"
         << "    int nr = array.GetLength(0);\n"
@@ -2041,7 +2041,7 @@ void CModule::implementEnum(
         << "    return h;\n"
         << "}\n"
         << "\n"
-        << "public static " << enumType->name << "[,] zz_" << enumType->name
+        << "public static " << enumType->name << "[,] _" << enumType->name
         << "_MatrixToArray(spi.PointerHandle h)\n"
         << "{\n"
         << "    IntPtr m = h.get_inner();\n"
@@ -2259,7 +2259,7 @@ namespace
         if (pos == std::string::npos)
             return csType;
 
-        return csType.substr(0, pos+1) + "zz_" + csType.substr(pos+1);
+        return csType.substr(0, pos+1) + "_" + csType.substr(pos+1);
     }
 }
 
