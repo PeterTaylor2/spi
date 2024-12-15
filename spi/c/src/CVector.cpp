@@ -56,6 +56,51 @@ spi_Int_Vector* spi_Int_Vector_new(int N)
     }
 }
 
+spi_Int_Vector* spi_Int_Vector_make(int N, int data[])
+{
+    SPI_C_LOCK_GUARD;
+    try
+    {
+        size_t uN = to_size_t(N);
+        auto out = new std::vector<int>(data, data + uN);
+        return (spi_Int_Vector*)(out);
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return NULL;
+    }
+}
+
+int spi_Int_Vector_data(spi_Int_Vector* v, int N, int data[])
+{
+    SPI_C_LOCK_GUARD;
+    if (!v)
+    {
+        spi_Error_set_function(__FUNCTION__, "NULL pointer");
+        return -1;
+    }
+
+    try
+    {
+        auto cpp = (const std::vector<int>*)(v);
+        size_t uN = to_size_t(N);
+        if (cpp->size() != uN)
+        {
+            spi_Error_set_function(__FUNCTION__, "Array size mismatch");
+            return -1;
+        }
+        for (size_t i = 0; i < uN; ++i)
+            data[i] = cpp->at(i);
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
+}
+
 int spi_Int_Vector_item(
     const spi_Int_Vector* v,
     int ii,
@@ -161,6 +206,51 @@ spi_Double_Vector* spi_Double_Vector_new(int N)
     {
         spi_Error_set_function(__FUNCTION__, e.what());
         return NULL;
+    }
+}
+
+spi_Double_Vector* spi_Double_Vector_make(int N, double data[])
+{
+    SPI_C_LOCK_GUARD;
+    try
+    {
+        size_t uN = to_size_t(N);
+        auto out = new std::vector<double>(data, data + uN);
+        return (spi_Double_Vector*)(out);
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return NULL;
+    }
+}
+
+int spi_Double_Vector_data(spi_Double_Vector* v, int N, double data[])
+{
+    SPI_C_LOCK_GUARD;
+    if (!v)
+    {
+        spi_Error_set_function(__FUNCTION__, "NULL pointer");
+        return -1;
+    }
+
+    try
+    {
+        auto cpp = (const std::vector<double>*)(v);
+        size_t uN = to_size_t(N);
+        if (cpp->size() != uN)
+        {
+            spi_Error_set_function(__FUNCTION__, "Array size mismatch");
+            return -1;
+        }
+        for (size_t i = 0; i < uN; ++i)
+            data[i] = cpp->at(i);
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
     }
 }
 
@@ -273,6 +363,54 @@ spi_Bool_Vector* spi_Bool_Vector_new(int N)
     }
 }
 
+spi_Bool_Vector* spi_Bool_Vector_make(int N, spi_Bool data[])
+{
+    SPI_C_LOCK_GUARD;
+    try
+    {
+        size_t uN = to_size_t(N);
+        std::vector<bool> out;
+        out.reserve(uN);
+        for (size_t i = 0; i < uN; ++i)
+            out.push_back(data[i] != SPI_FALSE);
+        return (spi_Bool_Vector*)(new std::vector<bool>(out));
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return NULL;
+    }
+}
+
+int spi_Bool_Vector_data(spi_Bool_Vector* v, int N, spi_Bool data[])
+{
+    SPI_C_LOCK_GUARD;
+    if (!v)
+    {
+        spi_Error_set_function(__FUNCTION__, "NULL pointer");
+        return -1;
+    }
+
+    try
+    {
+        auto cpp = (const std::vector<bool>*)(v);
+        size_t uN = to_size_t(N);
+        if (cpp->size() != uN)
+        {
+            spi_Error_set_function(__FUNCTION__, "Array size mismatch");
+            return -1;
+        }
+        for (size_t i = 0; i < uN; ++i)
+            data[i] = cpp->at(i) ? SPI_TRUE : SPI_FALSE;
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
+}
+
 int spi_Bool_Vector_item(
     const spi_Bool_Vector* v,
     int ii,
@@ -351,6 +489,56 @@ int spi_Bool_Vector_size(
     return 0;
 }
 
+spi_Instance_Vector* spi_Instance_Vector_make(int N, spi_Instance* data[])
+{
+    SPI_C_LOCK_GUARD;
+    try
+    {
+        size_t uN = to_size_t(N);
+        std::vector<spi::InstanceConstSP> out;
+        out.reserve(uN);
+        for (size_t i = 0; i < uN; ++i)
+        {
+            out.push_back(spi::InstanceConstSP((spi::Instance*)(data[i])));
+        }
+        return (spi_Instance_Vector*)(new std::vector<spi::InstanceConstSP>(out));
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return NULL;
+    }
+}
+
+int spi_Instance_Vector_data(spi_Instance_Vector* v, int N, spi_Instance* data[])
+{
+    SPI_C_LOCK_GUARD;
+    if (!v)
+    {
+        spi_Error_set_function(__FUNCTION__, "NULL pointer");
+        return -1;
+    }
+
+    try
+    {
+        auto cpp = (const std::vector<spi::InstanceConstSP>*)(v);
+        size_t uN = to_size_t(N);
+        if (cpp->size() != uN)
+        {
+            spi_Error_set_function(__FUNCTION__, "Array size mismatch");
+            return -1;
+        }
+        for (size_t i = 0; i < uN; ++i)
+            data[i] = (spi_Instance*)(spi::RawPointer(cpp->at(i)));
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
+}
+
 int spi_Instance_Vector_item(
     const spi_Instance_Vector* v,
     int i,
@@ -417,6 +605,55 @@ int spi_Instance_Vector_size(
     return 0;
 }
 
+spi_Enum_Vector* spi_Enum_Vector_make(int N, int data[])
+{
+    SPI_C_LOCK_GUARD;
+    try
+    {
+        size_t uN = to_size_t(N);
+        std::vector<spi::Enum> out;
+        out.reserve(uN);
+        for (size_t i = 0; i < uN; ++i)
+        {
+            out.push_back(data[i]);
+        }
+        return (spi_Enum_Vector*)(new std::vector<spi::Enum>(out));
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return NULL;
+    }
+}
+
+int spi_Enum_Vector_data(spi_Enum_Vector* v, int N, int data[])
+{
+    SPI_C_LOCK_GUARD;
+    if (!v)
+    {
+        spi_Error_set_function(__FUNCTION__, "NULL pointer");
+        return -1;
+    }
+
+    try
+    {
+        auto cpp = (const std::vector<spi::Enum>*)(v);
+        size_t uN = to_size_t(N);
+        if (cpp->size() != uN)
+        {
+            spi_Error_set_function(__FUNCTION__, "Array size mismatch");
+            return -1;
+        }
+        for (size_t i = 0; i < uN; ++i)
+            data[i] = cpp->at(i).value;
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
+}
 
 int spi_Enum_Vector_item(
     const spi_Enum_Vector* v,

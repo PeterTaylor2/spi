@@ -310,16 +310,15 @@ namespace SPI
             int N);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int spi_Int_Vector_item(
-            IntPtr v,
-            int i,
-            out int item);
+        private static extern IntPtr spi_Int_Vector_make(
+            int N,
+            int[] data);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int spi_Int_Vector_set_item(
+        private static extern int spi_Int_Vector_data(
             IntPtr v,
-            int i,
-            int item);
+            int N,
+            int[] data);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern int spi_Int_Vector_size(
@@ -342,9 +341,9 @@ namespace SPI
 
             int[] array = new int[size];
 
-            for (int i = 0; i < size; ++i)
+            if (size > 0)
             {
-                if (spi_Int_Vector_item(v, i, out array[i]) != 0)
+                if (spi_Int_Vector_data(v, size, array) != 0)
                 {
                     throw ErrorToException();
                 }
@@ -355,25 +354,22 @@ namespace SPI
 
         public static PointerHandle IntVectorFromArray(int[]? array)
         {
-            int size = array is null ? 0 : array.Length;
-            IntPtr v = spi_Int_Vector_new(size);
+            IntPtr v;
+
+            if (array is null)
+            {
+                v = spi_Int_Vector_new(0);
+            }
+            else
+            {
+                int size = array.Length;
+                v = spi_Int_Vector_make(size, array);
+            }
             if (v == IntPtr.Zero)
             {
                 throw ErrorToException();
             }
             PointerHandle h = new PointerHandle(v, spi_Int_Vector_delete);
-
-            if (array is not null)
-            {
-                for (int i = 0; i < size; ++i)
-                {
-                    if (spi_Int_Vector_set_item(v, i, array[i]) != 0)
-                    {
-                        throw ErrorToException();
-                    }
-                }
-            }
-
             return h;
         }
 
@@ -385,16 +381,15 @@ namespace SPI
             int N);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int spi_Double_Vector_item(
-            IntPtr v,
-            int i,
-            out double item);
+        private static extern IntPtr spi_Double_Vector_make(
+            int N,
+            double[] data);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int spi_Double_Vector_set_item(
+        private static extern int spi_Double_Vector_data(
             IntPtr v,
-            int i,
-            double item);
+            int N,
+            double[] data);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern int spi_Double_Vector_size(
@@ -417,9 +412,9 @@ namespace SPI
 
             double[] array = new double[size];
 
-            for (int i = 0; i < size; ++i)
+            if (size > 0)
             {
-                if (spi_Double_Vector_item(v, i, out array[i]) != 0)
+                if (spi_Double_Vector_data(v, size, array) != 0)
                 {
                     throw ErrorToException();
                 }
@@ -430,25 +425,22 @@ namespace SPI
 
         public static PointerHandle DoubleVectorFromArray(double[]? array)
         {
-            int size = array is null ? 0 : array.Length;
-            IntPtr v = spi_Double_Vector_new(size);
+            IntPtr v;
+
+            if (array is null)
+            {
+                v = spi_Double_Vector_new(0);
+            }
+            else
+            {
+                int size = array.Length;
+                v = spi_Double_Vector_make(size, array);
+            }
             if (v == IntPtr.Zero)
             {
                 throw ErrorToException();
             }
             PointerHandle h = new PointerHandle(v, spi_Double_Vector_delete);
-
-            if (array is not null)
-            {
-                for (int i = 0; i < size; ++i)
-                {
-                    if (spi_Double_Vector_set_item(v, i, array[i]) != 0)
-                    {
-                        throw ErrorToException();
-                    }
-                }
-            }
-
             return h;
         }
 
@@ -460,16 +452,15 @@ namespace SPI
             int N);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int spi_Bool_Vector_item(
-            IntPtr v,
-            int i,
-            out bool item);
+        private static extern IntPtr spi_Bool_Vector_make(
+            int N,
+            bool[] data);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int spi_Bool_Vector_set_item(
+        private static extern int spi_Bool_Vector_data(
             IntPtr v,
-            int i,
-            bool item);
+            int N,
+            bool[] data);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern int spi_Bool_Vector_size(
@@ -492,9 +483,9 @@ namespace SPI
 
             bool[] array = new bool[size];
 
-            for (int i = 0; i < size; ++i)
+            if (size > 0)
             {
-                if (spi_Bool_Vector_item(v, i, out array[i]) != 0)
+                if (spi_Bool_Vector_data(v, size, array) != 0)
                 {
                     throw ErrorToException();
                 }
@@ -505,26 +496,22 @@ namespace SPI
 
         public static PointerHandle BoolVectorFromArray(bool[]? array)
         {
-            int size = array is null ? 0 : array.Length;
-            IntPtr v = spi_Bool_Vector_new(size);
+            IntPtr v;
+
+            if (array is null)
+            {
+                v = spi_Bool_Vector_new(0);
+            }
+            else
+            {
+                int size = array.Length;
+                v = spi_Bool_Vector_make(size, array);
+            }
             if (v == IntPtr.Zero)
             {
                 throw ErrorToException();
             }
             PointerHandle h = new PointerHandle(v, spi_Bool_Vector_delete);
-
-            if (array is not null)
-            {
-                for (int i = 0; i < size; ++i)
-                {
-                    if (spi_Bool_Vector_set_item(v, i, array[i]) != 0)
-                    {
-                        spi_Bool_Vector_delete(v);
-                        throw ErrorToException();
-                    }
-                }
-            }
-
             return h;
         }
 
@@ -785,16 +772,15 @@ namespace SPI
             out int size);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int spi_Instance_Vector_item(
-            IntPtr v,
-            int i,
-            out IntPtr item);
+        private static extern IntPtr spi_Instance_Vector_make(
+            int N,
+            IntPtr[] data);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int spi_Instance_Vector_set_item(
+        private static extern int spi_Instance_Vector_data(
             IntPtr v,
-            int i,
-            IntPtr item);
+            int N,
+            IntPtr[] data);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern int spi_Instance_Vector_size(
@@ -802,16 +788,15 @@ namespace SPI
             out int size);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int spi_Enum_Vector_item(
-            IntPtr v,
-            int i,
-            out int item);
+        private static extern IntPtr spi_Enum_Vector_make(
+            int N,
+            int[] data);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int spi_Enum_Vector_set_item(
+        private static extern int spi_Enum_Vector_data(
             IntPtr v,
-            int i,
-            int item);
+            int N,
+            int[] data);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern int spi_Enum_Vector_size(
