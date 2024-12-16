@@ -605,19 +605,25 @@ int spi_Instance_Vector_size(
     return 0;
 }
 
-spi_Enum_Vector* spi_Enum_Vector_make(int N, int data[])
+int spi_Enum_Vector_set_data(spi_Enum_Vector* v, int N, int data[])
 {
     SPI_C_LOCK_GUARD;
     try
     {
         size_t uN = to_size_t(N);
-        std::vector<spi::Enum> out;
-        out.reserve(uN);
+        auto cpp = (std::vector<spi::Enum>*)(v);
+
+        if (cpp->size() != uN)
+        {
+            spi_Error_set_function(__FUNCTION__, "Array size mismatch");
+            return -1;
+        }
+
         for (size_t i = 0; i < uN; ++i)
         {
-            out.push_back(data[i]);
+            cpp->at(i) = data[i];
         }
-        return (spi_Enum_Vector*)(new std::vector<spi::Enum>(out));
+        return 0;
     }
     catch (std::exception& e)
     {

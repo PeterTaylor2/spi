@@ -188,7 +188,8 @@ extern "C"
         int* size /*(O)*/);
 
     SPI_C_IMPORT
-    spi_Enum_Vector* spi_Enum_Vector_make(
+    int spi_Enum_Vector_set_data(
+        spi_Enum_Vector* v,
         int N,
         int data[]);
 
