@@ -61,13 +61,19 @@ extern "C"
     spi_Int_Vector* spi_Int_Vector_new(
         int N);
 
-    SPI_C_IMPORT
+    /*SPI_C_IMPORT*/
     spi_Int_Vector* spi_Int_Vector_make(
         int N,
         int data[]);
 
     SPI_C_IMPORT
-    int spi_Int_Vector_data(
+    int spi_Int_Vector_get_data(
+        const spi_Int_Vector* v,
+        int N,
+        int data[]);
+
+    SPI_C_IMPORT
+    int spi_Int_Vector_set_data(
         spi_Int_Vector* v,
         int N,
         int data[]);
@@ -96,13 +102,19 @@ extern "C"
     spi_Double_Vector* spi_Double_Vector_new(
         int N);
 
-    SPI_C_IMPORT
+    /*SPI_C_IMPORT*/
     spi_Double_Vector* spi_Double_Vector_make(
         int N,
         double data[]);
 
     SPI_C_IMPORT
-    int spi_Double_Vector_data(
+    int spi_Double_Vector_get_data(
+        const spi_Double_Vector* v,
+        int N,
+        double data[]);
+
+    SPI_C_IMPORT
+    int spi_Double_Vector_set_data(
         spi_Double_Vector* v,
         int N,
         double data[]);
@@ -131,13 +143,19 @@ extern "C"
     spi_Bool_Vector* spi_Bool_Vector_new(
         int N);
 
-    SPI_C_IMPORT
+    /*SPI_C_IMPORT*/
     spi_Bool_Vector* spi_Bool_Vector_make(
         int N,
         spi_Bool data[]);
 
     SPI_C_IMPORT
-    int spi_Bool_Vector_data(
+    int spi_Bool_Vector_get_data(
+        const spi_Bool_Vector* v,
+        int N,
+        spi_Bool data[]);
+
+    SPI_C_IMPORT
+    int spi_Bool_Vector_set_data(
         spi_Bool_Vector* v,
         int N,
         spi_Bool data[]);
@@ -159,13 +177,19 @@ extern "C"
         const spi_Bool_Vector* v,
         int* size /*(O)*/);
 
-    SPI_C_IMPORT
+    /*SPI_C_IMPORT*/
     spi_Instance_Vector* spi_Instance_Vector_make(
         int N,
         spi_Instance* data[]);
 
     SPI_C_IMPORT
-    int spi_Instance_Vector_data(
+    int spi_Instance_Vector_get_data(
+        spi_Instance_Vector* v,
+        int N,
+        spi_Instance* data[]);
+
+    SPI_C_IMPORT
+    int spi_Instance_Vector_set_data(
         spi_Instance_Vector* v,
         int N,
         spi_Instance* data[]);
@@ -194,18 +218,18 @@ extern "C"
         int data[]);
 
     SPI_C_IMPORT
-    int spi_Enum_Vector_data(
+    int spi_Enum_Vector_get_data(
         spi_Enum_Vector* v,
         int N,
         int data[]);
 
-    SPI_C_IMPORT
+    /*SPI_C_IMPORT*/
     int spi_Enum_Vector_item(
         const spi_Enum_Vector* v,
         int i,
         int* item /*(O)*/);
 
-    SPI_C_IMPORT
+    /*SPI_C_IMPORT*/
     int spi_Enum_Vector_set_item(
         spi_Enum_Vector* v,
         int i,

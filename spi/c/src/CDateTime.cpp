@@ -101,6 +101,66 @@ spi_DateTime_Vector* spi_DateTime_Vector_new(int N)
     }
 }
 
+int spi_DateTime_Vector_get_data(const spi_DateTime_Vector* v, int N, spi_DateTime data[])
+{
+    SPI_C_LOCK_GUARD;
+    if (!v)
+    {
+        spi_Error_set_function(__FUNCTION__, "NULL pointer");
+        return -1;
+    }
+
+    try
+    {
+        auto cpp = (const std::vector<spi::DateTime>*)(v);
+        size_t uN = to_size_t(N);
+        if (uN != cpp->size())
+        {
+            spi_Error_set_function(__FUNCTION__, "Array size mismatch");
+            return -1;
+        }
+        for (int i = 0; i < N; ++i)
+            data[i] = cpp->at(i);
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
+    return 0;
+}
+
+int spi_DateTime_Vector_set_data(spi_DateTime_Vector* v, int N, spi_DateTime data[])
+{
+    SPI_C_LOCK_GUARD;
+    if (!v)
+    {
+        spi_Error_set_function(__FUNCTION__, "NULL pointer");
+        return -1;
+    }
+
+    try
+    {
+        auto cpp = (std::vector<spi::DateTime>*)(v);
+        size_t uN = to_size_t(N);
+        if (uN != cpp->size())
+        {
+            spi_Error_set_function(__FUNCTION__, "Array size mismatch");
+            return -1;
+        }
+        for (int i = 0; i < N; ++i)
+            cpp->at(i) = data[i];
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
+    return 0;
+}
+
 spi_DateTime_Matrix* spi_DateTime_Matrix_new(int nr, int nc)
 {
     SPI_C_LOCK_GUARD;

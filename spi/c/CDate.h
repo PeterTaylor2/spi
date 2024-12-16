@@ -59,12 +59,24 @@ extern "C"
         int N);
 
     SPI_C_IMPORT
+    int spi_Date_Vector_get_data(
+        const spi_Date_Vector* v,
+        int N,
+        spi_Date data[]);
+
+    SPI_C_IMPORT
+    int spi_Date_Vector_set_data(
+        spi_Date_Vector* v,
+        int N,
+        spi_Date data[]);
+
+    /*SPI_C_IMPORT*/
     int spi_Date_Vector_item(
         const spi_Date_Vector* v,
         int i,
         spi_Date* item /*(O)*/);
 
-    SPI_C_IMPORT
+    /*SPI_C_IMPORT*/
     int spi_Date_Vector_set_item(
         spi_Date_Vector* v,
         int i,
