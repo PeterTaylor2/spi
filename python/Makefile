@@ -107,4 +107,7 @@ bin: ../bin/$(G_ABI)/py$(G_PY_VERSION)/$(notdir $(I_TARGET))
 ../bin/$(G_ABI)/py$(G_PY_VERSION)/$(notdir $(I_TARGET)): $(I_TARGET)
 	@mkdir -p ../bin/$(G_ABI)/py$(G_PY_VERSION)
 	cp -f $(I_TARGET) ../bin/$(G_ABI)/py$(G_PY_VERSION)
+ifeq ($(G_PLATFORM),win32)
+	cp -f $(basename $(I_TARGET)).pdb ../bin/$(G_ABI)/py$(G_PY_VERSION)
+endif
 
