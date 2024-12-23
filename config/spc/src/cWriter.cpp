@@ -2153,6 +2153,7 @@ std::string CDataType::c_to_cpp(int arrayDim, const std::string& name) const
         case spdoc::PublicType::CLASS:
         case spdoc::PublicType::OBJECT:
         case spdoc::PublicType::VARIANT:
+        case spdoc::PublicType::MAP:
             return spi_util::StringFormat("*(const std::vector< %s >*)(%s)",
                 cppType.c_str(), name.c_str());
         default:
@@ -2178,6 +2179,7 @@ std::string CDataType::c_to_cpp(int arrayDim, const std::string& name) const
         case spdoc::PublicType::CLASS:
         case spdoc::PublicType::OBJECT:
         case spdoc::PublicType::VARIANT:
+        case spdoc::PublicType::MAP:
             return spi_util::StringFormat("*(const spi::MatrixData< %s >*)(%s)",
                 cppType.c_str(), name.c_str());
         default:
@@ -2255,6 +2257,7 @@ std::string CDataType::cpp_to_c(int arrayDim, const std::string & name) const
         case spdoc::PublicType::CLASS:
         case spdoc::PublicType::OBJECT:
         case spdoc::PublicType::VARIANT:
+        case spdoc::PublicType::MAP:
             return spi_util::StringFormat("(%s)(new %s(%s))",
                 cType(1).c_str(), cppType(1).c_str(), name.c_str());
         default:
@@ -2280,6 +2283,7 @@ std::string CDataType::cpp_to_c(int arrayDim, const std::string & name) const
         case spdoc::PublicType::CLASS:
         case spdoc::PublicType::OBJECT:
         case spdoc::PublicType::VARIANT:
+        case spdoc::PublicType::MAP:
             return spi_util::StringFormat("(%s)(new %s(%s))",
                 cType(2).c_str(), cppType(2).c_str(), name.c_str());
         default:
