@@ -671,16 +671,16 @@ namespace SPI
             int N);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int spi_String_Vector_item(
+        private static extern int spi_String_Vector_get_data(
             IntPtr v,
-            int i,
-            out string item);
+            int N,
+            string[] item);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int spi_String_Vector_set_item(
+        private static extern int spi_String_Vector_set_data(
             IntPtr v,
-            int i,
-            string item);
+            int N,
+            string[] item);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern int spi_String_Vector_size(
@@ -702,15 +702,10 @@ namespace SPI
             }
 
             string[] array = new string[size];
-
-            for (int i = 0; i < size; ++i)
+            if (spi_String_Vector_get_data(v, size, array) != 0)
             {
-                if (spi_String_Vector_item(v, i, out array[i]) != 0)
-                {
-                    throw ErrorToException();
-                }
+                throw ErrorToException();
             }
-
             return array;
         }
 
@@ -722,11 +717,12 @@ namespace SPI
             {
                 throw ErrorToException();
             }
+
             PointerHandle h = new PointerHandle(v, spi_String_Vector_delete);
 
-            for (int i = 0; i < size; ++i)
+            if (size > 0)
             {
-                if (spi_String_Vector_set_item(v, i, array[i]) != 0)
+                if (spi_String_Vector_set_data(v, size, array) != 0)
                 {
                     throw ErrorToException();
                 }
