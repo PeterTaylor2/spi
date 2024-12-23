@@ -56,6 +56,18 @@ extern "C"
         int N);
 
     SPI_C_IMPORT
+    int spi_String_Vector_get_data(
+        const spi_String_Vector* v,
+        int N,
+        char* data[]);
+
+    SPI_C_IMPORT
+    int spi_String_Vector_set_data(
+        spi_String_Vector* v,
+        int N,
+        char* data[]);
+
+    SPI_C_IMPORT
     int spi_String_Vector_item(
         const spi_String_Vector* v,
         int i,
