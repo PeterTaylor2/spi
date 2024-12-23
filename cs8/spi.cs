@@ -1763,8 +1763,9 @@ namespace SPI
             {
                 if (self != IntPtr.Zero)
                 {
-                    spi_Object_delete(self);
+                    IntPtr tmp = self;
                     self = IntPtr.Zero;
+                    spi_Object_delete(tmp);
                 }
             }
 
