@@ -194,13 +194,13 @@ extern "C"
         int N,
         spi_Instance* data[]);
 
-    /*SPI_C_IMPORT*/
+    SPI_C_IMPORT
     int spi_Instance_Vector_item(
         const spi_Instance_Vector* v,
         int i,
         spi_Instance** item /*(O)*/);
 
-    /*SPI_C_IMPORT*/
+    SPI_C_IMPORT
     int spi_Instance_Vector_set_item(
         spi_Instance_Vector* v,
         int i,
