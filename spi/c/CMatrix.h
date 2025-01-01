@@ -34,16 +34,6 @@
 #include <stddef.h>
 #include "CBool.h"
 
-#if 0
-#define DECLARE_MATRIX_METHODS(T, Import)\
-typedef struct T##_Matrix T##_Matrix;\
-Import void T##_Matrix_delete(T##_Matrix* m);\
-Import T##_Matrix* T##_Matrix_new(int nr, int nc);\
-Import int T##_Matrix_item(T##_Matrix* m, int i, int j, T** item);\
-Import int T##_Matrix_set_item(T##_Matrix* m, int i, int j, T* item);\
-Import int T##_Matrix_size(T##_Matrix* m, int* nr, int* nc)
-#endif
-
 #define DECLARE_MATRIX_METHODS(T, Import)\
 typedef struct T##_Matrix T##_Matrix;\
 Import void T##_Matrix_delete(T##_Matrix* m);\
