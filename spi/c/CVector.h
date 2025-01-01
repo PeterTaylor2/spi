@@ -126,23 +126,6 @@ extern "C"
         const spi_Bool_Vector* v,
         int* size /*(O)*/);
 
-    /*SPI_C_IMPORT*/
-    spi_Instance_Vector* spi_Instance_Vector_make(
-        int N,
-        spi_Instance* data[]);
-
-    /*SPI_C_IMPORT*/
-    int spi_Instance_Vector_get_data(
-        spi_Instance_Vector* v,
-        int N,
-        spi_Instance* data[]);
-
-    /*SPI_C_IMPORT*/
-    int spi_Instance_Vector_set_data(
-        spi_Instance_Vector* v,
-        int N,
-        spi_Instance* data[]);
-
     SPI_C_IMPORT
     int spi_Instance_Vector_item(
         const spi_Instance_Vector* v,
