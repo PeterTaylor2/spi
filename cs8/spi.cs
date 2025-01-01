@@ -822,16 +822,16 @@ namespace SPI
             int nr, int nc);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int spi_Int_Matrix_item(
+        private static extern int spi_Int_Matrix_get_data(
             IntPtr m,
-            int r, int c,
-            out int item);
+            int nr, int nc,
+            int[,] data);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int spi_Int_Matrix_set_item(
+        private static extern int spi_Int_Matrix_set_data(
             IntPtr m,
-            int r, int c,
-            int item);
+            int nr, int nc,
+            int[,] data);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern int spi_Int_Matrix_size(
@@ -855,15 +855,9 @@ namespace SPI
 
             int[,] array = new int[nr, nc];
 
-            for (int i = 0; i < nr; ++i)
+            if (spi_Int_Matrix_get_data(m, nr, nc, array) != 0)
             {
-                for (int j = 0; j < nc; ++j)
-                {
-                    if (spi_Int_Matrix_item(m, i, j, out array[i, j]) != 0)
-                    {
-                        throw ErrorToException();
-                    }
-                }
+                throw ErrorToException();
             }
             return array;
         }
@@ -882,15 +876,9 @@ namespace SPI
 
             if (array is not null)
             {
-                for (int i = 0; i < nr; ++i)
+                if (spi_Int_Matrix_set_data(m, nr, nc, array) != 0)
                 {
-                    for (int j = 0; j < nc; ++j)
-                    {
-                        if (spi_Int_Matrix_set_item(m, i, j, array[i, j]) != 0)
-                        {
-                            throw ErrorToException();
-                        }
-                    }
+                    throw ErrorToException();
                 }
             }
 
@@ -905,16 +893,16 @@ namespace SPI
             int nr, int nc);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int spi_Double_Matrix_item(
+        private static extern int spi_Double_Matrix_get_data(
             IntPtr m,
-            int r, int c,
-            out double item);
+            int nr, int nc,
+            double[,] data);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int spi_Double_Matrix_set_item(
+        private static extern int spi_Double_Matrix_set_data(
             IntPtr m,
-            int r, int c,
-            double item);
+            int nr, int nc,
+            double[,] data);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern int spi_Double_Matrix_size(
@@ -938,15 +926,9 @@ namespace SPI
 
             double[,] array = new double[nr, nc];
 
-            for (int i = 0; i < nr; ++i)
+            if (spi_Double_Matrix_get_data(m, nr, nc, array) != 0)
             {
-                for (int j = 0; j < nc; ++j)
-                {
-                    if (spi_Double_Matrix_item(m, i, j, out array[i, j]) != 0)
-                    {
-                        throw ErrorToException();
-                    }
-                }
+                throw ErrorToException();
             }
             return array;
         }
@@ -965,15 +947,9 @@ namespace SPI
 
             if (array is not null)
             {
-                for (int i = 0; i < nr; ++i)
+                if (spi_Double_Matrix_set_data(m, nr, nc, array) != 0)
                 {
-                    for (int j = 0; j < nc; ++j)
-                    {
-                        if (spi_Double_Matrix_set_item(m, i, j, array[i, j]) != 0)
-                        {
-                            throw ErrorToException();
-                        }
-                    }
+                    throw ErrorToException();
                 }
             }
 
@@ -988,16 +964,16 @@ namespace SPI
             int nr, int nc);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int spi_Bool_Matrix_item(
+        private static extern int spi_Bool_Matrix_get_data(
             IntPtr m,
-            int r, int c,
-            out int item);
+            int nr, int nc,
+            bool[,] data);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int spi_Bool_Matrix_set_item(
+        private static extern int spi_Bool_Matrix_set_data(
             IntPtr m,
-            int r, int c,
-            int item);
+            int nr, int nc,
+            bool[,] data);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern int spi_Bool_Matrix_size(
@@ -1021,17 +997,11 @@ namespace SPI
 
             bool[,] array = new bool[nr, nc];
 
-            for (int i = 0; i < nr; ++i)
+            if (spi_Bool_Matrix_get_data(m, nr, nc, array) != 0)
             {
-                for (int j = 0; j < nc; ++j)
-                {
-                    if (spi_Bool_Matrix_item(m, i, j, out int b) != 0)
-                    {
-                        throw ErrorToException();
-                    }
-                    array[i, j] = b != 0;
-                }
+                throw ErrorToException();
             }
+
             return array;
         }
 
@@ -1049,15 +1019,9 @@ namespace SPI
 
             if (array is not null)
             {
-                for (int i = 0; i < nr; ++i)
+                if (spi_Bool_Matrix_set_data(m, nr, nc, array) != 0)
                 {
-                    for (int j = 0; j < nc; ++j)
-                    {
-                        if (spi_Bool_Matrix_set_item(m, i, j, array[i, j] ? 1 : 0) != 0)
-                        {
-                            throw ErrorToException();
-                        }
-                    }
+                    throw ErrorToException();
                 }
             }
 
@@ -1072,16 +1036,16 @@ namespace SPI
             int nr, int nc);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int spi_Date_Matrix_item(
+        private static extern int spi_Date_Matrix_get_data(
             IntPtr m,
-            int r, int c,
-            out int item);
+            int nr, int nc,
+            int[,] data);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int spi_Date_Matrix_set_item(
+        private static extern int spi_Date_Matrix_set_data(
             IntPtr m,
-            int r, int c,
-            int item);
+            int nr, int nc,
+            int[,] data);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern int spi_Date_Matrix_size(
@@ -1105,16 +1069,19 @@ namespace SPI
             }
 
             System.DateTime[,] array = new System.DateTime[nr, nc];
-
-            for (int i = 0; i < nr; ++i)
+            if (nr > 0 && nc > 0)
             {
-                for (int j = 0; j < nc; ++j)
+                int[,] data = new int[nr, nc];
+                if (spi_Date_Matrix_get_data(m, nr, nc, data) != 0)
                 {
-                    if (spi_Date_Matrix_item(m, i, j, out int cdt) != 0)
+                    throw ErrorToException();
+                }
+                for (int i = 0; i < nr; ++i)
+                {
+                    for (int j = 0; j < nc; ++j)
                     {
-                        throw ErrorToException();
+                        array[i, j] = spi.DateFromCDate(data[i, j]);
                     }
-                    array[i, j] = spi.DateFromCDate(cdt);
                 }
             }
             return array;
@@ -1134,15 +1101,17 @@ namespace SPI
 
             if (array is not null)
             {
+                int[,] data = new int[nr, nc];
                 for (int i = 0; i < nr; ++i)
                 {
                     for (int j = 0; j < nc; ++j)
                     {
-                        if (spi_Date_Matrix_set_item(m, i, j, spi.DateToCDate(array[i, j])) != 0)
-                        {
-                            throw ErrorToException();
-                        }
+                        data[i, j] = spi.DateToCDate(array[i, j]);
                     }
+                }
+                if (spi_Date_Matrix_set_data(m, nr, nc, data) != 0)
+                {
+                    throw ErrorToException();
                 }
             }
 
@@ -1157,16 +1126,16 @@ namespace SPI
             int nr, int nc);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int spi_DateTime_Matrix_item(
+        private static extern int spi_DateTime_Matrix_get_data(
             IntPtr m,
-            int r, int c,
-            out double item);
+            int nr, int nc,
+            double[,] data);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int spi_DateTime_Matrix_set_item(
+        private static extern int spi_DateTime_Matrix_set_data(
             IntPtr m,
-            int r, int c,
-            double item);
+            int nr, int nc,
+            double[,] data);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern int spi_DateTime_Matrix_size(
@@ -1189,16 +1158,19 @@ namespace SPI
             }
 
             System.DateTime[,] array = new System.DateTime[nr, nc];
-
-            for (int i = 0; i < nr; ++i)
+            if (nr > 0 && nc > 0)
             {
-                for (int j = 0; j < nc; ++j)
+                double[,] data = new double[nr, nc];
+                if (spi_DateTime_Matrix_get_data(m, nr, nc, data) != 0)
                 {
-                    if (spi_DateTime_Matrix_item(m, i, j, out double cdt) != 0)
+                    throw ErrorToException();
+                }
+                for (int i = 0; i < nr; ++i)
+                {
+                    for (int j = 0; j < nc; ++j)
                     {
-                        throw ErrorToException();
+                        array[i, j] = spi.DateTimeFromCDateTime(data[i, j]);
                     }
-                    array[i, j] = spi.DateTimeFromCDateTime(cdt);
                 }
             }
             return array;
@@ -1218,15 +1190,17 @@ namespace SPI
 
             if (array is not null)
             {
+                double[,] data = new double[nr, nc];
                 for (int i = 0; i < nr; ++i)
                 {
                     for (int j = 0; j < nc; ++j)
                     {
-                        if (spi_DateTime_Matrix_set_item(m, i, j, spi.DateTimeToCDateTime(array[i, j])) != 0)
-                        {
-                            throw ErrorToException();
-                        }
+                        data[i, j] = spi.DateTimeToCDateTime(array[i, j]);
                     }
+                }
+                if (spi_DateTime_Matrix_set_data(m, nr, nc, data) != 0)
+                {
+                    throw ErrorToException();
                 }
             }
 
@@ -1241,16 +1215,16 @@ namespace SPI
             int nr, int nc);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int spi_String_Matrix_item(
+        private static extern int spi_String_Matrix_get_data(
             IntPtr m,
-            int r, int c,
-            out string item);
+            int nr, int nc,
+            string[,] data);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int spi_String_Matrix_set_item(
+        private static extern int spi_String_Matrix_set_data(
             IntPtr m,
-            int r, int c,
-            string item);
+            int nr, int nc,
+            string[,] data);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern int spi_String_Matrix_size(
@@ -1274,15 +1248,9 @@ namespace SPI
 
             string[,] array = new string[nr, nc];
 
-            for (int i = 0; i < nr; ++i)
+            if (spi_String_Matrix_get_data(m, nr, nc, array) != 0)
             {
-                for (int j = 0; j < nc; ++j)
-                {
-                    if (spi_String_Matrix_item(m, i, j, out array[i, j]) != 0)
-                    {
-                        throw ErrorToException();
-                    }
-                }
+                throw ErrorToException();
             }
             return array;
         }
@@ -1301,15 +1269,9 @@ namespace SPI
 
             if (array is not null)
             {
-                for (int i = 0; i < nr; ++i)
+                if (spi_String_Matrix_set_data(m, nr, nc, array) != 0)
                 {
-                    for (int j = 0; j < nc; ++j)
-                    {
-                        if (spi_String_Matrix_set_item(m, i, j, array[i, j]) != 0)
-                        {
-                            throw ErrorToException();
-                        }
-                    }
+                    throw ErrorToException();
                 }
             }
 

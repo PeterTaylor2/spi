@@ -176,6 +176,78 @@ spi_DateTime_Matrix* spi_DateTime_Matrix_new(int nr, int nc)
     }
 }
 
+int spi_DateTime_Matrix_get_data(const spi_DateTime_Matrix* m, int nr, int nc, spi_DateTime data[])
+{
+    SPI_C_LOCK_GUARD;
+    if (!m)
+    {
+        spi_Error_set_function(__FUNCTION__, "NULL pointer");
+        return -1;
+    }
+
+    try
+    {
+        auto cpp = (const spi::MatrixData<spi::DateTime>*)(m);
+        size_t unr = to_size_t(nr);
+        size_t unc = to_size_t(nc);
+        if (cpp->Rows() != unr || cpp->Cols() != unc)
+        {
+            spi_Error_set_function(__FUNCTION__, "Matrix size mismatch");
+            return -1;
+        }
+
+        // we cannot bulk copy spi::DateTime because spi::DateTime is stored
+        // as int/int whereas spi_DateTime is double
+        size_t N = unr * unc;
+        const spi::DateTime* p = cpp->DataPointer();
+        for (size_t i = 0; i < N; ++i)
+            data[i] = p[i]; // spi::DateTime automatically coerces to double
+
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
+}
+
+int spi_DateTime_Matrix_set_data(spi_DateTime_Matrix* m, int nr, int nc, spi_DateTime data[])
+{
+    SPI_C_LOCK_GUARD;
+    if (!m)
+    {
+        spi_Error_set_function(__FUNCTION__, "NULL pointer");
+        return -1;
+    }
+
+    try
+    {
+        auto cpp = (spi::MatrixData<spi::DateTime>*)(m);
+        size_t unr = to_size_t(nr);
+        size_t unc = to_size_t(nc);
+        if (cpp->Rows() != unr || cpp->Cols() != unc)
+        {
+            spi_Error_set_function(__FUNCTION__, "Matrix size mismatch");
+            return -1;
+        }
+
+        // we cannot bulk copy spi::DateTime because spi::DateTime is stored
+        // as int/int whereas spi_DateTime is double
+        size_t N = unr * unc;
+        spi::DateTime* p = cpp->DataPointer();
+        for (size_t i = 0; i < N; ++i)
+            p[i] = data[i]; // spi::DateTime automatically coerces from double
+
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
+}
+
 int spi_DateTime_Vector_item(
     const spi_DateTime_Vector* v,
     int ii,

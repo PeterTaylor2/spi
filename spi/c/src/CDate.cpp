@@ -252,6 +252,81 @@ int spi_Date_Vector_size(
     return 0;
 }
 
+int spi_Date_Matrix_get_data(
+    const spi_Date_Matrix* m,
+    int nr,
+    int nc,
+    spi_Date data[])
+{
+    SPI_C_LOCK_GUARD;
+    if (!m)
+    {
+        spi_Error_set_function(__FUNCTION__, "NULL pointer");
+        return -1;
+    }
+
+    try
+    {
+        auto cpp = (const spi::MatrixData<spi::Date>*)(m);
+        size_t unr = to_size_t(nr);
+        size_t unc = to_size_t(nc);
+        if (cpp->Rows() != unr || cpp->Cols() != unc)
+        {
+            spi_Error_set_function(__FUNCTION__, "Matrix size mismatch");
+            return -1;
+        }
+
+        // because spi::Date has the same size and content as spi_Date
+        // we can bulk copy
+        memcpy(&data[0], cpp->DataPointer(), unr * unc * sizeof(int));
+
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
+
+}
+
+int spi_Date_Matrix_set_data(
+    spi_Date_Matrix* m,
+    int nr,
+    int nc,
+    spi_Date data[])
+{
+    SPI_C_LOCK_GUARD;
+    if (!m)
+    {
+        spi_Error_set_function(__FUNCTION__, "NULL pointer");
+        return -1;
+    }
+
+    try
+    {
+        auto cpp = (spi::MatrixData<spi::Date>*)(m);
+        size_t unr = to_size_t(nr);
+        size_t unc = to_size_t(nc);
+        if (cpp->Rows() != unr || cpp->Cols() != unc)
+        {
+            spi_Error_set_function(__FUNCTION__, "Matrix size mismatch");
+            return -1;
+        }
+
+        // because spi::Date has the same size and content as spi_Date
+        // we can bulk copy
+        memcpy(cpp->DataPointer(), &data[0], unr * unc * sizeof(int));
+
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
+}
+
 int spi_Date_Matrix_item(
     const spi_Date_Matrix* m,
     int ir, int ic,

@@ -56,6 +56,69 @@ spi_Int_Matrix* spi_Int_Matrix_new(int nr, int nc)
     }
 }
 
+int spi_Int_Matrix_get_data(const spi_Int_Matrix* m, int nr, int nc, int data[])
+{
+    SPI_C_LOCK_GUARD;
+    if (!m)
+    {
+        spi_Error_set_function(__FUNCTION__, "NULL pointer");
+        return -1;
+    }
+
+    try
+    {
+        auto cpp = (const spi::MatrixData<int>*)(m);
+        size_t unr = to_size_t(nr);
+        size_t unc = to_size_t(nc);
+        if (cpp->Rows() != unr || cpp->Cols() != unc)
+        {
+            spi_Error_set_function(__FUNCTION__, "Matrix size mismatch");
+            return -1;
+        }
+
+        // because int is plain old data we can do a bulk copy
+        memcpy(&data[0], cpp->DataPointer(), unr * unc * sizeof(int));
+
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
+}
+
+int spi_Int_Matrix_set_data(spi_Int_Matrix* m, int nr, int nc, int data[])
+{
+    SPI_C_LOCK_GUARD;
+    if (!m)
+    {
+        spi_Error_set_function(__FUNCTION__, "NULL pointer");
+        return -1;
+    }
+
+    try
+    {
+        auto cpp = (spi::MatrixData<int>*)(m);
+        size_t unr = to_size_t(nr);
+        size_t unc = to_size_t(nc);
+        if (cpp->Rows() != unr || cpp->Cols() != unc)
+        {
+            spi_Error_set_function(__FUNCTION__, "Matrix size mismatch");
+            return -1;
+        }
+
+        // because int is plain old data we can do a bulk copy
+        memcpy(cpp->DataPointer(), &data[0], unr * unc * sizeof(int));
+
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
+}
 
 int spi_Int_Matrix_item(
     const spi_Int_Matrix* m,
@@ -183,6 +246,72 @@ spi_Double_Matrix* spi_Double_Matrix_new(int nr, int nc)
     }
 }
 
+
+
+int spi_Double_Matrix_get_data(const spi_Double_Matrix* m, int nr, int nc, double data[])
+{
+    SPI_C_LOCK_GUARD;
+    if (!m)
+    {
+        spi_Error_set_function(__FUNCTION__, "NULL pointer");
+        return -1;
+    }
+
+    try
+    {
+        auto cpp = (const spi::MatrixData<double>*)(m);
+        size_t unr = to_size_t(nr);
+        size_t unc = to_size_t(nc);
+        if (cpp->Rows() != unr || cpp->Cols() != unc)
+        {
+            spi_Error_set_function(__FUNCTION__, "Matrix size mismatch");
+            return -1;
+        }
+
+        // because double is plain old data we can do a bulk copy
+        memcpy(&data[0], cpp->DataPointer(), unr * unc * sizeof(double));
+
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
+}
+
+int spi_Double_Matrix_set_data(spi_Double_Matrix* m, int nr, int nc, double data[])
+{
+    SPI_C_LOCK_GUARD;
+    if (!m)
+    {
+        spi_Error_set_function(__FUNCTION__, "NULL pointer");
+        return -1;
+    }
+
+    try
+    {
+        auto cpp = (spi::MatrixData<double>*)(m);
+        size_t unr = to_size_t(nr);
+        size_t unc = to_size_t(nc);
+        if (cpp->Rows() != unr || cpp->Cols() != unc)
+        {
+            spi_Error_set_function(__FUNCTION__, "Matrix size mismatch");
+            return -1;
+        }
+
+        // because double is plain old data we can do this bulk copy
+
+        memcpy(cpp->DataPointer(), &data[0], unr * unc * sizeof(double));
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
+}
+
 int spi_Double_Matrix_item(
     const spi_Double_Matrix* m,
     int ir, int ic,
@@ -306,6 +435,86 @@ spi_Bool_Matrix* spi_Bool_Matrix_new(int nr, int nc)
     {
         spi_Error_set_function(__FUNCTION__, e.what());
         return NULL;
+    }
+}
+
+int spi_Bool_Matrix_get_data(const spi_Bool_Matrix* m, int nr, int nc, spi_Bool data[])
+{
+    SPI_C_LOCK_GUARD;
+    if (!m)
+    {
+        spi_Error_set_function(__FUNCTION__, "NULL pointer");
+        return -1;
+    }
+
+    try
+    {
+        auto cpp = (const spi::MatrixData<bool>*)(m);
+        size_t unr = to_size_t(nr);
+        size_t unc = to_size_t(nc);
+        if (cpp->Rows() != unr || cpp->Cols() != unc)
+        {
+            spi_Error_set_function(__FUNCTION__, "Matrix size mismatch");
+            return -1;
+        }
+
+        // bool and spi_Bool are not the same so we need to copy one at a time
+        size_t k = 0;
+        for (size_t i = 0; i < unr; ++i)
+        {
+            for (size_t j = 0; j < unc; ++j)
+            {
+                data[k] = cpp->at(i, j) ? SPI_TRUE : SPI_FALSE;
+                ++k;
+            }
+        }
+
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
+}
+
+int spi_Bool_Matrix_set_data(spi_Bool_Matrix* m, int nr, int nc, spi_Bool data[])
+{
+    SPI_C_LOCK_GUARD;
+    if (!m)
+    {
+        spi_Error_set_function(__FUNCTION__, "NULL pointer");
+        return -1;
+    }
+
+    try
+    {
+        auto cpp = (spi::MatrixData<bool>*)(m);
+        size_t unr = to_size_t(nr);
+        size_t unc = to_size_t(nc);
+        if (cpp->Rows() != unr || cpp->Cols() != unc)
+        {
+            spi_Error_set_function(__FUNCTION__, "Matrix size mismatch");
+            return -1;
+        }
+
+        // bool and spi_Bool are not the same so we need to copy one at a time
+        size_t k = 0;
+        for (size_t i = 0; i < unr; ++i)
+        {
+            for (size_t j = 0; j < unc; ++j)
+            {
+                cpp->at(i, j) = data[k] != SPI_FALSE;
+                ++k;
+            }
+        }
+
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
     }
 }
 
@@ -487,6 +696,90 @@ int spi_Instance_Matrix_size(
         return -1;
     }
 }
+
+int spi_Enum_Matrix_get_data(const spi_Enum_Matrix* m, int nr, int nc, int data[])
+{
+    SPI_C_LOCK_GUARD;
+    if (!m)
+    {
+        spi_Error_set_function(__FUNCTION__, "NULL pointer");
+        return -1;
+    }
+
+    try
+    {
+        auto cpp = (const spi::MatrixData<spi::Enum>*)(m);
+        size_t unr = to_size_t(nr);
+        size_t unc = to_size_t(nc);
+        if (cpp->Rows() != unr || cpp->Cols() != unc)
+        {
+            spi_Error_set_function(__FUNCTION__, "Matrix size mismatch");
+            return -1;
+        }
+
+        // int and spi_Enum are not the same so we need to copy one at a time
+        // actually they might be sufficiently similar to allow a block copy
+        size_t k = 0;
+        for (size_t i = 0; i < unr; ++i)
+        {
+            for (size_t j = 0; j < unc; ++j)
+            {
+                spi::Enum e = cpp->at(i, j);
+                data[k] = e.value;
+                ++k;
+            }
+        }
+
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
+}
+
+int spi_Enum_Matrix_set_data(spi_Enum_Matrix* m, int nr, int nc, int data[])
+{
+    SPI_C_LOCK_GUARD;
+    if (!m)
+    {
+        spi_Error_set_function(__FUNCTION__, "NULL pointer");
+        return -1;
+    }
+
+    try
+    {
+        auto cpp = (spi::MatrixData<spi::Enum>*)(m);
+        size_t unr = to_size_t(nr);
+        size_t unc = to_size_t(nc);
+        if (cpp->Rows() != unr || cpp->Cols() != unc)
+        {
+            spi_Error_set_function(__FUNCTION__, "Matrix size mismatch");
+            return -1;
+        }
+
+        // int and spi_Enum are not the same so we need to copy one at a time
+        // actually they might be sufficiently similar to allow a block copy
+        size_t k = 0;
+        for (size_t i = 0; i < unr; ++i)
+        {
+            for (size_t j = 0; j < unc; ++j)
+            {
+                cpp->at(i, j) = data[k];
+            }
+        }
+
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
+}
+
+
 
 int spi_Enum_Matrix_item(
     const spi_Enum_Matrix* m,

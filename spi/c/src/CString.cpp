@@ -170,6 +170,72 @@ spi_String_Matrix* spi_String_Matrix_new(int nr, int nc)
     }
 }
 
+int spi_String_Matrix_get_data(const spi_String_Matrix* m, int nr, int nc, char* data[])
+{
+    SPI_C_LOCK_GUARD;
+    if (!m)
+    {
+        spi_Error_set_function(__FUNCTION__, "NULL pointer");
+        return -1;
+    }
+
+    try
+    {
+        auto cpp = (const spi::MatrixData<std::string>*)(m);
+        size_t unr = to_size_t(nr);
+        size_t unc = to_size_t(nc);
+        if (unr != cpp->Rows() || unc != cpp->Cols())
+        {
+            spi_Error_set_function(__FUNCTION__, "Matrix size mismatch");
+            return -1;
+        }
+        size_t N = unr * unc;
+        const std::string* p = cpp->DataPointer();
+        for (int i = 0; i < N; ++i)
+            data[i] = spi_String_copy(p[i].c_str());
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
+    return 0;
+}
+
+int spi_String_Matrix_set_data(spi_String_Matrix* m, int nr, int nc, const char* data[])
+{
+    SPI_C_LOCK_GUARD;
+    if (!m)
+    {
+        spi_Error_set_function(__FUNCTION__, "NULL pointer");
+        return -1;
+    }
+
+    try
+    {
+        auto cpp = (spi::MatrixData<std::string>*)(m);
+        size_t unr = to_size_t(nr);
+        size_t unc = to_size_t(nc);
+        if (unr != cpp->Rows() || unc != cpp->Cols())
+        {
+            spi_Error_set_function(__FUNCTION__, "Matrix size mismatch");
+            return -1;
+        }
+        size_t N = unr * unc;
+        std::string* p = cpp->DataPointer();
+        for (int i = 0; i < N; ++i)
+            p[i] = data[i] ? std::string(data[i]) : std::string();
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
+    return 0;
+}
+
 int spi_String_Vector_item(
     const spi_String_Vector* v,
     int ii,

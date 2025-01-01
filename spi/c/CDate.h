@@ -95,12 +95,24 @@ extern "C"
         int nr, int nc);
 
     SPI_C_IMPORT
+    int spi_Date_Matrix_get_data(
+        const spi_Date_Matrix* m,
+        int nr, int nc,
+        spi_Date data[]);
+
+    SPI_C_IMPORT
+    int spi_Date_Matrix_set_data(
+        spi_Date_Matrix* m,
+        int nr, int nc,
+        spi_Date data[]);
+
+    /*SPI_C_IMPORT*/
     int spi_Date_Matrix_item(
         const spi_Date_Matrix* m,
         int r, int c,
         spi_Date* item /*(O)*/);
 
-    SPI_C_IMPORT
+    /*SPI_C_IMPORT*/
     int spi_Date_Matrix_set_item(
         spi_Date_Matrix* m,
         int r, int c,

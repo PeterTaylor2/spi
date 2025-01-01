@@ -90,7 +90,6 @@ extern "C"
         const spi_DateTime_Vector* v,
         int* size /*(O)*/);
 
-
     SPI_C_IMPORT
     void spi_DateTime_Matrix_delete(spi_DateTime_Matrix* m);
 
@@ -99,12 +98,24 @@ extern "C"
         int nr, int nc);
 
     SPI_C_IMPORT
+    int spi_DateTime_Matrix_get_data(
+        const spi_DateTime_Matrix* m,
+        int nr, int nc,
+        spi_DateTime data[]);
+
+    SPI_C_IMPORT
+    int spi_DateTime_Matrix_set_data(
+        spi_DateTime_Matrix* m,
+        int nr, int nc,
+        spi_DateTime data[]);
+
+    /*SPI_C_IMPORT*/
     int spi_DateTime_Matrix_item(
         const spi_DateTime_Matrix* m,
         int r, int c,
         spi_DateTime* item /*(O)*/);
 
-    SPI_C_IMPORT
+    /*SPI_C_IMPORT*/
     int spi_DateTime_Matrix_set_item(
         spi_DateTime_Matrix* m,
         int r, int c,

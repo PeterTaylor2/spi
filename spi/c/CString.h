@@ -67,13 +67,13 @@ extern "C"
         int N,
         char* data[]);
 
-    SPI_C_IMPORT
+    /*SPI_C_IMPORT*/
     int spi_String_Vector_item(
         const spi_String_Vector* v,
         int i,
         char** item /*(O)*/);
 
-    SPI_C_IMPORT
+    /*SPI_C_IMPORT*/
     int spi_String_Vector_set_item(
         spi_String_Vector* v,
         int i,
@@ -92,12 +92,24 @@ extern "C"
         int nr, int nc);
 
     SPI_C_IMPORT
+    int spi_String_Matrix_get_data(
+        const spi_String_Matrix* m,
+        int nr, int nc,
+        char* data[]);
+
+    SPI_C_IMPORT
+    int spi_String_Matrix_set_data(
+        spi_String_Matrix* m,
+        int nr, int nc,
+        const char* data[]);
+
+    /*SPI_C_IMPORT*/
     int spi_String_Matrix_item(
         const spi_String_Matrix* m,
         int r, int c,
         char** item /*(O)*/);
 
-    SPI_C_IMPORT
+    /*SPI_C_IMPORT*/
     int spi_String_Matrix_set_item(
         spi_String_Matrix* m,
         int r, int c,
