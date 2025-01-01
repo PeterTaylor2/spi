@@ -79,22 +79,23 @@ namespace SPI
             if (dt == 0)
                 return default(System.DateTime);
 
-            if (spi_Date_YMD(dt, out int year, out int month, out int day) != 0)
-            {
-                throw ErrorToException();
-            }
-            return new System.DateTime(year, month, day);
+            const long oneDay = 86400;
+            const long oneE7 = 10000000;
+            const long offset = 584388;
+            long ticks = ((long)dt + offset) * oneDay * oneE7;
+            return new System.DateTime(ticks);
         }
+
         public static int DateToCDate(System.DateTime dt)
         { 
             if (dt == default(System.DateTime))
                 return 0;
 
-            if (spi_Date_from_YMD(dt.Year, dt.Month, dt.Day, out int result) != 0)
-            {
-                throw ErrorToException();
-            }
-            return result;
+            const long oneDay = 86400;
+            const long oneE7 = 10000000;
+            const long offset = 584388;
+            long cdt = dt.Ticks / (oneDay * oneE7) - offset;
+            return (int)cdt;
         }
 
         /* DateTime functions */
@@ -114,25 +115,23 @@ namespace SPI
             if (dt == 0.0)
                 return default(System.DateTime);
 
-            if (spi_DateTime_YMDHMS(dt, out int year, out int month, out int day,
-                                    out int hours, out int minutes, out int seconds) != 0)
-            {
-                throw ErrorToException();
-            }
-            return new System.DateTime(year, month, day, hours, minutes, seconds);
+            const long oneDay = 86400;
+            const long oneE7 = 10000000;
+            const long offset = 584388;
+            long ticks = (long)((dt + offset) * oneDay * oneE7 + 0.5);
+            return new System.DateTime(ticks);
         }
+
         public static double DateTimeToCDateTime(System.DateTime dt)
         {
             if (dt == default(System.DateTime))
                 return 0.0;
 
-            if (spi_DateTime_from_YMDHMS(
-                dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second,
-                out double result) != 0)
-            {
-                throw ErrorToException();
-            }
-            return result;
+            const long oneDay = 86400;
+            const long oneE7 = 10000000;
+            const long offset = 584388;
+            double cdt = (double)(dt.Ticks) / (oneDay * oneE7) - offset;
+            return cdt;
         }
 
         ///* Object functions */
