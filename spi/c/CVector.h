@@ -61,11 +61,6 @@ extern "C"
     spi_Int_Vector* spi_Int_Vector_new(
         int N);
 
-    /*SPI_C_IMPORT*/
-    spi_Int_Vector* spi_Int_Vector_make(
-        int N,
-        int data[]);
-
     SPI_C_IMPORT
     int spi_Int_Vector_get_data(
         const spi_Int_Vector* v,
@@ -77,18 +72,6 @@ extern "C"
         spi_Int_Vector* v,
         int N,
         int data[]);
-
-    /*SPI_C_IMPORT*/
-    int spi_Int_Vector_item(
-        const spi_Int_Vector* v,
-        int i,
-        int* item /*(O)*/);
-
-    /*SPI_C_IMPORT*/
-    int spi_Int_Vector_set_item(
-        spi_Int_Vector* v,
-        int i,
-        int item);
 
     SPI_C_IMPORT
     int spi_Int_Vector_size(
@@ -102,11 +85,6 @@ extern "C"
     spi_Double_Vector* spi_Double_Vector_new(
         int N);
 
-    /*SPI_C_IMPORT*/
-    spi_Double_Vector* spi_Double_Vector_make(
-        int N,
-        double data[]);
-
     SPI_C_IMPORT
     int spi_Double_Vector_get_data(
         const spi_Double_Vector* v,
@@ -118,18 +96,6 @@ extern "C"
         spi_Double_Vector* v,
         int N,
         double data[]);
-
-    /*SPI_C_IMPORT*/
-    int spi_Double_Vector_item(
-        const spi_Double_Vector* v,
-        int i,
-        double* item /*(O)*/);
-
-    /*SPI_C_IMPORT*/
-    int spi_Double_Vector_set_item(
-        spi_Double_Vector* v,
-        int i,
-        double item);
 
     SPI_C_IMPORT
     int spi_Double_Vector_size(
@@ -143,11 +109,6 @@ extern "C"
     spi_Bool_Vector* spi_Bool_Vector_new(
         int N);
 
-    /*SPI_C_IMPORT*/
-    spi_Bool_Vector* spi_Bool_Vector_make(
-        int N,
-        spi_Bool data[]);
-
     SPI_C_IMPORT
     int spi_Bool_Vector_get_data(
         const spi_Bool_Vector* v,
@@ -159,18 +120,6 @@ extern "C"
         spi_Bool_Vector* v,
         int N,
         spi_Bool data[]);
-
-    /*SPI_C_IMPORT*/
-    int spi_Bool_Vector_item(
-        const spi_Bool_Vector* v,
-        int i,
-        int* item /*(O)*/);
-
-    /*SPI_C_IMPORT*/
-    int spi_Bool_Vector_set_item(
-        spi_Bool_Vector* v,
-        int i,
-        spi_Bool item);
 
     SPI_C_IMPORT
     int spi_Bool_Vector_size(
@@ -222,18 +171,6 @@ extern "C"
         spi_Enum_Vector* v,
         int N,
         int data[]);
-
-    /*SPI_C_IMPORT*/
-    int spi_Enum_Vector_item(
-        const spi_Enum_Vector* v,
-        int i,
-        int* item /*(O)*/);
-
-    /*SPI_C_IMPORT*/
-    int spi_Enum_Vector_set_item(
-        spi_Enum_Vector* v,
-        int i,
-        int item);
 
     SPI_C_IMPORT
     int spi_Enum_Vector_size(

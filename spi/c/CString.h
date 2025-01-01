@@ -67,18 +67,6 @@ extern "C"
         int N,
         char* data[]);
 
-    /*SPI_C_IMPORT*/
-    int spi_String_Vector_item(
-        const spi_String_Vector* v,
-        int i,
-        char** item /*(O)*/);
-
-    /*SPI_C_IMPORT*/
-    int spi_String_Vector_set_item(
-        spi_String_Vector* v,
-        int i,
-        const char* item);
-
     SPI_C_IMPORT
     int spi_String_Vector_size(
         const spi_String_Vector* v,
@@ -102,18 +90,6 @@ extern "C"
         spi_String_Matrix* m,
         int nr, int nc,
         const char* data[]);
-
-    /*SPI_C_IMPORT*/
-    int spi_String_Matrix_item(
-        const spi_String_Matrix* m,
-        int r, int c,
-        char** item /*(O)*/);
-
-    /*SPI_C_IMPORT*/
-    int spi_String_Matrix_set_item(
-        spi_String_Matrix* m,
-        int r, int c,
-        const char* item);
 
     SPI_C_IMPORT
     int spi_String_Matrix_size(

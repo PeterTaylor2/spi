@@ -56,22 +56,6 @@ spi_Int_Vector* spi_Int_Vector_new(int N)
     }
 }
 
-spi_Int_Vector* spi_Int_Vector_make(int N, int data[])
-{
-    SPI_C_LOCK_GUARD;
-    try
-    {
-        size_t uN = to_size_t(N);
-        auto out = new std::vector<int>(data, data + uN);
-        return (spi_Int_Vector*)(out);
-    }
-    catch (std::exception& e)
-    {
-        spi_Error_set_function(__FUNCTION__, e.what());
-        return NULL;
-    }
-}
-
 int spi_Int_Vector_get_data(const spi_Int_Vector* v, int N, int data[])
 {
     SPI_C_LOCK_GUARD;
@@ -130,68 +114,6 @@ int spi_Int_Vector_set_data(spi_Int_Vector* v, int N, int data[])
 
 }
 
-int spi_Int_Vector_item(
-    const spi_Int_Vector* v,
-    int ii,
-    int* item)
-{
-    SPI_C_LOCK_GUARD;
-    if (!v || !item)
-    {
-        spi_Error_set_function(__FUNCTION__, "NULL pointer");
-        return -1;
-    }
-
-    try
-    {
-        auto cpp = (const std::vector<int>*)(v);
-        size_t i = to_size_t(ii);
-        if (i >= cpp->size())
-        {
-            spi_Error_set_function(__FUNCTION__, "Array bounds mismatch");
-            return -1;
-        }
-        *item = (*cpp)[i];
-        return 0;
-    }
-    catch (std::exception& e)
-    {
-        spi_Error_set_function(__FUNCTION__, e.what());
-        return -1;
-    }
-}
-
-int spi_Int_Vector_set_item(
-    spi_Int_Vector* v,
-    int ii,
-    int item)
-{
-    SPI_C_LOCK_GUARD;
-    if (!v)
-    {
-        spi_Error_set_function(__FUNCTION__, "NULL pointer");
-        return -1;
-    }
-
-    try
-    {
-        auto cpp = (std::vector<int>*)(v);
-        size_t i = to_size_t(ii); 
-        if (i >= cpp->size())
-        {
-            spi_Error_set_function(__FUNCTION__, "Array bounds mismatch");
-            return -1;
-        }
-        (*cpp)[i] = item;
-        return 0;
-    }
-    catch (std::exception& e)
-    {
-        spi_Error_set_function(__FUNCTION__, e.what());
-        return -1;
-    }
-}
-
 int spi_Int_Vector_size(
     const spi_Int_Vector* v,
     int* size)
@@ -229,22 +151,6 @@ spi_Double_Vector* spi_Double_Vector_new(int N)
     try
     {
         auto out = new std::vector<double>(to_size_t(N));
-        return (spi_Double_Vector*)(out);
-    }
-    catch (std::exception& e)
-    {
-        spi_Error_set_function(__FUNCTION__, e.what());
-        return NULL;
-    }
-}
-
-spi_Double_Vector* spi_Double_Vector_make(int N, double data[])
-{
-    SPI_C_LOCK_GUARD;
-    try
-    {
-        size_t uN = to_size_t(N);
-        auto out = new std::vector<double>(data, data + uN);
         return (spi_Double_Vector*)(out);
     }
     catch (std::exception& e)
@@ -312,68 +218,6 @@ int spi_Double_Vector_set_data(spi_Double_Vector* v, int N, double data[])
 
 }
 
-int spi_Double_Vector_item(
-    const spi_Double_Vector* v,
-    int ii,
-    double* item)
-{
-    SPI_C_LOCK_GUARD;
-    if (!v || !item)
-    {
-        spi_Error_set_function(__FUNCTION__, "NULL pointer");
-        return -1;
-    }
-
-    try
-    {
-        auto cpp = (const std::vector<double>*)(v);
-        size_t i = to_size_t(ii); 
-        if (i >= cpp->size())
-        {
-            spi_Error_set_function(__FUNCTION__, "Array bounds mismatch");
-            return -1;
-        }
-        *item = (*cpp)[i];
-        return 0;
-    }
-    catch (std::exception& e)
-    {
-        spi_Error_set_function(__FUNCTION__, e.what());
-        return -1;
-    }
-}
-
-int spi_Double_Vector_set_item(
-    spi_Double_Vector* v,
-    int ii,
-    double item)
-{
-    SPI_C_LOCK_GUARD;
-    if (!v)
-    {
-        spi_Error_set_function(__FUNCTION__, "NULL pointer");
-        return -1;
-    }
-
-    try
-    {
-        auto cpp = (std::vector<double>*)(v);
-        size_t i = to_size_t(ii); 
-        if (i >= cpp->size())
-        {
-            spi_Error_set_function(__FUNCTION__, "Array bounds mismatch");
-            return -1;
-        }
-        (*cpp)[i] = item;
-        return 0;
-    }
-    catch (std::exception& e)
-    {
-        spi_Error_set_function(__FUNCTION__, e.what());
-        return -1;
-    }
-}
-
 int spi_Double_Vector_size(
     const spi_Double_Vector* v,
     int* size)
@@ -413,25 +257,6 @@ spi_Bool_Vector* spi_Bool_Vector_new(int N)
     {
         auto out = new std::vector<bool>(to_size_t(N));
         return (spi_Bool_Vector*)(out);
-    }
-    catch (std::exception& e)
-    {
-        spi_Error_set_function(__FUNCTION__, e.what());
-        return NULL;
-    }
-}
-
-spi_Bool_Vector* spi_Bool_Vector_make(int N, spi_Bool data[])
-{
-    SPI_C_LOCK_GUARD;
-    try
-    {
-        size_t uN = to_size_t(N);
-        std::vector<bool> out;
-        out.reserve(uN);
-        for (size_t i = 0; i < uN; ++i)
-            out.push_back(data[i] != SPI_FALSE);
-        return (spi_Bool_Vector*)(new std::vector<bool>(out));
     }
     catch (std::exception& e)
     {
@@ -497,68 +322,6 @@ int spi_Bool_Vector_set_data(spi_Bool_Vector* v, int N, spi_Bool data[])
         return -1;
     }
 
-}
-
-int spi_Bool_Vector_item(
-    const spi_Bool_Vector* v,
-    int ii,
-    spi_Bool* item)
-{
-    SPI_C_LOCK_GUARD;
-    if (!v || !item)
-    {
-        spi_Error_set_function(__FUNCTION__, "NULL pointer");
-        return -1;
-    }
-
-    try
-    {
-        auto cpp = (const std::vector<bool>*)(v);
-        size_t i = to_size_t(ii); 
-        if (i >= cpp->size())
-        {
-            spi_Error_set_function(__FUNCTION__, "Array bounds mismatch");
-            return -1;
-        }
-        *item = (*cpp)[i] ? SPI_TRUE : SPI_FALSE;
-        return 0;
-    }
-    catch (std::exception& e)
-    {
-        spi_Error_set_function(__FUNCTION__, e.what());
-        return -1;
-    }
-}
-
-int spi_Bool_Vector_set_item(
-    spi_Bool_Vector* v,
-    int ii,
-    spi_Bool item)
-{
-    SPI_C_LOCK_GUARD;
-    if (!v)
-    {
-        spi_Error_set_function(__FUNCTION__, "NULL pointer");
-        return -1;
-    }
-
-    try
-    {
-        auto cpp = (std::vector<bool>*)(v);
-        size_t i = to_size_t(ii); 
-        if (i >= cpp->size())
-        {
-            spi_Error_set_function(__FUNCTION__, "Array bounds mismatch");
-            return -1;
-        }
-        (*cpp)[i] = item != SPI_FALSE;
-        return 0;
-    }
-    catch (std::exception& e)
-    {
-        spi_Error_set_function(__FUNCTION__, e.what());
-        return -1;
-    }
 }
 
 int spi_Bool_Vector_size(
@@ -776,57 +539,6 @@ int spi_Enum_Vector_get_data(spi_Enum_Vector* v, int N, int data[])
         spi_Error_set_function(__FUNCTION__, e.what());
         return -1;
     }
-}
-
-int spi_Enum_Vector_item(
-    const spi_Enum_Vector* v,
-    int i,
-    int* item)
-{
-    SPI_C_LOCK_GUARD;
-    if (!v || !item)
-    {
-        spi_Error_set_function(__FUNCTION__, "NULL pointer");
-        return -1;
-    }
-    try
-    {
-        spi::Enum e = ((std::vector<spi::Enum>*)v)->at(
-            spi_util::IntegerCast<size_t>(i));
-
-        *item = e.value;
-        return 0;
-    }
-    catch (std::exception& e)
-    {
-        spi_Error_set_function(__FUNCTION__, e.what());
-        return -1;
-    }
-
-}
-
-int spi_Enum_Vector_set_item(
-    spi_Enum_Vector* v,
-    int i,
-    int item)
-{
-    SPI_C_LOCK_GUARD;
-    if (!v)
-    {
-        spi_Error_set_function(__FUNCTION__, "NULL pointer");
-        return -1;
-    }
-    try
-    {
-        ((std::vector<spi::Enum>*)v)->at(spi_util::IntegerCast<size_t>(i)) = item;
-        return 0;
-    }
-    catch (std::exception& e)
-    {
-        spi_Error_set_function(__FUNCTION__, e.what());
-        return -1;
-    }
-
 }
 
 int spi_Enum_Vector_size(

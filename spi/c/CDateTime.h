@@ -73,18 +73,6 @@ extern "C"
         int N,
         spi_DateTime data[]);
 
-    /*SPI_C_IMPORT*/
-    int spi_DateTime_Vector_item(
-        const spi_DateTime_Vector* v,
-        int i,
-        spi_DateTime* item /*(O)*/);
-
-    /*SPI_C_IMPORT*/
-    int spi_DateTime_Vector_set_item(
-        spi_DateTime_Vector* v,
-        int i,
-        spi_DateTime item);
-
     SPI_C_IMPORT
     int spi_DateTime_Vector_size(
         const spi_DateTime_Vector* v,
@@ -108,18 +96,6 @@ extern "C"
         spi_DateTime_Matrix* m,
         int nr, int nc,
         spi_DateTime data[]);
-
-    /*SPI_C_IMPORT*/
-    int spi_DateTime_Matrix_item(
-        const spi_DateTime_Matrix* m,
-        int r, int c,
-        spi_DateTime* item /*(O)*/);
-
-    /*SPI_C_IMPORT*/
-    int spi_DateTime_Matrix_set_item(
-        spi_DateTime_Matrix* m,
-        int r, int c,
-        spi_DateTime item);
 
     SPI_C_IMPORT
     int spi_DateTime_Matrix_size(

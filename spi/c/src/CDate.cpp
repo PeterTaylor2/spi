@@ -174,68 +174,6 @@ spi_Date_Matrix* spi_Date_Matrix_new(int nr, int nc)
     }
 }
 
-int spi_Date_Vector_item(
-    const spi_Date_Vector* v,
-    int ii,
-    spi_Date* item)
-{
-    SPI_C_LOCK_GUARD;
-    if (!v || !item)
-    {
-        spi_Error_set_function(__FUNCTION__, "NULL pointer");
-        return -1;
-    }
-
-    try
-    {
-        auto cpp = (const std::vector<spi::Date>*)(v);
-        size_t i = to_size_t(ii); 
-        if (i >= cpp->size())
-        {
-            spi_Error_set_function(__FUNCTION__, "Array bounds mismatch");
-            return -1;
-        }
-        *item = (*cpp)[i];
-        return 0;
-    }
-    catch (std::exception& e)
-    {
-        spi_Error_set_function(__FUNCTION__, e.what());
-        return -1;
-    }
-}
-
-int spi_Date_Vector_set_item(
-    spi_Date_Vector* v,
-    int ii,
-    spi_Date item)
-{
-    SPI_C_LOCK_GUARD;
-    if (!v)
-    {
-        spi_Error_set_function(__FUNCTION__, "NULL pointer");
-        return -1;
-    }
-
-    try
-    {
-        auto cpp = (std::vector<spi::Date>*)(v);
-        size_t i = to_size_t(ii); 
-        if (i >= cpp->size())
-        {
-            spi_Error_set_function(__FUNCTION__, "Array bounds mismatch");
-            return -1;
-        }
-        (*cpp)[i] = item;
-        return 0;
-    }
-    catch (std::exception& e)
-    {
-        spi_Error_set_function(__FUNCTION__, e.what());
-        return -1;
-    }
-}
-
 int spi_Date_Vector_size(
     const spi_Date_Vector* v,
     int* size)
@@ -318,70 +256,6 @@ int spi_Date_Matrix_set_data(
         // we can bulk copy
         memcpy(cpp->DataPointer(), &data[0], unr * unc * sizeof(int));
 
-        return 0;
-    }
-    catch (std::exception& e)
-    {
-        spi_Error_set_function(__FUNCTION__, e.what());
-        return -1;
-    }
-}
-
-int spi_Date_Matrix_item(
-    const spi_Date_Matrix* m,
-    int ir, int ic,
-    spi_Date* item)
-{
-    SPI_C_LOCK_GUARD;
-    if (!m || !item)
-    {
-        spi_Error_set_function(__FUNCTION__, "NULL pointer");
-        return -1;
-    }
-
-    try
-    {
-        auto cpp = (const spi::MatrixData<spi::Date>*)(m);
-        size_t r = to_size_t(ir);
-        size_t c = to_size_t(ic); 
-        if (r >= cpp->Rows() || c >= cpp->Cols())
-        {
-            spi_Error_set_function(__FUNCTION__, "Array bounds mismatch");
-            return -1;
-        }
-        *item = (*cpp)[r][c];
-        return 0;
-    }
-    catch (std::exception& e)
-    {
-        spi_Error_set_function(__FUNCTION__, e.what());
-        return -1;
-    }
-}
-
-int spi_Date_Matrix_set_item(
-    spi_Date_Matrix* m,
-    int ir, int ic,
-    spi_Date item)
-{
-    SPI_C_LOCK_GUARD;
-    if (!m)
-    {
-        spi_Error_set_function(__FUNCTION__, "NULL pointer");
-        return -1;
-    }
-
-    try
-    {
-        auto cpp = (spi::MatrixData<spi::Date>*)(m);
-        size_t r = to_size_t(ir);
-        size_t c = to_size_t(ic); 
-        if (r >= cpp->Rows() || c >= cpp->Cols())
-        {
-            spi_Error_set_function(__FUNCTION__, "Array bounds mismatch");
-            return -1;
-        }
-        (*cpp)[r][c] = item;
         return 0;
     }
     catch (std::exception& e)

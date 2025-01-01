@@ -58,21 +58,22 @@
  *        a. new - given the size creates an empty vector (or matrix).
  *        b. delete - deletes the vector (or matrix).
  *        c. size - returns the size of the vector (or matrix).
- *        d. set_item - puts an item into the vector (or matrix) at a given position
+ *        d. set_data - puts a block of data into the vector (or matrix) verifying
+ *           that the sizes match
  *           (the position will be bounds checked)
- *        e. item - gets an item from the vector (or matrix) from a given position
+ *        e. get_data - gets a block of data from the vector (or matrix) verifying
+ *           that the sizes match
+ *        f. set_item - puts an item into the vector (or matrix) at a given position
+ *           (the position will be bounds checked)
+ *        g. item - gets an item from the vector (or matrix) from a given position
  *           (the position will be bounds checked)
  *
- *    The set_item/item function will take as input/output the C-version of the type
- *    in C#. These may then need to be converted to the C++ type used within the
- *    vector (or matrix).
+ *    For atomic types (int, double, bool, string, date, datetime) we use the set_data
+ *    and get_data functions. This is to minimise the crossing of the C/C# boundary.
  *
- *    Potentially if there is no conversion needed (or it is automatically marshalled)
- *    then we could represent the vector as two inputs (array and size of array) - this
- *    would avoid the need for repeated crossing of the P/INVOKE layer to set/get
- *    individual elements of the vector.
- *
- * Exceptions to this policy will be noted for any particular function.
+ *    For complex types (instance, map, variant, object) we use the element-by-element
+ *    versions set_item and item. This is to avoid possible dangling pointers in cases
+ *    of exceptions. We might revisit this choice later.
  */
 
 #include "DeclSpec.h"

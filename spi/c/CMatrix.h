@@ -83,18 +83,6 @@ extern "C"
         int nr, int nc,
         int data[]);
 
-    /*SPI_C_IMPORT*/
-    int spi_Int_Matrix_item(
-        const spi_Int_Matrix* m,
-        int r, int c,
-        int* item /*(O)*/);
-
-    /*SPI_C_IMPORT*/
-    int spi_Int_Matrix_set_item(
-        spi_Int_Matrix* m,
-        int r, int c,
-        int item);
-
     SPI_C_IMPORT
     int spi_Int_Matrix_size(
         const spi_Int_Matrix*,
@@ -122,18 +110,6 @@ extern "C"
         int nc,
         double data[]);
 
-    /*SPI_C_IMPORT*/
-    int spi_Double_Matrix_item(
-        const spi_Double_Matrix* m,
-        int r, int c,
-        double* item /*(O)*/);
-
-    /*SPI_C_IMPORT*/
-    int spi_Double_Matrix_set_item(
-        spi_Double_Matrix* m,
-        int r, int c,
-        double item);
-
     SPI_C_IMPORT
     int spi_Double_Matrix_size(
         const spi_Double_Matrix*,
@@ -160,18 +136,6 @@ extern "C"
         int nr,
         int nc,
         spi_Bool data[]);
-
-    /*SPI_C_IMPORT*/
-    int spi_Bool_Matrix_item(
-        const spi_Bool_Matrix* m,
-        int r, int c,
-        spi_Bool* item /*(O)*/);
-
-    /*SPI_C_IMPORT*/
-    int spi_Bool_Matrix_set_item(
-        spi_Bool_Matrix* m,
-        int r, int c,
-        spi_Bool item);
 
     SPI_C_IMPORT
     int spi_Bool_Matrix_size(
@@ -210,18 +174,6 @@ extern "C"
         int nr,
         int nc,
         int data[]);
-
-    /*SPI_C_IMPORT*/
-    int spi_Enum_Matrix_item(
-        const spi_Enum_Matrix* m,
-        int r, int c,
-        int* item /*(O)*/);
-
-    /*SPI_C_IMPORT*/
-    int spi_Enum_Matrix_set_item(
-        spi_Enum_Matrix* m,
-        int r, int c,
-        int item);
 
     SPI_C_IMPORT
     int spi_Enum_Matrix_size(

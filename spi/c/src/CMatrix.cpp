@@ -120,70 +120,6 @@ int spi_Int_Matrix_set_data(spi_Int_Matrix* m, int nr, int nc, int data[])
     }
 }
 
-int spi_Int_Matrix_item(
-    const spi_Int_Matrix* m,
-    int ir, int ic,
-    int* item)
-{
-    SPI_C_LOCK_GUARD;
-    if (!m || !item)
-    {
-        spi_Error_set_function(__FUNCTION__, "NULL pointer");
-        return -1;
-    }
-
-    try
-    {
-        auto cpp = (const spi::MatrixData<int>*)(m);
-        size_t r = to_size_t(ir);
-        size_t c = to_size_t(ic);
-        if (r >= cpp->Rows() || c >= cpp->Cols())
-        {
-            spi_Error_set_function(__FUNCTION__, "Array bounds mismatch");
-            return -1;
-        }
-        *item = (*cpp)[r][c];
-        return 0;
-    }
-    catch (std::exception& e)
-    {
-        spi_Error_set_function(__FUNCTION__, e.what());
-        return -1;
-    }
-}
-
-int spi_Int_Matrix_set_item(
-    spi_Int_Matrix* m,
-    int ir, int ic,
-    int item)
-{
-    SPI_C_LOCK_GUARD;
-    if (!m)
-    {
-        spi_Error_set_function(__FUNCTION__, "NULL pointer");
-        return -1;
-    }
-
-    try
-    {
-        auto cpp = (spi::MatrixData<int>*)(m);
-        size_t r = to_size_t(ir);
-        size_t c = to_size_t(ic);
-        if (r >= cpp->Rows() || c >= cpp->Cols())
-        {
-            spi_Error_set_function(__FUNCTION__, "Array bounds mismatch");
-            return -1;
-        }
-        (*cpp)[r][c] = item;
-        return 0;
-    }
-    catch (std::exception& e)
-    {
-        spi_Error_set_function(__FUNCTION__, e.what());
-        return -1;
-    }
-}
-
 int spi_Int_Matrix_size(
     const spi_Int_Matrix* m,
     int* nr, int* nc)
@@ -303,70 +239,6 @@ int spi_Double_Matrix_set_data(spi_Double_Matrix* m, int nr, int nc, double data
         // because double is plain old data we can do this bulk copy
 
         memcpy(cpp->DataPointer(), &data[0], unr * unc * sizeof(double));
-        return 0;
-    }
-    catch (std::exception& e)
-    {
-        spi_Error_set_function(__FUNCTION__, e.what());
-        return -1;
-    }
-}
-
-int spi_Double_Matrix_item(
-    const spi_Double_Matrix* m,
-    int ir, int ic,
-    double* item)
-{
-    SPI_C_LOCK_GUARD;
-    if (!m || !item)
-    {
-        spi_Error_set_function(__FUNCTION__, "NULL pointer");
-        return -1;
-    }
-
-    try
-    {
-        auto cpp = (const spi::MatrixData<double>*)(m);
-        size_t r = to_size_t(ir);
-        size_t c = to_size_t(ic);
-        if (r >= cpp->Rows() || c >= cpp->Cols())
-        {
-            spi_Error_set_function(__FUNCTION__, "Array bounds mismatch");
-            return -1;
-        }
-        *item = (*cpp)[r][c];
-        return 0;
-    }
-    catch (std::exception& e)
-    {
-        spi_Error_set_function(__FUNCTION__, e.what());
-        return -1;
-    }
-}
-
-int spi_Double_Matrix_set_item(
-    spi_Double_Matrix* m,
-    int ir, int ic,
-    double item)
-{
-    SPI_C_LOCK_GUARD;
-    if (!m)
-    {
-        spi_Error_set_function(__FUNCTION__, "NULL pointer");
-        return -1;
-    }
-
-    try
-    {
-        auto cpp = (spi::MatrixData<double>*)(m);
-        size_t r = to_size_t(ir);
-        size_t c = to_size_t(ic); 
-        if (r >= cpp->Rows() || c >= cpp->Cols())
-        {
-            spi_Error_set_function(__FUNCTION__, "Array bounds mismatch");
-            return -1;
-        }
-        (*cpp)[r][c] = item;
         return 0;
     }
     catch (std::exception& e)
@@ -509,70 +381,6 @@ int spi_Bool_Matrix_set_data(spi_Bool_Matrix* m, int nr, int nc, spi_Bool data[]
             }
         }
 
-        return 0;
-    }
-    catch (std::exception& e)
-    {
-        spi_Error_set_function(__FUNCTION__, e.what());
-        return -1;
-    }
-}
-
-int spi_Bool_Matrix_item(
-    const spi_Bool_Matrix* m,
-    int ir, int ic,
-    spi_Bool* item)
-{
-    SPI_C_LOCK_GUARD;
-    if (!m || !item)
-    {
-        spi_Error_set_function(__FUNCTION__, "NULL pointer");
-        return -1;
-    }
-
-    try
-    {
-        auto cpp = (const spi::MatrixData<bool>*)(m);
-        size_t r = to_size_t(ir);
-        size_t c = to_size_t(ic); 
-        if (r >= cpp->Rows() || c >= cpp->Cols())
-        {
-            spi_Error_set_function(__FUNCTION__, "Array bounds mismatch");
-            return -1;
-        }
-        *item = (*cpp)[r][c];
-        return 0;
-    }
-    catch (std::exception& e)
-    {
-        spi_Error_set_function(__FUNCTION__, e.what());
-        return -1;
-    }
-}
-
-int spi_Bool_Matrix_set_item(
-    spi_Bool_Matrix* m,
-    int ir, int ic,
-    spi_Bool item)
-{
-    SPI_C_LOCK_GUARD;
-    if (!m)
-    {
-        spi_Error_set_function(__FUNCTION__, "NULL pointer");
-        return -1;
-    }
-
-    try
-    {
-        auto cpp = (spi::MatrixData<bool>*)(m);
-        size_t r = to_size_t(ir);
-        size_t c = to_size_t(ic); 
-        if (r >= cpp->Rows() || c >= cpp->Cols())
-        {
-            spi_Error_set_function(__FUNCTION__, "Array bounds mismatch");
-            return -1;
-        }
-        (*cpp)[r][c] = item;
         return 0;
     }
     catch (std::exception& e)
@@ -770,61 +578,6 @@ int spi_Enum_Matrix_set_data(spi_Enum_Matrix* m, int nr, int nc, int data[])
             }
         }
 
-        return 0;
-    }
-    catch (std::exception& e)
-    {
-        spi_Error_set_function(__FUNCTION__, e.what());
-        return -1;
-    }
-}
-
-
-
-int spi_Enum_Matrix_item(
-    const spi_Enum_Matrix* m,
-    int r, int c,
-    int* item)
-{
-    SPI_C_LOCK_GUARD;
-    if (!m || !item)
-    {
-        spi_Error_set_function(__FUNCTION__, "NULL pointer");
-        return -1;
-    }
-
-    try
-    {
-        spi::Enum e = ((spi::MatrixData<spi::Enum>*)(m))->at(
-            spi_util::IntegerCast<size_t>(r),
-            spi_util::IntegerCast<size_t>(c));
-        *item = e.value;
-        return 0;
-    }
-    catch (std::exception& e)
-    {
-        spi_Error_set_function(__FUNCTION__, e.what());
-        return -1;
-    }
-
-}
-
-int spi_Enum_Matrix_set_item(
-    spi_Enum_Matrix* m,
-    int r, int c,
-    int item)
-{
-    SPI_C_LOCK_GUARD;
-    if (!m)
-    {
-        spi_Error_set_function(__FUNCTION__, "NULL pointer");
-        return -1;
-    }
-    try
-    {
-        ((spi::MatrixData<spi::Enum>*)m)->at(
-            spi_util::IntegerCast<size_t>(r),
-            spi_util::IntegerCast<size_t>(c)) = item;
         return 0;
     }
     catch (std::exception& e)

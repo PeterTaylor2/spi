@@ -70,18 +70,6 @@ extern "C"
         int N,
         spi_Date data[]);
 
-    /*SPI_C_IMPORT*/
-    int spi_Date_Vector_item(
-        const spi_Date_Vector* v,
-        int i,
-        spi_Date* item /*(O)*/);
-
-    /*SPI_C_IMPORT*/
-    int spi_Date_Vector_set_item(
-        spi_Date_Vector* v,
-        int i,
-        spi_Date item);
-
     SPI_C_IMPORT
     int spi_Date_Vector_size(
         const spi_Date_Vector* v,
@@ -105,18 +93,6 @@ extern "C"
         spi_Date_Matrix* m,
         int nr, int nc,
         spi_Date data[]);
-
-    /*SPI_C_IMPORT*/
-    int spi_Date_Matrix_item(
-        const spi_Date_Matrix* m,
-        int r, int c,
-        spi_Date* item /*(O)*/);
-
-    /*SPI_C_IMPORT*/
-    int spi_Date_Matrix_set_item(
-        spi_Date_Matrix* m,
-        int r, int c,
-        spi_Date item);
 
     SPI_C_IMPORT
     int spi_Date_Matrix_size(
