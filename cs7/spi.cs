@@ -766,22 +766,6 @@ namespace SPI
             out int size);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr spi_Enum_Vector_make(
-            int N,
-            int[] data);
-
-        [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int spi_Enum_Vector_get_data(
-            IntPtr v,
-            int N,
-            int[] data);
-
-        [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int spi_Enum_Vector_size(
-            IntPtr v,
-            out int size);
-
-        [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern void spi_Variant_Vector_delete(IntPtr v);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
