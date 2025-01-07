@@ -216,7 +216,7 @@ int spi_Date_Matrix_get_data(
 
         // because spi::Date has the same size and content as spi_Date
         // we can bulk copy
-        memcpy(&data[0], cpp->DataPointer(), unr * unc * sizeof(int));
+        memcpy((void*)&data[0], (const void*)cpp->DataPointer(), unr * unc * sizeof(int));
 
         return 0;
     }
@@ -254,7 +254,7 @@ int spi_Date_Matrix_set_data(
 
         // because spi::Date has the same size and content as spi_Date
         // we can bulk copy
-        memcpy(cpp->DataPointer(), &data[0], unr * unc * sizeof(int));
+        memcpy((void*)cpp->DataPointer(), (const void*)&data[0], unr * unc * sizeof(int));
 
         return 0;
     }

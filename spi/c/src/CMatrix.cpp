@@ -77,7 +77,7 @@ int spi_Int_Matrix_get_data(const spi_Int_Matrix* m, int nr, int nc, int data[])
         }
 
         // because int is plain old data we can do a bulk copy
-        memcpy(&data[0], cpp->DataPointer(), unr * unc * sizeof(int));
+        memcpy((void*)&data[0], (const void*)cpp->DataPointer(), unr * unc * sizeof(int));
 
         return 0;
     }
@@ -109,7 +109,7 @@ int spi_Int_Matrix_set_data(spi_Int_Matrix* m, int nr, int nc, int data[])
         }
 
         // because int is plain old data we can do a bulk copy
-        memcpy(cpp->DataPointer(), &data[0], unr * unc * sizeof(int));
+        memcpy((void*)cpp->DataPointer(), (const void*)&data[0], unr * unc * sizeof(int));
 
         return 0;
     }
@@ -205,7 +205,7 @@ int spi_Double_Matrix_get_data(const spi_Double_Matrix* m, int nr, int nc, doubl
         }
 
         // because double is plain old data we can do a bulk copy
-        memcpy(&data[0], cpp->DataPointer(), unr * unc * sizeof(double));
+        memcpy((void*)&data[0], (const void*)cpp->DataPointer(), unr * unc * sizeof(double));
 
         return 0;
     }
@@ -238,7 +238,7 @@ int spi_Double_Matrix_set_data(spi_Double_Matrix* m, int nr, int nc, double data
 
         // because double is plain old data we can do this bulk copy
 
-        memcpy(cpp->DataPointer(), &data[0], unr * unc * sizeof(double));
+        memcpy((void*)cpp->DataPointer(), (const void*)&data[0], unr * unc * sizeof(double));
         return 0;
     }
     catch (std::exception& e)
