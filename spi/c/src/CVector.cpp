@@ -429,7 +429,7 @@ int spi_Enum_Vector_set_data(spi_Enum_Vector* v, int N, int data[])
     catch (std::exception& e)
     {
         spi_Error_set_function(__FUNCTION__, e.what());
-        return NULL;
+        return -1;
     }
 }
 
