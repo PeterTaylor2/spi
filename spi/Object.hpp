@@ -37,7 +37,6 @@
 #include "RuntimeError.hpp"
 #include <map>
 #include <vector>
-#include <set>
 #include <string.h>
 
 SPI_BEGIN_NAMESPACE
@@ -226,7 +225,6 @@ protected:
 
 private:
     int m_id;
-    static int g_count;
     mutable FunctionConstSP m_constructor;
     mutable MapConstSP m_public_map;
     mutable std::map<const Service*, ObjectConstSP> m_serviceCoercion;
@@ -235,9 +233,6 @@ private:
 
     Object(const Object&);
     const Object& operator=(const Object&);
-
-    static bool g_tracking;
-    static std::set<const Object*> g_tracked;
 };
 
 

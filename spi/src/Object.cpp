@@ -44,10 +44,19 @@
 #define CREATE_OBJECT_ID_ON_REQUEST
 #include <spi_util/UUID.hpp>
 
+#include <set>
+
 SPI_BEGIN_NAMESPACE
 
 bool Object::g_add_object_id_file = false;
 bool Object::g_add_object_id_string = false;
+
+namespace
+{
+    bool g_object_tracking = false;
+    int g_object_count = 0;
+    std::set<const Object*> g_tracked_objects;
+}
 
 ObjectType::ObjectType(
     const char*       className,
@@ -541,23 +550,23 @@ int Object::get_id() const
 void Object::set_tracking(bool tracking)
 {
     if (!tracking)
-        g_tracked.clear();
+        g_tracked_objects.clear();
 
-    g_tracking = tracking;
+    g_object_tracking = tracking;
 }
 
 size_t Object::tracked_object_count()
 {
-    return g_tracked.size();
+    return g_tracked_objects.size();
 }
 
 std::map<std::string, size_t> Object::tracked_object_by_class_name()
 {
     std::map<std::string, size_t> out;
-    if (g_tracking)
+    if (g_object_tracking)
     {
-        for (std::set<const Object*>::const_iterator iter = g_tracked.begin();
-            iter != g_tracked.end(); ++iter)
+        for (std::set<const Object*>::const_iterator iter = g_tracked_objects.begin();
+            iter != g_tracked_objects.end(); ++iter)
         {
             const std::string& class_name = (*iter)->get_class_name();
             std::map<std::string,size_t>::iterator iter2 = out.find(class_name);
@@ -575,21 +584,21 @@ Object::Object(bool no_id)
     if (no_id)
         m_id = 0;
     else
-        m_id = ++g_count;
+        m_id = ++g_object_count;
 
     m_meta_data.reset(new Map(""));
 
-    if (g_tracking)
+    if (g_object_tracking)
     {
-        g_tracked.insert(this);
+        g_tracked_objects.insert(this);
     }
 }
 
 Object::~Object()
 {
-    if (g_tracking)
+    if (g_object_tracking)
     {
-        g_tracked.erase(this);
+        g_tracked_objects.erase(this);
     }
 }
 
@@ -656,10 +665,6 @@ void Object::set_object_id(const std::string& object_id) const
     m_object_id = object_id;
 #endif
 }
-
-int Object::g_count = 0;
-bool Object::g_tracking = false;
-std::set<const Object*> Object::g_tracked;
 
 Value ObjectGet(const ObjectConstSP& obj, const char* name)
 {
