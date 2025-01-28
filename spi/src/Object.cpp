@@ -538,6 +538,37 @@ int Object::get_id() const
     return m_id;
 }
 
+void Object::set_tracking(bool tracking)
+{
+    if (!tracking)
+        g_tracked.clear();
+
+    g_tracking = tracking;
+}
+
+size_t Object::tracked_object_count()
+{
+    return g_tracked.size();
+}
+
+std::map<std::string, size_t> Object::tracked_object_by_class_name()
+{
+    std::map<std::string, size_t> out;
+    if (g_tracking)
+    {
+        for (auto iter = g_tracked.begin(); iter != g_tracked.end(); ++iter)
+        {
+            const std::string& class_name = (*iter)->get_class_name();
+            auto iter2 = out.find(class_name);
+            if (iter2 == out.end())
+                out.insert({ class_name,1 });
+            else
+                iter2->second += 1;
+        }
+    }
+    return out;
+}
+
 Object::Object(bool no_id)
 {
     if (no_id)
@@ -546,10 +577,20 @@ Object::Object(bool no_id)
         m_id = ++g_count;
 
     m_meta_data.reset(new Map(""));
+
+    if (g_tracking)
+    {
+        g_tracked.insert(this);
+    }
 }
 
 Object::~Object()
-{}
+{
+    if (g_tracking)
+    {
+        g_tracked.erase(this);
+    }
+}
 
 void Object::set_constructor(const FunctionConstSP& constructor) const
 {
@@ -616,6 +657,8 @@ void Object::set_object_id(const std::string& object_id) const
 }
 
 int Object::g_count = 0;
+bool Object::g_tracking = false;
+std::set<const Object*> Object::g_tracked;
 
 Value ObjectGet(const ObjectConstSP& obj, const char* name)
 {

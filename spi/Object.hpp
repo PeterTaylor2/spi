@@ -37,6 +37,7 @@
 #include "RuntimeError.hpp"
 #include <map>
 #include <vector>
+#include <set>
 #include <string.h>
 
 SPI_BEGIN_NAMESPACE
@@ -202,6 +203,10 @@ public:
     static bool g_add_object_id_file;
     static bool g_add_object_id_string;
 
+    static void set_tracking(bool tracking);
+    static size_t tracked_object_count();
+    static std::map<std::string, size_t> tracked_object_by_class_name();
+
 protected:
     Object(bool no_id=false);
     // sets the object_id - should only be called as part of the construction
@@ -230,6 +235,9 @@ private:
 
     Object(const Object&);
     const Object& operator=(const Object&);
+
+    static bool g_tracking;
+    static std::set<const Object*> g_tracked;
 };
 
 
