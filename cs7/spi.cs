@@ -670,10 +670,10 @@ namespace SPI
             int N);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int spi_String_Vector_get_data(
+        private static extern int spi_String_Vector_item(
             IntPtr v,
-            int N,
-            string[] item);
+            int i,
+            out string item);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern int spi_String_Vector_set_data(
@@ -701,10 +701,15 @@ namespace SPI
             }
 
             string[] array = new string[size];
-            if (spi_String_Vector_get_data(v, size, array) != 0)
+
+            for (int i = 0; i < size; ++i)
             {
-                throw ErrorToException();
+                if (spi_String_Vector_item(v, i, out array[i]) != 0)
+                {
+                    throw ErrorToException();
+                }
             }
+
             return array;
         }
 
@@ -1215,10 +1220,10 @@ namespace SPI
             int nr, int nc);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int spi_String_Matrix_get_data(
+        private static extern int spi_String_Matrix_item(
             IntPtr m,
-            int nr, int nc,
-            string[,] data);
+            int r, int c,
+            out string item);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern int spi_String_Matrix_set_data(
@@ -1248,9 +1253,15 @@ namespace SPI
 
             string[,] array = new string[nr, nc];
 
-            if (spi_String_Matrix_get_data(m, nr, nc, array) != 0)
+            for (int i = 0; i < nr; ++i)
             {
-                throw ErrorToException();
+                for (int j = 0; j < nc; ++j)
+                {
+                    if (spi_String_Matrix_item(m, i, j, out array[i, j]) != 0)
+                    {
+                        throw ErrorToException();
+                    }
+                }
             }
             return array;
         }
