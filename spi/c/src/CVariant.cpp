@@ -445,7 +445,7 @@ void spi_Variant_Vector_delete(spi_Variant_Vector* c)
     SPI_C_LOCK_GUARD;
     if (c)
     {
-        auto cpp = (std::vector<spi::ObjectConstSP>*)(c);
+        auto cpp = (std::vector<spi::Variant>*)(c);
         delete cpp;
     }
 }
@@ -455,7 +455,7 @@ void spi_Variant_Matrix_delete(spi_Variant_Matrix* c)
     SPI_C_LOCK_GUARD;
     if (c)
     {
-        auto cpp = (spi::MatrixData<spi::ObjectConstSP>*)(c);
+        auto cpp = (spi::MatrixData<spi::Variant>*)(c);
         delete cpp;
     }
 }
@@ -465,7 +465,7 @@ spi_Variant_Vector* spi_Variant_Vector_new(int N)
     SPI_C_LOCK_GUARD;
     try
     {
-        auto out = new std::vector<spi::ObjectConstSP>(to_size_t(N));
+        auto out = new std::vector<spi::Variant>(to_size_t(N));
         return (spi_Variant_Vector*)(out);
     }
     catch (std::exception& e)
@@ -480,7 +480,7 @@ spi_Variant_Matrix* spi_Variant_Matrix_new(int nr, int nc)
     SPI_C_LOCK_GUARD;
     try
     {
-        auto out = new spi::MatrixData<spi::ObjectConstSP>(to_size_t(nr), to_size_t(nc));
+        auto out = new spi::MatrixData<spi::Variant>(to_size_t(nr), to_size_t(nc));
         return (spi_Variant_Matrix*)(out);
     }
     catch (std::exception& e)
@@ -504,14 +504,14 @@ int spi_Variant_Vector_item(
 
     try
     {
-        auto cpp = (const std::vector<spi::ObjectConstSP>*)(v);
+        auto cpp = (const std::vector<spi::Variant>*)(v);
         size_t i = to_size_t(ii); 
         if (i >= cpp->size())
         {
             spi_Error_set_function(__FUNCTION__, "Array bounds mismatch");
             return -1;
         }
-        *item = (spi_Variant*)(new spi::ObjectConstSP((*cpp)[i]));
+        *item = (spi_Variant*)(new spi::Variant((*cpp)[i]));
         return 0;
     }
     catch (std::exception& e)
@@ -535,7 +535,7 @@ int spi_Variant_Vector_set_item(
 
     try
     {
-        auto cpp = (std::vector<spi::ObjectConstSP>*)(v);
+        auto cpp = (std::vector<spi::Variant>*)(v);
         size_t i = to_size_t(ii); 
         if (i >= cpp->size())
         {
@@ -544,11 +544,11 @@ int spi_Variant_Vector_set_item(
         }
         if (item)
         {
-            (*cpp)[i] = *(spi::ObjectConstSP*)item;
+            (*cpp)[i] = *(spi::Variant*)item;
         }
         else
         {
-            (*cpp)[i] = spi::ObjectConstSP();
+            (*cpp)[i] = spi::Variant();
         }
         return 0;
     }
@@ -570,7 +570,7 @@ int spi_Variant_Vector_size(
         return -1;
     }
 
-    auto cpp = (const std::vector<spi::ObjectConstSP>*)(v);
+    auto cpp = (const std::vector<spi::Variant>*)(v);
     *size = to_int(cpp->size());
     return 0;
 }
@@ -589,7 +589,7 @@ int spi_Variant_Matrix_item(
 
     try
     {
-        auto cpp = (const spi::MatrixData<spi::ObjectConstSP>*)(m);
+        auto cpp = (const spi::MatrixData<spi::Variant>*)(m);
         size_t r = to_size_t(ir);
         size_t c = to_size_t(ic); 
         if (r >= cpp->Rows() || c >= cpp->Cols())
@@ -597,7 +597,7 @@ int spi_Variant_Matrix_item(
             spi_Error_set_function(__FUNCTION__, "Array bounds mismatch");
             return -1;
         }
-        *item = (spi_Variant*)(new spi::ObjectConstSP((*cpp)[r][c]));
+        *item = (spi_Variant*)(new spi::Variant((*cpp)[r][c]));
         return 0;
     }
     catch (std::exception& e)
@@ -621,7 +621,7 @@ int spi_Variant_Matrix_set_item(
 
     try
     {
-        auto cpp = (spi::MatrixData<spi::ObjectConstSP>*)(m);
+        auto cpp = (spi::MatrixData<spi::Variant>*)(m);
         size_t r = to_size_t(ir);
         size_t c = to_size_t(ic); 
         if (r >= cpp->Rows() || c >= cpp->Cols())
@@ -631,11 +631,11 @@ int spi_Variant_Matrix_set_item(
         }
         if (item)
         {
-            (*cpp)[r][c] = *(spi::ObjectConstSP*)(item);
+            (*cpp)[r][c] = *(spi::Variant*)(item);
         }
         else
         {
-            (*cpp)[r][c] = spi::ObjectConstSP();
+            (*cpp)[r][c] = spi::Variant();
         }
         return 0;
     }
@@ -666,7 +666,7 @@ int spi_Variant_Matrix_size(
 
     try
     {
-        auto cpp = (const spi::MatrixData<spi::ObjectConstSP>*)(m);
+        auto cpp = (const spi::MatrixData<spi::Variant>*)(m);
         *nr = to_int(cpp->Rows());
         *nc = to_int(cpp->Cols());
         return 0;
