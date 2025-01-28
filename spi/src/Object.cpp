@@ -556,12 +556,13 @@ std::map<std::string, size_t> Object::tracked_object_by_class_name()
     std::map<std::string, size_t> out;
     if (g_tracking)
     {
-        for (auto iter = g_tracked.begin(); iter != g_tracked.end(); ++iter)
+        for (std::set<const Object*>::const_iterator iter = g_tracked.begin();
+            iter != g_tracked.end(); ++iter)
         {
             const std::string& class_name = (*iter)->get_class_name();
-            auto iter2 = out.find(class_name);
+            std::map<std::string,size_t>::iterator iter2 = out.find(class_name);
             if (iter2 == out.end())
-                out.insert({ class_name,1 });
+                out.insert(std::pair<std::string,size_t>(class_name,1));
             else
                 iter2->second += 1;
         }
