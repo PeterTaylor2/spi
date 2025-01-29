@@ -1577,7 +1577,7 @@ namespace SPI
                 if (spi_Variant_DateTime_Vector(var.self, out IntPtr dt) != 0)
                     throw ErrorToException();
 
-                PointerHandle h = spi.DateTimeVectorToHandle(dt);
+                using PointerHandle h = spi.DateTimeVectorToHandle(dt);
                 return spi.DateTimeVectorToArray(h);
             }
 
@@ -1586,7 +1586,7 @@ namespace SPI
                 if (spi_Variant_String_Vector(var.self, out IntPtr dt) != 0)
                     throw ErrorToException();
 
-                PointerHandle h = spi.StringVectorToHandle(dt);
+                using PointerHandle h = spi.StringVectorToHandle(dt);
                 return spi.StringVectorToArray(h);
             }
 
@@ -1595,7 +1595,7 @@ namespace SPI
                 if (spi_Variant_Double_Vector(var.self, out IntPtr dt) != 0)
                     throw ErrorToException();
 
-                PointerHandle h = spi.DoubleVectorToHandle(dt);
+                using PointerHandle h = spi.DoubleVectorToHandle(dt);
                 return spi.DoubleVectorToArray(h);
             }
 
@@ -1604,7 +1604,7 @@ namespace SPI
                 if (spi_Variant_Int_Vector(var.self, out IntPtr dt) != 0)
                     throw ErrorToException();
 
-                PointerHandle h = spi.IntVectorToHandle(dt);
+                using PointerHandle h = spi.IntVectorToHandle(dt);
                 return spi.IntVectorToArray(h);
             }
 
@@ -1613,7 +1613,7 @@ namespace SPI
                 if (spi_Variant_Bool_Vector(var.self, out IntPtr dt) != 0)
                     throw ErrorToException();
 
-                PointerHandle h = spi.BoolVectorToHandle(dt);
+                using PointerHandle h = spi.BoolVectorToHandle(dt);
                 return spi.BoolVectorToArray(h);
             }
 
@@ -1622,7 +1622,7 @@ namespace SPI
                 if (spi_Variant_Object_Vector(var.self, out IntPtr dt) != 0)
                     throw ErrorToException();
 
-                PointerHandle h = spi.SpiObjectVectorToHandle(dt);
+                using PointerHandle h = spi.SpiObjectVectorToHandle(dt);
                 return spi.SpiObjectVectorToArray(h);
             }
 
