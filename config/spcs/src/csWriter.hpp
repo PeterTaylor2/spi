@@ -239,6 +239,13 @@ public:
     std::string csi_to_cs(int arrayDim, const std::string& name,
         bool isOptional) const;
 
+    // declare temporary variable declarations needed prior to conversion
+    void cs_to_c_decl(
+        GeneratedOutput& ostr,
+        int arrayDim, 
+        const std::string& name,
+        size_t indent) const;
+
 private:
 
     spdoc::DataTypeConstSP dataType;

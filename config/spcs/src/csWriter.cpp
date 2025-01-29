@@ -840,6 +840,13 @@ void CModule::implementFunctionBegin(
     }
     ostr << ")\n"
         << spaces << "{\n";
+
+    for (size_t i = 0; i < func->inputs.size(); ++i)
+    {
+        const spdoc::AttributeConstSP& arg = func->inputs[i];
+        CDataType(arg->dataType, service).cs_to_c_decl(
+            ostr, arg->arrayDim, arg->name, indent + 4);
+    }
 }
 
 void CModule::implementFunctionEnd(
@@ -857,8 +864,9 @@ void CModule::implementFunctionEnd(
     {
         SPI_PRE_CONDITION(func->outputs.size() == 0);
 
-        std::string captureOutput = CDataType(func->returnType, service).c_to_csi(
-            func->returnArrayDim, "out");
+        CDataType cdt(func->returnType, service);
+
+        std::string captureOutput = cdt.c_to_csi(func->returnArrayDim, "out");
 
         if (!captureOutput.empty())
         {
@@ -868,7 +876,7 @@ void CModule::implementFunctionEnd(
 
         ostr << "\n"
             << spaces << gap << "return "
-            << CDataType(func->returnType, service).csi_to_cs(func->returnArrayDim, "out", func->optionalReturnType)
+            << cdt.csi_to_cs(func->returnArrayDim, "out", func->optionalReturnType)
             << ";\n";
     }
     else if (func->outputs.size() == 0)
@@ -1217,6 +1225,13 @@ void CModule::implementClass(
         ostr << ")\n"
             << "    {\n";
 
+        for (size_t i = 0; i < cls->attributes.size(); ++i)
+        {
+            const spdoc::ClassAttributeConstSP& arg = cls->attributes[i];
+            CDataType(arg->dataType, service).cs_to_c_decl(
+                ostr, arg->arrayDim, arg->name, 8);
+        }
+
         ostr << "        IntPtr inner = " << cname << "_new(";
         size_t pos = cname.length() + 28;
 
@@ -1302,8 +1317,11 @@ void CModule::implementClass(
         }
 
         ostr << cdt.csType(cfa->arrayDim, false) << " " << service->rename(cfa->name, true) << ")\n"
-            << "    {\n"
-            << "        IntPtr inner = " << cfFuncNames[i] << "("
+            << "    {\n";
+
+        cdt.cs_to_c_decl(ostr, arrayDim, cfa->name, 8);
+
+        ostr << "        IntPtr inner = " << cfFuncNames[i] << "("
             << cdt.cs_to_c(arrayDim, cfa->name) << ");\n"
             << "\n"
             << "        if (inner == IntPtr.Zero)\n"
@@ -1775,6 +1793,7 @@ void CModule::implementProperty(
             << "        set\n" // note that the input is arbitrary called value
             << "        {\n";
 
+        cdt.cs_to_c_decl(ostr, attr->arrayDim, "value", 12);
         ostr << "            IntPtr modified = " << cname << "_set_" << attr->name << "(self,";
 
         std::string arg = cdt.cs_to_c(attr->arrayDim, "value");
@@ -2276,6 +2295,107 @@ namespace
     }
 }
 
+// declares temporary variables subsequently used in cs_to_c
+void CDataType::cs_to_c_decl(
+    GeneratedOutput& ostr,
+    int arrayDim,
+    const std::string& name,
+    size_t indent) const
+{
+    // declare anything that returns PointerHandle via using
+    // these will be outputs from ..FromArray functions in this context
+
+    std::ostringstream oss;
+
+    std::string spaces(indent, ' ');
+
+    switch (arrayDim)
+    {
+    case 0: // scalars
+        break;
+    case 1: // vectors
+        switch (publicType)
+        {
+        case spdoc::PublicType::INT:
+            oss << "spi.IntVectorFromArray(" << service->rename(name, true) << ")";
+            break;
+        case spdoc::PublicType::BOOL:
+            oss << "spi.BoolVectorFromArray(" << service->rename(name, true) << ")";
+            break;
+        case spdoc::PublicType::DOUBLE:
+            oss << "spi.DoubleVectorFromArray(" << service->rename(name, true) << ")";
+            break;
+        case spdoc::PublicType::STRING:
+            oss << "spi.StringVectorFromArray(" << service->rename(name, true) << ")";
+            break;
+        case spdoc::PublicType::DATE:
+            oss << "spi.DateVectorFromArray(" << service->rename(name, true) << ")";
+            break;
+        case spdoc::PublicType::DATETIME:
+            oss << "spi.DateTimeVectorFromArray(" << service->rename(name, true) << ")";
+            break;
+        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::CLASS:
+            oss << forArrayTranslations(csType(0, false)) << "_VectorFromArray(" << service->rename(name, true) << ")";
+            break;
+        case spdoc::PublicType::VARIANT:
+            oss << "spi.SpiVariantVectorFromArray(" << service->rename(name, true) << ")";
+            break;
+        case spdoc::PublicType::OBJECT:
+            oss << "spi.SpiObjectVectorFromArray(" << service->rename(name, true) << ")";
+            break;
+        case spdoc::PublicType::MAP:
+        case spdoc::PublicType::CHAR:
+        default:
+            oss << "// " << __FUNCTION__ << " Vector not implemented for " <<
+                spdoc::PublicType::to_string(publicType);
+        }
+        ostr << spaces << "using var h_v_" << name << " = " << oss.str() << ";\n";
+        break;
+    case 2: // matrix
+        switch (publicType)
+        {
+        case spdoc::PublicType::BOOL:
+            oss << "spi.BoolMatrixFromArray(" << service->rename(name, true) << ")";
+            break;
+        case spdoc::PublicType::INT:
+            oss << "spi.IntMatrixFromArray(" << service->rename(name, true) << ")";
+            break;
+        case spdoc::PublicType::DOUBLE:
+            oss << "spi.DoubleMatrixFromArray(" << service->rename(name, true) << ")";
+            break;
+        case spdoc::PublicType::STRING:
+            oss << "spi.StringMatrixFromArray(" << service->rename(name, true) << ")";
+            break;
+        case spdoc::PublicType::DATE:
+            oss << "spi.DateMatrixFromArray(" << service->rename(name, true) << ")";
+            break;
+        case spdoc::PublicType::DATETIME:
+            oss << "spi.DateTimeMatrixFromArray(" << service->rename(name, true) << ")";
+            break;
+        case spdoc::PublicType::VARIANT:
+            oss << "spi.SpiVariantMatrixFromArray(" << service->rename(name, true) << ")";
+            break;
+        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::CLASS:
+            oss << forArrayTranslations(csType(0, false)) << "_MatrixFromArray(" << service->rename(name, true) << ")";
+            break;
+        case spdoc::PublicType::OBJECT:
+            oss << "spi.SpiObjectMatrixFromArray(" << service->rename(name, true) << ")";
+            break;
+        case spdoc::PublicType::MAP:
+        case spdoc::PublicType::CHAR:
+        default:
+            oss << "// " << __FUNCTION__ << " Matrix not implemented for " <<
+                spdoc::PublicType::to_string(publicType);
+        }
+        ostr << spaces << "using var h_m_" << name << " = " << oss.str() << ";\n";
+        break;
+    default:
+        SPI_THROW_RUNTIME_ERROR("ArrayDim " << arrayDim << " out of range [0,2]");
+    }
+}
+
 // this function converts from C# type to PINVOKE type
 //
 // sometimes we don't have to do anything (the standard marshalling does the business)
@@ -2329,32 +2449,16 @@ std::string CDataType::cs_to_c(int arrayDim, const std::string& name) const
         switch (publicType)
         {
         case spdoc::PublicType::INT:
-            oss << "spi.IntVectorFromArray(" << service->rename(name, true) << ").get_inner()";
-            break;
         case spdoc::PublicType::BOOL:
-            oss << "spi.BoolVectorFromArray(" << service->rename(name, true) << ").get_inner()";
-            break;
         case spdoc::PublicType::DOUBLE:
-            oss << "spi.DoubleVectorFromArray(" << service->rename(name, true) << ").get_inner()";
-            break;
         case spdoc::PublicType::STRING:
-            oss << "spi.StringVectorFromArray(" << service->rename(name, true) << ").get_inner()";
-            break;
         case spdoc::PublicType::DATE:
-            oss << "spi.DateVectorFromArray(" << service->rename(name, true) << ").get_inner()";
-            break;
         case spdoc::PublicType::DATETIME:
-            oss << "spi.DateTimeVectorFromArray(" << service->rename(name, true) << ").get_inner()";
-            break;
         case spdoc::PublicType::ENUM:
         case spdoc::PublicType::CLASS:
-            oss << forArrayTranslations(csType(0, false)) << "_VectorFromArray(" << service->rename(name, true) << ").get_inner()";
-            break;
         case spdoc::PublicType::VARIANT:
-            oss << "spi.SpiVariantVectorFromArray(" << service->rename(name, true) << ").get_inner()";
-            break;
         case spdoc::PublicType::OBJECT:
-            oss << "spi.SpiObjectVectorFromArray(" << service->rename(name, true) << ").get_inner()";
+            oss << "h_v_" << name << ".get_inner()";
             break;
         case spdoc::PublicType::MAP:
         case spdoc::PublicType::CHAR:
@@ -2367,32 +2471,16 @@ std::string CDataType::cs_to_c(int arrayDim, const std::string& name) const
         switch (publicType)
         {
         case spdoc::PublicType::BOOL:
-            oss << "spi.BoolMatrixFromArray(" << service->rename(name, true) << ").get_inner()";
-            break;
         case spdoc::PublicType::INT:
-            oss << "spi.IntMatrixFromArray(" << service->rename(name, true) << ").get_inner()";
-            break;
         case spdoc::PublicType::DOUBLE:
-            oss << "spi.DoubleMatrixFromArray(" << service->rename(name, true) << ").get_inner()";
-            break;
         case spdoc::PublicType::STRING:
-            oss << "spi.StringMatrixFromArray(" << service->rename(name, true) << ").get_inner()";
-            break;
         case spdoc::PublicType::DATE:
-            oss << "spi.DateMatrixFromArray(" << service->rename(name, true) << ").get_inner()";
-            break;
         case spdoc::PublicType::DATETIME:
-            oss << "spi.DateTimeMatrixFromArray(" << service->rename(name, true) << ").get_inner()";
-            break;
         case spdoc::PublicType::VARIANT:
-            oss << "spi.SpiVariantMatrixFromArray(" << service->rename(name, true) << ").get_inner()";
-            break;
         case spdoc::PublicType::ENUM:
         case spdoc::PublicType::CLASS:
-            oss << forArrayTranslations(csType(0, false)) << "_MatrixFromArray(" << service->rename(name, true) << ").get_inner()";
-            break;
         case spdoc::PublicType::OBJECT:
-            oss << "spi.SpiObjectMatrixFromArray(" << service->rename(name, true) << ").get_inner()";
+            oss << "h_m_" << name << ".get_inner()";
             break;
         case spdoc::PublicType::MAP:
         case spdoc::PublicType::CHAR:
@@ -2414,7 +2502,8 @@ std::string CDataType::cs_to_c(int arrayDim, const std::string& name) const
 
 // this is code which converts from PINVOKE output to an intermediate C# type
 // sometimes it isn't needed at all
-// similar purpose to cs_to_csi accept this is data on the way out rather than in
+// if the temporary variable is a PointerHandle then declare with using
+// similar purpose to cs_to_csi except this is data on the way out rather than in
 std::string CDataType::c_to_csi(int arrayDim, const std::string& name) const
 {
     std::ostringstream oss;
@@ -2456,32 +2545,32 @@ std::string CDataType::c_to_csi(int arrayDim, const std::string& name) const
         switch (publicType)
         {
         case spdoc::PublicType::BOOL:
-            oss << "var o_" << name << " = spi.BoolVectorToHandle(c_" << name << ")";
+            oss << "using var o_" << name << " = spi.BoolVectorToHandle(c_" << name << ")";
             break;
         case spdoc::PublicType::INT:
-            oss << "var o_" << name << " = spi.IntVectorToHandle(c_" << name << ")";
+            oss << "using var o_" << name << " = spi.IntVectorToHandle(c_" << name << ")";
             break;
         case spdoc::PublicType::DOUBLE:
-            oss << "var o_" << name << " = spi.DoubleVectorToHandle(c_" << name << ")";
+            oss << "using var o_" << name << " = spi.DoubleVectorToHandle(c_" << name << ")";
             break;
         case spdoc::PublicType::STRING:
-            oss << "var o_" << name << " = spi.StringVectorToHandle(c_" << name << ")";
+            oss << "using var o_" << name << " = spi.StringVectorToHandle(c_" << name << ")";
             break;
         case spdoc::PublicType::DATE:
-            oss << "var o_" << name << " = spi.DateVectorToHandle(c_" << name << ")";
+            oss << "using var o_" << name << " = spi.DateVectorToHandle(c_" << name << ")";
             break;
         case spdoc::PublicType::DATETIME:
-            oss << "var o_" << name << " = spi.DateTimeVectorToHandle(c_" << name << ")";
+            oss << "using var o_" << name << " = spi.DateTimeVectorToHandle(c_" << name << ")";
             break;
         case spdoc::PublicType::ENUM:
         case spdoc::PublicType::CLASS:
-            oss << "var o_" << name << " = " << forArrayTranslations(csType(0, false)) << "_VectorToHandle(c_" << name << ")";
+            oss << "using var o_" << name << " = " << forArrayTranslations(csType(0, false)) << "_VectorToHandle(c_" << name << ")";
             break;
         case spdoc::PublicType::VARIANT:
-            oss << "var o_" << name << " = spi.SpiVariantVectorToHandle(c_" << name << ")";
+            oss << "using var o_" << name << " = spi.SpiVariantVectorToHandle(c_" << name << ")";
             break;
         case spdoc::PublicType::OBJECT:
-            oss << "var o_" << name << " = spi.SpiObjectVectorToHandle(c_" << name << ")";
+            oss << "using var o_" << name << " = spi.SpiObjectVectorToHandle(c_" << name << ")";
             break;
         case spdoc::PublicType::MAP:
         default:
@@ -2493,32 +2582,32 @@ std::string CDataType::c_to_csi(int arrayDim, const std::string& name) const
         switch (publicType)
         {
         case spdoc::PublicType::BOOL:
-            oss << "var o_" << name << " = spi.BoolMatrixToHandle(c_" << name << ")";
+            oss << "using var o_" << name << " = spi.BoolMatrixToHandle(c_" << name << ")";
             break;
         case spdoc::PublicType::INT:
-            oss << "var o_" << name << " = spi.IntMatrixToHandle(c_" << name << ")";
+            oss << "using var o_" << name << " = spi.IntMatrixToHandle(c_" << name << ")";
             break;
         case spdoc::PublicType::DOUBLE:
-            oss << "var o_" << name << " = spi.DoubleMatrixToHandle(c_" << name << ")";
+            oss << "using var o_" << name << " = spi.DoubleMatrixToHandle(c_" << name << ")";
             break;
         case spdoc::PublicType::STRING:
-            oss << "var o_" << name << " = spi.StringMatrixToHandle(c_" << name << ")";
+            oss << "using var o_" << name << " = spi.StringMatrixToHandle(c_" << name << ")";
             break;
         case spdoc::PublicType::DATE:
-            oss << "var o_" << name << " = spi.DateMatrixToHandle(c_" << name << ")";
+            oss << "using var o_" << name << " = spi.DateMatrixToHandle(c_" << name << ")";
             break;
         case spdoc::PublicType::DATETIME:
-            oss << "var o_" << name << " = spi.DateTimeMatrixToHandle(c_" << name << ")";
+            oss << "using var o_" << name << " = spi.DateTimeMatrixToHandle(c_" << name << ")";
             break;
         case spdoc::PublicType::ENUM:
         case spdoc::PublicType::CLASS:
-            oss << "var o_" << name << " = " << forArrayTranslations(csType(0, false)) << "_MatrixToHandle(c_" << name << ")";
+            oss << "using var o_" << name << " = " << forArrayTranslations(csType(0, false)) << "_MatrixToHandle(c_" << name << ")";
             break;
         case spdoc::PublicType::VARIANT:
-            oss << "var o_" << name << " = spi.SpiVariantMatrixToHandle(c_" << name << ")";
+            oss << "using var o_" << name << " = spi.SpiVariantMatrixToHandle(c_" << name << ")";
             break;
         case spdoc::PublicType::OBJECT:
-            oss << "var o_" << name << " = spi.SpiObjectMatrixToHandle(c_" << name << ")";
+            oss << "using var o_" << name << " = spi.SpiObjectMatrixToHandle(c_" << name << ")";
             break;
         case spdoc::PublicType::MAP:
         default:
@@ -2667,4 +2756,3 @@ std::string CDataType::csi_to_cs(
     }
     return returnedOutput;
 }
-
