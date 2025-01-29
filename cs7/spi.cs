@@ -1356,6 +1356,9 @@ namespace SPI
         private static extern int spi_Variant_type(IntPtr m, out string vt);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int spi_Variant_array_element_type(IntPtr m, out string vt);
+
+        [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern void spi_Variant_Matrix_delete(IntPtr m);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
@@ -1476,9 +1479,26 @@ namespace SPI
                 return v.self;
             }
 
+            /// returns the type of the Variant with the following possible values:
+            /// Undefined, Char, String, Int, Double, Bool, Date, DateTime, Map, Array, Object
+            /// 
+            /// if the variant type is Array then you may wish to enquire
+            /// further using array_element_type()
             public string type()
             {
                 if (spi_Variant_type(self, out string vt) != 0)
+                {
+                    throw spi.ErrorToException();
+                }
+                return vt;
+            }
+
+            /// returns the common element type if the Variant is an array
+            /// this will returned UNDEFINED if the Variant is not an array
+            /// or if the Variant array does not have a common element type
+            public string array_element_type()
+            {
+                if (spi_Variant_array_element_type(self, out string vt) != 0)
                 {
                     throw spi.ErrorToException();
                 }
