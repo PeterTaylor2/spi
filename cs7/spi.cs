@@ -1459,9 +1459,8 @@ namespace SPI
             {
                 if (self != IntPtr.Zero)
                 {
-                    IntPtr tmp = self;
+                    spi_Variant_delete(self);
                     self = IntPtr.Zero;
-                    spi_Variant_delete(tmp);
                 }
             }
 
@@ -1753,9 +1752,8 @@ namespace SPI
             {
                 if (self != IntPtr.Zero)
                 {
-                    IntPtr tmp = self;
+                    spi_Object_delete(self);
                     self = IntPtr.Zero;
-                    spi_Object_delete(tmp);
                 }
             }
 
