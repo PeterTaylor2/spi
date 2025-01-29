@@ -83,6 +83,17 @@ extern "C"
         char** vt);
 
     SPI_C_IMPORT
+    int spi_Variant_array_num_dimensions(
+        spi_Variant* var,
+        int* numDimensions);
+
+    SPI_C_IMPORT
+    int spi_Variant_array_dimensions(
+        spi_Variant* var,
+        int ND,
+        int dimensions[]);
+
+    SPI_C_IMPORT
     int spi_Variant_String(
         spi_Variant* var,
         char** str);

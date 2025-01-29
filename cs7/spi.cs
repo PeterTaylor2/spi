@@ -1359,6 +1359,12 @@ namespace SPI
         private static extern int spi_Variant_array_element_type(IntPtr m, out string vt);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int spi_Variant_array_num_dimensions(IntPtr m, out int ND);
+
+        [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int spi_Variant_array_dimensions(IntPtr m, int ND, int[] dimensions);
+
+        [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern void spi_Variant_Matrix_delete(IntPtr m);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
@@ -1503,6 +1509,20 @@ namespace SPI
                     throw spi.ErrorToException();
                 }
                 return vt;
+            }
+
+            public int[] array_dimensions()
+            {
+                if (spi_Variant_array_num_dimensions(self, out int ND) != 0)
+                {
+                    throw spi.ErrorToException();
+                }
+                int[] dimensions = new int[ND];
+                if (spi_Variant_array_dimensions(self, ND, dimensions) != 0)
+                {
+                    throw spi.ErrorToException();
+                }
+                return dimensions;
             }
 
             static public implicit operator System.DateTime(SpiVariant var)

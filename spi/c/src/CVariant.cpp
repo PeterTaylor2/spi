@@ -182,6 +182,60 @@ int spi_Variant_array_element_type(spi_Variant* var, char** vt)
     return 0;
 }
 
+int spi_Variant_array_num_dimensions(spi_Variant* var, int* numDimensions)
+{
+    SPI_C_LOCK_GUARD;
+    try
+    {
+        if (!var || !numDimensions)
+        {
+            spi_Error_set_function(__FUNCTION__, "NULL inputs");
+            return -1;
+        }
+        spi::IArrayConstSP array = ((spi::Variant*)var)->GetValue().getArray();
+        std::vector<size_t> dimensions = array->dimensions();
+        *numDimensions = to_int(dimensions.size());
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
+    return 0;
+}
+
+int spi_Variant_array_dimensions(spi_Variant* var, int ND, int dimensions[])
+{
+    SPI_C_LOCK_GUARD;
+    try
+    {
+        if (!var)
+        {
+            spi_Error_set_function(__FUNCTION__, "NULL inputs");
+            return -1;
+        }
+        spi::IArrayConstSP array = ((spi::Variant*)var)->GetValue().getArray();
+        size_t uND = to_size_t(ND);
+        const std::vector<size_t>& arrayDimensions = array->dimensions();
+        if (arrayDimensions.size() != uND)
+        {
+            spi_Error_set_function(__FUNCTION__, "Array size mismatch");
+            return -1;
+        }
+        for (size_t i = 0; i < uND; ++i)
+            dimensions[i] = to_int(arrayDimensions[i]);
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
+    return 0;
+
+}
+
 int spi_Variant_String(spi_Variant * var, char ** str)
 {
     SPI_C_LOCK_GUARD;
