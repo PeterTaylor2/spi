@@ -78,6 +78,11 @@ extern "C"
         char** vt);
 
     SPI_C_IMPORT
+    int spi_Variant_array_element_type(
+        spi_Variant* var,
+        char** vt);
+
+    SPI_C_IMPORT
     int spi_Variant_String(
         spi_Variant* var,
         char** str);

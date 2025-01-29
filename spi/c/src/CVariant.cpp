@@ -151,6 +151,37 @@ int spi_Variant_type(spi_Variant* var, char** vt)
     return 0;
 }
 
+int spi_Variant_array_element_type(spi_Variant* var, char** vt)
+{
+    SPI_C_LOCK_GUARD;
+    try
+    {
+        if (!var || !vt)
+        {
+            spi_Error_set_function(__FUNCTION__, "NULL inputs");
+            return -1;
+        }
+        spi::Value::Type valueType = ((spi::Variant*)var)->ValueType();
+        spi::Value::Type arrayElementType = spi::Value::UNDEFINED;
+        switch (valueType)
+        {
+        case spi::Value::ARRAY:
+            arrayElementType = ((spi::Variant*)var)->GetValue().getArray()->elementType();
+            break;
+        default:
+            break;
+        }
+        *vt = spi_String_copy(spi::Value::TypeToString(arrayElementType));
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
+    return 0;
+}
+
 int spi_Variant_String(spi_Variant * var, char ** str)
 {
     SPI_C_LOCK_GUARD;
