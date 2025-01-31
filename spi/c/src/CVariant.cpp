@@ -169,7 +169,8 @@ int spi_Variant_array_element_type(spi_Variant* var, char** vt)
             arrayElementType = ((spi::Variant*)var)->GetValue().getArray()->elementType();
             break;
         default:
-            break;
+            spi_Error_set_function(__FUNCTION__, "Input is not an array");
+            return -1;
         }
         *vt = spi_String_copy(spi::Value::TypeToString(arrayElementType));
         return 0;
