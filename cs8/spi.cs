@@ -1497,30 +1497,110 @@ namespace SPI
                 return vt;
             }
 
+            public string value_type
+            {
+                get
+                {
+                    return type();
+                }
+            }
+
             /// returns the common element type if the Variant is an array
             /// this will returned UNDEFINED if the Variant is not an array
             /// or if the Variant array does not have a common element type
-            public string array_element_type()
+            public string array_element_type
             {
-                if (spi_Variant_array_element_type(self, out string vt) != 0)
+                get
                 {
-                    throw spi.ErrorToException();
+                    if (spi_Variant_array_element_type(self, out string vt) != 0)
+                    {
+                        throw spi.ErrorToException();
+                    }
+                    return vt;
                 }
-                return vt;
             }
 
-            public int[] array_dimensions()
+            public int[] array_dimensions
             {
-                if (spi_Variant_array_num_dimensions(self, out int ND) != 0)
+                get
                 {
-                    throw spi.ErrorToException();
+                    if (spi_Variant_array_num_dimensions(self, out int ND) != 0)
+                    {
+                        throw ErrorToException();
+                    }
+                    int[] dimensions = new int[ND];
+                    if (spi_Variant_array_dimensions(self, ND, dimensions) != 0)
+                    {
+                        throw spi.ErrorToException();
+                    }
+                    return dimensions;
                 }
-                int[] dimensions = new int[ND];
-                if (spi_Variant_array_dimensions(self, ND, dimensions) != 0)
+            }
+
+            public System.DateTime scalar_date
+            {
+                get
                 {
-                    throw spi.ErrorToException();
+                    if (spi_Variant_DateTime(self, out double dt) != 0)
+                        throw ErrorToException();
+
+                    return DateTimeFromCDateTime(dt);
                 }
-                return dimensions;
+            }
+
+            public System.String scalar_string
+            {
+                get
+                {
+                    if (spi_Variant_String(self, out string str) != 0)
+                        throw ErrorToException();
+
+                    return str;
+                }
+            }
+
+            public double scalar_double
+            {
+                get
+                {
+                    if (spi_Variant_Double(self, out double d) != 0)
+                        throw ErrorToException();
+
+                    return d;
+                }
+            }
+
+            public int scalar_int
+            {
+                get
+                {
+                    if (spi_Variant_Int(self, out int i) != 0)
+                        throw ErrorToException();
+
+                    return i;
+                }
+            }
+
+            public bool scalar_bool
+            {
+                get
+                {
+                    if (spi_Variant_Bool(self, out bool b) != 0)
+                        throw ErrorToException();
+
+                    return b;
+                }
+            }
+
+            public SpiObject scalar_object
+            {
+                get
+                {
+                    if (spi_Variant_Object(self, out IntPtr o) != 0)
+                        throw ErrorToException();
+
+                    return SpiObject.Wrap(o);
+                }
             }
 
             static public implicit operator System.DateTime(SpiVariant var)
