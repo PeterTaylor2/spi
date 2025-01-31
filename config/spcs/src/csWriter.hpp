@@ -237,7 +237,8 @@ public:
 
     std::string c_to_csi(int arrayDim, const std::string& name) const;
     std::string csi_to_cs(int arrayDim, const std::string& name,
-        bool isOptional) const;
+        bool isOptional,
+        bool isNullable) const;
 
     // declare temporary variable declarations needed prior to conversion
     void cs_to_c_decl(

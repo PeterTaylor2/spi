@@ -858,8 +858,6 @@ void CModule::implementFunctionEnd(
     std::string spaces(indent, ' ');
     std::string gap(4, ' ');
 
-    bool isNullable = service->nullable() && func->optionalReturnType;
-
     if (func->returnType)
     {
         SPI_PRE_CONDITION(func->outputs.size() == 0);
@@ -876,7 +874,8 @@ void CModule::implementFunctionEnd(
 
         ostr << "\n"
             << spaces << gap << "return "
-            << cdt.csi_to_cs(func->returnArrayDim, "out", func->optionalReturnType)
+            << cdt.csi_to_cs(func->returnArrayDim, "out", func->optionalReturnType,
+                service->nullable())
             << ";\n";
     }
     else if (func->outputs.size() == 0)
@@ -899,7 +898,8 @@ void CModule::implementFunctionEnd(
                     << spaces << gap << captureOutput << ";\n";
             }
 
-            args.push_back(cdt.csi_to_cs(out->arrayDim, out->name, out->isOptional));
+            args.push_back(cdt.csi_to_cs(
+                out->arrayDim, out->name, out->isOptional, service->nullable()));
         }
 
         if (args.size() == 1)
@@ -1417,7 +1417,7 @@ void CModule::implementClass(
 
     if (cls->isAbstract)
     {
-        // to avoid slicing an abstract class must be able to wrap itself using
+        // to avoid slicing an abstract class must be able to wrapper itself using
         // the correct sub-class - hence just like at the C++ level we need to
         // define the sub-class-wrappers to be tried out in turn
 
@@ -1474,7 +1474,7 @@ void CModule::implementClass(
     }
     else
     {
-        // for a non-abstract class we just wrap (checking that we have the right type)
+        // for a non-abstract class we just wrapper (checking that we have the right type)
         if (service->nullable())
         {
             ostr << "\n"
@@ -1524,7 +1524,7 @@ void CModule::implementClass(
 
     if (!cls->baseClassName.empty())
     {
-        // for a class with a base class we supply BaseWrap which tries to wrap
+        // for a class with a base class we supply BaseWrap which tries to wrapper
         // but returns null if the given inner type is not an instance of our type
         // we call Wrap to allow a deep class hierarchy
 
@@ -1595,57 +1595,57 @@ void CModule::implementClass(
         // on input the array itself is declared to be nullable
 
         ostr << "\n"
-        << "public static spi.PointerHandle _" << cls->name << "_VectorFromArray(" << cls->name << "[]?" << " array)\n"
-        << "{\n"
-        << "    int size = array is null ? 0 : array.Length;\n"
-        << "    IntPtr v = " << cname << "_Vector_new(size);\n"
-        << "    if (v == IntPtr.Zero)\n"
-        << "    {\n"
-        << "        throw spi.ErrorToException();\n"
-        << "    }\n"
-        << "\n"
-        << "    spi.PointerHandle h = new spi.PointerHandle(v, " << cname << "_Vector_delete);\n"
-        << ""
-        << "    if (!(array is null))\n"
-        << "    {\n"
-        << "        for (int i = 0; i < size; ++i)\n"
-        << "        {\n"
-        << "            IntPtr item = spi.SpiObject.get_inner(array[i]);\n"
-        << "            if (item == IntPtr.Zero)\n"
-        << "                throw new Exception(\"Null pointer in array\");\n"
-        << "            if (spi_Instance_Vector_set_item(v, i, item) != 0)\n"
-        << "            {\n"
-        << "                throw spi.ErrorToException();\n"
-        << "            }\n"
-        << "        }\n"
-        << "    }\n"
-        << "\n"
-        << "    return h;\n"
-        << "}\n";
+            << "public static spi.PointerHandle _" << cls->name << "_VectorFromArray(" << cls->name << "[]?" << " array)\n"
+            << "{\n"
+            << "    int size = array is null ? 0 : array.Length;\n"
+            << "    IntPtr v = " << cname << "_Vector_new(size);\n"
+            << "    if (v == IntPtr.Zero)\n"
+            << "    {\n"
+            << "        throw spi.ErrorToException();\n"
+            << "    }\n"
+            << "\n"
+            << "    spi.PointerHandle h = new spi.PointerHandle(v, " << cname << "_Vector_delete);\n"
+            << ""
+            << "    if (!(array is null))\n"
+            << "    {\n"
+            << "        for (int i = 0; i < size; ++i)\n"
+            << "        {\n"
+            << "            IntPtr item = spi.SpiObject.get_inner(array[i]);\n"
+            << "            if (item == IntPtr.Zero)\n"
+            << "                throw new Exception(\"Null pointer in array\");\n"
+            << "            if (spi_Instance_Vector_set_item(v, i, item) != 0)\n"
+            << "            {\n"
+            << "                throw spi.ErrorToException();\n"
+            << "            }\n"
+            << "        }\n"
+            << "    }\n"
+            << "\n"
+            << "    return h;\n"
+            << "}\n";
 
-    ostr << "\n"
-        << "public static " << cls->name << "[] _" << cls->name << "_VectorToArray(spi.PointerHandle h)\n"
-        << "{\n"
-        << "    IntPtr v = h.get_inner();\n"
-        << "    int size;\n"
-        << "    if (spi_Instance_Vector_size(v, out size) != 0)\n"
-        << "    {\n"
-        << "        throw spi.ErrorToException();\n"
-        << "    }\n"
-        << "\n"
-        << "    " << cls->name << "[] array = new " << cls->name << "[size];\n"
-        << "    for (int i = 0; i < size; ++i)\n"
-        << "    {\n"
-        << "        if (spi_Instance_Vector_item(v, i, out IntPtr item) != 0)\n"
-        << "        {\n"
-        << "            throw spi.ErrorToException();\n"
-        << "        }\n"
-        << "        if (item == IntPtr.Zero)\n"
-        << "            throw new Exception(\"Null pointer in array\");\n"
-        << "        array[i] = " << cls->name << ".Wrap(item);\n"
-        << "    }\n"
-        << "    return array;\n"
-        << "}\n";
+        ostr << "\n"
+            << "public static " << cls->name << "[] _" << cls->name << "_VectorToArray(spi.PointerHandle h)\n"
+            << "{\n"
+            << "    IntPtr v = h.get_inner();\n"
+            << "    int size;\n"
+            << "    if (spi_Instance_Vector_size(v, out size) != 0)\n"
+            << "    {\n"
+            << "        throw spi.ErrorToException();\n"
+            << "    }\n"
+            << "\n"
+            << "    " << cls->name << "[] array = new " << cls->name << "[size];\n"
+            << "    for (int i = 0; i < size; ++i)\n"
+            << "    {\n"
+            << "        if (spi_Instance_Vector_item(v, i, out IntPtr item) != 0)\n"
+            << "        {\n"
+            << "            throw spi.ErrorToException();\n"
+            << "        }\n"
+            << "        if (item == IntPtr.Zero)\n"
+            << "            throw new Exception(\"Null pointer in array\");\n"
+            << "        array[i] = " << cls->name << ".Wrap(item);\n"
+            << "    }\n"
+            << "    return array;\n"
+            << "}\n";
 
         // the second two versions of VectorFromArray and VectorToArray handle the case that elements of the array can be null
         // on input the array itself is declared to be nullable
@@ -1784,7 +1784,8 @@ void CModule::implementProperty(
         ostr << "            " << captureOutput << ";\n\n";
     }
 
-    ostr << "            return " << cdt.csi_to_cs(attr->arrayDim, attr->name, attr->isOptional) << ";\n"
+    ostr << "            return "
+        << cdt.csi_to_cs(attr->arrayDim, attr->name, attr->isOptional, service->nullable()) << ";\n"
         << "        }\n";
 
     if (canPut)
@@ -2625,9 +2626,13 @@ std::string CDataType::c_to_csi(int arrayDim, const std::string& name) const
 std::string CDataType::csi_to_cs(
     int arrayDim,
     const std::string& name,
-    bool isOptional) const
+    bool isOptional,
+    bool isNullable) const
 {
     std::ostringstream oss;
+
+    const char* wrapper = (isOptional && isNullable) ? "WrapNullable" : "Wrap";
+    const char* nullableArray = (isOptional && isNullable) ? "_Nullable" : "";
 
     switch (arrayDim)
     {
@@ -2654,13 +2659,13 @@ std::string CDataType::csi_to_cs(
             break;
         case spdoc::PublicType::CLASS:
             oss << service->nsGlobal() << "." << dataType->nsService << "."
-                << dataType->name << ".Wrap(c_" << name << ")";
+                << dataType->name << "." << wrapper << "(c_" << name << ")";
             break;
         case spdoc::PublicType::OBJECT:
-            oss << "spi.SpiObject.Wrap(c_" << name << ")";
+            oss << "spi.SpiObject." << wrapper << "(c_" << name << ")";
             break;
         case spdoc::PublicType::MAP:
-            oss << "spi.SpiMap.Wrap(c_" << name << ")";
+            oss << "spi.SpiMap." << wrapper << "(c_" << name << ")";
             break;
         case spdoc::PublicType::VARIANT:
             oss << "new spi.SpiVariant(c_" << name << ")";
@@ -2695,8 +2700,12 @@ std::string CDataType::csi_to_cs(
             oss << "spi.SpiVariantVectorToArray(o_" << name << ")";
             break;
         case spdoc::PublicType::ENUM:
+            oss << forArrayTranslations(csType(0, false))
+                << "_VectorToArray(o_" << name << ")";
+            break;
         case spdoc::PublicType::CLASS:
-            oss << forArrayTranslations(csType(0, false)) << "_VectorToArray(o_" << name << ")";
+            oss << forArrayTranslations(csType(0, false)) << nullableArray
+                << "_VectorToArray(o_" << name << ")";
             break;
         case spdoc::PublicType::OBJECT:
             oss << "spi.SpiObjectVectorToArray(o_" << name << ")";
@@ -2732,8 +2741,13 @@ std::string CDataType::csi_to_cs(
             oss << "spi.SpiVariantMatrixToArray(o_" << name << ")";
             break;
         case spdoc::PublicType::ENUM:
+            oss << forArrayTranslations(csType(0, false))
+                << "_MatrixToArray(o_" << name << ")";
+            break;
+        // FIXME: I cannot see that _MatrixToArray has been implemented
         case spdoc::PublicType::CLASS:
-            oss << forArrayTranslations(csType(0, false)) << "_MatrixToArray(o_" << name << ")";
+            oss << forArrayTranslations(csType(0, false)) << nullableArray
+                << "_MatrixToArray(o_" << name << ")";
             break;
         case spdoc::PublicType::OBJECT:
             oss << "spi.SpiObjectMatrixToArray(o_" << name << ")";
