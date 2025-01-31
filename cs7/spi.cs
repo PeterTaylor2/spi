@@ -1497,132 +1497,251 @@ namespace SPI
                 return vt;
             }
 
-            /// returns the common element type if the Variant is an array
-            /// this will returned UNDEFINED if the Variant is not an array
-            /// or if the Variant array does not have a common element type
-            public string array_element_type()
+            public string Value_Type
             {
-                if (spi_Variant_array_element_type(self, out string vt) != 0)
+                get
                 {
-                    throw spi.ErrorToException();
+                    return type();
                 }
-                return vt;
             }
 
-            public int[] array_dimensions()
+            /// returns the common element type if the Variant is an array
+            /// this will returned Undefined if the Variant does not have
+            /// a common element type
+            /// 
+            /// throws an exception if the Variant is not an array
+            public string Array_Element_Type
             {
-                if (spi_Variant_array_num_dimensions(self, out int ND) != 0)
+                get
                 {
-                    throw spi.ErrorToException();
+                    if (spi_Variant_array_element_type(self, out string vt) != 0)
+                    {
+                        throw spi.ErrorToException();
+                    }
+                    return vt;
                 }
-                int[] dimensions = new int[ND];
-                if (spi_Variant_array_dimensions(self, ND, dimensions) != 0)
+            }
+
+            /// returns the dimensions of the array as an array of int
+            /// 
+            /// if the variant is not an array then throws an exception
+            /// 
+            /// otherwise returns an array of size 1 for a vector and
+            /// an array of size 2 for a matrix - higher dimensions are
+            /// not supported
+            public int[] Array_Dimensions
+            {
+                get
                 {
-                    throw spi.ErrorToException();
+                    if (spi_Variant_array_num_dimensions(self, out int ND) != 0)
+                    {
+                        throw spi.ErrorToException();
+                    }
+                    int[] dimensions = new int[ND];
+                    if (spi_Variant_array_dimensions(self, ND, dimensions) != 0)
+                    {
+                        throw spi.ErrorToException();
+                    }
+                    return dimensions;
                 }
-                return dimensions;
+            }
+
+            public System.DateTime Scalar_DateTime
+            {
+                get
+                {
+                    if (spi_Variant_DateTime(self, out double dt) != 0)
+                        throw spi.ErrorToException();
+
+                    return DateTimeFromCDateTime(dt);
+                }
+            }
+
+            public System.String Scalar_String
+            {
+                get
+                {
+                    if (spi_Variant_String(self, out string str) != 0)
+                        throw spi.ErrorToException();
+
+                    return str;
+                }
+            }
+
+            public double Scalar_Double
+            {
+                get
+                {
+                    if (spi_Variant_Double(self, out double d) != 0)
+                        throw spi.ErrorToException();
+
+                    return d;
+                }
+            }
+
+            public int Scalar_Int
+            {
+                get
+                {
+                    if (spi_Variant_Int(self, out int i) != 0)
+                        throw spi.ErrorToException();
+
+                    return i;
+                }
+            }
+
+            public bool Scalar_Bool
+            {
+                get
+                {
+                    if (spi_Variant_Bool(self, out bool b) != 0)
+                        throw spi.ErrorToException();
+
+                    return b;
+                }
+            }
+
+            public SpiObject Scalar_Object
+            {
+                get
+                {
+                    if (spi_Variant_Object(self, out IntPtr o) != 0)
+                        throw spi.ErrorToException();
+
+                    return SpiObject.Wrap(o);
+                }
+            }
+
+            public System.DateTime[] Vector_DateTime
+            {
+                get
+                {
+                    if (spi_Variant_DateTime_Vector(self, out IntPtr vec) != 0)
+                        throw spi.ErrorToException();
+
+                    PointerHandle h = spi.DateTimeVectorToHandle(vec);
+                    return spi.DateTimeVectorToArray(h);
+                }
+            }
+
+            public System.String[] Vector_String
+            {
+                get
+                {
+                    if (spi_Variant_String_Vector(self, out IntPtr vec) != 0)
+                        throw spi.ErrorToException();
+
+                    PointerHandle h = spi.StringVectorToHandle(vec);
+                    return spi.StringVectorToArray(h);
+                }
+            }
+
+            public double[] Vector_Double
+            {
+                get
+                {
+                    if (spi_Variant_Double_Vector(self, out IntPtr dt) != 0)
+                        throw spi.ErrorToException();
+
+                    PointerHandle h = spi.DoubleVectorToHandle(dt);
+                    return spi.DoubleVectorToArray(h);
+                }
+            }
+
+            public int[] Vector_Int
+            {
+                get
+                {
+                    if (spi_Variant_Int_Vector(self, out IntPtr dt) != 0)
+                        throw spi.ErrorToException();
+
+                    PointerHandle h = spi.IntVectorToHandle(dt);
+                    return spi.IntVectorToArray(h);
+                }
+            }
+
+            public bool[] Vector_Bool
+            {
+                get
+                {
+                    if (spi_Variant_Bool_Vector(self, out IntPtr dt) != 0)
+                        throw spi.ErrorToException();
+
+                    PointerHandle h = spi.BoolVectorToHandle(dt);
+                    return spi.BoolVectorToArray(h);
+                }
+            }
+
+            public SpiObject[] Vector_Object
+            {
+                get
+                {
+                    if (spi_Variant_Object_Vector(self, out IntPtr dt) != 0)
+                        throw spi.ErrorToException();
+
+                    PointerHandle h = spi.SpiObjectVectorToHandle(dt);
+                    return spi.SpiObjectVectorToArray(h);
+                }
             }
 
             static public implicit operator System.DateTime(SpiVariant var)
             {
-                if (spi_Variant_DateTime(var.self, out double dt) != 0)
-                    throw ErrorToException();
-
-                return DateTimeFromCDateTime(dt);
+                return var.Scalar_DateTime;
             }
 
             static public implicit operator System.String(SpiVariant var)
             {
-                if (spi_Variant_String(var.self, out string str) != 0)
-                    throw ErrorToException();
-
-                return str;
+                return var.Scalar_String;
             }
 
             static public implicit operator double(SpiVariant var)
             {
-                if (spi_Variant_Double(var.self, out double d) != 0)
-                    throw ErrorToException();
-
-                return d;
+                return var.Scalar_Double;
             }
 
             static public implicit operator int(SpiVariant var)
             {
-                if (spi_Variant_Int(var.self, out int i) != 0)
-                    throw ErrorToException();
-
-                return i;
+                return var.Scalar_Int;
             }
 
             static public implicit operator bool(SpiVariant var)
             {
-                if (spi_Variant_Bool(var.self, out bool b) != 0)
-                    throw ErrorToException();
-
-                return b;
+                return var.Scalar_Bool;
             }
 
             static public implicit operator SpiObject(SpiVariant var)
             {
-                if (spi_Variant_Object(var.self, out IntPtr o) != 0)
-                    throw ErrorToException();
-
-                return SpiObject.Wrap(o);
+                return var.Scalar_Object;
             }
 
             static public implicit operator System.DateTime[](SpiVariant var)
             {
-                if (spi_Variant_DateTime_Vector(var.self, out IntPtr dt) != 0)
-                    throw ErrorToException();
-
-                using PointerHandle h = spi.DateTimeVectorToHandle(dt);
-                return spi.DateTimeVectorToArray(h);
+                return var.Vector_DateTime;
             }
 
             static public implicit operator System.String[](SpiVariant var)
             {
-                if (spi_Variant_String_Vector(var.self, out IntPtr dt) != 0)
-                    throw ErrorToException();
-
-                using PointerHandle h = spi.StringVectorToHandle(dt);
-                return spi.StringVectorToArray(h);
+                return var.Vector_String;
             }
 
             static public implicit operator double[](SpiVariant var)
             {
-                if (spi_Variant_Double_Vector(var.self, out IntPtr dt) != 0)
-                    throw ErrorToException();
-
-                using PointerHandle h = spi.DoubleVectorToHandle(dt);
-                return spi.DoubleVectorToArray(h);
+                return var.Vector_Double;
             }
 
             static public implicit operator int[](SpiVariant var)
             {
-                if (spi_Variant_Int_Vector(var.self, out IntPtr dt) != 0)
-                    throw ErrorToException();
-
-                using PointerHandle h = spi.IntVectorToHandle(dt);
-                return spi.IntVectorToArray(h);
+                return var.Vector_Int;
             }
 
             static public implicit operator bool[](SpiVariant var)
             {
-                if (spi_Variant_Bool_Vector(var.self, out IntPtr dt) != 0)
-                    throw ErrorToException();
-
-                using PointerHandle h = spi.BoolVectorToHandle(dt);
-                return spi.BoolVectorToArray(h);
+                return var.Vector_Bool;
             }
 
             static public implicit operator SpiObject[](SpiVariant var)
             {
-                if (spi_Variant_Object_Vector(var.self, out IntPtr dt) != 0)
-                    throw ErrorToException();
-
-                using PointerHandle h = spi.SpiObjectVectorToHandle(dt);
-                return spi.SpiObjectVectorToArray(h);
+                return var.Vector_Object;
             }
 
             // note that self = spi::Variant*
