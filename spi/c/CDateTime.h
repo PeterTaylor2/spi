@@ -41,8 +41,20 @@ extern "C"
     typedef struct spi_DateTime_Vector spi_DateTime_Vector;
     typedef struct spi_DateTime_Matrix spi_DateTime_Matrix;
 
+#define SPI_DATE_TIME_OFFSET 109205
 
+#if 0
     /* DateTime functions */
+    SPI_C_IMPORT
+    int spi_DateTime_from_DATE(
+        double inp,
+        spi_DateTime* out);
+
+    SPI_C_IMPORT
+    int spi_DateTime_to_DATE(
+        spi_DateTime inp,
+        double* out);
+
     SPI_C_IMPORT
     int spi_DateTime_from_YMDHMS(
         int year, int month, int day, int hours, int minutes, int seconds,
@@ -52,7 +64,7 @@ extern "C"
     int spi_DateTime_YMDHMS(
         spi_DateTime date,
         int* year, int* month, int* day, int* hours, int* minutes, int* seconds);
-
+#endif
 
     SPI_C_IMPORT
     void spi_DateTime_Vector_delete(spi_DateTime_Vector* v);

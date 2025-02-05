@@ -2192,7 +2192,7 @@ std::string CDataType::csiType(int arrayDim) const
     case spdoc::PublicType::DATE:
         return "int";
     case spdoc::PublicType::DATETIME:
-        return "double";
+        return "System.DateTime";
     case spdoc::PublicType::ENUM:
         oss << dataType->nsService << "." << dataType->name;
         return oss.str();
@@ -2425,7 +2425,7 @@ std::string CDataType::cs_to_c(int arrayDim, const std::string& name) const
             oss << "spi.DateToCDate(" << service->rename(name, true) << ")";
             break;
         case spdoc::PublicType::DATETIME:
-            oss << "spi.DateTimeToCDateTime(" << service->rename(name, true) << ")";
+            //oss << "spi.DateTimeToCDateTime(" << service->rename(name, true) << ")";
             break;
         case spdoc::PublicType::CLASS:
             oss << csType(0, false) << ".get_inner(" << service->rename(name, true) << ")";
@@ -2653,7 +2653,7 @@ std::string CDataType::csi_to_cs(
             oss << "spi.DateFromCDate(c_" << name << ")";
             break;
         case spdoc::PublicType::DATETIME:
-            oss << "spi.DateTimeFromCDateTime(c_" << name << ")";
+            //oss << "spi.DateTimeFromCDateTime(c_" << name << ")";
             break;
         case spdoc::PublicType::ENUM:
             break;

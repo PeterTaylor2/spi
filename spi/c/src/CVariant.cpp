@@ -288,7 +288,7 @@ int spi_Variant_DateTime(spi_Variant * var, spi_DateTime * dt)
             spi_Error_set_function(__FUNCTION__, "NULL inputs");
             return -1;
         }
-        *dt = ((spi::Variant*)var)->ToDateTime();
+        *dt = (double)((spi::Variant*)var)->ToDateTime() - SPI_DATE_TIME_OFFSET;
         return 0;
     }
     catch (std::exception& e)

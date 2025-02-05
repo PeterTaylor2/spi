@@ -30,6 +30,39 @@
 * Implementation of spi_DateTime functions
 **************************************************************************
 */
+#if 0
+int spi_DateTime_from_DATE(double inp, spi_DateTime* out)
+{
+    SPI_C_LOCK_GUARD;
+    try
+    {
+        SPI_PRE_CONDITION(out);
+        *out = inp + SPI_DATE_TIME_OFFSET;
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
+}
+
+int spi_DateTime_to_DATE(spi_DateTime inp, double* out)
+{
+    SPI_C_LOCK_GUARD;
+    try
+    {
+        SPI_PRE_CONDITION(out);
+        *out = inp - SPI_DATE_TIME_OFFSET;
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
+}
+
 int spi_DateTime_from_YMDHMS(
     int year, int month, int day, int hours, int minutes, int seconds,
     spi_DateTime* dt)
@@ -65,6 +98,7 @@ int spi_DateTime_YMDHMS(
         return -1;
     }
 }
+#endif
 
 void spi_DateTime_Vector_delete(spi_DateTime_Vector* c)
 {
@@ -101,7 +135,10 @@ spi_DateTime_Vector* spi_DateTime_Vector_new(int N)
     }
 }
 
-int spi_DateTime_Vector_get_data(const spi_DateTime_Vector* v, int N, spi_DateTime data[])
+int spi_DateTime_Vector_get_data(
+    const spi_DateTime_Vector* v,
+    int N,
+    spi_DateTime data[])
 {
     SPI_C_LOCK_GUARD;
     if (!v)
@@ -120,7 +157,9 @@ int spi_DateTime_Vector_get_data(const spi_DateTime_Vector* v, int N, spi_DateTi
             return -1;
         }
         for (int i = 0; i < N; ++i)
-            data[i] = cpp->at(i);
+        {
+            data[i] = ((double)cpp->at(i) - SPI_DATE_TIME_OFFSET);
+        }
         return 0;
     }
     catch (std::exception& e)
@@ -150,7 +189,7 @@ int spi_DateTime_Vector_set_data(spi_DateTime_Vector* v, int N, spi_DateTime dat
             return -1;
         }
         for (int i = 0; i < N; ++i)
-            cpp->at(i) = data[i];
+            cpp->at(i) = spi::DateTime(data[i] + SPI_DATE_TIME_OFFSET);
         return 0;
     }
     catch (std::exception& e)
@@ -201,7 +240,7 @@ int spi_DateTime_Matrix_get_data(const spi_DateTime_Matrix* m, int nr, int nc, s
         size_t N = unr * unc;
         const spi::DateTime* p = cpp->DataPointer();
         for (size_t i = 0; i < N; ++i)
-            data[i] = p[i]; // spi::DateTime automatically coerces to double
+            data[i] = (double)p[i] - SPI_DATE_TIME_OFFSET;
 
         return 0;
     }
@@ -237,7 +276,7 @@ int spi_DateTime_Matrix_set_data(spi_DateTime_Matrix* m, int nr, int nc, spi_Dat
         size_t N = unr * unc;
         spi::DateTime* p = cpp->DataPointer();
         for (size_t i = 0; i < N; ++i)
-            p[i] = data[i]; // spi::DateTime automatically coerces from double
+            p[i] = spi::DateTime(data[i] + SPI_DATE_TIME_OFFSET);
 
         return 0;
     }
