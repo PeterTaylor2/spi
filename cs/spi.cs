@@ -98,44 +98,6 @@ namespace SPI
             return (int)cdt;
         }
 
-#if false
-        /* DateTime functions */
-        [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int spi_DateTime_from_YMDHMS(
-            int year, int month, int day, int hours, int minutes, int seconds,
-            out double dateTime);
-
-        [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int spi_DateTime_YMDHMS(
-            double date,
-            out int year, out int month, out int day,
-            out int hours, out int minutes, out int seconds);
-
-        public static System.DateTime DateTimeFromCDateTime(double dt)
-        {
-            if (dt == 0.0)
-                return default(System.DateTime);
-
-            const long oneDay = 86400;
-            const long oneE7 = 10000000;
-            const long offset = 584388;
-            long ticks = (long)((dt + offset) * oneDay * oneE7 + 0.5);
-            return new System.DateTime(ticks);
-        }
-
-        public static double DateTimeToCDateTime(System.DateTime dt)
-        {
-            if (dt == default(System.DateTime))
-                return 0.0;
-
-            const long oneDay = 86400;
-            const long oneE7 = 10000000;
-            const long offset = 584388;
-            double cdt = (double)(dt.Ticks) / (oneDay * oneE7) - offset;
-            return cdt;
-        }
-#endif
-
         ///* Object functions */
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern void spi_Object_delete(IntPtr item);
@@ -624,15 +586,10 @@ namespace SPI
             }
 
             System.DateTime[] array = new System.DateTime[size];
-            //double[] data = new double[size];
             if (spi_DateTime_Vector_get_data(v, size, array) != 0)
             {
                 throw ErrorToException();
             }
-            //for (int i = 0; i < size; ++i)
-            //{
-            //    array[i] = DateTimeFromCDateTime(data[i]);
-            //}
             return array;
         }
 
@@ -649,11 +606,6 @@ namespace SPI
 
             if (array is not null && size > 0)
             {
-                //double[] data = new double[size];
-                //for (int i = 0; i < size; ++i)
-                //{
-                //    data[i] = DateTimeToCDateTime(array[i]);
-                //}
                 if (spi_DateTime_Vector_set_data(v, size, array) != 0)
                 {
                     throw ErrorToException();
@@ -1135,7 +1087,7 @@ namespace SPI
         private static extern int spi_DateTime_Matrix_get_data(
             IntPtr m,
             int nr, int nc,
-            System.DateTime[,] data);
+            [In, Out] System.DateTime[,] data);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern int spi_DateTime_Matrix_set_data(
@@ -1166,18 +1118,10 @@ namespace SPI
             System.DateTime[,] array = new System.DateTime[nr, nc];
             if (nr > 0 && nc > 0)
             {
-                //double[,] data = new double[nr, nc];
                 if (spi_DateTime_Matrix_get_data(m, nr, nc, array) != 0)
                 {
                     throw ErrorToException();
                 }
-                //for (int i = 0; i < nr; ++i)
-                //{
-                //    for (int j = 0; j < nc; ++j)
-                //    {
-                //        array[i, j] = spi.DateTimeFromCDateTime(data[i, j]);
-                //    }
-                //}
             }
             return array;
         }
@@ -1196,14 +1140,6 @@ namespace SPI
 
             if (array is not null)
             {
-                //double[,] data = new double[nr, nc];
-                //for (int i = 0; i < nr; ++i)
-                //{
-                //    for (int j = 0; j < nc; ++j)
-                //    {
-                //        data[i, j] = spi.DateTimeToCDateTime(array[i, j]);
-                //    }
-                //}
                 if (spi_DateTime_Matrix_set_data(m, nr, nc, array) != 0)
                 {
                     throw ErrorToException();

@@ -189,7 +189,9 @@ int spi_DateTime_Vector_set_data(spi_DateTime_Vector* v, int N, spi_DateTime dat
             return -1;
         }
         for (int i = 0; i < N; ++i)
+        {
             cpp->at(i) = spi::DateTime(data[i] + SPI_DATE_TIME_OFFSET);
+        }
         return 0;
     }
     catch (std::exception& e)
@@ -235,12 +237,12 @@ int spi_DateTime_Matrix_get_data(const spi_DateTime_Matrix* m, int nr, int nc, s
             return -1;
         }
 
-        // we cannot bulk copy spi::DateTime because spi::DateTime is stored
-        // as int/int whereas spi_DateTime is double
         size_t N = unr * unc;
         const spi::DateTime* p = cpp->DataPointer();
         for (size_t i = 0; i < N; ++i)
+        {
             data[i] = (double)p[i] - SPI_DATE_TIME_OFFSET;
+        }
 
         return 0;
     }
@@ -271,12 +273,12 @@ int spi_DateTime_Matrix_set_data(spi_DateTime_Matrix* m, int nr, int nc, spi_Dat
             return -1;
         }
 
-        // we cannot bulk copy spi::DateTime because spi::DateTime is stored
-        // as int/int whereas spi_DateTime is double
         size_t N = unr * unc;
         spi::DateTime* p = cpp->DataPointer();
         for (size_t i = 0; i < N; ++i)
+        {
             p[i] = spi::DateTime(data[i] + SPI_DATE_TIME_OFFSET);
+        }
 
         return 0;
     }
