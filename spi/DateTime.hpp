@@ -39,13 +39,6 @@
 #include "Date.hpp"
 
 SPI_BEGIN_NAMESPACE
-class DateTime;
-SPI_END_NAMESPACE
-
-SPI_IMPORT
-std::ostream& operator << (std::ostream& ostr, const spi::DateTime& dt);
-
-SPI_BEGIN_NAMESPACE
 
 class SPI_IMPORT TimeDelta
 {
@@ -98,8 +91,6 @@ public:
 
     static double TimeToDouble(int time);
     static int DoubleToTime(double time);
-
-    friend std::ostream& ::operator << (std::ostream& ostr, const DateTime& dt);
 
 private:
     spi::Date m_date;
@@ -166,6 +157,9 @@ inline spi::DateTime operator - (spi::DateTime dt, spi::TimeDelta delta)
 {
     return dt.Add(delta.Negate());
 }
+
+SPI_IMPORT
+std::ostream& operator << (std::ostream& ostr, const spi::DateTime& dt);
 
 #endif
 

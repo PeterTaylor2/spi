@@ -38,13 +38,6 @@
 #include <iostream>
 
 SPI_BEGIN_NAMESPACE
-class Date;
-SPI_END_NAMESPACE
-
-SPI_IMPORT
-std::ostream& operator << (std::ostream& ostr, const spi::Date& date);
-
-SPI_BEGIN_NAMESPACE
 
 /**
  * Date class contains no virtual functions - hence the size of the class
@@ -85,8 +78,6 @@ public:
 
     Date& operator += (int days);
     Date& operator -= (int days);
-
-    friend std::ostream& ::operator << (std::ostream& ostr, const Date& date);
 
 private:
     int m_dt;
@@ -148,6 +139,9 @@ inline Date operator - (Date dt, int days)
 }
 
 SPI_END_NAMESPACE
+
+SPI_IMPORT
+std::ostream& operator << (std::ostream& ostr, const spi::Date& date);
 
 #endif
 
