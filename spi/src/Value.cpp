@@ -1168,3 +1168,9 @@ void Value::Translate(Value& t, bool permissive) const
 
 SPI_END_NAMESPACE
 
+std::ostream& operator<<(std::ostream& os, const spi::Value& value)
+{
+    os << value.toString();
+    return os;
+}
+

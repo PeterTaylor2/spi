@@ -408,3 +408,10 @@ int DateTime::DoubleToTime(double time)
 }
 
 SPI_END_NAMESPACE
+
+std::ostream& operator<<(std::ostream& ostr, const spi::DateTime& dt)
+{
+    ostr << dt.ToString();
+    return ostr;
+}
+

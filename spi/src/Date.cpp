@@ -151,3 +151,10 @@ Date& Date::operator -= (int days)
 }
 
 SPI_END_NAMESPACE
+
+std::ostream& operator<<(std::ostream& ostr, const spi::Date& date)
+{
+    ostr << date.ToString();
+    return ostr;
+}
+

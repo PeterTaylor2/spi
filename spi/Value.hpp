@@ -65,7 +65,12 @@
 #include "Map.hpp"
 #include "ObjectSmartPtr.hpp"
 
-#include <vector>
+SPI_BEGIN_NAMESPACE
+class Value;
+SPI_END_NAMESPACE
+
+SPI_IMPORT
+std::ostream& operator << (std::ostream& ostr, const spi::Value& value);
 
 SPI_BEGIN_NAMESPACE
 
@@ -271,6 +276,8 @@ public:
 
     template<typename T>
     std::vector<T> getVector(bool permissive) const;
+
+    friend std::ostream& ::operator << (std::ostream& os, const Value& value);
 };
 
 class SPI_IMPORT IArray : public RefCounter
