@@ -29,10 +29,10 @@ extern "C"
 {
 #endif
 
-typedef int spi_Bool;
+typedef int System_Bool;
 
-#define SPI_TRUE 1
-#define SPI_FALSE 0
+#define SYSTEM_TRUE 1
+#define SYSTEM_FALSE 0
 
 
 #ifdef __cplusplus

@@ -86,7 +86,7 @@ extern "C"
     int spi_Object_handle_save(
         const char* baseName,
         spi_Object* obj,
-        spi_Bool noCount,
+        System_Bool noCount,
         char** handle);
 
     SPI_C_IMPORT

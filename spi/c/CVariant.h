@@ -67,7 +67,7 @@ extern "C"
     spi_Variant* spi_Variant_new_Double(double d);
 
     SPI_C_IMPORT
-    spi_Variant* spi_Variant_new_Bool(spi_Bool b);
+    spi_Variant* spi_Variant_new_Bool(System_Bool b);
 
     SPI_C_IMPORT
     spi_Variant* spi_Variant_new_Int(int i);
@@ -116,7 +116,7 @@ extern "C"
     SPI_C_IMPORT
     int spi_Variant_Bool(
         spi_Variant* var,
-        spi_Bool* b);
+        System_Bool* b);
 
     SPI_C_IMPORT
     int spi_Variant_Int(

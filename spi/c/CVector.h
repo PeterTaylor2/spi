@@ -113,13 +113,13 @@ extern "C"
     int spi_Bool_Vector_get_data(
         const spi_Bool_Vector* v,
         int N,
-        spi_Bool data[]);
+        System_Bool data[]);
 
     SPI_C_IMPORT
     int spi_Bool_Vector_set_data(
         spi_Bool_Vector* v,
         int N,
-        spi_Bool data[]);
+        System_Bool data[]);
 
     SPI_C_IMPORT
     int spi_Bool_Vector_size(

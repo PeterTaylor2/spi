@@ -30,7 +30,7 @@
 * Implementation of spi_DateTime functions
 **************************************************************************
 */
-#if 0
+#if false
 int spi_DateTime_from_DATE(double inp, spi_DateTime* out)
 {
     SPI_C_LOCK_GUARD;
@@ -110,16 +110,6 @@ void spi_DateTime_Vector_delete(spi_DateTime_Vector* c)
     }
 }
 
-void spi_DateTime_Matrix_delete(spi_DateTime_Matrix* c)
-{
-    SPI_C_LOCK_GUARD;
-    if (c)
-    {
-        auto cpp = (spi::MatrixData<spi::DateTime>*)(c);
-        delete cpp;
-    }
-}
-
 spi_DateTime_Vector* spi_DateTime_Vector_new(int N)
 {
     SPI_C_LOCK_GUARD;
@@ -138,7 +128,7 @@ spi_DateTime_Vector* spi_DateTime_Vector_new(int N)
 int spi_DateTime_Vector_get_data(
     const spi_DateTime_Vector* v,
     int N,
-    spi_DateTime data[])
+    System_Date data[])
 {
     SPI_C_LOCK_GUARD;
     if (!v)
@@ -158,7 +148,7 @@ int spi_DateTime_Vector_get_data(
         }
         for (int i = 0; i < N; ++i)
         {
-            data[i] = ((double)cpp->at(i) - SPI_DATE_TIME_OFFSET);
+            data[i] = ((spi_DateTime)cpp->at(i) - SPI_DATE_TIME_OFFSET);
         }
         return 0;
     }
@@ -170,7 +160,10 @@ int spi_DateTime_Vector_get_data(
     return 0;
 }
 
-int spi_DateTime_Vector_set_data(spi_DateTime_Vector* v, int N, spi_DateTime data[])
+int spi_DateTime_Vector_set_data(
+    spi_DateTime_Vector* v,
+    int N,
+    System_Date data[])
 {
     SPI_C_LOCK_GUARD;
     if (!v)
@@ -202,6 +195,16 @@ int spi_DateTime_Vector_set_data(spi_DateTime_Vector* v, int N, spi_DateTime dat
     return 0;
 }
 
+void spi_DateTime_Matrix_delete(spi_DateTime_Matrix* c)
+{
+    SPI_C_LOCK_GUARD;
+    if (c)
+    {
+        auto cpp = (spi::MatrixData<spi::DateTime>*)(c);
+        delete cpp;
+    }
+}
+
 spi_DateTime_Matrix* spi_DateTime_Matrix_new(int nr, int nc)
 {
     SPI_C_LOCK_GUARD;
@@ -217,7 +220,11 @@ spi_DateTime_Matrix* spi_DateTime_Matrix_new(int nr, int nc)
     }
 }
 
-int spi_DateTime_Matrix_get_data(const spi_DateTime_Matrix* m, int nr, int nc, spi_DateTime data[])
+int spi_DateTime_Matrix_get_data(
+    const spi_DateTime_Matrix* m,
+    int nr,
+    int nc,
+    System_Date data[])
 {
     SPI_C_LOCK_GUARD;
     if (!m)
@@ -241,7 +248,7 @@ int spi_DateTime_Matrix_get_data(const spi_DateTime_Matrix* m, int nr, int nc, s
         const spi::DateTime* p = cpp->DataPointer();
         for (size_t i = 0; i < N; ++i)
         {
-            data[i] = (double)p[i] - SPI_DATE_TIME_OFFSET;
+            data[i] = (spi_DateTime)p[i] - SPI_DATE_TIME_OFFSET;
         }
 
         return 0;
@@ -253,7 +260,11 @@ int spi_DateTime_Matrix_get_data(const spi_DateTime_Matrix* m, int nr, int nc, s
     }
 }
 
-int spi_DateTime_Matrix_set_data(spi_DateTime_Matrix* m, int nr, int nc, spi_DateTime data[])
+int spi_DateTime_Matrix_set_data(
+    spi_DateTime_Matrix* m,
+    int nr,
+    int nc,
+    System_Date data[])
 {
     SPI_C_LOCK_GUARD;
     if (!m)

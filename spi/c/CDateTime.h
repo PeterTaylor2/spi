@@ -37,13 +37,17 @@ extern "C"
 {
 #endif
 
-    typedef double spi_DateTime;
+    typedef double System_Date; /* corresponding to Win32 DATE */
+    typedef double spi_DateTime; /* corresponding to spi::DateTime */
+
+    /* note that spi_DateTime = System_Date + SPI_DATE_TIME_OFFSET */
+
     typedef struct spi_DateTime_Vector spi_DateTime_Vector;
     typedef struct spi_DateTime_Matrix spi_DateTime_Matrix;
 
 #define SPI_DATE_TIME_OFFSET 109205
 
-#if 0
+#if false
     /* DateTime functions */
     SPI_C_IMPORT
     int spi_DateTime_from_DATE(
@@ -77,13 +81,13 @@ extern "C"
     int spi_DateTime_Vector_get_data(
         const spi_DateTime_Vector* v,
         int N,
-        spi_DateTime data[]);
+        System_Date data[]);
 
     SPI_C_IMPORT
     int spi_DateTime_Vector_set_data(
         spi_DateTime_Vector* v,
         int N,
-        spi_DateTime data[]);
+        System_Date data[]);
 
     SPI_C_IMPORT
     int spi_DateTime_Vector_size(
@@ -101,13 +105,13 @@ extern "C"
     int spi_DateTime_Matrix_get_data(
         const spi_DateTime_Matrix* m,
         int nr, int nc,
-        spi_DateTime data[]);
+        System_Date data[]);
 
     SPI_C_IMPORT
     int spi_DateTime_Matrix_set_data(
         spi_DateTime_Matrix* m,
         int nr, int nc,
-        spi_DateTime data[]);
+        System_Date data[]);
 
     SPI_C_IMPORT
     int spi_DateTime_Matrix_size(

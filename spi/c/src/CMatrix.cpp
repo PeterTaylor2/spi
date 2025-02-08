@@ -282,7 +282,7 @@ int spi_Double_Matrix_size(
 
 /*
 **************************************************************************
-* Implementation of spi_Bool functions
+* Implementation of System_Bool functions
 **************************************************************************
 */
 void spi_Bool_Matrix_delete(spi_Bool_Matrix* c)
@@ -310,7 +310,7 @@ spi_Bool_Matrix* spi_Bool_Matrix_new(int nr, int nc)
     }
 }
 
-int spi_Bool_Matrix_get_data(const spi_Bool_Matrix* m, int nr, int nc, spi_Bool data[])
+int spi_Bool_Matrix_get_data(const spi_Bool_Matrix* m, int nr, int nc, System_Bool data[])
 {
     SPI_C_LOCK_GUARD;
     if (!m)
@@ -330,13 +330,13 @@ int spi_Bool_Matrix_get_data(const spi_Bool_Matrix* m, int nr, int nc, spi_Bool 
             return -1;
         }
 
-        // bool and spi_Bool are not the same so we need to copy one at a time
+        // bool and System_Bool are not the same so we need to copy one at a time
         size_t k = 0;
         for (size_t i = 0; i < unr; ++i)
         {
             for (size_t j = 0; j < unc; ++j)
             {
-                data[k] = cpp->at(i, j) ? SPI_TRUE : SPI_FALSE;
+                data[k] = cpp->at(i, j) ? SYSTEM_TRUE : SYSTEM_FALSE;
                 ++k;
             }
         }
@@ -350,7 +350,7 @@ int spi_Bool_Matrix_get_data(const spi_Bool_Matrix* m, int nr, int nc, spi_Bool 
     }
 }
 
-int spi_Bool_Matrix_set_data(spi_Bool_Matrix* m, int nr, int nc, spi_Bool data[])
+int spi_Bool_Matrix_set_data(spi_Bool_Matrix* m, int nr, int nc, System_Bool data[])
 {
     SPI_C_LOCK_GUARD;
     if (!m)
@@ -370,13 +370,13 @@ int spi_Bool_Matrix_set_data(spi_Bool_Matrix* m, int nr, int nc, spi_Bool data[]
             return -1;
         }
 
-        // bool and spi_Bool are not the same so we need to copy one at a time
+        // bool and System_Bool are not the same so we need to copy one at a time
         size_t k = 0;
         for (size_t i = 0; i < unr; ++i)
         {
             for (size_t j = 0; j < unc; ++j)
             {
-                cpp->at(i, j) = data[k] != SPI_FALSE;
+                cpp->at(i, j) = data[k] != SYSTEM_FALSE;
                 ++k;
             }
         }

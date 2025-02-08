@@ -25,7 +25,7 @@
 
 #include "Helper.hpp"
 
-
+#if false
 /*
 **************************************************************************
 * Implementation of spi_Date functions
@@ -63,6 +63,7 @@ int spi_Date_YMD(
         return -1;
     }
 }
+#endif
 
 void spi_Date_Vector_delete(spi_Date_Vector* c)
 {
@@ -70,16 +71,6 @@ void spi_Date_Vector_delete(spi_Date_Vector* c)
     if (c)
     {
         auto cpp = (std::vector<spi::Date>*)(c);
-        delete cpp;
-    }
-}
-
-void spi_Date_Matrix_delete(spi_Date_Matrix* c)
-{
-    SPI_C_LOCK_GUARD;
-    if (c)
-    {
-        auto cpp = (spi::MatrixData<spi::Date>*)(c);
         delete cpp;
     }
 }
@@ -99,7 +90,10 @@ spi_Date_Vector* spi_Date_Vector_new(int N)
     }
 }
 
-int spi_Date_Vector_get_data(const spi_Date_Vector* v, int N, spi_Date data[])
+int spi_Date_Vector_get_data(
+    const spi_Date_Vector* v,
+    int N,
+    System_Date data[])
 {
     SPI_C_LOCK_GUARD;
     if (!v)
@@ -118,7 +112,7 @@ int spi_Date_Vector_get_data(const spi_Date_Vector* v, int N, spi_Date data[])
             return -1;
         }
         for (int i = 0; i < N; ++i)
-            data[i] = cpp->at(i);
+            data[i] = (spi_Date)cpp->at(i) - SPI_DATE_OFFSET;
         return 0;
     }
     catch (std::exception& e)
@@ -129,7 +123,10 @@ int spi_Date_Vector_get_data(const spi_Date_Vector* v, int N, spi_Date data[])
     return 0;
 }
 
-int spi_Date_Vector_set_data(spi_Date_Vector* v, int N, spi_Date data[])
+int spi_Date_Vector_set_data(
+    spi_Date_Vector* v,
+    int N,
+    System_Date data[])
 {
     SPI_C_LOCK_GUARD;
     if (!v)
@@ -148,7 +145,7 @@ int spi_Date_Vector_set_data(spi_Date_Vector* v, int N, spi_Date data[])
             return -1;
         }
         for (int i = 0; i < N; ++i)
-            cpp->at(i) = data[i];
+            cpp->at(i) = spi::Date((spi_Date)data[i] + SPI_DATE_OFFSET);
         return 0;
     }
     catch (std::exception& e)
@@ -157,21 +154,6 @@ int spi_Date_Vector_set_data(spi_Date_Vector* v, int N, spi_Date data[])
         return -1;
     }
     return 0;
-}
-
-spi_Date_Matrix* spi_Date_Matrix_new(int nr, int nc)
-{
-    SPI_C_LOCK_GUARD;
-    try
-    {
-        auto out = new spi::MatrixData<spi::Date>(to_size_t(nr), to_size_t(nc));
-        return (spi_Date_Matrix*)(out);
-    }
-    catch (std::exception& e)
-    {
-        spi_Error_set_function(__FUNCTION__, e.what());
-        return NULL;
-    }
 }
 
 int spi_Date_Vector_size(
@@ -190,11 +172,36 @@ int spi_Date_Vector_size(
     return 0;
 }
 
+void spi_Date_Matrix_delete(spi_Date_Matrix* c)
+{
+    SPI_C_LOCK_GUARD;
+    if (c)
+    {
+        auto cpp = (spi::MatrixData<spi::Date>*)(c);
+        delete cpp;
+    }
+}
+
+spi_Date_Matrix* spi_Date_Matrix_new(int nr, int nc)
+{
+    SPI_C_LOCK_GUARD;
+    try
+    {
+        auto out = new spi::MatrixData<spi::Date>(to_size_t(nr), to_size_t(nc));
+        return (spi_Date_Matrix*)(out);
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return NULL;
+    }
+}
+
 int spi_Date_Matrix_get_data(
     const spi_Date_Matrix* m,
     int nr,
     int nc,
-    spi_Date data[])
+    System_Date data[])
 {
     SPI_C_LOCK_GUARD;
     if (!m)
@@ -214,9 +221,12 @@ int spi_Date_Matrix_get_data(
             return -1;
         }
 
-        // because spi::Date has the same size and content as spi_Date
-        // we can bulk copy
-        memcpy((void*)&data[0], (const void*)cpp->DataPointer(), unr * unc * sizeof(int));
+        size_t N = unr * unc;
+        const spi::Date* p = cpp->DataPointer();
+        for (size_t i = 0; i < N; ++i)
+        {
+            data[i] = (spi_Date)p[i] - SPI_DATE_OFFSET;
+        }
 
         return 0;
     }
@@ -232,7 +242,7 @@ int spi_Date_Matrix_set_data(
     spi_Date_Matrix* m,
     int nr,
     int nc,
-    spi_Date data[])
+    System_Date data[])
 {
     SPI_C_LOCK_GUARD;
     if (!m)
@@ -252,9 +262,12 @@ int spi_Date_Matrix_set_data(
             return -1;
         }
 
-        // because spi::Date has the same size and content as spi_Date
-        // we can bulk copy
-        memcpy((void*)cpp->DataPointer(), (const void*)&data[0], unr * unc * sizeof(int));
+        size_t N = unr * unc;
+        spi::Date* p = cpp->DataPointer();
+        for (size_t i = 0; i < N; ++i)
+        {
+            p[i] = spi::Date((spi_Date)data[i] + SPI_DATE_OFFSET);
+        }
 
         return 0;
     }

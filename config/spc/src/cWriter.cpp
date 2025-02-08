@@ -1952,7 +1952,7 @@ std::string CDataType::cType(int arrayDim) const
     switch (publicType)
     {
     case spdoc::PublicType::BOOL:
-        scalarType = "spi_Bool";
+        scalarType = "System_Bool";
         arrayType = "spi_Bool";
         break;
     case spdoc::PublicType::CHAR:
@@ -1971,11 +1971,11 @@ std::string CDataType::cType(int arrayDim) const
         arrayType = "spi_String";
         break;
     case spdoc::PublicType::DATE:
-        scalarType = "spi_Date";
+        scalarType = "System_Date";
         arrayType = "spi_Date";
         break;
     case spdoc::PublicType::DATETIME:
-        scalarType = "spi_DateTime";
+        scalarType = "System_Date";
         arrayType = "spi_DateTime";
         break;
     case spdoc::PublicType::ENUM:
@@ -2103,12 +2103,12 @@ std::string CDataType::c_to_cpp(int arrayDim, const std::string& name) const
         case spdoc::PublicType::CHAR:
             return name;
         case spdoc::PublicType::BOOL:
-            return spi_util::StringFormat("%s != SPI_FALSE", name.c_str());
+            return spi_util::StringFormat("%s != SYSTEM_FALSE", name.c_str());
         case spdoc::PublicType::STRING:
             return spi_util::StringFormat("%s ? std::string(%s) : std::string()",
                 name.c_str(), name.c_str());
         case spdoc::PublicType::DATE:
-            return spi_util::StringFormat("spi::Date(%s)", name.c_str());
+            return spi_util::StringFormat("spi::Date((spi_Date)%s + SPI_DATE_OFFSET)", name.c_str());
         case spdoc::PublicType::DATETIME:
             return spi_util::StringFormat("spi::DateTime(%s + SPI_DATE_TIME_OFFSET)", name.c_str());
         case spdoc::PublicType::ENUM:
@@ -2210,12 +2210,12 @@ std::string CDataType::cpp_to_c(int arrayDim, const std::string & name) const
         case spdoc::PublicType::CHAR:
             return name;
         case spdoc::PublicType::BOOL:
-            return spi_util::StringFormat("%s ? SPI_TRUE : SPI_FALSE", name.c_str());
+            return spi_util::StringFormat("%s ? SYSTEM_TRUE : SYSTEM_FALSE", name.c_str());
         case spdoc::PublicType::STRING:
             return spi_util::StringFormat("spi_String_copy(%s.c_str())",
                 name.c_str());
         case spdoc::PublicType::DATE:
-            return spi_util::StringFormat("(spi_Date)(%s)", name.c_str());
+            return spi_util::StringFormat("(spi_Date)(%s) - SPI_DATE_OFFSET", name.c_str());
         case spdoc::PublicType::DATETIME:
             return spi_util::StringFormat("(spi_DateTime)(%s) - SPI_DATE_TIME_OFFSET", name.c_str());
         case spdoc::PublicType::ENUM:

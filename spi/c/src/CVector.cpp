@@ -237,7 +237,7 @@ int spi_Double_Vector_size(
 
 /*
 **************************************************************************
-* Implementation of spi_Bool functions
+* Implementation of System_Bool functions
 **************************************************************************
 */
 void spi_Bool_Vector_delete(spi_Bool_Vector* c)
@@ -265,7 +265,7 @@ spi_Bool_Vector* spi_Bool_Vector_new(int N)
     }
 }
 
-int spi_Bool_Vector_get_data(const spi_Bool_Vector* v, int N, spi_Bool data[])
+int spi_Bool_Vector_get_data(const spi_Bool_Vector* v, int N, System_Bool data[])
 {
     SPI_C_LOCK_GUARD;
     if (!v)
@@ -284,7 +284,7 @@ int spi_Bool_Vector_get_data(const spi_Bool_Vector* v, int N, spi_Bool data[])
             return -1;
         }
         for (size_t i = 0; i < uN; ++i)
-            data[i] = cpp->at(i) ? SPI_TRUE : SPI_FALSE;
+            data[i] = cpp->at(i) ? SYSTEM_TRUE : SYSTEM_FALSE;
         return 0;
     }
     catch (std::exception& e)
@@ -294,7 +294,7 @@ int spi_Bool_Vector_get_data(const spi_Bool_Vector* v, int N, spi_Bool data[])
     }
 }
 
-int spi_Bool_Vector_set_data(spi_Bool_Vector* v, int N, spi_Bool data[])
+int spi_Bool_Vector_set_data(spi_Bool_Vector* v, int N, System_Bool data[])
 {
     SPI_C_LOCK_GUARD;
     if (!v)
@@ -313,7 +313,7 @@ int spi_Bool_Vector_set_data(spi_Bool_Vector* v, int N, spi_Bool data[])
             return -1;
         }
         for (size_t i = 0; i < uN; ++i)
-            cpp->at(i) = data[i] != SPI_FALSE;
+            cpp->at(i) = data[i] != SYSTEM_FALSE;
         return 0;
     }
     catch (std::exception& e)

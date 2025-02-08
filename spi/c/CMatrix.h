@@ -118,14 +118,14 @@ extern "C"
         const spi_Bool_Matrix* m,
         int nr,
         int nc,
-        spi_Bool data[]);
+        System_Bool data[]);
 
     SPI_C_IMPORT
     int spi_Bool_Matrix_set_data(
         spi_Bool_Matrix* m,
         int nr,
         int nc,
-        spi_Bool data[]);
+        System_Bool data[]);
 
     SPI_C_IMPORT
     int spi_Bool_Matrix_size(

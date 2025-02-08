@@ -194,7 +194,7 @@ spi_Variant* spi_Object_get_value(spi_Object* self, const char * name)
 int spi_Object_handle_save(
     const char* baseName,
     spi_Object* obj,
-    spi_Bool noCount,
+    System_Bool noCount,
     char** handle)
 {
     SPI_C_LOCK_GUARD;
@@ -206,7 +206,7 @@ int spi_Object_handle_save(
         const std::string& cHandle = spi::ObjectHandleSave(
             baseName,
             (spi::Object*)obj,
-            noCount == SPI_TRUE);
+            noCount == SYSTEM_TRUE);
 
         *handle = spi_String_copy(cHandle.c_str());
         return 0;

@@ -99,7 +99,7 @@ spi_Variant* spi_Variant_new_Double(double d)
     }
 }
 
-spi_Variant* spi_Variant_new_Bool(spi_Bool b)
+spi_Variant* spi_Variant_new_Bool(System_Bool b)
 {
     SPI_C_LOCK_GUARD;
     try
@@ -318,7 +318,7 @@ int spi_Variant_Double(spi_Variant * var, double * d)
     }
 }
 
-int spi_Variant_Bool(spi_Variant * var, spi_Bool * b)
+int spi_Variant_Bool(spi_Variant * var, System_Bool * b)
 {
     SPI_C_LOCK_GUARD;
     try
@@ -328,7 +328,7 @@ int spi_Variant_Bool(spi_Variant * var, spi_Bool * b)
             spi_Error_set_function(__FUNCTION__, "NULL inputs");
             return -1;
         }
-        *b = ((spi::Variant*)var)->ToBool() ? SPI_TRUE : SPI_FALSE;
+        *b = ((spi::Variant*)var)->ToBool() ? SYSTEM_TRUE : SYSTEM_FALSE;
         return 0;
     }
     catch (std::exception& e)
