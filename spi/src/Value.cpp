@@ -940,7 +940,7 @@ std::string Value::toString (const char* indent) const
     case Value::INT:
         return StringFormat("%d", anInt);
     case Value::DOUBLE:
-        output = StringFormat("%.17g", aDouble);
+        output = StringFormat("%.15g", aDouble);
         if (strchr(output.c_str(), 'e') == NULL &&
             strchr(output.c_str(), '.') == NULL)
         {
