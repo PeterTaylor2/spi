@@ -826,6 +826,46 @@ std::vector<T> ValueGetVector(const Value& v, bool permissive,
     return result;
 }
 
+std::string ArrayToString(IArrayConstSP& array, const char* indent)
+{
+    std::ostringstream ostr;
+
+    SPI_PRE_CONDITION(indent);
+
+    const std::vector<size_t> dimensions = array->dimensions();
+    size_t numDims = dimensions.size();
+    size_t size = array->size();
+
+    SPI_POST_CONDITION(numDims >= 1);
+
+    ostr << "[";
+    size_t size2 = 1;
+    for (size_t i = 0; i < numDims; ++i)
+    {
+        if (i > 0)
+            ostr << ",";
+        ostr << dimensions[i];
+        size2 *= dimensions[i];
+    }
+    ostr << "]";
+    SPI_POST_CONDITION(size == size2);
+
+    size_t blockSize = dimensions.back();
+    for (size_t i = 0; i < size; i += blockSize)
+    {
+        ostr << "\n" << indent << "{";
+        const char* sep = "";
+        for (size_t j = 0; j < blockSize; ++j)
+        {
+            const Value& value = array->getItem(i+j);
+            ostr << "\n" << indent << value.toString(indent) << sep;
+            sep = ",";
+        }
+        ostr << "\n" << indent << "}";
+    }
+    return ostr.str();
+}
+
 } // end of private namespace
 
 std::vector<std::string>
@@ -953,6 +993,8 @@ std::string Value::toString (const char* indent) const
         return std::string(Date(aDate));
     case Value::DATETIME:
         return std::string(DateTime(Date(aDateTime[0]), aDateTime[1]));
+    case Value::ARRAY:
+        return ArrayToString(getArray(), indent);
     default:
         return StringFormat("Complex value of type '%s'", TypeToString(type));
     }
