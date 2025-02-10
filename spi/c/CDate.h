@@ -49,17 +49,6 @@ extern "C"
 
 #define SPI_DATE_OFFSET 109205
 
-#if false
-    /* Date functions */
-    SPI_C_IMPORT
-    int spi_Date_from_YMD(
-        int year, int month, int day, spi_Date* date);
-
-    SPI_C_IMPORT
-    int spi_Date_YMD(
-        spi_Date date, int* year, int* month, int* day);
-#endif
-
     /* vector functions */
     SPI_C_IMPORT
     void spi_Date_Vector_delete(spi_Date_Vector* v);

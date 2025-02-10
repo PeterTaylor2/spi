@@ -25,46 +25,6 @@
 
 #include "Helper.hpp"
 
-#if false
-/*
-**************************************************************************
-* Implementation of spi_Date functions
-**************************************************************************
-*/
-int spi_Date_from_YMD(
-    int year, int month, int day, spi_Date* date)
-{
-    SPI_C_LOCK_GUARD;
-    try
-    {
-        *date = spi::Date(year, month, day);
-        return 0;
-    }
-    catch (std::exception& e)
-    {
-        spi_Error_set_function(__FUNCTION__, e.what());
-        return -1;
-    }
-}
-
-int spi_Date_YMD(
-    spi_Date date, int* year, int* month, int* day)
-{
-    SPI_C_LOCK_GUARD;
-    try
-    {
-        auto cpp = spi::Date(date);
-        cpp.YMD(year, month, day);
-        return 0;
-    }
-    catch (std::exception& e)
-    {
-        spi_Error_set_function(__FUNCTION__, e.what());
-        return -1;
-    }
-}
-#endif
-
 void spi_Date_Vector_delete(spi_Date_Vector* c)
 {
     SPI_C_LOCK_GUARD;

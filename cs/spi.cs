@@ -65,43 +65,6 @@ namespace SPI
             return new Exception(error);
         }
 
-#if false
-        /* Date functions */
-        [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int spi_Date_from_YMD(
-            int year, int month, int day, out int date);
-
-        [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int spi_Date_YMD(
-            int date, out int year, out int month, out int day);
-#endif
-
-#if false
-        public static System.DateTime DateFromCDate(int dt)
-        {
-            if (dt == 0)
-                return default(System.DateTime);
-
-            const long oneDay = 86400;
-            const long oneE7 = 10000000;
-            const long offset = 584388;
-            long ticks = ((long)dt + offset) * oneDay * oneE7;
-            return new System.DateTime(ticks);
-        }
-
-        public static int DateToCDate(System.DateTime dt)
-        { 
-            if (dt == default(System.DateTime))
-                return 0;
-
-            const long oneDay = 86400;
-            const long oneE7 = 10000000;
-            const long offset = 584388;
-            long cdt = dt.Ticks / (oneDay * oneE7) - offset;
-            return (int)cdt;
-        }
-#endif
-
         ///* Object functions */
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern void spi_Object_delete(IntPtr item);
