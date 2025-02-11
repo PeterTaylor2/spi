@@ -32,4 +32,13 @@ G_LIB=ar rv $@
 # debug or optimised code
 I_SYS_LIBS=-lc -lm -ldl -lpthread $(G_UUID_LIBS)
 
+# common warning flags for both release and debug mode
+# you can override this entire definition before including the configuration file
+#
+# to add flags use U_DEFINES instead (defined only for linux64_gcc context)
+# you can also use U_LINUX64_RELEASE_CFLAGS or U_LINUX64_DEBUG_CFLAGS
+
+G_LINUX64_GCC_WARNINGS?=-Wall -Wno-unused-value -Wno-deprecated -Wno-unused-variable -Wno-unused-but-set-variable -Wno-write-strings -Wno-sequence-point -Werror
+
+G_LINUX_VISIBILITY?=-fvisibility=hidden
 

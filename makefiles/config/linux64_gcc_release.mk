@@ -16,7 +16,7 @@ include $(U_MAKEFILES)/config/linux64_gcc.mk
 ###########################################################################
 G_OPTIMIZE_CFLAGS=-O3 -pipe
 I_DEFINES = $(U_DEFINES) $(U_LINUX64_RELEASE_CFLAGS)
-I_CFLAGS = -pthread -c -m64 -fPIC -Wformat -Wno-write-strings -fvisibility=hidden $(I_DEFINES)
+I_CFLAGS = -pthread -c -m64 -fPIC $(G_LINUX64_GCC_WARNINGS) $(G_LINUX_VISIBILITY) $(I_DEFINES)
 
 G_CFLAGS = $(I_CFLAGS) $(U_LINUX64_CFLAGS)
 G_CPPFLAGS = $(I_CFLAGS) $(U_LINUX64_CPPFLAGS)
