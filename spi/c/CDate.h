@@ -47,7 +47,11 @@ extern "C"
     typedef struct spi_Date_Vector spi_Date_Vector;
     typedef struct spi_Date_Matrix spi_Date_Matrix;
 
-#define SPI_DATE_OFFSET 109205
+    SPI_C_IMPORT
+    spi_Date spi_Date_convert_in(System_Date dt);
+
+    SPI_C_IMPORT
+    System_Date spi_Date_convert_out(spi_Date dt);
 
     /* vector functions */
     SPI_C_IMPORT

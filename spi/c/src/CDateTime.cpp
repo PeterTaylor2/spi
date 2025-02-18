@@ -22,6 +22,7 @@
 
 #include "CDateTime.h"
 #include "Error.h"
+#include "CDate.h"
 
 #include "Helper.hpp"
 
@@ -30,6 +31,24 @@
 * Implementation of spi_DateTime functions
 **************************************************************************
 */
+spi_DateTime spi_DateTime_convert_in(System_Date dt)
+{
+    System_Date date = (int)dt;
+    double time = dt - date;
+
+    spi_Date out = spi_Date_convert_in(date);
+    return out + time;
+}
+
+System_Date spi_DateTime_convert_out(spi_DateTime dt)
+{
+    spi_Date date = (spi_Date)dt;
+    double time = dt - date;
+
+    System_Date out = spi_Date_convert_out(date);
+    return out + time;
+}
+
 void spi_DateTime_Vector_delete(spi_DateTime_Vector* c)
 {
     SPI_C_LOCK_GUARD;
@@ -78,7 +97,7 @@ int spi_DateTime_Vector_get_data(
         }
         for (int i = 0; i < N; ++i)
         {
-            data[i] = ((spi_DateTime)cpp->at(i) - SPI_DATE_TIME_OFFSET);
+            data[i] = spi_DateTime_convert_out(cpp->at(i));
         }
         return 0;
     }
@@ -113,7 +132,7 @@ int spi_DateTime_Vector_set_data(
         }
         for (int i = 0; i < N; ++i)
         {
-            cpp->at(i) = spi::DateTime(data[i] + SPI_DATE_TIME_OFFSET);
+            cpp->at(i) = spi_DateTime_convert_in(data[i]);
         }
         return 0;
     }
@@ -178,7 +197,7 @@ int spi_DateTime_Matrix_get_data(
         const spi::DateTime* p = cpp->DataPointer();
         for (size_t i = 0; i < N; ++i)
         {
-            data[i] = (spi_DateTime)p[i] - SPI_DATE_TIME_OFFSET;
+            data[i] = spi_DateTime_convert_out(p[i]);
         }
 
         return 0;
@@ -218,7 +237,7 @@ int spi_DateTime_Matrix_set_data(
         spi::DateTime* p = cpp->DataPointer();
         for (size_t i = 0; i < N; ++i)
         {
-            p[i] = spi::DateTime(data[i] + SPI_DATE_TIME_OFFSET);
+            p[i] = spi_DateTime_convert_in(data[i]);
         }
 
         return 0;

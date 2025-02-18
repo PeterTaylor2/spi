@@ -25,6 +25,30 @@
 
 #include "Helper.hpp"
 
+namespace 
+{
+    const int SPI_DATE_OFFSET = 109205;
+}
+
+spi_Date spi_Date_convert_in(System_Date dt)
+{
+    spi_Date out = (spi_Date)dt;
+    if (out <= 0)
+        out = 0;
+    else
+        out = out + SPI_DATE_OFFSET;
+    return out;
+}
+
+System_Date spi_Date_convert_out(spi_Date dt)
+{
+    const int y400 = 365 * 400 + 97; /* number of days in 400 years */
+    System_Date out = dt > 0 ?
+        dt - SPI_DATE_OFFSET : /* relative to 1900 */
+        -4 * y400 - SPI_DATE_OFFSET; /* we want to get default(System.DateTime) */
+    return out;
+}
+
 void spi_Date_Vector_delete(spi_Date_Vector* c)
 {
     SPI_C_LOCK_GUARD;
@@ -72,7 +96,7 @@ int spi_Date_Vector_get_data(
             return -1;
         }
         for (int i = 0; i < N; ++i)
-            data[i] = (spi_Date)cpp->at(i) - SPI_DATE_OFFSET;
+            data[i] = spi_Date_convert_out(cpp->at(i));
         return 0;
     }
     catch (std::exception& e)
@@ -105,7 +129,7 @@ int spi_Date_Vector_set_data(
             return -1;
         }
         for (int i = 0; i < N; ++i)
-            cpp->at(i) = spi::Date((spi_Date)data[i] + SPI_DATE_OFFSET);
+            cpp->at(i) = spi_Date_convert_in(data[i]);
         return 0;
     }
     catch (std::exception& e)
@@ -185,7 +209,7 @@ int spi_Date_Matrix_get_data(
         const spi::Date* p = cpp->DataPointer();
         for (size_t i = 0; i < N; ++i)
         {
-            data[i] = (spi_Date)p[i] - SPI_DATE_OFFSET;
+            data[i] = spi_Date_convert_out(p[i]);
         }
 
         return 0;
@@ -226,7 +250,7 @@ int spi_Date_Matrix_set_data(
         spi::Date* p = cpp->DataPointer();
         for (size_t i = 0; i < N; ++i)
         {
-            p[i] = spi::Date((spi_Date)data[i] + SPI_DATE_OFFSET);
+            p[i] = spi_Date_convert_in(data[i]);
         }
 
         return 0;
