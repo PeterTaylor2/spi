@@ -88,6 +88,7 @@ ifeq ($(G_PLATFORM),win32)
 
 $(U_SERVICE_DOC).pdf: $(U_SERVICE).svo $(U_SERVICE_DOC).tex
 	@rm -f *.aux *.bbl *.blg *.log *.out *.toc
+	@echo "pdflatex $(U_SERVICE_DOC).tex"
 	@pdflatex --quiet $(U_SERVICE_DOC).tex
 	@pdflatex --quiet $(U_SERVICE_DOC).tex
 	pdflatex --quiet $(U_SERVICE_DOC).tex
