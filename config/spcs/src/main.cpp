@@ -157,7 +157,7 @@ int main(int argc, char* argv[])
     const char* longOptions = "noGeneratedCodeNotice noTidyUp license licenseFile= backup csNamingStyle nullable";
     try
     {
-        spi_util::CommandLine commandLine(argc, argv, "wvx=", longOptions);
+        spi_util::CommandLine commandLine(argc, argv, "wvx=s=", longOptions);
         exe = spi_util::path::basename(commandLine.exeName);
 
         std::string opt;
@@ -183,6 +183,10 @@ int main(int argc, char* argv[])
             else if (opt == "--license")
             {
                 printBanner(exe, true);
+            }
+            else if (opt == "-s")
+            {
+                options.satellites.push_back(val);
             }
             else if (opt == "-x")
             {

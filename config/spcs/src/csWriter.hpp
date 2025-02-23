@@ -50,7 +50,8 @@ struct Options
         license(),
         writeBackup(),
         csNamingStyle(),
-        nullable()
+        nullable(),
+        satellites()
     {}
 
     bool noGeneratedCodeNotice;
@@ -58,6 +59,7 @@ struct Options
     bool writeBackup;
     bool csNamingStyle;
     bool nullable;
+    std::vector<std::string> satellites;
 };
 
 struct Usage

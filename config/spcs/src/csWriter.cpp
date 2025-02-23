@@ -298,13 +298,31 @@ std::string CService::writeServiceFile(const std::string& dirname) const
             << m_csDllImport << "\n"
             << "private static extern int init_" << m_service->ns << "();\n"
             << "\n"
-            << "public static void start_service()\n"
+            << "public static void start_service()\n" // should this be private?
             << "{\n"
             << "    if (init_" << m_service->ns << "() != 0)\n"
             << "    {\n"
             << "        throw spi.ErrorToException();\n"
             << "    }\n"
             << "}\n";
+
+        // static constructor called when the class is first accessed
+        // this is only declared in the main service (i.e. not in satellites)
+        // hence we will have to call the init_*_classes method for each
+        // satellite
+        ostr << "\n"
+            << "static " << m_service->ns << "()\n"
+            << "{\n"
+            << "    start_service();\n"
+            << "    init_" << m_service->name << "_classes();\n";
+
+        for (size_t i = 0; i < m_options.satellites.size(); ++i)
+        {
+            ostr << "    init_" << m_options.satellites[i] << "_classes();\n";
+        }
+
+            // FIXME: we should initialise the classes for any satellite services
+        ostr << "}\n";
 
         ostr << "\n"
             << m_csDllImport << "\n"
