@@ -4,7 +4,7 @@
 # VC16 compiler (2019)
 
 # note this is included after the optional site.mk which can override compiler
-G_WIN32_COMPILER?=msvc16
+G_WIN32_COMPILER?=msvc17
 G_WIN32_BITS=32
 
 BITS?=32
@@ -12,7 +12,7 @@ BITS?=32
 ifdef WIN32_COMPILER
 COMPILER?=$(WIN32_COMPILER)
 else
-COMPILER?=msvc16
+COMPILER?=msvc17
 endif
 
 G_WIN32_PROGRAM_FILES:=/cygdrive/c/Program Files (x86)
