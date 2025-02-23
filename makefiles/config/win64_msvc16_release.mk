@@ -4,14 +4,6 @@
 G_ABI=Release-x64-vc16
 G_BUILD_DIR=win64/msvc16_release
 
-ifeq ($(G_WIN32_COMPILER),msvc16)
-ifeq ($(G_WIN32_BITS),64)
-G_ABI=Release
-else
-G_ABI=Release-x64
-endif
-endif
-
 include $(U_MAKEFILES)/config/win64_msvc16.mk
 
 ###########################################################################
