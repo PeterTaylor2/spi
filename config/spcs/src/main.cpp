@@ -80,7 +80,6 @@ static int run(
     const std::string& dirname,
     const std::string& nsGlobal,
     const std::string& dllName,
-    //const std::string& companyName,
     const std::vector<std::string>& exclusions,
     const Options& options,
     bool noTidyUp,
@@ -89,7 +88,7 @@ static int run(
     spi::ServiceSP docService = spdoc::spdoc_start_service();
     spdoc::ServiceConstSP serviceDoc = spdoc::Service::from_file(infilename.c_str());
 
-    CServiceConstSP service = CService::Make(serviceDoc, nsGlobal, dllName, /*companyName,*/exclusions, options);
+    CServiceConstSP service = CService::Make(serviceDoc, nsGlobal, dllName, exclusions, options);
 
     size_t nbModules = serviceDoc->modules.size();
     std::vector<CModuleConstSP> modules;
@@ -122,10 +121,6 @@ static int run(
     }
 
     fns.insert(service->writeServiceFile(dirname));
-    //if (!service->service()->sharedService)
-    //{
-    //    fns.insert(service->writeAssemblyInfo(dirname));
-    //}
     fns.insert(service->writeEnumExtensionsFile(dirname));
 
     if (!noTidyUp)
@@ -148,7 +143,6 @@ int main(int argc, char* argv[])
     std::string dirname;
     std::string nsGlobal;
     std::string dllName;
-    // std::string companyName;
 
     std::string exe("SPCS");
 
@@ -231,7 +225,6 @@ int main(int argc, char* argv[])
         dirname     = commandLine.args[2];
         nsGlobal    = commandLine.args[3];
         dllName     = commandLine.args[4];
-        // companyName = commandLine.args[5];
     }
     catch (std::exception& e)
     {
@@ -253,7 +246,7 @@ int main(int argc, char* argv[])
 
     try
     {
-        int status = run(infilename, outfilename, dirname, nsGlobal, dllName,/* companyName,*/
+        int status = run(infilename, outfilename, dirname, nsGlobal, dllName,
             exclusions, options, noTidyUp, verbose);
         return status;
     }

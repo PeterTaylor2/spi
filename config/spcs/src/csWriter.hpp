@@ -87,12 +87,10 @@ public:
         const spdoc::ServiceConstSP& service,
         const std::string& nsGlobal,
         const std::string& dllName,
-        // const std::string& companyName,
         const std::vector<std::string>& exclusions,
         const Options& options);
 
     std::string writeServiceFile(const std::string& dirname) const;
-    // std::string writeAssemblyInfo(const std::string& dirname) const;
     std::string writeEnumExtensionsFile(const std::string& dirname) const;
 
     const std::string& name() const;
@@ -116,7 +114,6 @@ protected:
         const spdoc::ServiceConstSP& service,
         const std::string& nsGlobal,
         const std::string& dllName,
-        // const std::string& companyName,
         const std::vector<std::string>& exclusions,
         const Options& options);
 
@@ -125,7 +122,6 @@ private:
     spdoc::ServiceConstSP m_service;
     std::string m_nsGlobal;
     std::string m_dllName;
-    // std::string m_companyName;
     std::string m_import;
     std::string m_csDllImport;
     std::string m_spiImport;

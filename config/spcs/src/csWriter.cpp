@@ -222,25 +222,22 @@ CServiceConstSP CService::Make(
     const spdoc::ServiceConstSP& service,
     const std::string& nsGlobal,
     const std::string& dllName,
-    //const std::string& companyName,
     const std::vector<std::string>& exclusions,
     const Options& options)
 {
-    return new CService(service, nsGlobal, dllName,/* companyName,*/ exclusions, options);
+    return new CService(service, nsGlobal, dllName, exclusions, options);
 }
 
 CService::CService(
     const spdoc::ServiceConstSP& service,
     const std::string& nsGlobal,
     const std::string& dllName,
-    //const std::string& companyName,
     const std::vector<std::string>& exclusions,
     const Options& options)
     :
     m_service(service),
     m_nsGlobal(nsGlobal),
     m_dllName(dllName),
-    //m_companyName(companyName),
     m_import(),
     m_csDllImport(),
     m_spiImport(),
@@ -511,40 +508,6 @@ std::string CService::writeEnumExtensionsFile(const std::string& dirname) const
 
     return std::string(); // will trigger deletion
 }
-
-#if 0
-std::string CService::writeAssemblyInfo(const std::string& dirname) const
-{
-    std::string basename = StringFormat("cs_%s_AssemblyInfo.cs", m_service->name.c_str());
-    std::string filename = spi_util::path::join(
-        dirname.c_str(), basename.c_str(), 0);
-
-    GeneratedOutput ostr(filename, spi_util::path::dirname(filename), writeBackup());
-
-    int year = spi::Date::Today().Year();
-
-    ostr << "using System.Reflection;\n"
-        << "using System.Runtime.CompilerServices;\n"
-        << "using System.Runtime.InteropServices;\n"
-        << "\n";
-
-    ostr << "[assembly: AssemblyTitle(\"" << m_dllName << "\")]\n";
-    ostr << "[assembly: AssemblyDescription(\"" << m_service->longName << "\")]\n";
-    ostr << "[assembly: AssemblyConfiguration(\"\")]\n";
-    ostr << "[assembly: AssemblyCompany(\"" << m_companyName << "\")]\n";
-    ostr << "[assembly: AssemblyProduct(\"" << m_companyName << " C# Interface\")]\n";
-    ostr << "[assembly: AssemblyCopyright(\"Copyright © " << m_companyName << " " << year << "\")]\n";
-    ostr << "[assembly: AssemblyTrademark(\"\")]\n";
-    ostr << "[assembly: AssemblyCulture(\"\")]\n";
-    ostr << "[assembly: ComVisible(false)]\n";
-    ostr << "[assembly: AssemblyVersion(\"" << m_service->version << "\")]\n";
-    ostr << "[assembly: AssemblyFileVersion(\"" << m_service->version << "\")]\n";
-    ostr << "\n";
-
-    ostr.close();
-    return filename;
-}
-#endif
 
 const std::string& CService::name() const
 {
