@@ -1971,11 +1971,11 @@ std::string CDataType::cType(int arrayDim) const
         arrayType = "spi_String";
         break;
     case spdoc::PublicType::DATE:
-        scalarType = "System_Date";
+        scalarType = "spi_Date";
         arrayType = "spi_Date";
         break;
     case spdoc::PublicType::DATETIME:
-        scalarType = "System_Date";
+        scalarType = "spi_DateTime";
         arrayType = "spi_DateTime";
         break;
     case spdoc::PublicType::ENUM:
@@ -2108,9 +2108,9 @@ std::string CDataType::c_to_cpp(int arrayDim, const std::string& name) const
             return spi_util::StringFormat("%s ? std::string(%s) : std::string()",
                 name.c_str(), name.c_str());
         case spdoc::PublicType::DATE:
-            return spi_util::StringFormat("spi::Date(spi_Date_convert_in(%s))", name.c_str());
+            return spi_util::StringFormat("spi::Date(%s)", name.c_str());
         case spdoc::PublicType::DATETIME:
-            return spi_util::StringFormat("spi::DateTime(spi_DateTime_convert_in(%s))", name.c_str());
+            return spi_util::StringFormat("spi::DateTime(%s)", name.c_str());
         case spdoc::PublicType::ENUM:
             return spi_util::StringFormat("%s((%s::Enum)(%s))",
                 cppType.c_str(), cppType.c_str(), name.c_str());
@@ -2215,9 +2215,9 @@ std::string CDataType::cpp_to_c(int arrayDim, const std::string & name) const
             return spi_util::StringFormat("spi_String_copy(%s.c_str())",
                 name.c_str());
         case spdoc::PublicType::DATE:
-            return spi_util::StringFormat("spi_Date_convert_out((spi_Date)(%s))", name.c_str());
+            return spi_util::StringFormat("(spi_Date)(%s)", name.c_str());
         case spdoc::PublicType::DATETIME:
-            return spi_util::StringFormat("spi_DateTime_convert_out((spi_DateTime)(%s))", name.c_str());
+            return spi_util::StringFormat("(spi_DateTime)(%s)", name.c_str());
         case spdoc::PublicType::ENUM:
             return spi_util::StringFormat("%s((%s::Enum)(%s))",
                 cType().c_str(), cppType(0).c_str(), name.c_str());

@@ -22,7 +22,6 @@
 
 #include "CDateTime.h"
 #include "Error.h"
-#include "CDate.h"
 
 #include "Helper.hpp"
 
@@ -31,22 +30,40 @@
 * Implementation of spi_DateTime functions
 **************************************************************************
 */
-spi_DateTime spi_DateTime_convert_in(System_Date dt)
+int spi_DateTime_from_YMDHMS(
+    int year, int month, int day, int hours, int minutes, int seconds,
+    spi_DateTime* dt)
 {
-    System_Date date = (int)dt;
-    double time = dt - date;
-
-    spi_Date out = spi_Date_convert_in(date);
-    return out + time;
+    SPI_C_LOCK_GUARD;
+    try
+    {
+        *dt = spi::DateTime(spi::Date(year, month, day), hours, minutes, seconds);
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
 }
 
-System_Date spi_DateTime_convert_out(spi_DateTime dt)
+int spi_DateTime_YMDHMS(
+    spi_DateTime dt,
+    int* year, int* month, int* day, int* hours, int* minutes, int* seconds)
 {
-    spi_Date date = (spi_Date)dt;
-    double time = dt - date;
-
-    System_Date out = spi_Date_convert_out(date);
-    return out + time;
+    SPI_C_LOCK_GUARD;
+    try
+    {
+        auto cpp = spi::DateTime(dt);
+        cpp.Date().YMD(year, month, day);
+        cpp.HMS(hours, minutes, seconds);
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
 }
 
 void spi_DateTime_Vector_delete(spi_DateTime_Vector* c)
@@ -55,6 +72,16 @@ void spi_DateTime_Vector_delete(spi_DateTime_Vector* c)
     if (c)
     {
         auto cpp = (std::vector<spi::DateTime>*)(c);
+        delete cpp;
+    }
+}
+
+void spi_DateTime_Matrix_delete(spi_DateTime_Matrix* c)
+{
+    SPI_C_LOCK_GUARD;
+    if (c)
+    {
+        auto cpp = (spi::MatrixData<spi::DateTime>*)(c);
         delete cpp;
     }
 }
@@ -74,10 +101,7 @@ spi_DateTime_Vector* spi_DateTime_Vector_new(int N)
     }
 }
 
-int spi_DateTime_Vector_get_data(
-    const spi_DateTime_Vector* v,
-    int N,
-    System_Date data[])
+int spi_DateTime_Vector_get_data(const spi_DateTime_Vector* v, int N, spi_DateTime data[])
 {
     SPI_C_LOCK_GUARD;
     if (!v)
@@ -96,9 +120,7 @@ int spi_DateTime_Vector_get_data(
             return -1;
         }
         for (int i = 0; i < N; ++i)
-        {
-            data[i] = spi_DateTime_convert_out(cpp->at(i));
-        }
+            data[i] = cpp->at(i);
         return 0;
     }
     catch (std::exception& e)
@@ -109,10 +131,7 @@ int spi_DateTime_Vector_get_data(
     return 0;
 }
 
-int spi_DateTime_Vector_set_data(
-    spi_DateTime_Vector* v,
-    int N,
-    System_Date data[])
+int spi_DateTime_Vector_set_data(spi_DateTime_Vector* v, int N, spi_DateTime data[])
 {
     SPI_C_LOCK_GUARD;
     if (!v)
@@ -131,9 +150,7 @@ int spi_DateTime_Vector_set_data(
             return -1;
         }
         for (int i = 0; i < N; ++i)
-        {
-            cpp->at(i) = spi_DateTime_convert_in(data[i]);
-        }
+            cpp->at(i) = data[i];
         return 0;
     }
     catch (std::exception& e)
@@ -142,16 +159,6 @@ int spi_DateTime_Vector_set_data(
         return -1;
     }
     return 0;
-}
-
-void spi_DateTime_Matrix_delete(spi_DateTime_Matrix* c)
-{
-    SPI_C_LOCK_GUARD;
-    if (c)
-    {
-        auto cpp = (spi::MatrixData<spi::DateTime>*)(c);
-        delete cpp;
-    }
 }
 
 spi_DateTime_Matrix* spi_DateTime_Matrix_new(int nr, int nc)
@@ -169,11 +176,7 @@ spi_DateTime_Matrix* spi_DateTime_Matrix_new(int nr, int nc)
     }
 }
 
-int spi_DateTime_Matrix_get_data(
-    const spi_DateTime_Matrix* m,
-    int nr,
-    int nc,
-    System_Date data[])
+int spi_DateTime_Matrix_get_data(const spi_DateTime_Matrix* m, int nr, int nc, spi_DateTime data[])
 {
     SPI_C_LOCK_GUARD;
     if (!m)
@@ -193,12 +196,12 @@ int spi_DateTime_Matrix_get_data(
             return -1;
         }
 
+        // we cannot bulk copy spi::DateTime because spi::DateTime is stored
+        // as int/int whereas spi_DateTime is double
         size_t N = unr * unc;
         const spi::DateTime* p = cpp->DataPointer();
         for (size_t i = 0; i < N; ++i)
-        {
-            data[i] = spi_DateTime_convert_out(p[i]);
-        }
+            data[i] = p[i]; // spi::DateTime automatically coerces to double
 
         return 0;
     }
@@ -209,11 +212,7 @@ int spi_DateTime_Matrix_get_data(
     }
 }
 
-int spi_DateTime_Matrix_set_data(
-    spi_DateTime_Matrix* m,
-    int nr,
-    int nc,
-    System_Date data[])
+int spi_DateTime_Matrix_set_data(spi_DateTime_Matrix* m, int nr, int nc, spi_DateTime data[])
 {
     SPI_C_LOCK_GUARD;
     if (!m)
@@ -233,12 +232,12 @@ int spi_DateTime_Matrix_set_data(
             return -1;
         }
 
+        // we cannot bulk copy spi::DateTime because spi::DateTime is stored
+        // as int/int whereas spi_DateTime is double
         size_t N = unr * unc;
         spi::DateTime* p = cpp->DataPointer();
         for (size_t i = 0; i < N; ++i)
-        {
-            p[i] = spi_DateTime_convert_in(data[i]);
-        }
+            p[i] = data[i]; // spi::DateTime automatically coerces from double
 
         return 0;
     }

@@ -37,21 +37,18 @@ extern "C"
 {
 #endif
 
-    typedef double System_Date; /* corresponding to Win32 DATE */
-    typedef int spi_Date; /* corresponding to spi::Date */
-
-    /* note that spi_Date = (spi_Date)System_Date + SPI_DATE_OFFSET */
-    /* essentially we truncate any non-integer DATE provided when */
-    /* we are converting to spi::Date */
-
+    typedef int spi_Date;
     typedef struct spi_Date_Vector spi_Date_Vector;
     typedef struct spi_Date_Matrix spi_Date_Matrix;
 
+    /* Date functions */
     SPI_C_IMPORT
-    spi_Date spi_Date_convert_in(System_Date dt);
+    int spi_Date_from_YMD(
+        int year, int month, int day, spi_Date* date);
 
     SPI_C_IMPORT
-    System_Date spi_Date_convert_out(spi_Date dt);
+    int spi_Date_YMD(
+        spi_Date date, int* year, int* month, int* day);
 
     /* vector functions */
     SPI_C_IMPORT
@@ -65,13 +62,13 @@ extern "C"
     int spi_Date_Vector_get_data(
         const spi_Date_Vector* v,
         int N,
-        System_Date data[]);
+        spi_Date data[]);
 
     SPI_C_IMPORT
     int spi_Date_Vector_set_data(
         spi_Date_Vector* v,
         int N,
-        System_Date data[]);
+        spi_Date data[]);
 
     SPI_C_IMPORT
     int spi_Date_Vector_size(
@@ -89,13 +86,13 @@ extern "C"
     int spi_Date_Matrix_get_data(
         const spi_Date_Matrix* m,
         int nr, int nc,
-        System_Date data[]);
+        spi_Date data[]);
 
     SPI_C_IMPORT
     int spi_Date_Matrix_set_data(
         spi_Date_Matrix* m,
         int nr, int nc,
-        System_Date data[]);
+        spi_Date data[]);
 
     SPI_C_IMPORT
     int spi_Date_Matrix_size(

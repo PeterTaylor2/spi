@@ -65,6 +65,75 @@ namespace SPI
             return new Exception(error);
         }
 
+        /* Date functions */
+        [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int spi_Date_from_YMD(
+            int year, int month, int day, out int date);
+
+        [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int spi_Date_YMD(
+            int date, out int year, out int month, out int day);
+
+        public static System.DateTime DateFromCDate(int dt)
+        {
+            if (dt == 0)
+                return default(System.DateTime);
+
+            const long oneDay = 86400;
+            const long oneE7 = 10000000;
+            const long offset = 584388;
+            long ticks = ((long)dt + offset) * oneDay * oneE7;
+            return new System.DateTime(ticks);
+        }
+
+        public static int DateToCDate(System.DateTime dt)
+        { 
+            if (dt == default(System.DateTime))
+                return 0;
+
+            const long oneDay = 86400;
+            const long oneE7 = 10000000;
+            const long offset = 584388;
+            long cdt = dt.Ticks / (oneDay * oneE7) - offset;
+            return (int)cdt;
+        }
+
+        /* DateTime functions */
+        [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int spi_DateTime_from_YMDHMS(
+            int year, int month, int day, int hours, int minutes, int seconds,
+            out double dateTime);
+
+        [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int spi_DateTime_YMDHMS(
+            double date,
+            out int year, out int month, out int day,
+            out int hours, out int minutes, out int seconds);
+
+        public static System.DateTime DateTimeFromCDateTime(double dt)
+        {
+            if (dt == 0.0)
+                return default(System.DateTime);
+
+            const long oneDay = 86400;
+            const long oneE7 = 10000000;
+            const long offset = 584388;
+            long ticks = (long)((dt + offset) * oneDay * oneE7 + 0.5);
+            return new System.DateTime(ticks);
+        }
+
+        public static double DateTimeToCDateTime(System.DateTime dt)
+        {
+            if (dt == default(System.DateTime))
+                return 0.0;
+
+            const long oneDay = 86400;
+            const long oneE7 = 10000000;
+            const long offset = 584388;
+            double cdt = (double)(dt.Ticks) / (oneDay * oneE7) - offset;
+            return cdt;
+        }
+
         ///* Object functions */
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern void spi_Object_delete(IntPtr item);
@@ -149,7 +218,7 @@ namespace SPI
         private static extern IntPtr spi_Variant_new_Date(int dt);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr spi_Variant_new_DateTime(System.DateTime dt);
+        private static extern IntPtr spi_Variant_new_DateTime(double dt);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr spi_Variant_new_Double(double d);
@@ -173,7 +242,7 @@ namespace SPI
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern int spi_Variant_DateTime(
             IntPtr var,
-            out System.DateTime dt);
+            out double dt);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern int spi_Variant_Double(
@@ -446,13 +515,13 @@ namespace SPI
         private static extern int spi_Date_Vector_get_data(
             IntPtr v,
             int N,
-            [In, Out] System.DateTime[] data);
+            [In, Out] int[] data);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern int spi_Date_Vector_set_data(
             IntPtr v,
             int N,
-            System.DateTime[] data);
+            int[] data);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern int spi_Date_Vector_size(
@@ -474,9 +543,14 @@ namespace SPI
             }
 
             System.DateTime[] array = new System.DateTime[size];
-            if (spi_Date_Vector_get_data(v, size, array) != 0)
+            int[] data = new int[size];
+            if (spi_Date_Vector_get_data(v, size, data) != 0)
             {
                 throw ErrorToException();
+            }
+            for (int i = 0; i < size; ++i)
+            {
+                array[i] = DateFromCDate(data[i]);
             }
             return array;
         }
@@ -494,7 +568,12 @@ namespace SPI
 
             if (array is not null && size > 0)
             {
-                if (spi_Date_Vector_set_data(v, size, array) != 0)
+                int[] data = new int[size];
+                for (int i = 0; i < size; ++i)
+                {
+                    data[i] = DateToCDate(array[i]);
+                }
+                if (spi_Date_Vector_set_data(v, size, data) != 0)
                 {
                     throw ErrorToException();
                 }
@@ -514,13 +593,13 @@ namespace SPI
         private static extern int spi_DateTime_Vector_get_data(
             IntPtr v,
             int N,
-            [In, Out] System.DateTime[] data);
+            [In, Out] double[] data);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern int spi_DateTime_Vector_set_data(
             IntPtr v,
             int N,
-            System.DateTime[] data);
+            double[] data);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern int spi_DateTime_Vector_size(
@@ -543,9 +622,14 @@ namespace SPI
             }
 
             System.DateTime[] array = new System.DateTime[size];
-            if (spi_DateTime_Vector_get_data(v, size, array) != 0)
+            double[] data = new double[size];
+            if (spi_DateTime_Vector_get_data(v, size, data) != 0)
             {
                 throw ErrorToException();
+            }
+            for (int i = 0; i < size; ++i)
+            {
+                array[i] = DateTimeFromCDateTime(data[i]);
             }
             return array;
         }
@@ -563,7 +647,12 @@ namespace SPI
 
             if (array is not null && size > 0)
             {
-                if (spi_DateTime_Vector_set_data(v, size, array) != 0)
+                double[] data = new double[size];
+                for (int i = 0; i < size; ++i)
+                {
+                    data[i] = DateTimeToCDateTime(array[i]);
+                }
+                if (spi_DateTime_Vector_set_data(v, size, data) != 0)
                 {
                     throw ErrorToException();
                 }
@@ -954,13 +1043,13 @@ namespace SPI
         private static extern int spi_Date_Matrix_get_data(
             IntPtr m,
             int nr, int nc,
-            [In, Out] System.DateTime[,] data);
+            [In, Out] int[,] data);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern int spi_Date_Matrix_set_data(
             IntPtr m,
             int nr, int nc,
-            System.DateTime[,] data);
+            int[,] data);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern int spi_Date_Matrix_size(
@@ -986,9 +1075,17 @@ namespace SPI
             System.DateTime[,] array = new System.DateTime[nr, nc];
             if (nr > 0 && nc > 0)
             {
-                if (spi_Date_Matrix_get_data(m, nr, nc, array) != 0)
+                int[,] data = new int[nr, nc];
+                if (spi_Date_Matrix_get_data(m, nr, nc, data) != 0)
                 {
                     throw ErrorToException();
+                }
+                for (int i = 0; i < nr; ++i)
+                {
+                    for (int j = 0; j < nc; ++j)
+                    {
+                        array[i, j] = spi.DateFromCDate(data[i, j]);
+                    }
                 }
             }
             return array;
@@ -1008,7 +1105,15 @@ namespace SPI
 
             if (array is not null)
             {
-                if (spi_Date_Matrix_set_data(m, nr, nc, array) != 0)
+                int[,] data = new int[nr, nc];
+                for (int i = 0; i < nr; ++i)
+                {
+                    for (int j = 0; j < nc; ++j)
+                    {
+                        data[i, j] = spi.DateToCDate(array[i, j]);
+                    }
+                }
+                if (spi_Date_Matrix_set_data(m, nr, nc, data) != 0)
                 {
                     throw ErrorToException();
                 }
@@ -1028,13 +1133,13 @@ namespace SPI
         private static extern int spi_DateTime_Matrix_get_data(
             IntPtr m,
             int nr, int nc,
-            [In, Out] System.DateTime[,] data);
+            [In, Out] double[,] data);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern int spi_DateTime_Matrix_set_data(
             IntPtr m,
             int nr, int nc,
-            System.DateTime[,] data);
+            double[,] data);
 
         [DllImport("spi-c", CallingConvention = CallingConvention.Cdecl)]
         private static extern int spi_DateTime_Matrix_size(
@@ -1059,9 +1164,17 @@ namespace SPI
             System.DateTime[,] array = new System.DateTime[nr, nc];
             if (nr > 0 && nc > 0)
             {
-                if (spi_DateTime_Matrix_get_data(m, nr, nc, array) != 0)
+                double[,] data = new double[nr, nc];
+                if (spi_DateTime_Matrix_get_data(m, nr, nc, data) != 0)
                 {
                     throw ErrorToException();
+                }
+                for (int i = 0; i < nr; ++i)
+                {
+                    for (int j = 0; j < nc; ++j)
+                    {
+                        array[i, j] = spi.DateTimeFromCDateTime(data[i, j]);
+                    }
                 }
             }
             return array;
@@ -1081,7 +1194,15 @@ namespace SPI
 
             if (array is not null)
             {
-                if (spi_DateTime_Matrix_set_data(m, nr, nc, array) != 0)
+                double[,] data = new double[nr, nc];
+                for (int i = 0; i < nr; ++i)
+                {
+                    for (int j = 0; j < nc; ++j)
+                    {
+                        data[i, j] = spi.DateTimeToCDateTime(array[i, j]);
+                    }
+                }
+                if (spi_DateTime_Matrix_set_data(m, nr, nc, data) != 0)
                 {
                     throw ErrorToException();
                 }
@@ -1303,7 +1424,7 @@ namespace SPI
 
             public SpiVariant(System.DateTime dt)
             {
-                self = spi_Variant_new_DateTime(dt);
+                self = spi_Variant_new_DateTime(DateTimeToCDateTime(dt));
                 if (self == IntPtr.Zero)
                     throw ErrorToException();
             }
@@ -1429,10 +1550,10 @@ namespace SPI
             {
                 get
                 {
-                    if (spi_Variant_DateTime(self, out System.DateTime dt) != 0)
+                    if (spi_Variant_DateTime(self, out double dt) != 0)
                         throw spi.ErrorToException();
 
-                    return dt;
+                    return DateTimeFromCDateTime(dt);
                 }
             }
 

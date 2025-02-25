@@ -25,28 +25,43 @@
 
 #include "Helper.hpp"
 
-namespace 
+
+/*
+**************************************************************************
+* Implementation of spi_Date functions
+**************************************************************************
+*/
+int spi_Date_from_YMD(
+    int year, int month, int day, spi_Date* date)
 {
-    const int SPI_DATE_OFFSET = 109205;
+    SPI_C_LOCK_GUARD;
+    try
+    {
+        *date = spi::Date(year, month, day);
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
 }
 
-spi_Date spi_Date_convert_in(System_Date dt)
+int spi_Date_YMD(
+    spi_Date date, int* year, int* month, int* day)
 {
-    spi_Date out = (spi_Date)dt;
-    if (out <= 0)
-        out = 0;
-    else
-        out = out + SPI_DATE_OFFSET;
-    return out;
-}
-
-System_Date spi_Date_convert_out(spi_Date dt)
-{
-    const int y400 = 365 * 400 + 97; /* number of days in 400 years */
-    System_Date out = dt > 0 ?
-        dt - SPI_DATE_OFFSET : /* relative to 1900 */
-        -4 * y400 - SPI_DATE_OFFSET; /* we want to get default(System.DateTime) */
-    return out;
+    SPI_C_LOCK_GUARD;
+    try
+    {
+        auto cpp = spi::Date(date);
+        cpp.YMD(year, month, day);
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return -1;
+    }
 }
 
 void spi_Date_Vector_delete(spi_Date_Vector* c)
@@ -55,6 +70,16 @@ void spi_Date_Vector_delete(spi_Date_Vector* c)
     if (c)
     {
         auto cpp = (std::vector<spi::Date>*)(c);
+        delete cpp;
+    }
+}
+
+void spi_Date_Matrix_delete(spi_Date_Matrix* c)
+{
+    SPI_C_LOCK_GUARD;
+    if (c)
+    {
+        auto cpp = (spi::MatrixData<spi::Date>*)(c);
         delete cpp;
     }
 }
@@ -74,10 +99,7 @@ spi_Date_Vector* spi_Date_Vector_new(int N)
     }
 }
 
-int spi_Date_Vector_get_data(
-    const spi_Date_Vector* v,
-    int N,
-    System_Date data[])
+int spi_Date_Vector_get_data(const spi_Date_Vector* v, int N, spi_Date data[])
 {
     SPI_C_LOCK_GUARD;
     if (!v)
@@ -96,7 +118,7 @@ int spi_Date_Vector_get_data(
             return -1;
         }
         for (int i = 0; i < N; ++i)
-            data[i] = spi_Date_convert_out(cpp->at(i));
+            data[i] = cpp->at(i);
         return 0;
     }
     catch (std::exception& e)
@@ -107,10 +129,7 @@ int spi_Date_Vector_get_data(
     return 0;
 }
 
-int spi_Date_Vector_set_data(
-    spi_Date_Vector* v,
-    int N,
-    System_Date data[])
+int spi_Date_Vector_set_data(spi_Date_Vector* v, int N, spi_Date data[])
 {
     SPI_C_LOCK_GUARD;
     if (!v)
@@ -129,7 +148,7 @@ int spi_Date_Vector_set_data(
             return -1;
         }
         for (int i = 0; i < N; ++i)
-            cpp->at(i) = spi_Date_convert_in(data[i]);
+            cpp->at(i) = data[i];
         return 0;
     }
     catch (std::exception& e)
@@ -138,6 +157,21 @@ int spi_Date_Vector_set_data(
         return -1;
     }
     return 0;
+}
+
+spi_Date_Matrix* spi_Date_Matrix_new(int nr, int nc)
+{
+    SPI_C_LOCK_GUARD;
+    try
+    {
+        auto out = new spi::MatrixData<spi::Date>(to_size_t(nr), to_size_t(nc));
+        return (spi_Date_Matrix*)(out);
+    }
+    catch (std::exception& e)
+    {
+        spi_Error_set_function(__FUNCTION__, e.what());
+        return NULL;
+    }
 }
 
 int spi_Date_Vector_size(
@@ -156,36 +190,11 @@ int spi_Date_Vector_size(
     return 0;
 }
 
-void spi_Date_Matrix_delete(spi_Date_Matrix* c)
-{
-    SPI_C_LOCK_GUARD;
-    if (c)
-    {
-        auto cpp = (spi::MatrixData<spi::Date>*)(c);
-        delete cpp;
-    }
-}
-
-spi_Date_Matrix* spi_Date_Matrix_new(int nr, int nc)
-{
-    SPI_C_LOCK_GUARD;
-    try
-    {
-        auto out = new spi::MatrixData<spi::Date>(to_size_t(nr), to_size_t(nc));
-        return (spi_Date_Matrix*)(out);
-    }
-    catch (std::exception& e)
-    {
-        spi_Error_set_function(__FUNCTION__, e.what());
-        return NULL;
-    }
-}
-
 int spi_Date_Matrix_get_data(
     const spi_Date_Matrix* m,
     int nr,
     int nc,
-    System_Date data[])
+    spi_Date data[])
 {
     SPI_C_LOCK_GUARD;
     if (!m)
@@ -205,12 +214,9 @@ int spi_Date_Matrix_get_data(
             return -1;
         }
 
-        size_t N = unr * unc;
-        const spi::Date* p = cpp->DataPointer();
-        for (size_t i = 0; i < N; ++i)
-        {
-            data[i] = spi_Date_convert_out(p[i]);
-        }
+        // because spi::Date has the same size and content as spi_Date
+        // we can bulk copy
+        memcpy((void*)&data[0], (const void*)cpp->DataPointer(), unr * unc * sizeof(int));
 
         return 0;
     }
@@ -226,7 +232,7 @@ int spi_Date_Matrix_set_data(
     spi_Date_Matrix* m,
     int nr,
     int nc,
-    System_Date data[])
+    spi_Date data[])
 {
     SPI_C_LOCK_GUARD;
     if (!m)
@@ -246,12 +252,9 @@ int spi_Date_Matrix_set_data(
             return -1;
         }
 
-        size_t N = unr * unc;
-        spi::Date* p = cpp->DataPointer();
-        for (size_t i = 0; i < N; ++i)
-        {
-            p[i] = spi_Date_convert_in(data[i]);
-        }
+        // because spi::Date has the same size and content as spi_Date
+        // we can bulk copy
+        memcpy((void*)cpp->DataPointer(), (const void*)&data[0], unr * unc * sizeof(int));
 
         return 0;
     }
