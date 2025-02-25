@@ -211,7 +211,10 @@ std::string CService::writePublicHeaderFile(const std::string& dirname,
     {
         ostr << "\n"
             << m_import << "\n"
-            << "int init_" << m_service->ns << "(void);\n"
+            << "int init_" << m_service->ns << "();\n"
+            << "\n"
+            << m_import << "\n"
+            << "int " << m_service->ns << "_service_version(char** version);\n"
             << "\n"
             << m_import << "\n"
             << "int " << m_service->ns << "_start_logging(\n"
@@ -311,7 +314,7 @@ std::string CService::writeSourceFile(const std::string& dirname) const
         << "static spi::ServiceSP g_service;\n";
 
     ostr << "\n"
-        << "int init_" << m_service->ns << "(void)\n"
+        << "int init_" << m_service->ns << "()\n"
         << "{\n"
         << "    SPI_C_LOCK_GUARD;\n"
         << "    try\n"
@@ -335,6 +338,28 @@ std::string CService::writeSourceFile(const std::string& dirname) const
 
     if (!m_service->sharedService)
     {
+        ostr << "\n"
+            << "int " << m_service->ns << "_service_version(char** version)\n"
+            << "{\n"
+            << "    SPI_C_LOCK_GUARD;\n"
+            << "    try\n"
+            << "    {\n"
+            << "        if (!version)\n"
+            << "        {\n"
+            << "            spi_Error_set_function(__FUNCTION__, \"NULL output\");\n"
+            << "            return -1;\n"
+            << "        }\n"
+            << "        const char* cv = " << m_service->ns << "::" << m_service->ns << "_version();\n"
+            << "        *version = spi_String_copy(cv);\n"
+            << "        return 0;\n"
+            << "    }\n"
+            << "    catch (std::exception& e)\n"
+            << "    {\n"
+            << "        spi_Error_set_function(__FUNCTION__, e.what());\n"
+            << "        return -1;\n"
+            << "    }\n"
+            << "}\n";
+
         ostr << "\n"
             << "int " << m_service->ns << "_start_logging(\n"
             << "    const char* filename,\n"
