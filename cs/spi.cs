@@ -79,6 +79,10 @@ namespace SPI
             if (dt == 0)
                 return default(System.DateTime);
 
+            if (dt >= 109205)
+                return System.DateTime.FromOADate(dt-109205);
+
+            // last resort for dates before 1899-12-30
             const long oneDay = 86400;
             const long oneE7 = 10000000;
             const long offset = 584388;
@@ -91,6 +95,11 @@ namespace SPI
             if (dt == default(System.DateTime))
                 return 0;
 
+            double oaDate = dt.ToOADate();
+            if (oaDate > 0.0)
+                return (int)oaDate + 109205;
+
+            // last resort for dates before 1899-12-30
             const long oneDay = 86400;
             const long oneE7 = 10000000;
             const long offset = 584388;
@@ -115,6 +124,10 @@ namespace SPI
             if (dt == 0.0)
                 return default(System.DateTime);
 
+            if (dt >= 109205)
+                return System.DateTime.FromOADate(dt-109205);
+
+            // last resort for dates before 1899-12-30
             const long oneDay = 86400;
             const long oneE7 = 10000000;
             const long offset = 584388;
@@ -127,6 +140,12 @@ namespace SPI
             if (dt == default(System.DateTime))
                 return 0.0;
 
+            double oaDate = dt.ToOADate();
+
+            if (oaDate > 0.0)
+                return oaDate + 109205;
+
+            // last resort for dates before 1899-12-30
             const long oneDay = 86400;
             const long oneE7 = 10000000;
             const long offset = 584388;
