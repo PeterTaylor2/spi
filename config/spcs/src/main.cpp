@@ -42,7 +42,7 @@ const char* copyright = "Copyright (C) 2012-2023 Sartorial Programming Ltd.";
 
 static void print_usage(std::ostream& ostr, const std::string& exe, const char* longOptions)
 {
-    ostr << "USAGE: " << exe << " [-w] [-x <exclusion>] [longOptions] <infile> <outfile> <dirname> <nsGlobal> <dllName> <companyName>\n"
+    ostr << "USAGE: " << exe << " [-w] [-x <exclusion>] [longOptions] <infile> <outfile> <dirname> <nsGlobal> <dllName>\n"
         << "\n"
         << "where longOptions can be as follows:\n\t--"
         << spi_util::StringReplace(longOptions, " ", "\n\t--") << std::endl;
@@ -80,7 +80,7 @@ static int run(
     const std::string& dirname,
     const std::string& nsGlobal,
     const std::string& dllName,
-    const std::string& companyName,
+    //const std::string& companyName,
     const std::vector<std::string>& exclusions,
     const Options& options,
     bool noTidyUp,
@@ -89,7 +89,7 @@ static int run(
     spi::ServiceSP docService = spdoc::spdoc_start_service();
     spdoc::ServiceConstSP serviceDoc = spdoc::Service::from_file(infilename.c_str());
 
-    CServiceConstSP service = CService::Make(serviceDoc, nsGlobal, dllName, companyName, exclusions, options);
+    CServiceConstSP service = CService::Make(serviceDoc, nsGlobal, dllName, /*companyName,*/exclusions, options);
 
     size_t nbModules = serviceDoc->modules.size();
     std::vector<CModuleConstSP> modules;
@@ -122,10 +122,10 @@ static int run(
     }
 
     fns.insert(service->writeServiceFile(dirname));
-    if (!service->service()->sharedService)
-    {
-        fns.insert(service->writeAssemblyInfo(dirname));
-    }
+    //if (!service->service()->sharedService)
+    //{
+    //    fns.insert(service->writeAssemblyInfo(dirname));
+    //}
     fns.insert(service->writeEnumExtensionsFile(dirname));
 
     if (!noTidyUp)
@@ -148,7 +148,7 @@ int main(int argc, char* argv[])
     std::string dirname;
     std::string nsGlobal;
     std::string dllName;
-    std::string companyName;
+    // std::string companyName;
 
     std::string exe("SPCS");
 
@@ -157,7 +157,7 @@ int main(int argc, char* argv[])
     const char* longOptions = "noGeneratedCodeNotice noTidyUp license licenseFile= backup csNamingStyle nullable";
     try
     {
-        spi_util::CommandLine commandLine(argc, argv, "wvx=s=", longOptions);
+        spi_util::CommandLine commandLine(argc, argv, "wvx=s=i=", longOptions);
         exe = spi_util::path::basename(commandLine.exeName);
 
         std::string opt;
@@ -183,6 +183,10 @@ int main(int argc, char* argv[])
             else if (opt == "--license")
             {
                 printBanner(exe, true);
+            }
+            else if (opt == "-i")
+            {
+                options.imports.push_back(val);
             }
             else if (opt == "-s")
             {
@@ -216,7 +220,7 @@ int main(int argc, char* argv[])
             }
         }
 
-        if (commandLine.args.size() != 6)
+        if (commandLine.args.size() != 5)
         {
             print_usage(std::cerr, exe, longOptions);
             return -1;
@@ -227,7 +231,7 @@ int main(int argc, char* argv[])
         dirname     = commandLine.args[2];
         nsGlobal    = commandLine.args[3];
         dllName     = commandLine.args[4];
-        companyName = commandLine.args[5];
+        // companyName = commandLine.args[5];
     }
     catch (std::exception& e)
     {
@@ -249,7 +253,7 @@ int main(int argc, char* argv[])
 
     try
     {
-        int status = run(infilename, outfilename, dirname, nsGlobal, dllName, companyName,
+        int status = run(infilename, outfilename, dirname, nsGlobal, dllName,/* companyName,*/
             exclusions, options, noTidyUp, verbose);
         return status;
     }

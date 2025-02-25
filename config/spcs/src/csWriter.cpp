@@ -222,25 +222,25 @@ CServiceConstSP CService::Make(
     const spdoc::ServiceConstSP& service,
     const std::string& nsGlobal,
     const std::string& dllName,
-    const std::string& companyName,
+    //const std::string& companyName,
     const std::vector<std::string>& exclusions,
     const Options& options)
 {
-    return new CService(service, nsGlobal, dllName, companyName, exclusions, options);
+    return new CService(service, nsGlobal, dllName,/* companyName,*/ exclusions, options);
 }
 
 CService::CService(
     const spdoc::ServiceConstSP& service,
     const std::string& nsGlobal,
     const std::string& dllName,
-    const std::string& companyName,
+    //const std::string& companyName,
     const std::vector<std::string>& exclusions,
     const Options& options)
     :
     m_service(service),
     m_nsGlobal(nsGlobal),
     m_dllName(dllName),
-    m_companyName(companyName),
+    //m_companyName(companyName),
     m_import(),
     m_csDllImport(),
     m_spiImport(),
@@ -298,7 +298,10 @@ std::string CService::writeServiceFile(const std::string& dirname) const
             << m_csDllImport << "\n"
             << "private static extern int init_" << m_service->ns << "();\n"
             << "\n"
-            << "public static void start_service()\n" // should this be private?
+            << m_csDllImport << "\n"
+            << "private static extern int " << m_service->ns << "_service_version(out string version);\n"
+            << "\n"
+            << "private static void start_service()\n"
             << "{\n"
             << "    if (init_" << m_service->ns << "() != 0)\n"
             << "    {\n"
@@ -306,14 +309,34 @@ std::string CService::writeServiceFile(const std::string& dirname) const
             << "    }\n"
             << "}\n";
 
+        ostr << "\n"
+            << "public static string " << m_service->ns << "_service_version()\n"
+            << "{\n"
+            << "    if (" << m_service->ns << "_service_version(out string version) != 0)\n"
+            << "    {\n"
+            << "        throw spi.ErrorToException();\n"
+            << "    }\n"
+            << "    return version;\n"
+            << "}\n";
+
+
         // static constructor called when the class is first accessed
         // this is only declared in the main service (i.e. not in satellites)
         // hence we will have to call the init_*_classes method for each
         // satellite
         ostr << "\n"
             << "static " << m_service->ns << "()\n"
-            << "{\n"
-            << "    start_service();\n"
+            << "{\n";
+
+        for (size_t i = 0; i < m_options.imports.size(); ++i)
+        {
+            const std::string imp = m_options.imports[i];
+            ostr << "    // ensure that " << imp << " has been initialised\n"
+                << "    string " << imp << "_version = " << imp << "." << imp << "_service_version();\n"
+                << "\n";
+        }
+
+        ostr << "    start_service();\n"
             << "    init_" << m_service->name << "_classes();\n";
 
         for (size_t i = 0; i < m_options.satellites.size(); ++i)
@@ -489,6 +512,7 @@ std::string CService::writeEnumExtensionsFile(const std::string& dirname) const
     return std::string(); // will trigger deletion
 }
 
+#if 0
 std::string CService::writeAssemblyInfo(const std::string& dirname) const
 {
     std::string basename = StringFormat("cs_%s_AssemblyInfo.cs", m_service->name.c_str());
@@ -520,6 +544,7 @@ std::string CService::writeAssemblyInfo(const std::string& dirname) const
     ostr.close();
     return filename;
 }
+#endif
 
 const std::string& CService::name() const
 {
