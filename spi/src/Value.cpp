@@ -826,7 +826,7 @@ std::vector<T> ValueGetVector(const Value& v, bool permissive,
     return result;
 }
 
-std::string ArrayToString(IArrayConstSP& array, const char* indent)
+std::string ArrayToString(const IArrayConstSP& array, const char* indent)
 {
     std::ostringstream ostr;
 
