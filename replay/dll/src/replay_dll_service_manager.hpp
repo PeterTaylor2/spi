@@ -36,7 +36,6 @@ SPI_REPLAY_BEGIN_NAMESPACE
 using spi::SafeCopy;
 
 spi::Service* replay_service();
-const char* replay_version();
 void replay_check_permission();
 bool replay_begin_function(bool noLogging=false);
 void replay_end_function();

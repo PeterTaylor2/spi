@@ -53,6 +53,9 @@ spi::ServiceSP spdoc_exported_service();
 SPI_IMPORT
 spi::Date spdoc_get_time_out();
 
+SPI_IMPORT
+const char* spdoc_version();
+
 SPDOC_END_NAMESPACE
 
 #endif /* _SPDOC_DLL_SERVICE_HPP_*/

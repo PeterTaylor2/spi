@@ -1169,7 +1169,10 @@ void ServiceDefinition::writeServiceHeaders(
         << "spi::ServiceSP " << m_name << "_exported_service();\n"
         << "\n"
         << m_import << "\n"
-        << "spi::Date " << m_name << "_get_time_out();\n";
+        << "spi::Date " << m_name << "_get_time_out();\n"
+        << "\n"
+        << m_import << "\n"
+        << "const char* " << m_name << "_version();\n";
 
     ostr << "\n";
     writeEndNamespace(ostr);
@@ -1198,7 +1201,6 @@ void ServiceDefinition::writeServiceHeaders(
         << "using spi::SafeCopy;\n"
         << "\n"
         << "spi::Service* " << m_name << "_service();\n"
-        << "const char* " << m_name << "_version();\n"
         << "void " << m_name << "_check_permission();\n"
         << "bool " << m_name << "_begin_function(bool noLogging=false);\n"
         << "void " << m_name << "_end_function();\n"

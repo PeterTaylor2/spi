@@ -36,7 +36,6 @@ SPDOC_BEGIN_NAMESPACE
 using spi::SafeCopy;
 
 spi::Service* spdoc_service();
-const char* spdoc_version();
 void spdoc_check_permission();
 bool spdoc_begin_function(bool noLogging=false);
 void spdoc_end_function();

@@ -53,6 +53,9 @@ spi::ServiceSP replay_exported_service();
 REPLAY_IMPORT
 spi::Date replay_get_time_out();
 
+REPLAY_IMPORT
+const char* replay_version();
+
 SPI_REPLAY_END_NAMESPACE
 
 #endif /* _REPLAY_DLL_SERVICE_HPP_*/
