@@ -247,7 +247,9 @@ public:
         GeneratedOutput& ostr,
         int arrayDim, 
         const std::string& name,
-        size_t indent) const;
+        size_t indent,
+        bool isOptional,
+        bool isNullable) const;
 
 private:
 

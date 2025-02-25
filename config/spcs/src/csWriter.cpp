@@ -863,7 +863,8 @@ void CModule::implementFunctionBegin(
     {
         const spdoc::AttributeConstSP& arg = func->inputs[i];
         CDataType(arg->dataType, service).cs_to_c_decl(
-            ostr, arg->arrayDim, arg->name, indent + 4);
+            ostr, arg->arrayDim, arg->name, indent + 4,
+            arg->isOptional, service->nullable());
     }
 }
 
@@ -1247,7 +1248,8 @@ void CModule::implementClass(
         {
             const spdoc::ClassAttributeConstSP& arg = cls->attributes[i];
             CDataType(arg->dataType, service).cs_to_c_decl(
-                ostr, arg->arrayDim, arg->name, 8);
+                ostr, arg->arrayDim, arg->name, 8,
+                arg->isOptional, service->nullable());
         }
 
         ostr << "        IntPtr inner = " << cname << "_new(";
@@ -1337,7 +1339,8 @@ void CModule::implementClass(
         ostr << cdt.csType(cfa->arrayDim, false) << " " << service->rename(cfa->name, true) << ")\n"
             << "    {\n";
 
-        cdt.cs_to_c_decl(ostr, arrayDim, cfa->name, 8);
+        cdt.cs_to_c_decl(ostr, arrayDim, cfa->name, 8,
+            cfa->isOptional, service->nullable());
 
         ostr << "        IntPtr inner = " << cfFuncNames[i] << "("
             << cdt.cs_to_c(arrayDim, cfa->name) << ");\n"
@@ -1812,7 +1815,8 @@ void CModule::implementProperty(
             << "        set\n" // note that the input is arbitrary called value
             << "        {\n";
 
-        cdt.cs_to_c_decl(ostr, attr->arrayDim, "value", 12);
+        cdt.cs_to_c_decl(ostr, attr->arrayDim, "value", 12,
+            attr->isOptional, service->nullable());
         ostr << "            IntPtr modified = " << cname << "_set_" << attr->name << "(self,";
 
         std::string arg = cdt.cs_to_c(attr->arrayDim, "value");
@@ -2266,18 +2270,18 @@ std::string CDataType::csType(int arrayDim, bool isOptional, bool inputArg) cons
         break;
     case spdoc::PublicType::CLASS:
         oss << /* service->nsGlobal() << "." << */ dataType->nsService << "." << dataType->name;
-        if (isOptional && arrayDim == 0)
+        if (isOptional)// && arrayDim == 0)
             oss << nullable;
         scalarType = oss.str();
         break;
     case spdoc::PublicType::OBJECT:
         scalarType = "spi.SpiObject";
-        if (isOptional && arrayDim == 0)
+        if (isOptional)// && arrayDim == 0)
             scalarType += nullable;
         break;
     case spdoc::PublicType::MAP:
         scalarType = "spi.SpiMap";
-        if (isOptional && arrayDim == 0)
+        if (isOptional)// && arrayDim == 0)
             scalarType += nullable;
         break;
     case spdoc::PublicType::VARIANT:
@@ -2319,12 +2323,16 @@ void CDataType::cs_to_c_decl(
     GeneratedOutput& ostr,
     int arrayDim,
     const std::string& name,
-    size_t indent) const
+    size_t indent,
+    bool isOptional,
+    bool isNullable) const
 {
     // declare anything that returns PointerHandle via using
     // these will be outputs from ..FromArray functions in this context
 
     std::ostringstream oss;
+
+    const char* nullable = (isOptional && isNullable) ? "_Nullable" : "";
 
     std::string spaces(indent, ' ');
 
@@ -2354,8 +2362,10 @@ void CDataType::cs_to_c_decl(
             oss << "spi.DateTimeVectorFromArray(" << service->rename(name, true) << ")";
             break;
         case spdoc::PublicType::ENUM:
-        case spdoc::PublicType::CLASS:
             oss << forArrayTranslations(csType(0, false)) << "_VectorFromArray(" << service->rename(name, true) << ")";
+            break;
+        case spdoc::PublicType::CLASS:
+            oss << forArrayTranslations(csType(0, false)) << nullable << "_VectorFromArray(" << service->rename(name, true) << ")";
             break;
         case spdoc::PublicType::VARIANT:
             oss << "spi.SpiVariantVectorFromArray(" << service->rename(name, true) << ")";
@@ -2396,8 +2406,10 @@ void CDataType::cs_to_c_decl(
             oss << "spi.SpiVariantMatrixFromArray(" << service->rename(name, true) << ")";
             break;
         case spdoc::PublicType::ENUM:
-        case spdoc::PublicType::CLASS:
             oss << forArrayTranslations(csType(0, false)) << "_MatrixFromArray(" << service->rename(name, true) << ")";
+            break;
+        case spdoc::PublicType::CLASS:
+            oss << forArrayTranslations(csType(0, false)) << nullable << "_MatrixFromArray(" << service->rename(name, true) << ")";
             break;
         case spdoc::PublicType::OBJECT:
             oss << "spi.SpiObjectMatrixFromArray(" << service->rename(name, true) << ")";
