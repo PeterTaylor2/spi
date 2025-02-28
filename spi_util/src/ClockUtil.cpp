@@ -128,6 +128,8 @@ namespace {
 
     static ClockEvents g_clockEvents;
 
+    static ClockFunction* g_parent = nullptr;
+
 } // end of anonymous namespace
 
 /*
@@ -149,9 +151,9 @@ void ClockEventsStart()
  * If ClockStart has not been called then this function does nothing.
  * Note that msg must be static data as it is only consumed later.
  */
-void ClockEventsLog(const char* msg)
+double ClockEventsLog(const char* msg, double extraTime)
 {
-    g_clockEvents.Log(msg);
+    return g_clockEvents.Log(msg, extraTime);
 }
 
 /*
@@ -181,18 +183,21 @@ void ClockEvents::Start()
     m_time = m_clock.Time();
 }
 
-void ClockEvents::Log(const char* msg)
+double ClockEvents::Log(const char* msg, double extraTime)
 {
     if (!m_started)
-        return;
+        return 0.0;
 
     double time = m_clock.Time();
     double elapsedTime = time - m_time + m_unallocatedTime;
+    double totalTime = elapsedTime + extraTime;
     m_unallocatedTime = 0.0;
-    AddClockEvent(msg, elapsedTime);
+    AddClockEvent(msg, elapsedTime, totalTime);
 
     // re-calculate the time to avoid the overhead of adding to the index of clock events
     m_time = m_clock.Time();
+
+    return totalTime;
 }
 
 void ClockEvents::Write(const char* filename)
@@ -234,6 +239,7 @@ void Profile::Clear()
     times.clear();
     fractionalTimes.clear();
     numCalls.clear();
+    totalTimes.clear();
 
     totalTime = 0.0;
     count = 0;
@@ -249,14 +255,14 @@ void Profile::Write(const char* filename) const
         ostr << std::endl;
         for (size_t i = 0; i < count; ++i)
         {
-            sprintf(buf, "%-45s : %12.8f : %5.2f%% (%d)",
+            sprintf(buf, "%-50s : %10.6f : %5.2f%% : %10.6f : %5.2f%% (%d)",
                 names[i].c_str(), times[i], 100 * fractionalTimes[i],
-                numCalls[i]);
+                totalTimes[i], 100 * fractionalTotalTimes[i], numCalls[i]);
             ostr << buf << std::endl;
         }
-        sprintf(buf, "%45s   ============", "");
+        sprintf(buf, "%50s   ==========", "");
         ostr << buf << std::endl;
-        sprintf(buf, "%-45s : %12.8f", "Total", totalTime);
+        sprintf(buf, "%-50s : %10.6f", "Total", totalTime);
         ostr << buf << std::endl;
     }
     ostr << std::endl;
@@ -270,7 +276,8 @@ void ClockEvents::GetProfile(Profile& profile) const
 
     std::map<std::string, double> indexTime;
     std::map<std::string, int> indexCount;
-    double totalTime = 0.0;
+    std::map<std::string, double> indexTotalTime;
+    double grandTotalTime = 0.0;
         
     size_t numEvents = m_indexEvents.size();
 
@@ -279,7 +286,8 @@ void ClockEvents::GetProfile(Profile& profile) const
     {
         indexTime[iter->first] += iter->second.time;
         indexCount[iter->first] += iter->second.count;
-        totalTime += iter->second.time;
+        indexTotalTime[iter->first] += iter->second.totalTime;
+        grandTotalTime += iter->second.time;
     }
 
     for (std::map<std::string, double>::const_iterator iter = indexTime.begin();
@@ -289,19 +297,26 @@ void ClockEvents::GetProfile(Profile& profile) const
         // ClockFunction level since the string might have been static
         std::string noAnonymous = StringReplace(
             iter->first, "`anonymous-namespace'", "");
-        double timeFraction = totalTime > 0.0 ? iter->second / totalTime : 0.0;
+        double timeFraction = grandTotalTime > 0.0 ? iter->second / grandTotalTime : 0.0;
+
+        double totalTime = indexTotalTime[iter->first];
+        double totalTimeFraction = totalTime > 0.0 ? totalTime / grandTotalTime : 0.0;
 
         profile.names.push_back(noAnonymous);
         profile.times.push_back(iter->second);
         profile.fractionalTimes.push_back(timeFraction);
         profile.numCalls.push_back(indexCount[iter->first]);
+        profile.totalTimes.push_back(totalTime);
+        profile.fractionalTotalTimes.push_back(totalTimeFraction);
     }
-    profile.totalTime = totalTime;
+    profile.totalTime = grandTotalTime;
     profile.count = profile.names.size();
 
     SPI_UTIL_POST_CONDITION(profile.count == profile.times.size());
     SPI_UTIL_POST_CONDITION(profile.count == profile.fractionalTimes.size());
     SPI_UTIL_POST_CONDITION(profile.count == profile.numCalls.size());
+    SPI_UTIL_POST_CONDITION(profile.count == profile.totalTimes.size());
+    SPI_UTIL_POST_CONDITION(profile.count == profile.fractionalTotalTimes.size());
 }
 
 void ClockEvents::Clear()
@@ -310,7 +325,7 @@ void ClockEvents::Clear()
     m_indexEvents.clear();
 }
 
-void ClockEvents::AddClockEvent(const char* msg, double time)
+void ClockEvents::AddClockEvent(const char* msg, double time, double totalTime)
 {
     // the time spent in this function is not counted by the event clock
     std::string name(msg);
@@ -320,6 +335,7 @@ void ClockEvents::AddClockEvent(const char* msg, double time)
         ClockEventCount total;
         total.count = 1;
         total.time = time;
+        total.totalTime = totalTime;
 
         m_indexEvents.insert(IndexClockEventCount::value_type(name, total));
     }
@@ -327,6 +343,7 @@ void ClockEvents::AddClockEvent(const char* msg, double time)
     {
         iter->second.count += 1;
         iter->second.time += time;
+        iter->second.totalTime += totalTime;
     }
 }
 
@@ -334,7 +351,9 @@ ClockFunction::ClockFunction(const char* func, ClockEvents* events)
     :
     m_func(func),
     m_unallocatedTime(),
-    m_events(events)
+    m_events(events),
+    m_parent(g_parent),
+    m_extraTime()
 {
     if (!m_events)
         m_events = &g_clockEvents;
@@ -348,6 +367,8 @@ ClockFunction::ClockFunction(const char* func, ClockEvents* events)
         m_events->m_unallocatedTime = 0.0;
 
         m_events->m_time = m_events->m_clock.Time();
+
+        g_parent = this;
     }
 }
 
@@ -355,8 +376,11 @@ ClockFunction::~ClockFunction()
 {
     if (m_events->m_started)
     {
-        m_events->Log(m_func);
+        double elapsedTime = m_events->Log(m_func, m_extraTime);
         m_events->m_unallocatedTime = m_unallocatedTime;
+        g_parent = m_parent;
+        if (g_parent)
+            g_parent->m_extraTime += elapsedTime;
     }
 }
 

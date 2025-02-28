@@ -71,7 +71,7 @@ void ClockEventsStart();
  * Note that msg must be static data as it is only consumed later.
  */
 SPI_UTIL_IMPORT
-void ClockEventsLog(const char* msg);
+double ClockEventsLog(const char* msg, double extraTime);
 
 /*
  * Call this to write all the events to the given file.
@@ -88,6 +88,8 @@ struct SPI_UTIL_IMPORT Profile
     std::vector<double> times;
     std::vector<double> fractionalTimes;
     std::vector<int> numCalls;
+    std::vector<double> totalTimes;
+    std::vector<double> fractionalTotalTimes;
 
     double totalTime;
     size_t count;
@@ -102,9 +104,9 @@ public:
     ClockEvents();
 
     void Start();
-    void Log(const char* msg);
+    double Log(const char* msg, double extraTime);
     void Write(const char* filename);
-    void AddClockEvent(const char* msg, double time);
+    void AddClockEvent(const char* msg, double time, double totalTime);
 
     void GetProfile(Profile& profile) const;
     void Clear();
@@ -115,8 +117,9 @@ private:
 
     struct ClockEventCount
     {
-        int count;
-        double time;
+        int count = 0;
+        double time = 0.0;
+        double totalTime = 0.0;
     };
 
     typedef std::map<std::string, ClockEventCount> IndexClockEventCount;
@@ -144,6 +147,8 @@ private:
     const char* m_func;
     double m_unallocatedTime;
     ClockEvents* m_events;
+    ClockFunction* m_parent;
+    double m_extraTime;
 };
 
 SPI_UTIL_END_NAMESPACE
