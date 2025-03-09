@@ -160,8 +160,20 @@ namespace path
         return result;
     }
 
+    namespace
+    {
+        const std::string HTTP("http:");
+        const std::string HTTPS("https:");
+    }
+
     std::string convert(const std::string & path)
     {
+        if ((path.substr(0, 5) == HTTP) ||
+            (path.substr(0, 6) == HTTPS))
+        {
+            return posix(path);
+        }
+            
 #ifdef _MSC_VER
         return win32(path);
 #else
