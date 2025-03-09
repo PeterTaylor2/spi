@@ -117,9 +117,11 @@ private:
 
     struct ClockEventCount
     {
-        int count = 0;
-        double time = 0.0;
-        double totalTime = 0.0;
+        int count;
+        double time;
+        double totalTime;
+
+        ClockEventCount();
     };
 
     typedef std::map<std::string, ClockEventCount> IndexClockEventCount;

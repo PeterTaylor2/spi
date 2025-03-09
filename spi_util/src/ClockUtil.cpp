@@ -128,7 +128,7 @@ namespace {
 
     static ClockEvents g_clockEvents;
 
-    static ClockFunction* g_parent = nullptr;
+    static ClockFunction* g_parent = NULL;
 
 } // end of anonymous namespace
 
@@ -164,6 +164,13 @@ void ClockEventsWrite(const char* filename)
 {
     g_clockEvents.Write(filename);
 }
+
+ClockEvents::ClockEventCount::ClockEventCount()
+    :
+    count(0),
+    time(0.0),
+    totalTime(0.0)
+{}
 
 ClockEvents::ClockEvents()
     :
