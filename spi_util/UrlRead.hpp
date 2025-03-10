@@ -143,6 +143,9 @@ JSONMapConstSP URLReadContentsJSON(
     const std::vector<std::string>& headers = std::vector<std::string>(),
     bool authenticate = false);
 
+SPI_UTIL_IMPORT
+std::string URLEscape(const std::string& url);
+
 SPI_UTIL_END_NAMESPACE
 
 #endif

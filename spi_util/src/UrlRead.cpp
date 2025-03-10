@@ -336,6 +336,25 @@ JSONMapConstSP URLReadContentsJSON(
     return jv.GetMap();
 }
 
+std::string URLEscape(const std::string& url)
+{
+    if (!GlobalInitialisation)
+        GlobalInitialisation.reset(new GlobalInit());
+
+    CURL* handle = curl_easy_init();
+
+    char* csUrlEscape = curl_easy_escape(handle, url.c_str(), url.length());
+
+    if (csUrlEscape)
+    {
+        std::string urlEscape(csUrlEscape);
+        free(csUrlEscape);
+        return urlEscape;
+    }
+
+    return url;
+}
+
 URLInfo::URLInfo(
     long responseCode,
     const std::string& contents,
