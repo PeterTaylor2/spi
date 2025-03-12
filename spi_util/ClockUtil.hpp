@@ -71,7 +71,7 @@ void ClockEventsStart();
  * Note that msg must be static data as it is only consumed later.
  */
 SPI_UTIL_IMPORT
-double ClockEventsLog(const char* msg, double extraTime);
+double ClockEventsLog(const char* msg, double extraTime = 0.0);
 
 /*
  * Call this to write all the events to the given file.
