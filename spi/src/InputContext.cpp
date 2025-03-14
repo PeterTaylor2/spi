@@ -357,6 +357,12 @@ InputContext* InputContext::NoContext()
     return &noContext;
 }
 
+void InputContext::SetAllOptional(bool allOptional)
+{
+    PythonInputContext::allOptional = allOptional;
+    ExcelInputContext::allOptional = allOptional;
+}
+
 std::vector<bool> InputContext::ValueToBoolVector(const Value& value,
     bool optional,
     bool defaultValue) const

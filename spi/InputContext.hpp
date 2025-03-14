@@ -91,6 +91,8 @@ public:
     static InputContext* PythonContext();
     static InputContext* NoContext();
 
+    static void SetAllOptional(bool allOptional);
+
     virtual ~InputContext() = 0;
     virtual const char* Context() const = 0;
     virtual bool ValueToBool(
