@@ -39,6 +39,7 @@
 #include "RuntimeError.hpp"
 #include "JSONValue.hpp"
 #include "JSONParser.hpp"
+#include "Utils.hpp"
 
 #undef SPI_UTIL_CLOCK_EVENTS
 #include "ClockUtil.hpp"
@@ -343,7 +344,7 @@ std::string URLEscape(const std::string& url)
 
     CURL* handle = curl_easy_init();
 
-    char* csUrlEscape = curl_easy_escape(handle, url.c_str(), url.length());
+    char* csUrlEscape = curl_easy_escape(handle, url.c_str(), IntegerCast<int>(url.length()));
 
     if (csUrlEscape)
     {
