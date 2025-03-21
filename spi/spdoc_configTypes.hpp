@@ -629,7 +629,8 @@ public:
         bool isDelegate,
         bool canPut,
         bool hasDynamicAttributes,
-        bool asValue);
+        bool asValue,
+        const std::string& constructor);
 
     /**
     ************************************************************************
@@ -683,7 +684,8 @@ protected:
         bool isDelegate,
         bool canPut,
         bool hasDynamicAttributes,
-        bool asValue);
+        bool asValue,
+        const std::string& constructor);
 
 public:
 
@@ -704,6 +706,7 @@ public:
     const bool canPut;
     const bool hasDynamicAttributes;
     const bool asValue;
+    const std::string constructor;
 
 public:
     std::string getName() const { return name; } 

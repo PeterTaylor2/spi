@@ -65,12 +65,13 @@ WrapperClassSP WrapperClass::Make(
     bool                            uuid,
     bool incomplete,
     const std::string& accessorFormat,
-    const std::string& propertyFormat)
+    const std::string& propertyFormat,
+    const std::string& constructor)
 {
     return new WrapperClass(
         description, name, ns, innerClass, baseClass, isVirtual, noMake,
         objectName, isDelegate, canPut, noId, asValue, uuid, incomplete,
-        accessorFormat, propertyFormat);
+        accessorFormat, propertyFormat, constructor);
 }
 
 WrapperClass::WrapperClass(
@@ -89,7 +90,8 @@ WrapperClass::WrapperClass(
     bool                            uuid,
     bool incomplete,
     const std::string& accessorFormat,
-    const std::string& propertyFormat)
+    const std::string& propertyFormat,
+    const std::string& constructor)
     :
     m_description(description),
     m_name(name),
@@ -107,6 +109,7 @@ WrapperClass::WrapperClass(
     m_incomplete(incomplete),
     m_accessorFormat(accessorFormat),
     m_propertyFormat(propertyFormat),
+    m_constructor(constructor),
     m_verbatimConstructor(),
     m_classAttributes(),
     m_methods(),
@@ -1381,7 +1384,7 @@ spdoc::ConstructConstSP WrapperClass::getDoc() const
             !m_dataType ? spdoc::DataTypeConstSP() : m_dataType->getDoc(),
             isDelegate(), m_canPut,
             !!m_dynamicPropertiesCode,
-            m_asValue);
+            m_asValue, m_constructor);
     }
     return m_doc;
 }

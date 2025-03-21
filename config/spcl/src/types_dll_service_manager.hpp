@@ -40,7 +40,6 @@ TYPES_BEGIN_NAMESPACE
 using spi::SafeCopy;
 
 spi::Service* types_service();
-const char* types_version();
 void types_check_permission();
 bool types_begin_function(bool noLogging=false);
 void types_end_function();

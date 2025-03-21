@@ -70,7 +70,8 @@ public:
         bool                            uuid,
         bool incomplete,
         const std::string& accessorFormat,
-        const std::string& propertyFormat);
+        const std::string& propertyFormat,
+        const std::string& constructor);
 
     void addClassAttribute(const ClassAttributeConstSP& classAttribute);
     void addMethod(const ClassMethodConstSP& method);
@@ -159,7 +160,8 @@ protected:
         bool                            uuid,
         bool incomplete,
         const std::string& accessorFormat,
-        const std::string& propertyFormat);
+        const std::string& propertyFormat,
+        const std::string& constructor);
 
 private:
     std::vector<std::string>           m_description;
@@ -178,6 +180,7 @@ private:
     bool                               m_incomplete;
     std::string                        m_accessorFormat;
     std::string                        m_propertyFormat;
+    std::string                        m_constructor;
 
 private:
     std::string                        m_verbatimStart;

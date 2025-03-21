@@ -200,7 +200,8 @@ spdoc::ConstructConstSP MapClass::getDoc() const
         std::vector<spdoc::CoerceFromConstSP> coerceFromDocs;
         std::vector<spdoc::CoerceToConstSP> coerceToDocs;
 
-        std::string baseClassName = "";
+        std::string baseClassName;
+        std::string constructor;
 
         m_doc = spdoc::Class::Make(
             m_name, m_ns, m_description, baseClassName,
@@ -213,7 +214,8 @@ spdoc::ConstructConstSP MapClass::getDoc() const
             false, // isDelegate
             m_canPut,
             true, // hasDynamicAttributes
-            false); // asValue
+            false, // asValue
+            constructor);
     }
     return m_doc;
 }

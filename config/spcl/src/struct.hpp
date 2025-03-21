@@ -73,7 +73,8 @@ public:
         bool                            uuid,
         bool                            byValue,
         bool                            useAccessors,
-        bool                            incomplete);
+        bool                            incomplete,
+        const std::string&              constructor);
 
     void addClassAttribute(const ClassAttributeConstSP& attribute);
     void addMethod(const ClassMethodConstSP& method);
@@ -147,7 +148,8 @@ protected:
         bool                            uuid,
         bool                            byValue,
         bool useAccessors,
-        bool incomplete);
+        bool incomplete,
+        const std::string& constructor);
 
 private:
     std::vector<std::string>        m_description;
@@ -164,6 +166,7 @@ private:
     bool                            m_byValue;
     bool                            m_useAccessors;
     bool                            m_incomplete;
+    std::string                     m_constructor;
 
     std::vector<AttributeConstSP>   m_attributes;
     std::vector<ClassMethodConstSP> m_methods;
