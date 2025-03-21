@@ -76,7 +76,7 @@ extern "C"
     PyObject* spi_py_object_copy(PyObject* pyo);
 
     SPI_PY_IMPORT
-    PyObject* spi_py_object_deep_copy(PyObject* pyo);
+    PyObject* spi_py_object_deepcopy(PyObject* pyo, PyObject* ignored);
 
     SPI_PY_IMPORT
     PyObject* spi_py_object_to_string (PyObject* pyo, PyObject* args);
