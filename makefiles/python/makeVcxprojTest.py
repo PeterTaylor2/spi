@@ -70,6 +70,7 @@ def make_proj(fileName,
               defaultBits,
               toolsVersion,
               platformToolset,
+              toplevelPatterns,
               makefileTarget="all", 
               bin=r"C:\cygwin\bin",
               includes=None,
@@ -82,6 +83,7 @@ def make_proj(fileName,
     driverFiles = []
     inputFiles = []
     baselineFiles = []
+    toplevelFiles = []
     includePath = [] if includes is None else includes[:]
     for pattern in driverPatterns:
         driverFiles.extend(glob.glob(pattern))
@@ -92,10 +94,15 @@ def make_proj(fileName,
     for pattern in baselinePatterns:
         baselineFiles.extend(glob.glob(pattern))
 
+    for pattern in toplevelPatterns:
+        toplevelFiles.extend(glob.glob(pattern))
+
     driverFiles   = [os.path.normpath(fn) for fn in driverFiles]
     inputFiles    = [os.path.normpath(fn) for fn in inputFiles]
     baselineFiles = [os.path.normpath(fn) for fn in baselineFiles]
     buildFiles    = makeVcxproj.get_build_files()
+
+    buildFiles.extend([os.path.normpath(fn) for fn in toplevelFiles])
 
     platforms = vstools.platforms(compiler)
 
@@ -153,11 +160,12 @@ def command_line(compiler, toolsVersion, platformToolset):
     import sys
     import getopt
 
-    opts,args = getopt.getopt(sys.argv[1:], "I:i:o:d:t:b:",
+    opts,args = getopt.getopt(sys.argv[1:], "I:i:o:d:t:b:T:",
                               ["compiler=", "exe="])
     driverPatterns   = ["drivers/*.py"]
     inputPatterns    = ["inputs/*.inp"]
     baselinePatterns = ["baseline/*.out"]
+    toplevelPatterns = []
     kwargs           = {}
     includes         = []
     for opt in opts:
@@ -167,6 +175,7 @@ def command_line(compiler, toolsVersion, platformToolset):
         elif opt[0] == "-o": baselinePatterns.append(opt[1])
         elif opt[0] == "-t": kwargs["makefileTarget"] = opt[1]
         elif opt[0] == "-b": kwargs["bin"] = opt[1]
+        elif opt[0] == "-T": toplevelPatterns.append(opt[1])
         elif opt[0] == "--compiler": compiler = opt[1]
         elif opt[0] == "--exe": kwargs["exePath"] = opt[1]
 
@@ -181,7 +190,8 @@ def command_line(compiler, toolsVersion, platformToolset):
     defaultBits     = int(args[3])
 
     make_proj(fileName, name, driverPatterns, inputPatterns, baselinePatterns,
-              compiler, defaultCompiler, defaultBits, toolsVersion, platformToolset, **kwargs)
+              compiler, defaultCompiler, defaultBits, toolsVersion,
+              platformToolset, toplevelPatterns, **kwargs)
 
 
 _template = """\
