@@ -515,30 +515,28 @@ ClassAttributeConstSP parseClassAttribute(
     std::string hideIf = getOption(accessorOptions, "hideIf")->getString();
     bool noCopy = getOption(accessorOptions, "noCopy")->getBool();
     token = lexer.getToken();
-    ConverterConstSP converter;
     if (token.type == '{')
     {
         code = lexer.getVerbatim();
-        token = lexer.getToken();
-        if (isNamedToken(token, "convert"))
-        {
-            converter = parseConverterCode(lexer, module, service, false);
-        }
-        else
-        {
-            lexer.returnToken(token);
-        }
-    }
-    else if (isNamedToken(token, "convert"))
-    {
-        converter = parseConverterCode(lexer, module, service, false);
     }
     else if (token.type != ';')
     {
-        throw spi::RuntimeError(
-            "Expecting code or ';' - actual was (%s)",
-            token.toString().c_str());
+        SPI_THROW_RUNTIME_ERROR("Expecting accessor code or ';' - actual was ("
+            << token.toString() << ")");
     }
+
+    // we look for convert immediately after the accessor code or the ';'
+    token = lexer.getToken();
+    ConverterConstSP converter;
+    if (isNamedToken(token, "convert"))
+    {
+        converter = parseConverterCode(lexer, module, service, false);
+    }
+    else
+    {
+        lexer.returnToken(token);
+    }
+
     ClassAttributeConstSP classAttribute = ClassAttribute::Make(
         attr, accessLevel, code, noConvert, canHide, hideIf, noCopy, converter);
 
