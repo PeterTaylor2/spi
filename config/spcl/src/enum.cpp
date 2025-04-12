@@ -50,6 +50,103 @@ using spi_util::StringStartsWith;
 using spi_util::StringEndsWith;
 
 /*
+***********************************************************************
+** Implementation of EnumConstructor
+***********************************************************************
+*/
+EnumConstructorConstSP EnumConstructor::Make(
+    const std::vector<std::string>& description,
+    const AttributeConstSP& coerceFrom,
+    const VerbatimConstSP& code)
+{
+    return EnumConstructorConstSP(new EnumConstructor(description, coerceFrom, code));
+}
+
+EnumConstructor::EnumConstructor(
+    const std::vector<std::string>& description,
+    const AttributeConstSP& coerceFrom,
+    const VerbatimConstSP& code)
+    :
+    m_description(description),
+    m_coerceFrom(coerceFrom),
+    m_code(code)
+{
+    m_doc = spdoc::EnumConstructor::Make(publicType(), m_description);
+}
+
+const spdoc::PublicType EnumConstructor::publicType() const
+{
+    return m_coerceFrom->dataType()->publicType();
+}
+
+const VerbatimConstSP& EnumConstructor::code() const
+{
+    return m_code;
+}
+
+void EnumConstructor::declare(
+    GeneratedOutput& ostr,
+    const std::string& enumName,
+    const ServiceDefinitionConstSP& svc) const
+{
+    writeStartCommentBlock(ostr, true, 4);
+
+    ostr << "    * Creates instance of " << enumName << " by coercion from "
+        << m_coerceFrom->dataType()->name() << ".\n";
+
+    if (m_description.size() > 0)
+    {
+        ostr << "    *\n";
+        writeComments(ostr, m_description, 0, 4);
+    }
+
+    ostr << "    *\n";
+    ostr << "    * @param " << m_coerceFrom->name() << "\n";
+    writeComments(ostr, m_coerceFrom->description(), 4, 4);
+
+    writeEndCommentBlock(ostr, 4);
+
+    const DataTypeConstSP& enumType = svc->getDataType(enumName);
+
+    ostr << "    " << enumType->outerValueType() << "(";
+    writeFunctionArg(ostr, false, m_coerceFrom);
+    ostr << ") : value(Coerce(" << m_coerceFrom->name() << ")) {}\n";
+}
+
+void EnumConstructor::declareCoerce(
+    GeneratedOutput& ostr,
+    const std::string& enumName,
+    const ServiceDefinitionConstSP& svc) const
+{
+    const DataTypeConstSP& enumType = svc->getDataType(enumName);
+
+    ostr << "    static " << enumType->outerValueType() << "::Enum Coerce(";
+    writeFunctionArg(ostr, false, m_coerceFrom);
+    ostr << ");\n";
+}
+
+void EnumConstructor::implement(GeneratedOutput& ostr,
+    const std::string& enumName,
+    const ServiceDefinitionConstSP& svc) const
+{
+    const DataTypeConstSP& enumType = svc->getDataType(enumName);
+
+    ostr << "\n"
+        << enumType->outerValueType() << "::Enum"
+        << " " << enumName << "::Coerce(";
+    writeFunctionArg(ostr, false, m_coerceFrom);
+    ostr << ")\n";
+
+    ostr << "{";
+    writeVerbatim(ostr, m_code);
+}
+
+spdoc::EnumConstructorConstSP EnumConstructor::doc() const
+{
+    return m_doc;
+}
+
+/*
 ***************************************************************************
 ** Implementation of Enumerand
 ***************************************************************************
@@ -94,9 +191,11 @@ EnumConstSP Enum::Make(
     const std::string&                   innerName,
     const std::string&                   innerHeader,
     const std::string&                   enumTypedef,
-    const std::vector<EnumerandConstSP>& enumerands)
+    const std::vector<EnumerandConstSP>& enumerands,
+    const std::vector<EnumConstructorConstSP>& constructors)
 {
-    return new Enum(description, name, ns, innerName, innerHeader, enumTypedef, enumerands);
+    return new Enum(description, name, ns, innerName, innerHeader, enumTypedef, 
+        enumerands, constructors);
 }
 
 bool Enum::declareInClasses() const
@@ -160,22 +259,35 @@ void Enum::declare(
         << "    " << m_name << "() : value(UNINITIALIZED_VALUE) {}\n"
         << "    " << m_name << "(" << m_name << "::Enum value) : value(value) {}\n"
         << "    " << m_name << "(const char* str) : value(" << m_name << "::from_string(str)) {}\n"
-        << "    " << m_name << "(const std::string & str) : value("<< m_name << "::from_string(str.c_str())) {}\n"
-        << "    " << m_name << "(const spi::Value & value);\n"
-        << "\n"
+        << "    " << m_name << "(const std::string & str) : value(" << m_name << "::from_string(str.c_str())) {}\n"
+        << "    " << m_name << "(const spi::Value & value);\n";
+
+    for (size_t i = 0; i < m_constructors.size(); ++i)
+    {
+        m_constructors[i]->declare(ostr, m_name, svc);
+    }
+
+    ostr << "\n"
+        // FIXME: validate that operator Enum() has a good value!
         << "    operator " << m_name << "::Enum() const { return value; }\n"
         << "    operator std::string() const { return std::string(" << m_name << "::to_string(value)); }\n"
         << "    operator spi::Value() const { return spi::Value(" << m_name << "::to_string(value)); }\n"
-        << "    std::string to_string() const { return std::string("<< m_name << "::to_string(value)); }\n"
+        << "    std::string to_string() const { return std::string(" << m_name << "::to_string(value)); }\n"
         << "    spi::Value to_value() const { return spi::Value(" << m_name << "::to_string(value)); }\n"
         << "\n"
         << "    static " << m_name << "::Enum from_string(const char*);\n"
-        << "    static const char* to_string(" << m_name << "::Enum);\n"
-        // FIXME: validate that operator Enum() has a good value!
-         << "\n"
-         << "private:\n"
-         << "    " << m_name << "::Enum value;\n"
-         << "};\n";
+        << "    static const char* to_string(" << m_name << "::Enum);\n";
+
+    ostr << "\n"
+        << "private:\n"
+        << "    " << m_name << "::Enum value;\n";
+
+    for (size_t i = 0; i < m_constructors.size(); ++i)
+    {
+        m_constructors[i]->declareCoerce(ostr, m_name, svc);
+    }
+
+    ostr << "};\n";
 }
 
 void Enum::declareHelper(
@@ -203,14 +315,47 @@ void Enum::implement(
         << m_name << "::" << m_name << "(const spi::Value &v)\n"
         << "{\n"
         << "    switch(v.getType())\n"
-        << "    {\n"
-        << "    case spi::Value::INT:\n"
-        << "        value = (Enum)v.getInt();\n"
-        << "        break;\n"
-        << "    case spi::Value::SHORT_STRING:\n"
+        << "    {\n";
+
+    bool hasIntConstructor = false;
+
+    for (size_t i = 0; i < m_constructorTypes.size(); ++i)
+    {
+        spdoc::PublicType constructorType = m_constructorTypes[i];
+
+        switch(constructorType)
+        {
+        case spdoc::PublicType::BOOL:
+            ostr << "    case spi::Value::BOOL:\n"
+                << "        value = Coerce(v.getBool());\n"
+                << "        break;\n";
+            break;
+        case spdoc::PublicType::INT:
+            hasIntConstructor = true;
+            ostr << "    case spi::Value::INT:\n"
+                << "        value = Coerce(v.getInt());\n"
+                << "        break;\n";
+            break;
+        default:
+            SPI_THROW_RUNTIME_ERROR("Unexpected constructor type " <<
+                spdoc::PublicType::to_string(constructorType));
+        }
+    }
+
+    if (!hasIntConstructor)
+    {
+        ostr << "    case spi::Value::INT:\n"
+            << "        value = (Enum)v.getInt();\n"
+            << "        break;\n";
+    }
+
+    ostr << "    case spi::Value::SHORT_STRING:\n"
         << "    case spi::Value::STRING:\n"
         << "        value = from_string(v.getString().c_str());\n"
         << "        break;\n"
+	<< "    case spi::Value::UNDEFINED:\n"
+	<< "        value = from_string(\"\");\n"
+	<< "        break;\n"
         << "    default:\n"
         << "        SPI_THROW_RUNTIME_ERROR(\"Bad value type: \" << spi::Value::TypeToString(v.getType()));\n"
         << "    }\n"
@@ -343,6 +488,11 @@ void Enum::implementHelper(
          << "    throw std::runtime_error(\"Bad enumerated value\");\n"
          << "}\n";
 
+    for (size_t i = 0; i < m_constructors.size(); ++i)
+    {
+        m_constructors[i]->implement(ostr, m_name, svc);
+    }
+
 }
 
 void Enum::implementRegistration(
@@ -364,6 +514,7 @@ spdoc::ConstructConstSP Enum::getDoc() const
     if (!m_doc)
     {
         std::vector<spdoc::EnumerandConstSP> enumerandDocs;
+        std::vector<spdoc::EnumConstructorConstSP> constructorDocs;
         for (size_t i = 0; i < m_enumerands.size(); ++i)
         {
             std::string code = m_enumerands[i]->name();
@@ -374,7 +525,13 @@ spdoc::ConstructConstSP Enum::getDoc() const
             enumerandDocs.push_back(spdoc::Enumerand::Make(
                 code, strings, m_enumerands[i]->description()));
         }
-        m_doc = spdoc::Enum::Make(m_name, m_description, enumerandDocs);
+        for (size_t i = 0; i < m_constructors.size(); ++i)
+        {
+            constructorDocs.push_back(m_constructors[i]->doc());
+        }
+
+        m_doc = spdoc::Enum::Make(m_name, m_description, enumerandDocs,
+            constructorDocs);
     }
     return m_doc;
 }
@@ -386,7 +543,8 @@ Enum::Enum(
     const std::string&                   innerName,
     const std::string&                   innerHeader,
     const std::string&                   enumTypedef,
-    const std::vector<EnumerandConstSP>& enumerands)
+    const std::vector<EnumerandConstSP>& enumerands,
+    const std::vector<EnumConstructorConstSP>& constructors)
     :
     m_description(description),
     m_name(name),
@@ -394,7 +552,8 @@ Enum::Enum(
     m_innerName(innerName),
     m_innerHeader(innerHeader),
     m_enumTypedef(enumTypedef),
-    m_enumerands(enumerands)
+    m_enumerands(enumerands),
+    m_constructors(constructors)
 {
     VerifyAndComplete();
 }
@@ -547,6 +706,20 @@ void Enum::VerifyAndComplete()
             m_possibleValues.push_back(m_enumerands[i]->name());
         }
     }
+
+    std::set<spdoc::PublicType> constructorTypes;
+    for (size_t i = 0; i < m_constructors.size(); ++i)
+    {
+        spdoc::PublicType constructorType = m_constructors[i]->publicType();
+        if (constructorTypes.count(constructorType))
+        {
+            SPI_THROW_RUNTIME_ERROR("Cannot define two constructors using "
+                << spdoc::PublicType::to_string(constructorType));
+        }
+        constructorTypes.insert(constructorType);
+    }
+
+    m_constructorTypes.assign(constructorTypes.begin(), constructorTypes.end());
 }
 
 void Enum::declareTypeConversions(

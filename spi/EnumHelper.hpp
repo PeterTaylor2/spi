@@ -26,6 +26,7 @@
 #include "Namespace.hpp"
 #include "DeclSpec.h"
 #include "Map.hpp"
+#include <spi_util/MatrixData.hpp>
 
 #include <string>
 #include <vector>
@@ -136,6 +137,73 @@ std::vector<T> EnumVectorFromStringVector(
     for (size_t i = 0; i < values.size(); ++i)
         output.push_back(T(values[i]));
     return output;
+}
+
+template<class T>
+std::vector<T> EnumVectorFromValueVector(
+    const std::vector<Value>& values,
+    bool isOptional = false,
+    const Value& defaultValue = Value())
+{
+    std::vector<T> output;
+    size_t N = values.size();
+    output.reserve(N);
+    for (size_t i = 0; i < N; ++i)
+    {
+        const Value& value = values[i];
+        if (value.isUndefined())
+        {
+            if (isOptional)
+            {
+                output.push_back(T(defaultValue));
+            }
+            else
+            {
+                SPI_THROW_RUNTIME_ERROR("Undefined value for EnumVector");
+            }
+        }
+        else
+        {
+            output.push_back(T(value));
+        }
+    }
+    return output;
+}
+
+template<class T>
+spi_util::MatrixData<T> EnumNatrixFromValueMatrix(
+    const spi_util::MatrixData<Value>& values,
+    bool isOptional = false,
+    const Value& defaultValue = Value())
+{
+    std::vector<T> v;
+    size_t nbRows = values.Rows();
+    size_t nbCols = values.Cols();
+    size_t size = nbRows * nbCols;
+    const Value* p = values.DataPointer();
+    v.reserve(size);
+
+    for (size_t i = 0; i < size; ++i)
+    {
+        const Value& value = p[i];
+        if (value.isUndefined())
+        {
+            if (isOptional)
+            {
+                v.push_back(T(defaultValue));
+            }
+            else
+            {
+                SPI_THROW_RUNTIME_ERROR("Undefined value for EnumMatrix");
+            }
+        }
+        else
+        {
+            v.push_back(T(value));
+        }
+    }
+
+    return spi_util::MatrixData<T>(nbRows, nbCols, v);
 }
 
 SPI_END_NAMESPACE

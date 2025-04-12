@@ -57,6 +57,9 @@ spi::ServiceSP types_exported_service();
 SPI_IMPORT
 spi::Date types_get_time_out();
 
+SPI_IMPORT
+const char* types_version();
+
 TYPES_END_NAMESPACE
 
 #endif /* _TYPES_DLL_SERVICE_HPP_*/

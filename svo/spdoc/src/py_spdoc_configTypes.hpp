@@ -74,6 +74,8 @@ PyObject* py_spdoc_Function_objectCount(PyObject* self, PyObject* args, PyObject
 
 PyObject* py_spdoc_Enumerand_Coerce(PyObject* self, PyObject* args);
 
+PyObject* py_spdoc_EnumConstructor_Coerce(PyObject* self, PyObject* args);
+
 PyObject* py_spdoc_Enum_Coerce(PyObject* self, PyObject* args);
 
 PyObject* py_spdoc_ClassMethod_Coerce(PyObject* self, PyObject* args);

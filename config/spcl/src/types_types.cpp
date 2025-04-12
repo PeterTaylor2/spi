@@ -884,7 +884,10 @@ Enum::inner_type Enum::make_inner(
     std::string innerName;
     std::string innerHeader;
     std::string enumTypedef;
-    return ::Enum::Make(description, name, ns, innerName, innerHeader, enumTypedef, enumerands);
+    std::vector<EnumConstructorConstSP> constructors;
+    return ::Enum::Make(
+        description, name, ns, innerName, innerHeader, enumTypedef, enumerands,
+        constructors);
 }
 
 Enum::inner_type Enum::get_inner() const

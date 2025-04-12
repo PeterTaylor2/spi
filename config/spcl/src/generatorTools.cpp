@@ -1570,6 +1570,62 @@ void writeFromValueInContext(
     const ConstantConstSP& defaultValue)
 {
     spdoc::PublicType publicType = dataType->publicType();
+
+    if (publicType == spdoc::PublicType::ENUM)
+    {
+        switch (arrayDim)
+        {
+        case 0:
+            ostr << "    " << dataType->outerReferenceType() << " " << name;
+            if (isOptional)
+            {
+                ostr << " = " << value << ".isUndefined() ? ";
+                if (defaultValue && !defaultValue->isUndefined())
+                {
+                    ostr << "spi::Value(" << defaultValue->toCode() << ")";
+                }
+                else
+                {
+                    // this should compile but won't translate
+                    ostr << "spi::Value()";
+                }
+                ostr << " : " << value << ";\n";
+            }
+            else
+            {
+                ostr << " = " << value << ";\n";
+            }
+            break;
+        case 1:
+            ostr << "    " << dataType->outerArrayType(1) << " " << name
+                << " =\n        spi::EnumVectorFromValueVector<"
+                << dataType->cppName() << ">(\n            "
+                << value << ".getArray(in_context->AcceptScalarForArray())->getVector()";
+
+            if (isOptional)
+            {
+                ostr << ", true, spi::Value(" << defaultValue->toCode(spdoc::PublicType::STRING) << ")";
+            }
+
+            ostr << ");\n";
+            break;
+        case 2:
+            ostr << "    " << dataType->outerArrayType(2) << " " << name
+                << " =\n        spi::EnumMatrixFromValueMatrix < "
+                << dataType->cppName() << "> (" << value << ".getMatrix()";
+
+            if (isOptional)
+            {
+                ostr << ", true, spi::Value(" << defaultValue->toCode(spdoc::PublicType::STRING) << ")";
+            }
+
+            ostr << "); \n";
+            break;
+        default:
+            SPI_THROW_RUNTIME_ERROR("PROGRAM_BUG");
+        }
+    }
+    else
     if (arrayDim > 0)
     {
         ostr << "    " << dataType->outerArrayType(arrayDim) << " " << name

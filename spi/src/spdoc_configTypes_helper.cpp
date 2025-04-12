@@ -142,8 +142,7 @@ spi::Value DataType_caller(
         in_context->ValueToString(in_values[2]);
     const std::string& valueTypeName =
         in_context->ValueToString(in_values[3]);
-    PublicType publicType =
-        in_context->ValueToString(in_values[4]);
+    PublicType publicType = in_values[4];
     bool noDoc =
         in_context->ValueToBool(in_values[5]);
     const std::string& nsService =
@@ -1104,6 +1103,108 @@ spi::FunctionCaller Enumerand_FunctionCaller = {
 
 /*
 ****************************************************************************
+* Implementation of EnumConstructor
+****************************************************************************
+*/
+
+EnumConstructor::outer_type
+EnumConstructor::Coerce(const spi::ObjectConstSP& o)
+{
+    // isNull
+    if (!o)
+        return EnumConstructor::outer_type();
+
+    // isInstance
+    const EnumConstructor* p = dynamic_cast<const EnumConstructor*>(o.get());
+    if (p)
+        return EnumConstructor::outer_type(p);
+
+    spi::ObjectType* ot = &object_type;
+    spi::ObjectConstSP o2;
+
+    // service coercion if the input object is from another service
+    if (ot->get_service() != o->get_service())
+    {
+        o2 = o->service_coercion(ot->get_service());
+        if (o2)
+        {
+            p = dynamic_cast<const EnumConstructor*>(o2.get());
+            if (p)
+                return EnumConstructor::outer_type(p);
+        }
+        else
+        {
+            o2 = o;
+        }
+    }
+    else
+    {
+        o2 = o;
+    }
+
+    // coerceTo if the input object has a different name
+    if (strcmp(ot->get_class_name(), o2->get_class_name()) != 0)
+    {
+        spi::ObjectConstSP o3 = o2->coerce_to_object(ot->get_class_name());
+        if (o3)
+        {
+            p = dynamic_cast<const EnumConstructor*>(o3.get());
+            if (p)
+                return EnumConstructor::outer_type(p);
+        }
+    }
+
+    SPI_THROW_RUNTIME_ERROR(o->get_class_name()
+        << " is neither " << ot->get_class_name()
+        << " nor a sub-class of " << ot->get_class_name());
+}
+
+void EnumConstructor::to_map(
+    spi::IObjectMap* obj_map, bool public_only) const
+{
+    obj_map->SetString("constructorType", constructorType);
+    obj_map->SetStringVector("description", description);
+}
+
+spi::ObjectConstSP EnumConstructor::object_from_map(
+    spi::IObjectMap* obj_map,
+    spi::ValueToObject& value_to_object)
+{
+    PublicType constructorType
+        = obj_map->GetString("constructorType");
+    const std::vector<std::string>& description
+        = obj_map->GetStringVector("description");
+
+    return new EnumConstructor(constructorType, description);
+}
+
+SPI_IMPLEMENT_OBJECT_TYPE(EnumConstructor, "EnumConstructor", spdoc_service, false, 0);
+
+spi::Value EnumConstructor_caller(
+    const spi::InputContext*       in_context,
+    const std::vector<spi::Value>& in_values)
+{
+    PublicType constructorType = in_values[0];
+    std::vector<std::string> description =
+        in_context->ValueToStringVector(in_values[1]);
+
+    const EnumConstructorConstSP& o_result = spdoc::EnumConstructor::Make(
+        constructorType, description);
+    return spi::ObjectConstSP(o_result);
+}
+
+spi::FunctionCaller EnumConstructor_FunctionCaller = {
+    "EnumConstructor",
+    2,
+    {
+        {"constructorType", spi::ArgType::ENUM, "PublicType", false, false, false},
+        {"description", spi::ArgType::STRING, "string", true, false, false}
+    },
+    EnumConstructor_caller
+};
+
+/*
+****************************************************************************
 * Implementation of Enum
 ****************************************************************************
 */
@@ -1166,6 +1267,7 @@ void Enum::to_map(
     obj_map->SetString("name", name);
     obj_map->SetStringVector("description", description);
     obj_map->SetInstanceVector<Enumerand const>("enumerands", enumerands);
+    obj_map->SetInstanceVector<EnumConstructor const>("constructors", constructors, !public_only && (constructors.size() == 0));
 }
 
 spi::ObjectConstSP Enum::object_from_map(
@@ -1178,8 +1280,10 @@ spi::ObjectConstSP Enum::object_from_map(
         = obj_map->GetStringVector("description");
     const std::vector<EnumerandConstSP>& enumerands
         = obj_map->GetInstanceVector<Enumerand const>("enumerands", value_to_object);
+    const std::vector<EnumConstructorConstSP>& constructors
+        = obj_map->GetInstanceVector<EnumConstructor const>("constructors", value_to_object);
 
-    return new Enum(name, description, enumerands);
+    return new Enum(name, description, enumerands, constructors);
 }
 
 SPI_IMPLEMENT_OBJECT_TYPE(Enum, "Enum", spdoc_service, true, 0);
@@ -1194,19 +1298,22 @@ spi::Value Enum_caller(
         in_context->ValueToStringVector(in_values[1]);
     std::vector<EnumerandConstSP> enumerands =
         in_context->ValueToInstanceVector<Enumerand const>(in_values[2]);
+    std::vector<EnumConstructorConstSP> constructors =
+        in_context->ValueToInstanceVector<EnumConstructor const>(in_values[3]);
 
     const EnumConstSP& o_result = spdoc::Enum::Make(name, description,
-        enumerands);
+        enumerands, constructors);
     return spi::ObjectConstSP(o_result);
 }
 
 spi::FunctionCaller Enum_FunctionCaller = {
     "Enum",
-    3,
+    4,
     {
         {"name", spi::ArgType::STRING, "string", false, false, false},
         {"description", spi::ArgType::STRING, "string", true, false, false},
-        {"enumerands", spi::ArgType::OBJECT, "Enumerand", true, false, false}
+        {"enumerands", spi::ArgType::OBJECT, "Enumerand", true, false, false},
+        {"constructors", spi::ArgType::OBJECT, "EnumConstructor", true, false, false}
     },
     Enum_caller
 };
@@ -2426,6 +2533,8 @@ void configTypes_register_object_types(const spi::ServiceSP& svc)
     svc->add_function_caller(&Function_objectCount_FunctionCaller);
     svc->add_object_type(&Enumerand::object_type);
     svc->add_function_caller(&Enumerand_FunctionCaller);
+    svc->add_object_type(&EnumConstructor::object_type);
+    svc->add_function_caller(&EnumConstructor_FunctionCaller);
     svc->add_object_type(&Enum::object_type);
     svc->add_function_caller(&Enum_FunctionCaller);
     svc->add_object_type(&ClassMethod::object_type);
