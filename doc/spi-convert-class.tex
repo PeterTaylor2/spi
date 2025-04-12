@@ -1,0 +1,228 @@
+\documentclass[a4paper] {article}
+
+\addtolength{\hoffset}{-1.27cm} 
+\addtolength{\textwidth}{2.54cm}
+
+\pagestyle{headings}
+
+\usepackage{amsmath}
+\usepackage{verbatim}
+\usepackage{longtable}
+\usepackage{calc}
+\usepackage{graphicx}
+\usepackage{fancyvrb}
+
+% always load hyperref last since it redefines many LaTeX commands
+% also you need to have hyperref turned off if you are using YAP to view .dvi files
+\usepackage[colorlinks=true,bookmarks=true]{hyperref}
+\setlongtables
+
+%\setlength{\topmargin}{-20mm}
+%\setlength{\oddsidemargin}{-2.4mm}
+%\setlength{\evensidemargin}{-2.4mm}
+%\setlength{\textwidth}{164mm}
+%\setlength{\textheight}{256mm}
+%\setlength{\columnsep}{8mm}
+%\setlength{\columnseprule}{0.4pt}
+
+\parindent0mm
+\parskip2ex plus1ex minus1ex
+
+
+
+\author{Peter Taylor}
+\date{7 April 2025}
+\sloppy
+
+% define various commands for the standard constructs we will use in this document
+
+\title{SPI: How to convert a class to a new format}
+\begin{document}
+\maketitle
+\begin{abstract}
+This document describes the convert syntax for converting a field in a class from one format to another.
+The idea is that this happens when you read the object and you don't need to go back and back-build all the objects for this class.
+\end{abstract}
+
+\section{Standard use case}
+
+The general case is as follows:
+
+\begin{verbatim}
+	
+old format:
+
+class MyClass
+{
+    ...
+    public <old_type> <old_name>;
+    ...
+};
+
+new format:
+
+class MyClass
+{
+    ...
+    property <old_type> <old_name>;
+    public <new_type> <new_name> {accessor_code;}
+    convert(<old_type> <old_name>)
+    {
+        <new_name> = function(<old_name>);
+    }
+    ...
+};
+\end{verbatim}
+
+The code which is changed is primarily the \verb|object_from_map| function for the class.
+We try to fetch \verb|<new_name>| from the map.
+If it doesn't exist we see if \verb|<old_name>| is in the map.
+If it is in the map, then we apply the conversion routine.
+The conversion routine defined above is specifically only used in the case that \verb|<new_name>| is undefined.
+
+Here is a real world example and the corresponding generated code.
+
+First an extract from the .cfg file describing the class:
+\begin{verbatim}
+
+    property Deal deal;
+    /** Compact string (in PBN format) representing the deal. */
+    public string pbn
+    {
+        return bridge::pbn::dealToString(self->deal);
+    }
+    convert(Deal deal)
+    {
+        pbn = bridge::pbn::dealToString(deal);
+    }
+
+\end{verbatim}
+
+Second we see the generated code for the \verb|object_from_map| function for this class:
+
+\begin{verbatim}
+    std::string pbn;
+    if (!obj_map->Exists("pbn"))
+    {
+        const DealConstSP& o_deal = obj_map->GetInstance<Deal const>(
+            "deal", value_to_object);
+        boost::shared_ptr< bridge::Deal const > deal;
+
+        SPI_PRE_CONDITION(o_deal);
+        deal = Deal::get_inner(o_deal);
+		
+#line etc.
+        pbn = bridge::pbn::dealToString(deal);
+#line etc.
+    }
+    else
+    {
+        pbn = obj_map->GetString("pbn");
+    }
+
+\end{verbatim}
+
+The convert routine appears (from this example) to be acting upon the inner type of the old field.
+Whether it is expected to return the outer type of the new field is a matter for discovery.
+
+The code which manages the conversion is in \verb|generatorTools.cpp| and is in the function \verb|writeFromMap|.
+
+The relevant code fragment is:
+
+\begin{verbatim}
+
+if (converter)
+{
+  if (arrayDim > 0)
+  {
+    ostr << dataType->outerArrayType(arrayDim);
+  }
+  else
+  {
+    ostr << dataType->outerValueType();
+  }
+  ostr << " " << name << ";\n"
+       << indentString << "if (!" << objectMap << "->Exists(\"" << name << "\"))\n"
+       << indentString << "{\n";
+    
+  const std::vector<AttributeConstSP>& convertedAttributes = converter->attributes();
+  size_t N = convertedAttributes.size();
+  for (size_t j = 0; j < N; ++j)
+  {
+    const AttributeConstSP attr = convertedAttributes[j];
+    const DataTypeConstSP& dataType = attr->dataType();
+    const std::string&     name = attr->name();
+    int                    arrayDim = attr->arrayDim();
+    bool                   isOptional = attr->isOptional();
+    const ConstantConstSP& defaultValue = attr->defaultValue();
+      
+    ostr << indentString << "  ";
+    if (arrayDim > 0)
+    {
+      ostr << "const " << dataType->outerArrayType(arrayDim) << "&";
+    }
+    else
+    {
+      ostr << dataType->outerReferenceType();
+    }
+    if (dataType->needsTranslation())
+    {
+      ostr << " o_" << name << " = "
+           << dataType->fromMapCode(objectMap, valueToObject, name, arrayDim,
+                  isOptional, defaultValue)
+           << ";\n";
+    }
+    else
+    {
+      ostr << " " << name << " = "
+           << dataType->fromMapCode(objectMap, valueToObject, name, arrayDim,
+                    isOptional, defaultValue)
+           << ";\n";
+    }
+  }
+  writeInnerDeclarationsAndTranslations(ostr, convertedAttributes, "",
+         false, "o_", 6);
+  writeVerbatim(ostr, converter->code(), indent + 2, true);
+    
+  ostr << indentString << "}\n"
+       << indentString << "else\n"
+       << indentString << "{\n"
+       << indentString << "    " << name << " = "
+       << dataType->fromMapCode(objectMap, valueToObject, name, arrayDim,
+              isOptional, defaultValue)
+       << ";\n"
+       << indentString << "}\n";
+}
+else
+{
+  if (arrayDim > 0)
+  {
+    ostr << "const " << dataType->outerArrayType(arrayDim) << "&";
+  }
+  else
+  {
+    ostr << dataType->outerReferenceType();
+  }
+  ostr << " " << name << "\n"
+       << indentString << "    = "
+       << dataType->fromMapCode(objectMap, valueToObject, name, arrayDim,
+               isOptional, defaultValue)
+       << ";\n";
+}
+  
+  
+\end{verbatim}
+
+So if I read this correctly, we get the outer types for the conversion routine from the map.
+Then we convert them to the corresponding inner types.
+The conversion code is expected to return the outer type of the new field.
+So some sort of mixed context.
+
+One use case might be converting from a bool to an enum.
+You can declare the conversion from bool in the definition of the enum.
+This deals with the case where the constructor function prototype changed from bool to the enumerated type.
+
+However the old data on file uses bool.
+The conversion of the class handles this conversion - and you could use the newly minted constructor of the enumerated type which uses bool as the input.
+
+\end{document}

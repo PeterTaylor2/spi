@@ -41,6 +41,7 @@ SPI_DECLARE_OBJECT_CLASS(Construct);
 SPI_DECLARE_OBJECT_CLASS(SimpleType);
 SPI_DECLARE_OBJECT_CLASS(Function);
 SPI_DECLARE_OBJECT_CLASS(Enumerand);
+SPI_DECLARE_OBJECT_CLASS(EnumConstructor);
 SPI_DECLARE_OBJECT_CLASS(Enum);
 SPI_DECLARE_OBJECT_CLASS(ClassMethod);
 SPI_DECLARE_OBJECT_CLASS(CoerceFrom);
@@ -436,6 +437,34 @@ public:
 
 /**
 ****************************************************************************
+* No description.
+****************************************************************************
+*/
+class SPI_IMPORT EnumConstructor : public spi::Object
+{
+public:
+    static EnumConstructorConstSP Make(
+        PublicType constructorType,
+        const std::vector<std::string>& description);
+
+    typedef spi::ObjectSmartPtr<EnumConstructor> outer_type;
+
+    SPI_DECLARE_OBJECT_TYPE(EnumConstructor);
+
+protected:
+
+    EnumConstructor(
+        PublicType constructorType,
+        const std::vector<std::string>& description);
+
+public:
+
+    const PublicType constructorType;
+    const std::vector<std::string> description;
+};
+
+/**
+****************************************************************************
 * Defines an enumerated type.
 ****************************************************************************
 */
@@ -445,7 +474,8 @@ public:
     static EnumConstSP Make(
         const std::string& name,
         const std::vector<std::string>& description,
-        const std::vector<EnumerandConstSP>& enumerands);
+        const std::vector<EnumerandConstSP>& enumerands,
+        const std::vector<EnumConstructorConstSP>& constructors);
 
     /**
     ************************************************************************
@@ -470,13 +500,15 @@ protected:
     Enum(
         const std::string& name,
         const std::vector<std::string>& description,
-        const std::vector<EnumerandConstSP>& enumerands);
+        const std::vector<EnumerandConstSP>& enumerands,
+        const std::vector<EnumConstructorConstSP>& constructors);
 
 public:
 
     const std::string name;
     const std::vector<std::string> description;
     const std::vector<EnumerandConstSP> enumerands;
+    const std::vector<EnumConstructorConstSP> constructors;
 
 public:
     std::string getName() const { return name; } 

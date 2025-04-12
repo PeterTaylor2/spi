@@ -730,27 +730,53 @@ Enumerand::Enumerand(
 
 /*
 ****************************************************************************
+* Implementation of EnumConstructor
+****************************************************************************
+*/
+EnumConstructorConstSP EnumConstructor::Make(
+    PublicType constructorType,
+    const std::vector<std::string>& description)
+{
+    spdoc_check_permission();
+    return EnumConstructorConstSP(
+        new EnumConstructor(constructorType, description));
+}
+
+EnumConstructor::EnumConstructor(
+    PublicType constructorType,
+    const std::vector<std::string>& description)
+    :
+    spi::Object(true),
+    constructorType(constructorType),
+    description(description)
+{}
+
+/*
+****************************************************************************
 * Implementation of Enum
 ****************************************************************************
 */
 EnumConstSP Enum::Make(
     const std::string& name,
     const std::vector<std::string>& description,
-    const std::vector<EnumerandConstSP>& enumerands)
+    const std::vector<EnumerandConstSP>& enumerands,
+    const std::vector<EnumConstructorConstSP>& constructors)
 {
     spdoc_check_permission();
     return EnumConstSP(
-        new Enum(name, description, enumerands));
+        new Enum(name, description, enumerands, constructors));
 }
 
 Enum::Enum(
     const std::string& name,
     const std::vector<std::string>& description,
-    const std::vector<EnumerandConstSP>& enumerands)
+    const std::vector<EnumerandConstSP>& enumerands,
+    const std::vector<EnumConstructorConstSP>& constructors)
     :
     name(name),
     description(description),
-    enumerands(enumerands)
+    enumerands(enumerands),
+    constructors(constructors)
 {}
 
 /*

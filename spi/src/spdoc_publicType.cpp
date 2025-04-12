@@ -44,6 +44,9 @@ PublicType::PublicType(const spi::Value &v)
     case spi::Value::STRING:
         value = from_string(v.getString().c_str());
         break;
+    case spi::Value::UNDEFINED:
+        value = from_string("");
+        break;
     default:
         SPI_THROW_RUNTIME_ERROR("Bad value type: " << spi::Value::TypeToString(v.getType()));
     }

@@ -917,6 +917,93 @@ static PyTypeObject Enumerand_PyObjectType = {
     PyType_GenericNew, /* tp_new */
 };
 
+static int py_spdoc_EnumConstructor_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
+{
+    static spi::FunctionCaller* func = 0;
+    try
+    {
+        if (!func)
+            func = get_function_caller("EnumConstructor");
+
+        self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::EnumConstructor::object_type);
+        return 0;
+    }
+    catch (spi::PyException&)
+    {
+        return -1;
+    }
+    catch (std::exception &e)
+    {
+        spi::pyExceptionHandler(e.what());
+        return -1;
+    }
+    catch (...)
+    {
+        spi::pyExceptionHandler("Unknown exception");
+        return -1;
+    }
+}
+
+static PyGetSetDef EnumConstructor_properties[] = {
+    {"constructorType", (getter)(spi_py_object_getter), NULL, NULL,
+        (void*) "constructorType"},
+    {"description", (getter)(spi_py_object_getter), NULL, NULL,
+        (void*) "description"},
+    {NULL} // sentinel
+};
+
+PyObject* py_spdoc_EnumConstructor_Coerce(PyObject* self, PyObject* args)
+{
+    PyObject* pyo = get_python_service()->ObjectCoerce("EnumConstructor", args);
+    return pyo;
+}
+static PyMethodDef EnumConstructor_methods[] = {
+    {"Coerce", (PyCFunction)py_spdoc_EnumConstructor_Coerce, METH_VARARGS | METH_STATIC,
+        "Coerce EnumConstructor from arbitrary value"},
+    {NULL, NULL, 0, NULL} // sentinel
+};
+
+static PyTypeObject EnumConstructor_PyObjectType = {
+    PyVarObject_HEAD_INIT(NULL, 0)
+    "spdoc.EnumConstructor", /*tp_name*/
+    sizeof(SpiPyObject), /*tp_basicsize*/
+    0, /*tp_itemsize*/
+    (destructor)spi_py_object_dealloc, /*tp_dealloc*/
+    0, /*tp_print*/
+    0, /*tp_getattr*/
+    0, /*tp_setattr*/
+    0, /*tp_compare*/
+    0, /*tp_repr*/
+    0, /*tp_as_number*/
+    0, /*tp_as_sequence*/
+    0, /*tp_as_mapping*/
+    0, /*tp_hash */
+    0, /*tp_call*/
+    0, /*tp_str*/
+    0, /*tp_getattro*/
+    0, /*tp_setattro*/
+    0, /*tp_as_buffer*/
+    Py_TPFLAGS_DEFAULT, /*tp_flags*/
+    "__init__(self, constructorType, description=[])", /* tp_doc */
+    0, /* tp_traverse */
+    0, /* tp_clear */
+    0, /* tp_richcompare */
+    0, /* tp_weaklistoffset */
+    0, /* tp_iter */
+    0, /* tp_iternext */
+    EnumConstructor_methods, /* tp_methods */
+    0, /* tp_members */
+    EnumConstructor_properties, /* tp_getset */
+    0, /* tp_base */
+    0, /* tp_dict */
+    0, /* tp_descr_get */
+    0, /* tp_descr_set */
+    0, /* tp_dictoffset */
+    (initproc)py_spdoc_EnumConstructor_init, /* tp_init */
+    0, /* tp_alloc */
+    PyType_GenericNew, /* tp_new */
+};
+
 static int py_spdoc_Enum_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
@@ -951,6 +1038,8 @@ static PyGetSetDef Enum_properties[] = {
         (void*) "description"},
     {"enumerands", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "enumerands"},
+    {"constructors", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
+        (void*) "constructors"},
     {NULL} // sentinel
 };
 
@@ -986,7 +1075,7 @@ static PyTypeObject Enum_PyObjectType = {
     0, /*tp_setattro*/
     0, /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT, /*tp_flags*/
-    "Defines an enumerated type.\n\n__init__(self, name, description=[], enumerands=[])", /* tp_doc */
+    "Defines an enumerated type.\n\n__init__(self, name, description=[], enumerands=[], constructors=[])", /* tp_doc */
     0, /* tp_traverse */
     0, /* tp_clear */
     0, /* tp_richcompare */
@@ -2033,6 +2122,9 @@ void py_spdoc_configTypes_update_functions(spi::PythonService* svc)
 
     svc->AddClass("Enumerand", "Enumerand",
         &Enumerand_PyObjectType);
+
+    svc->AddClass("EnumConstructor", "EnumConstructor",
+        &EnumConstructor_PyObjectType);
 
     svc->AddClass("Enum", "Enum",
         &Enum_PyObjectType, "Construct");

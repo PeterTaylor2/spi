@@ -30,17 +30,69 @@
 
 #include "construct.hpp"
 
+#include "dataType.hpp"
+
 #include <vector>
 #include <string>
 
 class NamespaceManager;
+class GeneratedOutput;
 
 SPI_DECLARE_RC_CLASS(Enumerand);
 SPI_DECLARE_RC_CLASS(Enum);
+SPI_DECLARE_RC_CLASS(Attribute);
+SPI_DECLARE_RC_CLASS(Verbatim);
+SPI_DECLARE_RC_CLASS(EnumConstructor);
+SPI_DECLARE_RC_CLASS(ServiceDefinition);
 
 SPDOC_BEGIN_NAMESPACE
 SPI_DECLARE_OBJECT_CLASS(Enum);
+SPI_DECLARE_OBJECT_CLASS(EnumConstructor);
 SPDOC_END_NAMESPACE
+
+/**
+ * Defines an enum constructor.
+ *
+ * This consists of the following:
+ *    attribute
+ *    code
+ */
+class EnumConstructor : public spi::RefCounter
+{
+public:
+    static EnumConstructorConstSP Make(
+        const std::vector<std::string>& description,
+        const AttributeConstSP& coerceFrom,
+        const VerbatimConstSP& code);
+
+    const spdoc::PublicType publicType() const;
+    const VerbatimConstSP& code() const;
+
+    void declare(GeneratedOutput& ostr,
+        const std::string& enumName,
+        const ServiceDefinitionConstSP& svc) const;
+
+    void declareCoerce(GeneratedOutput& ostr,
+        const std::string& enumName,
+        const ServiceDefinitionConstSP& svc) const;
+
+    void implement(GeneratedOutput& ostr,
+        const std::string& enumName,
+        const ServiceDefinitionConstSP& svc) const;
+
+    spdoc::EnumConstructorConstSP doc() const;
+
+private:
+    EnumConstructor(const std::vector<std::string>& description,
+        const AttributeConstSP& coerceFrom,
+        const VerbatimConstSP& code);
+
+    std::vector<std::string> m_description;
+    AttributeConstSP m_coerceFrom;
+    VerbatimConstSP  m_code;
+
+    spdoc::EnumConstructorConstSP m_doc;
+};
 
 /**
  * Enumerand - a single entry in an enumerated type.
@@ -102,13 +154,14 @@ class Enum : public Construct
 {
 public:
     static EnumConstSP Make(
-        const std::vector<std::string>&      description,
-        const std::string&                   name,
-        const std::string&                   ns,
-        const std::string&                   innerName,
-        const std::string&                   innerHeader,
-        const std::string&                   enumTypedef,
-        const std::vector<EnumerandConstSP>& enumerands);
+        const std::vector<std::string>& description,
+        const std::string& name,
+        const std::string& ns,
+        const std::string& innerName,
+        const std::string& innerHeader,
+        const std::string& enumTypedef,
+        const std::vector<EnumerandConstSP>& enumerands,
+        const std::vector<EnumConstructorConstSP>& constructors);
 
     // implementation of Construct
     void declare(GeneratedOutput& ostr,
@@ -152,13 +205,14 @@ public:
 
 protected:
     Enum(
-        const std::vector<std::string>&      description,
-        const std::string&                   name,
-        const std::string&                   ns,
-        const std::string&                   innerName,
-        const std::string&                   innerHeader,
-        const std::string&                   enumTypedef,
-        const std::vector<EnumerandConstSP>& enumerands);
+        const std::vector<std::string>& description,
+        const std::string& name,
+        const std::string& ns,
+        const std::string& innerName,
+        const std::string& innerHeader,
+        const std::string& enumTypedef,
+        const std::vector<EnumerandConstSP>& enumerands,
+        const std::vector<EnumConstructorConstSP>& constructors);
 
 private:
     std::vector<std::string>      m_description;
@@ -168,18 +222,22 @@ private:
     std::string                   m_innerHeader;
     std::string                   m_enumTypedef;
     std::vector<EnumerandConstSP> m_enumerands;
+    std::vector<EnumConstructorConstSP> m_constructors;
 
     void VerifyAndComplete();
 
     mutable DataTypeConstSP m_dataType;
     std::map<std::string, std::string> m_indexEnumerands;
     std::vector<std::string> m_possibleValues;
+    std::vector<spdoc::PublicType> m_constructorTypes;
 
     mutable spdoc::EnumConstSP m_doc;
 
 public:
     const std::string& name() const { return m_name; }
     const std::vector<EnumerandConstSP>& enumerands() const { return m_enumerands; }
+    const std::vector<spdoc::PublicType>& constructorTypes() const
+    { return m_constructorTypes; }
 
 };
 

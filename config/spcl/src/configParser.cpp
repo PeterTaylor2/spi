@@ -710,6 +710,86 @@ CoerceFromConstSP parseCoerceFrom(
     return CoerceFrom::Make(description, args[0]->attribute(), code, convert);
 }
 
+EnumConstructorConstSP parseEnumConstructor(
+    ConfigLexer& lexer,
+    const std::string& enumName,
+    const std::vector<std::string>& description,
+    const ModuleDefinitionSP& module,
+    const ServiceDefinitionSP& service,
+    bool verbose)
+{
+    // we have already parsed the typenamep
+    // hence we first expect (
+    // then one parameter
+    // then )
+    // then verbatim (mandatory)
+    ConfigLexer::Token token = lexer.getToken();
+
+    if (token.type != '(')
+    {
+        SPI_THROW_RUNTIME_ERROR("Expect '(' after " << enumName
+            << " for alternative constructor");
+    }
+
+    std::vector<FunctionAttributeConstSP> args = parseFunctionArgs(
+        lexer, module, service, verbose);
+
+    if (args.size() != 1)
+    {
+        SPI_THROW_RUNTIME_ERROR("Expect one parameter for alternative constructor for "
+            << enumName);
+    }
+
+    if (args[0]->isOutput())
+    {
+        SPI_THROW_RUNTIME_ERROR("Parameter for alternative constructor for "
+            << enumName << " should not be an output");
+    }
+
+    const AttributeConstSP arg = args[0]->attribute();
+
+    // arg must be scalar and one of a limited list of types
+    if (arg->arrayDim() != 0)
+    {
+        SPI_THROW_RUNTIME_ERROR("Parameter for alternative constructor for "
+            << enumName << " must be a scalar");
+    }
+
+    switch (arg->dataType()->publicType())
+    {
+    case spdoc::PublicType::BOOL:
+    case spdoc::PublicType::INT:
+        break;
+    case spdoc::PublicType::ENUM:
+        // from C++ this might be nice to support enum to enum coercion
+        // however from Excel/Python the enum is defined as a string
+        SPI_THROW_RUNTIME_ERROR("We cannot define constructor from another enum");
+#if 0
+        if (arg->dataType()->name() == enumName)
+        {
+            SPI_THROW_RUNTIME_ERROR(
+                "We cannot define a constructor from the same enum " << enumName);
+        }
+        break;
+#endif
+    case spdoc::PublicType::CHAR:
+        // from C++ this might be nice but from Excel/Python we cannot distinguish
+        // char so easily from string
+        SPI_THROW_RUNTIME_ERROR("We cannot define constructor from char");
+    case spdoc::PublicType::STRING:
+        // plausible that we allow alternative string output conversion
+        // however the Enum generated classes already have operator std::string
+        SPI_THROW_RUNTIME_ERROR("We cannot define constructor from string since it is already defined");
+    default:
+        SPI_THROW_RUNTIME_ERROR(arg->dataType()->name()
+            << " cannot be used as the type for a constructor of an enumerated type");
+    }
+
+    VerbatimConstSP code = parseImplementation(lexer, true);
+
+    return EnumConstructor::Make(description, arg, code);
+}
+
 CoerceToConstSP parseCoerceTo(
     ConfigLexer& lexer,
     const std::string& className,
@@ -744,7 +824,6 @@ CoerceToConstSP parseCoerceTo(
     VerbatimConstSP code = parseImplementation(lexer, true);
     return CoerceTo::Make(description, targetType, code);
 }
-
 
 /**
  * Defines information about a function definition when the function is in
@@ -1478,10 +1557,47 @@ void enumKeywordHandler(
         throw spi::RuntimeError("%s: Expected } - actual was (%s)",
                                 __FUNCTION__, token.toString().c_str());
 
-    getTokenOfType(lexer, ';');
+    token = lexer.getToken();
+
+    std::vector<EnumConstructorConstSP> constructors;
+
+    if (token.type == '{')
+    {
+        // we will allow operator bool to show how to coerce to bool
+        // we will allow <name>(bool value) to show to coerce from bool
+
+        token = lexer.getToken();
+        while (token.type != '}')
+        {
+            lexer.returnToken(token);
+
+            DescriptionParser desc;
+            token = desc.consume(lexer, verbose);
+
+            if (token.type == SPI_CONFIG_TOKEN_TYPE_NAME &&
+                name == token.value.aName)
+            {
+                EnumConstructorConstSP constructor = parseEnumConstructor(
+                    lexer, name, desc.take(), module, service, verbose);
+                constructors.push_back(constructor);
+            }
+            else
+            {
+                SPI_THROW_RUNTIME_ERROR("Unexpected token " << token.toString() 
+                    << " in enum context");
+            }
+            token = lexer.getToken();
+        }
+    }
+    else if (token.type != ';')
+    {
+        SPI_THROW_RUNTIME_ERROR("expecting ';' to end enum definition - not " <<
+            token.toString());
+    }
 
     EnumConstSP type = Enum::Make(description, name, module->moduleNamespace(),
-        innerName, innerHeader, enumTypedef, enumerands);
+        innerName, innerHeader, enumTypedef, enumerands,
+        constructors);
     type->dataType(service, ignore);
 
     if (!ignore)

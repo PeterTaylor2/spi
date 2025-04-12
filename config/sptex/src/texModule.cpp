@@ -436,7 +436,7 @@ std::string writeTexEnum(
 
     writeTexEndTable(ostr, 2);
 
-
+    // FIXME - handle construct->constructors
 
     ostr << "\n\n";
     fns.insert(filename);

@@ -594,8 +594,7 @@ spi::Value DataType_caller(
         in_context->ValueToString(in_values[4], true, "");
     const std::string& innerRefType =
         in_context->ValueToString(in_values[5], true, "");
-    PublicType publicType =
-        in_context->ValueToString(in_values[6]);
+    PublicType publicType = in_values[6];
     const std::string& objectName =
         in_context->ValueToString(in_values[7], true, "");
     bool isClosed =
