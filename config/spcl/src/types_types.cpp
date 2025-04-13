@@ -1059,10 +1059,11 @@ BaseStruct::inner_type BaseStruct::make_inner(
     const bool& useAccessors = o_useAccessors;
 
     bool incomplete = false;
+    std::string constructor;
 
     ::StructSP self = ::Struct::Make(
         description, name, ns, baseClass, noMake, objectName, canPut, noId, isVirtual, asValue, 
-        uuid, byValue, useAccessors, incomplete);
+        uuid, byValue, useAccessors, incomplete, constructor);
 
     SPI_POST_CONDITION(self->isAbstract());
 
@@ -1507,11 +1508,12 @@ BaseWrapperClass::inner_type BaseWrapperClass::make_inner(
     bool incomplete = false;
     std::string accessorFormat;
     std::string propertyFormat;
+    std::string constructor;
 
     ::WrapperClassSP self = ::WrapperClass::Make(
         description, name, ns, innerClass, baseClass, isVirtual,
         noMake, objectName, isDelegate, canPut, noId, asValue, uuid,
-        incomplete, accessorFormat, propertyFormat);
+        incomplete, accessorFormat, propertyFormat, constructor);
 
     SPI_POST_CONDITION(self->isAbstract());
 

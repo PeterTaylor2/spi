@@ -2454,7 +2454,8 @@ void structKeywordHandler(
     StructSP type = Struct::Make(
         description, name, module->moduleNamespace(), baseClass, noMake,
         getOption(options, "objectName")->getString(),
-        canPut, noId, isVirtual, asValue, uuid, byValue, false, incomplete);
+        canPut, noId, isVirtual, asValue, uuid, byValue, false, incomplete,
+        constructor);
 
     // we need to register the type before parsing the contents in order to
     // allow references to itself in the structure definition
@@ -3057,7 +3058,8 @@ void classNoWrapHandler(
         description, className, module->moduleNamespace(),
         baseClass, noMake,
         getOption(options, "objectName")->getString(),
-        canPut, noId, isVirtual, asValue, uuid, byValue, true, incomplete);
+        canPut, noId, isVirtual, asValue, uuid, byValue, true, incomplete,
+        constructor);
 
     // we need to register the type before parsing the contents in order to
     // allow references to itself in the class definition
@@ -3358,7 +3360,8 @@ void classKeywordHandler(
         getOption(options, "asValue")->getBool(),
         uuid, incomplete,
         getOption(options, "accessorFormat")->getString(),
-        getOption(options, "propertyFormat")->getString());
+        getOption(options, "propertyFormat")->getString(),
+        constructor);
 
     // we need to register the type before parsing the contents in order to
     // allow references to itself in the class definition

@@ -1639,6 +1639,8 @@ void ExcelModule::registerClass(
                   << "    help.push_back(\"Base name for object handle.\");\n";
         }
 
+        bool isHidden = !cls->constructor.empty();
+
         std::string classHelp = GetFirstParagraph(cls->description);
         ostr << "    svc->RegisterFunction(xllName, \"xl_" << service->ns()
             << "_" << makeNamespaceSep(module->ns, "_") << cls->name
@@ -1646,7 +1648,13 @@ void ExcelModule::registerClass(
             << makeNamespaceSep(module->ns, funcNameSep)
             << xlFuncPrefix << "\", \"" << service->ns() << "\", args,\n"
             << "        \"" << classHelp << "\",\n"
-            << "        help);\n";
+            << "        help";
+
+        if (isHidden)
+        {
+            ostr << "," << (isHidden ? "true" : "false");
+        }
+        ostr << ");\n";
     }
 
     for (size_t i = 0; i < cls->methods.size(); ++i)
