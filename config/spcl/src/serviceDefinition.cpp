@@ -1172,7 +1172,10 @@ void ServiceDefinition::writeServiceHeaders(
         << "spi::Date " << m_name << "_get_time_out();\n"
         << "\n"
         << m_import << "\n"
-        << "const char* " << m_name << "_version();\n";
+        << "const char* " << m_name << "_version();\n"
+        << "\n"
+        << m_import << "\n"
+        << "const char* " << m_name << "_startup_directory();\n";
 
     ostr << "\n";
     writeEndNamespace(ostr);
@@ -1568,6 +1571,12 @@ void ServiceDefinition::writeServiceSource(
     ostr << "    g_has_permission = true;\n"
          << "}\n"
          << "\n";
+
+    ostr << "const char* " << m_name << "_startup_directory()\n"
+        << "{\n"
+        << "    return &g_startup_directory[0];\n"
+        << "}\n"
+        << "\n";
 
     nsman.endAllNamespaces(ostr);
     writeEndNamespace(ostr);
