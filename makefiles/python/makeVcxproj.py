@@ -250,9 +250,12 @@ def _get_property_groups(platforms, makefileTarget, cleanTarget, compiler, defau
 
     vsIncludePath = []
     for include in includePath:
-        if include == ".": vsIncludePath.append("$(MSBuildProjectDirectory)")
-        else: vsIncludePath.append(
-            "$(MSBuildProjectDirectory)\\%s" % os.path.normpath(include))
+        if include == ".":
+            vsIncludePath.append("$(MSBuildProjectDirectory)")
+        elif ":" in include: # absolute path
+            vsIncludePath.append(os.path.normpath(include))
+        else:
+            vsIncludePath.append("$(MSBuildProjectDirectory)\\%s" % os.path.normpath(include))
     if len(vsIncludePath): vsIncludePath.append("")
     vsIncludePath = ";".join(vsIncludePath)
 
