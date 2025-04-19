@@ -100,12 +100,8 @@ spi/src/*.c
 spi/src/*.h
 spi/c/src/*.cpp
 spi/c/src/*.hpp
-cs7/spi.cs
-cs7/App.config
-cs7/spi-AssemblyInfo.cs
-cs7/spcs7.csproj
-cs8/spi.cs
-cs8/spcs8.csproj
+cs/spi.cs
+cs/spcs.csproj
 spi/excel/src/*.cpp
 spi/excel/src/xl4/*.c
 spi/excel/src/xl4/*.h
@@ -121,8 +117,7 @@ spi/python/src/*.cpp
 spi/python/src/*.hpp
 dll/Makefile
 c/Makefile
-cs7/Makefile
-cs8/Makefile
+cs/Makefile
 excel/Makefile
 excel/xl_versions.txt
 python/Makefile

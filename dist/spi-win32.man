@@ -50,7 +50,7 @@ makeXLAddin/Makefile
 
 spi-vs1[67].sln
 spi-vs1[67]-python.sln
-spi-vs1[67]-cs.sln
+spi-cs.sln
 all.guid
 refresh-projects.guid
 refresh-projects.v1[67].vcxproj
