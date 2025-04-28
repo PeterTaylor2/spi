@@ -167,6 +167,56 @@ namespace csv
         return out;
     }
 
+    void csv::WriteLine(std::ostream& os, const std::vector<std::string>& row)
+    {
+        size_t N = row.size();
+        if (N > 0)
+        {
+            WriteItem(os, row[0]);
+        }
+        for (size_t i = 1; i < N; ++i)
+        {
+            os << ',';
+            WriteItem(os, row[i]);
+        }
+    }
+
+    void csv::WriteItem(std::ostream& os, const std::string& item)
+    {
+        // from perusing ParseLine it appears that the best case scenario
+        // we just write the item
+        // 
+        // otherwise we enclose the item in "..."
+        // 
+        // in the latter case any " in the item needs to be replaced with ""
+        // 
+        // so what is otherwise?
+        // basically a comma in item triggers otherwise
+
+        const char* work = item.c_str();
+        const char* p = strchr(work, ',');
+        if (!p)
+        {
+            // no commas in the string
+            os << item;
+        }
+        else
+        {
+            // commas in the string
+            // convert " to "" inside the quotes
+            os << '"';
+            p = strchr(work, '"');
+            while (p)
+            {
+                os << std::string(work, p - work);
+                os << '"' << '"';
+                work = p + 1;
+                p = strchr(work, '"');
+            }
+            os << work << '"';
+        }
+    }
+
     Data::Data()
         :
         m_rows(),
@@ -282,6 +332,18 @@ namespace csv
         return out;
     }
 
+    void csv::Data::Write(std::ostream& ostr) const
+    {
+        size_t N = m_rows.size();
+
+        for (size_t i = 0; i < N; ++i)
+        {
+            spi_util::csv::WriteLine(ostr, m_rows[i]);
+            ostr << '\n';
+        }
+        ostr.flush();
+    }
+
     void Data::verifyAndComplete()
     {
         m_numRows = m_rows.size();
@@ -298,4 +360,9 @@ namespace csv
 
 SPI_UTIL_END_NAMESPACE
 
-
+std::ostream& operator<<(std::ostream& ostr, const spi_util::csv::DataConstSP& data)
+{
+    SPI_UTIL_PRE_CONDITION(data);
+    data->Write(ostr);
+    return ostr;
+}

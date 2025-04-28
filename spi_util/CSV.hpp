@@ -45,6 +45,8 @@ SPI_UTIL_NAMESPACE
 namespace csv
 {
     std::vector<std::string> ParseLine(const char* line);
+    void WriteLine(std::ostream& os, const std::vector<std::string>& row);
+    void WriteItem(std::ostream& os, const std::string& item);
 
     SPI_UTIL_DECLARE_RC_CLASS(Data);
 
@@ -70,6 +72,8 @@ namespace csv
         static DataSP Read(const std::string& filename, bool stopOnBlankLine=false);
         static DataSP Read(const std::string& name, std::istream& istr, bool stopOnBlankLine=false);
 
+        void Write(std::ostream&) const;
+
     private:
         std::vector<std::vector<std::string>> m_rows;
         size_t m_numRows;
@@ -81,6 +85,10 @@ namespace csv
 } // end of namespace csv
 
 SPI_UTIL_END_NAMESPACE
+
+SPI_UTIL_IMPORT
+std::ostream& operator << (std::ostream& ostr, const spi_util::csv::DataConstSP& data);
+
 
 #endif
 
