@@ -174,6 +174,11 @@ void replay_check_permission()
     g_has_permission = true;
 }
 
+const char* replay_startup_directory()
+{
+    return &g_startup_directory[0];
+}
+
 SPI_REPLAY_END_NAMESPACE
 
 #ifdef REPLAY_EXPORT

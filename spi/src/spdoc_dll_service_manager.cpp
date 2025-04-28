@@ -176,6 +176,11 @@ void spdoc_check_permission()
     g_has_permission = true;
 }
 
+const char* spdoc_startup_directory()
+{
+    return &g_startup_directory[0];
+}
+
 SPDOC_END_NAMESPACE
 
 #ifdef SPI_EXPORT

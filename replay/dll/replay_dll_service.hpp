@@ -56,6 +56,9 @@ spi::Date replay_get_time_out();
 REPLAY_IMPORT
 const char* replay_version();
 
+REPLAY_IMPORT
+const char* replay_startup_directory();
+
 SPI_REPLAY_END_NAMESPACE
 
 #endif /* _REPLAY_DLL_SERVICE_HPP_*/
