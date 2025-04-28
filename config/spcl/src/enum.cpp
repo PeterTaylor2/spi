@@ -334,6 +334,9 @@ void Enum::implement(
             hasIntConstructor = true;
             ostr << "    case spi::Value::INT:\n"
                 << "        value = Coerce(v.getInt());\n"
+                << "        break;\n"
+                << "    case spi::Value::DOUBLE:\n"
+                << "        value = Coerce(v.getInt(true));\n"
                 << "        break;\n";
             break;
         default:
@@ -353,9 +356,9 @@ void Enum::implement(
         << "    case spi::Value::STRING:\n"
         << "        value = from_string(v.getString().c_str());\n"
         << "        break;\n"
-	<< "    case spi::Value::UNDEFINED:\n"
-	<< "        value = from_string(\"\");\n"
-	<< "        break;\n"
+        << "    case spi::Value::UNDEFINED:\n"
+        << "        value = from_string(\"\");\n"
+        << "        break;\n"
         << "    default:\n"
         << "        SPI_THROW_RUNTIME_ERROR(\"Bad value type: \" << spi::Value::TypeToString(v.getType()));\n"
         << "    }\n"
