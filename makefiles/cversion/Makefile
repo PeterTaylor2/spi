@@ -11,5 +11,5 @@ U_TARGET=cversion
 include $(U_MAKEFILES)/build/exe.mk
 
 U_VCPROJ=cversion
-U_VCPROJ_OPTIONS=-trun --cleanTarget=config-clean
+U_VCPROJ_OPTIONS=-trun
 

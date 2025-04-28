@@ -33,6 +33,7 @@ config/spxl
 
 EXTRA_VCPROJ_DIRS=\
 makefiles/gendep\
+makefiles/cversion\
 config\
 config/spdoc\
 config/spcl/types
