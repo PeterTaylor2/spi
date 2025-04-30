@@ -55,6 +55,11 @@ const std::vector<std::string>& IMapObject::GetNames() const
     return m_map->FieldNames();
 }
 
+MapObjectSP MapObject::Make(const char* className)
+{
+    return MapObjectSP(new MapObject(MapSP(new Map(className))));
+}
+
 MapObjectSP MapObject::Make(const MapSP& aMap)
 {
     return MapObjectSP(new MapObject(aMap));

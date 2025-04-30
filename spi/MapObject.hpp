@@ -213,6 +213,7 @@ class SPI_IMPORT MapObject : public IMapObject
 {
 public:
     SPI_DECLARE_MAP_OBJECT_TYPE(MapObject);
+    static MapObjectSP Make(const char* className);
     static MapObjectSP Make(const MapSP& aMap);
     static MapObjectSP Make(const MapConstSP& aConstMap);
     static MapObjectSP Make(const MapConstSP& aConstMap,
