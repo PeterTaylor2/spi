@@ -167,7 +167,7 @@ namespace csv
         return out;
     }
 
-    void csv::WriteLine(std::ostream& os, const std::vector<std::string>& row)
+    void WriteLine(std::ostream& os, const std::vector<std::string>& row)
     {
         size_t N = row.size();
         if (N > 0)
@@ -181,7 +181,7 @@ namespace csv
         }
     }
 
-    void csv::WriteItem(std::ostream& os, const std::string& item)
+    void WriteItem(std::ostream& os, const std::string& item)
     {
         // from perusing ParseLine it appears that the best case scenario
         // we just write the item
