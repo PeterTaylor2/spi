@@ -1079,11 +1079,14 @@ void writeVerbatim(
             ostr << "\n";
         }
 
+        // we always strip the code to the right to avoid trailing spaces
+        // or perhaps more importantly differences in line endings
+
         if (stripLines)
         {
             for (size_t i = blankLines; i < nbLines; ++i)
             {
-                const std::string& line = code[i];
+                const std::string& line = spi_util::StringStrip(code[i], false, true);
                 size_t spaces = countSpacesAtStartOfLine(line);
                 size_t startFrom = std::min(spaces, stripLeft);
                 ostr << line.substr(startFrom) << "\n";
@@ -1094,7 +1097,7 @@ void writeVerbatim(
             std::string indentString(indent, ' ');
             for (size_t i = blankLines; i < nbLines; ++i)
             {
-                ostr << indentString << code[i] << "\n";
+                ostr << indentString << spi_util::StringStrip(code[i], false, true) << "\n";
             }
         }
         if (!g_options.noVerbatimLine && !sourceFileName.empty())

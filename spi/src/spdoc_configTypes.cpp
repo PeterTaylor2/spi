@@ -156,7 +156,7 @@ std::string DataType_Helper::RefType(
     else
     {
         // the assumption is that refTypeName = "const valueTypeName&"
-        oss << "const " << self->nsService << "::" 
+        oss << "const " << self->nsService << "::"
             << self->valueTypeName << "&";
     }
     return oss.str();
@@ -630,7 +630,7 @@ std::vector<std::string> Function_Helper::Summary(
     {
         oss << self->returnType->name;
         for (int i = 0; i < self->returnArrayDim; ++i)
-            oss << "[]";   
+            oss << "[]";
     }
     else
     {
@@ -839,7 +839,7 @@ std::vector<std::string> Enum_Helper::Summary(
     std::vector<std::string> summary;
 
     size_t numEnumerands = self->enumerands.size();
-    
+
     if (numEnumerands > 0)
     {
         std::ostringstream oss;
@@ -1871,7 +1871,7 @@ std::string Service_Helper::getPropertyClass(
         return std::string();
 
     ClassConstSP baseClass = self->getClass(baseClassName);
-    
+
     const std::vector<ClassAttributeConstSP>& properties = baseClass->properties;
     size_t N = properties.size();
     for (size_t i = 0; i < N; ++i)

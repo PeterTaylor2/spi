@@ -314,7 +314,7 @@ public:
     const bool noDoc;
 
 public:
-    std::string getName() const { return name; } 
+    std::string getName() const { return name; }
 };
 
 /**
@@ -401,7 +401,7 @@ public:
     const bool optionalReturnType;
 
 public:
-    std::string getName() const { return name; } 
+    std::string getName() const { return name; }
 };
 
 /**
@@ -511,7 +511,7 @@ public:
     const std::vector<EnumConstructorConstSP> constructors;
 
 public:
-    std::string getName() const { return name; } 
+    std::string getName() const { return name; }
 };
 
 /**
@@ -741,7 +741,7 @@ public:
     const std::string constructor;
 
 public:
-    std::string getName() const { return name; } 
+    std::string getName() const { return name; }
 };
 
 /**
