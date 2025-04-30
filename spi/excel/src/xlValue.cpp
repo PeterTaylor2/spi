@@ -47,6 +47,8 @@
 #include <spi/MatrixData.hpp>
 #include <spi_util/Utils.hpp>
 
+#include <limits>
+
 #define INT(x) spi_util::IntegerCast<int>(x)
 
 #include "xlcall.h"
@@ -127,6 +129,13 @@ spi::Value xloperToValue(XLOPER* oper)
     }
     case xltypeErr:
     {
+        switch (oper->val.err)
+        {
+        case xlerrNum:
+            return spi::Value(std::numeric_limits<double>::quiet_NaN());
+        case xlerrDiv0:
+            return spi::Value(std::numeric_limits<double>::infinity());
+        }
         throw ExcelInputError();
     }
     case xltypeMulti:
