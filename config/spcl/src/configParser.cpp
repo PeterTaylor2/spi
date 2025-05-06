@@ -1306,6 +1306,7 @@ ClassMethodConstSP classMethodKeywordHandler(
 
 EnumerandConstSP parseEnumerand(
     ConfigLexer& lexer,
+    const std::string& innerValueFormat,
     bool verbose)
 {
     // looks for an enumerand
@@ -1334,6 +1335,11 @@ EnumerandConstSP parseEnumerand(
     else
     {
         lexer.returnToken(token);
+    }
+
+    if (value.empty() && !innerValueFormat.empty())
+    {
+        value = spi_util::StringFormat(innerValueFormat.c_str(), enumerand.c_str());
     }
 
     token = lexer.getToken();
@@ -1410,6 +1416,7 @@ void enumKeywordHandler(
     std::string innerName;
     std::string innerHeader;
     std::string enumTypedef;
+    std::string innerValueFormat;
 
     token = lexer.getToken();
     bool ignore = false;
@@ -1473,6 +1480,7 @@ void enumKeywordHandler(
         }
         ParserOptions defaultOptions;
         defaultOptions["innerHeader"]  = StringConstant::Make("");
+        defaultOptions["innerValueFormat"] = StringConstant::Make("");
         bool integerType = innerName == "int" ||
             innerName == "long" ||
             innerName == "size_t" ||
@@ -1498,7 +1506,7 @@ void enumKeywordHandler(
         ParserOptions options;
         options = parseOptions(lexer, "{", defaultOptions, verbose);
         ignore = getOption(options, "ignore")->getBool();
-
+        innerValueFormat = getOption(options, "innerValueFormat")->getString();
         innerHeader = getOption(options, "innerHeader")->getString();
         if (!enumDeclared && !integerType)
         { 
@@ -1531,7 +1539,7 @@ void enumKeywordHandler(
     // we cannot have an enumerand with no types - hence always expect
     // the first name
 
-    EnumerandConstSP enumerand = parseEnumerand(lexer, verbose);
+    EnumerandConstSP enumerand = parseEnumerand(lexer, innerValueFormat, verbose);
     if (enumerand)
     {
         enumerands.push_back(enumerand);
@@ -1540,7 +1548,7 @@ void enumKeywordHandler(
             token = lexer.getToken();
             if (token.type == ',')
             {
-                enumerand = parseEnumerand(lexer, verbose);
+                enumerand = parseEnumerand(lexer, innerValueFormat, verbose);
                 if (!enumerand)
                     throw spi::RuntimeError("No enumerand after ','");
                 enumerands.push_back(enumerand);

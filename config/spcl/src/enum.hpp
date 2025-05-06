@@ -105,8 +105,6 @@ private:
 class Enumerand : public spi::RefCounter
 {
 public:
-    //friend class Enum;
-
     static EnumerandConstSP Make(
         const std::vector<std::string>& description,
         const std::string&              name,
