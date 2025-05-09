@@ -184,6 +184,44 @@ const std::string& Enumerand::outputString() const
 ** Implementation of Enum
 ***************************************************************************
 */
+EnumBitmaskConstSP EnumBitmask::Make(
+    const std::string& all,
+    const std::string& sep,
+    bool asInt,
+    const std::string& constructor,
+    const std::string& hasFlag,
+    const std::string& toMap,
+    const std::string& instance)
+{
+    return EnumBitmaskConstSP(new EnumBitmask(
+        all, sep, asInt, constructor, hasFlag, toMap, instance));
+}
+
+EnumBitmask::EnumBitmask(
+    const std::string& all,
+    const std::string& sep,
+    bool asInt,
+    const std::string& constructor,
+    const std::string& hasFlag,
+    const std::string& toMap,
+    const std::string& instance)
+    :
+    m_all(all),
+    m_sep(sep),
+    m_asInt(asInt),
+    m_constructor(constructor),
+    m_hasFlag(hasFlag),
+    m_toMap(toMap),
+    m_instance(instance)
+{
+}
+
+
+/*
+***************************************************************************
+** Implementation of Enum
+***************************************************************************
+*/
 EnumConstSP Enum::Make(
     const std::vector<std::string>&      description,
     const std::string&                   name,
@@ -192,10 +230,11 @@ EnumConstSP Enum::Make(
     const std::string&                   innerHeader,
     const std::string&                   enumTypedef,
     const std::vector<EnumerandConstSP>& enumerands,
-    const std::vector<EnumConstructorConstSP>& constructors)
+    const std::vector<EnumConstructorConstSP>& constructors,
+    const EnumBitmaskConstSP&            bitmask)
 {
     return new Enum(description, name, ns, innerName, innerHeader, enumTypedef, 
-        enumerands, constructors);
+        enumerands, constructors, bitmask);
 }
 
 bool Enum::declareInClasses() const
@@ -216,11 +255,18 @@ void Enum::declare(
 
     enumNameSep = "::";
     ostr << "* Class " << m_name << " containing enumerated type "
-         << m_name << "::Enum.\n"
-         << "* Whenever " << m_name << " is expected you can use "
-         << m_name << "::Enum,\n"
-         << "* and vice versa, because automatic type conversion is provided by\n"
-         << "* the constructor and cast operator.\n";
+        << m_name << "::Enum.\n"
+        << "* Whenever " << m_name << " is expected you can use "
+        << m_name << "::Enum,\n"
+        << "* and vice versa, because automatic type conversion is provided by\n"
+        << "* the constructor and cast operator.\n";
+
+    if (m_bitmask)
+    {
+        ostr << "*\n"
+            << "* Supports the BitmaskType pattern. As a result value is actually\n"
+            << "* a union of all the flags which have been set in the bitmask.\n";
+    }
 
     if (m_description.size() != 0)
     {
@@ -238,29 +284,76 @@ void Enum::declare(
             if (enumerand->description().size() > 0)
                 writeComments(ostr, enumerand->description(), 4, 0);
         }
+        if (m_bitmask)
+        {
+            ostr << "* " << m_name << enumNameSep << m_bitmask->all() << "\n"
+                << "*     All of the above combined\n";
+        }
     }
 
     writeEndCommentBlock(ostr);
 
     ostr << "class " << svc->getImport() << " " << m_name << "\n"
-         << "{\n"
-         << "public:\n"
-         << "    enum Enum\n"
-         << "    {\n";
+        << "{\n"
+        << "public:\n"
+        << "    enum Enum\n"
+        << "    {\n";
 
-    for (size_t i = 0; i < nbEnumerands; ++i)
-        ostr << "        " << m_enumerands[i]->name() << ",\n";
+    if (m_bitmask)
+    {
+        int value = 1;
+        int all = 0;
 
-    ostr << "        UNINITIALIZED_VALUE\n"
-        << "    };\n"
+        for (size_t i = 0; i < nbEnumerands; ++i)
+        {
+            ostr << "        " << m_enumerands[i]->name() << " = " << value << ",\n";
+            all += value;
+            value *= 2;
+        }
+        ostr << "        " << m_bitmask->all() << " = " << all << "\n";
+    }
+    else
+    {
+        for (size_t i = 0; i < nbEnumerands; ++i)
+            ostr << "        " << m_enumerands[i]->name() << ",\n";
+        ostr << "        UNINITIALIZED_VALUE\n";
+    }
+
+    ostr << "    };\n"
         << "\n"
         << "    static spi::EnumInfo* get_enum_info();\n"
-        << "\n"
-        << "    " << m_name << "() : value(UNINITIALIZED_VALUE) {}\n"
-        << "    " << m_name << "(" << m_name << "::Enum value) : value(value) {}\n"
-        << "    " << m_name << "(const char* str) : value(" << m_name << "::from_string(str)) {}\n"
-        << "    " << m_name << "(const std::string & str) : value(" << m_name << "::from_string(str.c_str())) {}\n"
-        << "    " << m_name << "(const spi::Value & value);\n";
+        << "\n";
+
+    if (m_bitmask)
+    {
+        ostr << "    " << m_name << "() : value((Enum)0) {}\n"
+            << "    " << m_name << "(" << m_name << "::Enum value);\n";
+    }
+    else
+    {
+        ostr << "    " << m_name << "() : value(UNINITIALIZED_VALUE) {}\n"
+            << "    " << m_name << "(" << m_name << "::Enum value) : value(value) {}\n";
+    }
+
+
+    if (m_bitmask)
+    {
+        ostr << "    " << m_name << "(const std::string& str);\n";
+    }
+    else
+    {
+        ostr << "    " << m_name << "(const char* str) : value(" << m_name << "::from_string(str)) {}\n"
+            << "    " << m_name << "(const std::string& str) : value(" << m_name << "::from_string(str.c_str())) {}\n";
+    }
+
+    ostr << "    " << m_name << "(const spi::Value& value);\n";
+
+    // we shouldn't define the equivalent constructor for bitmask
+    // but we can provide the coerce from bool functionality
+    if (m_bitmask)
+    {
+        ostr << "    " << m_name << "(int value);\n";
+    }
 
     for (size_t i = 0; i < m_constructors.size(); ++i)
     {
@@ -268,15 +361,40 @@ void Enum::declare(
     }
 
     ostr << "\n"
-        // FIXME: validate that operator Enum() has a good value!
-        << "    operator " << m_name << "::Enum() const { return value; }\n"
-        << "    operator std::string() const { return std::string(" << m_name << "::to_string(value)); }\n"
-        << "    operator spi::Value() const { return spi::Value(" << m_name << "::to_string(value)); }\n"
-        << "    std::string to_string() const { return std::string(" << m_name << "::to_string(value)); }\n"
-        << "    spi::Value to_value() const { return spi::Value(" << m_name << "::to_string(value)); }\n"
-        << "\n"
+        << "    operator " << m_name << "::Enum() const { return value; }\n";
+
+    ostr << "    operator std::string() const { return to_string(); }\n"
+        << "    operator spi::Value() const { return to_value(); }\n";
+
+    if (m_bitmask)
+    {
+        ostr << "    std::string to_string() const;\n";
+
+        if (m_bitmask->asInt())
+        {
+            ostr << "    spi::Value to_value() const { return spi::Value((int)value); }\n";
+        }
+        else
+        {
+            ostr << "    spi::Value to_value() const { return spi::Value(to_string());\n";
+        }
+    }
+    else
+    {
+        ostr << "    std::string to_string() const { return std::string(" << m_name << "::to_string(value)); }\n"
+            << "    spi::Value to_value() const { return spi::Value(to_string()); }\n";
+    }
+
+    ostr << "\n"
         << "    static " << m_name << "::Enum from_string(const char*);\n"
         << "    static const char* to_string(" << m_name << "::Enum);\n";
+
+    if (m_bitmask)
+    {
+        ostr << "\n"
+            << "    bool has_flag(" << m_name << "::Enum flag) const; \n"
+            << "    spi::MapConstSP to_map() const;\n";
+    }
 
     ostr << "\n"
         << "private:\n"
@@ -345,10 +463,19 @@ void Enum::implement(
         }
     }
 
+    if (hasIntConstructor && m_bitmask)
+    {
+        SPI_THROW_RUNTIME_ERROR(
+            "Cannot have an int constructor independently from bitmask");
+    }
+
     if (!hasIntConstructor)
     {
         ostr << "    case spi::Value::INT:\n"
             << "        value = (Enum)v.getInt();\n"
+            << "        break;\n"
+            << "    case spi::Value::DOUBLE:\n"
+            << "        value = (Enum)(v.getInt(true));\n"
             << "        break;\n";
     }
 
@@ -366,39 +493,128 @@ void Enum::implement(
 
     if (!m_innerName.empty())
     {
+        // write convert_in from outer type to inner type
         ostr << "\n"
-             << m_innerName << " " << m_name << "_convert_in(const " << m_name << "& v_)\n"
-             << "{\n"
-             << "    switch((" << m_name << "::Enum)v_)\n"
-             << "    {\n";
-
-        for (size_t i = 0; i < m_enumerands.size(); ++i)
+            << m_innerName << " " << m_name << "_convert_in(const " << m_name << "& v_)\n"
+            << "{\n";
+        
+        if (m_bitmask)
         {
-            ostr << "    case " << m_name << "::" << m_enumerands[i]->name() << ":\n"
-                 << "        return " << m_enumerands[i]->value() << ";\n";
+            // when we have a bitmask we need to check each flag
+            ostr << "    unsigned int out = 0; \n"
+                << "    unsigned int v = (unsigned int)(" << m_name << "::Enum)(v_);\n"
+                << "\n";
+            for (size_t i = 0; i < m_enumerands.size(); ++i)
+            {
+                ostr << "    if (v & (unsigned int)" << m_name << "::" << m_enumerands[i]->name() << ")\n"
+                    << "        out += (unsigned int)" << m_enumerands[i]->value() << ";\n";
+            }
+            ostr << "\n"
+                << "    return (" << m_innerName << ")out; \n"
+                << "}\n";
         }
-        ostr << "    case " << m_name << "::UNINITIALIZED_VALUE:\n"
-             << "        throw std::runtime_error(\"Uninitialized value for "
-             << m_name << "\");\n"
-             << "    }\n"
-             << "    throw spi::RuntimeError(\"Bad enumerated value\");\n"
-             << "}\n";
+        else
+        {
+            ostr << "    switch((" << m_name << "::Enum)v_)\n"
+                << "    {\n";
 
+            for (size_t i = 0; i < m_enumerands.size(); ++i)
+            {
+                ostr << "    case " << m_name << "::" << m_enumerands[i]->name() << ":\n"
+                    << "        return " << m_enumerands[i]->value() << ";\n";
+            }
+            ostr << "    case " << m_name << "::UNINITIALIZED_VALUE:\n"
+                << "        throw std::runtime_error(\"Uninitialized value for "
+                << m_name << "\");\n"
+                << "    }\n"
+                << "    throw spi::RuntimeError(\"Bad enumerated value\");\n"
+                << "}\n";
+        }
+
+        // write convert_out from inner type to outer type
         ostr << "\n"
              << m_name << " " << m_name << "_convert_out(" << m_innerName << " v_)\n"
              << "{\n";
 
-        // implement as sequence of if statements rather than
-        // switch since the innerType might not be numeric
-        // but could be an enumerated class (or even a string)
-        for (size_t i = 0; i < m_enumerands.size(); ++i)
+        if (m_bitmask)
         {
-            ostr << "    if (v_ == " << m_enumerands[i]->value() << ")\n"
-                 << "        return " << m_name << "::" << m_enumerands[i]->name()
-                 << ";\n";
+            ostr << "    unsigned int out = 0;\n"
+                << "    unsigned int v = (unsigned int)v_;\n"
+                << "\n";
+
+            for (size_t i = 0; i < m_enumerands.size(); ++i)
+            {
+                ostr << "    if (v & (unsigned int)" << m_enumerands[i]->value() << ")\n"
+                    << "        out += (unsigned int)" << m_name << "::" << m_enumerands[i]->name()
+                    << ";\n";
+            }
+            ostr << "\n"
+                << "    return " << m_name << "(out);\n"
+                << "}\n";
         }
-        ostr << "    throw spi::RuntimeError(\"Bad enumerated value\");\n"
-             << "}\n";
+        else
+        {
+            // implement as sequence of if statements rather than
+            // switch since the innerType might not be numeric
+            // but could be an enumerated class (or even a string)
+            for (size_t i = 0; i < m_enumerands.size(); ++i)
+            {
+                ostr << "    if (v_ == " << m_enumerands[i]->value() << ")\n"
+                    << "        return " << m_name << "::" << m_enumerands[i]->name()
+                    << ";\n";
+            }
+            ostr << "    throw spi::RuntimeError(\"Bad enumerated value\");\n"
+                << "}\n";
+        }
+    }
+
+    if (m_bitmask)
+    {
+        ostr << "\n"
+            << m_name << "::" << m_name << "(" << m_name << "::Enum v_)\n"
+            << "    : value(v_)\n"
+            << "{\n"
+            << "    if ((unsigned int)value > (unsigned int)"
+            << m_name << "::" << m_bitmask->all() << ")\n"
+            << "    {\n"
+            << "        SPI_THROW_RUNTIME_ERROR(\"Input value out of range\");\n"
+            << "    }\n"
+            << "}\n";
+
+        ostr << "\n"
+            << m_name << "::" << m_name << "(const std::string& str)\n"
+            << "{\n"
+            << "    if (spi::StringUpper(str) == \""
+            << spi_util::StringUpper(m_bitmask->all()) << "\")\n"
+            << "    {\n"
+            << "        value = " << m_name << "::" << m_bitmask->all() << ";\n"
+            << "    }\n"
+            << "    else\n"
+            << "    {\n"
+            << "        const std::vector<std::string> parts = spi_util::StringSplit(str, \""
+            << m_bitmask->sep() << "\");\n"
+            << "        unsigned int v = 0;\n"
+            << "        size_t N = parts.size();\n"
+            << "        for (size_t i = 0; i < N; ++i)\n"
+            << "        {\n"
+            << "            const std::string& part = spi_util::StringStrip(parts[i]);\n"
+            << "            Enum p = " << m_name << "::from_string(part.c_str());\n"
+            << "            v += (unsigned int)p;\n"
+            << "        }\n"
+            << "        value = (" << m_name << "::Enum)v;\n"
+            << "    }\n"
+            << "}\n";
+
+        ostr << "\n"
+            << m_name << "::" << m_name << "(int v_)\n"
+            << "{\n"
+            << "    unsigned int v = spi_util::IntegerCast<unsigned int>(v_);\n"
+            << "    if (v > (unsigned int)" << m_name << "::" << m_bitmask->all() << ")\n"
+            << "    {\n"
+            << "        SPI_THROW_RUNTIME_ERROR(\"Input value out of range\");\n"
+            << "    }\n"
+            << "    value = (" << m_name << "::Enum)v; \n"
+            << "}\n";
     }
 }
 
@@ -425,6 +641,28 @@ void Enum::implementHelper(
          << "    }\n"
          << "    return &the_info;\n"
          << "}\n";
+
+    if (m_bitmask)
+    {
+        ostr << "\n"
+            << "std::string " << m_name << "::to_string() const\n"
+            << "{\n"
+            << "    unsigned int v = (unsigned int)value;\n"
+            << "    std::vector<std::string> parts;\n"
+            << "\n";
+
+        for (size_t i = 0; i < m_enumerands.size(); ++i)
+        {
+            ostr << "    if (v & (unsigned int)" << m_name << "::" << m_enumerands[i]->name() << ")\n";
+            ostr << "        parts.push_back(" << m_name << "::to_string("
+                << m_name << "::" << m_enumerands[i]->name() << "));\n";
+        }
+
+        ostr << "\n"
+            << "    return spi_util::StringJoin(\""
+            << m_bitmask->sep() << "\", parts);\n"
+            << "}\n";
+    }
 
     std::map<std::string,std::string>::const_iterator iter =
          m_indexEnumerands.begin();
@@ -484,12 +722,52 @@ void Enum::implementHelper(
              << "\";\n";
     }
 
-    ostr << "    case " << m_name << "::UNINITIALIZED_VALUE:\n"
-         << "        throw std::runtime_error(\"Uninitialized value for "
-         << m_name << "\");\n"
-         << "    }\n"
-         << "    throw std::runtime_error(\"Bad enumerated value\");\n"
-         << "}\n";
+    if (!m_bitmask)
+    {
+        ostr << "    case " << m_name << "::UNINITIALIZED_VALUE:\n"
+            << "        throw std::runtime_error(\"Uninitialized value for "
+            << m_name << "\");\n";
+    }
+    ostr << "    }\n"
+        << "    throw std::runtime_error(\"Bad enumerated value\");\n"
+        << "}\n";
+
+    if (m_bitmask)
+    {
+        int all = 0;
+        int value = 1;
+        size_t N = m_enumerands.size();
+        for (size_t i = 0; i < N; ++i)
+        {
+            all += value;
+            value *= 2;
+        }
+
+        ostr << "\n"
+            << "// this implementation means that we can combine flags in the input\n"
+            << "bool " << m_name << "::has_flag(" << m_name << "::Enum flag) const\n"
+            << "{\n"
+            << "    unsigned int i_flag = (unsigned int)flag;\n"
+            << "    unsigned int i_test = (unsigned int)value & i_flag;\n"
+            << "    return (i_test == i_flag);\n"
+            << "}\n";
+
+        ostr << "\n"
+            << "spi::MapConstSP " << m_name << "::to_map() const\n"
+            << "{\n"
+            << "    spi::MapSP m(new spi::Map(\"" << m_name << "\"));\n"
+            << "\n";
+
+        for (size_t i = 0; i < N; ++i)
+        {
+            const EnumerandConstSP& e = m_enumerands[i];
+            ostr << "    m->SetValue(\"" << spi_util::StringLower(e->name()) << "\", "
+                << "has_flag(" << m_name << "::" << e->name() << "));\n";
+        }
+        ostr << "\n"
+            << "    return m; \n"
+            << "}\n";
+    }
 
     for (size_t i = 0; i < m_constructors.size(); ++i)
     {
@@ -547,7 +825,8 @@ Enum::Enum(
     const std::string&                   innerHeader,
     const std::string&                   enumTypedef,
     const std::vector<EnumerandConstSP>& enumerands,
-    const std::vector<EnumConstructorConstSP>& constructors)
+    const std::vector<EnumConstructorConstSP>& constructors,
+    const EnumBitmaskConstSP&            bitmask)
     :
     m_description(description),
     m_name(name),
@@ -556,7 +835,8 @@ Enum::Enum(
     m_innerHeader(innerHeader),
     m_enumTypedef(enumTypedef),
     m_enumerands(enumerands),
-    m_constructors(constructors)
+    m_constructors(constructors),
+    m_bitmask(bitmask)
 {
     VerifyAndComplete();
 }

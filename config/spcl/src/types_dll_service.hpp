@@ -60,6 +60,9 @@ spi::Date types_get_time_out();
 SPI_IMPORT
 const char* types_version();
 
+SPI_IMPORT
+const char* types_startup_directory();
+
 TYPES_END_NAMESPACE
 
 #endif /* _TYPES_DLL_SERVICE_HPP_*/

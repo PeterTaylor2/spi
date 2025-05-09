@@ -176,6 +176,11 @@ void types_check_permission()
     g_has_permission = true;
 }
 
+const char* types_startup_directory()
+{
+    return &g_startup_directory[0];
+}
+
 TYPES_END_NAMESPACE
 
 #ifdef SPI_EXPORT

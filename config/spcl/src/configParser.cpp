@@ -1411,7 +1411,46 @@ void enumKeywordHandler(
     //
     // the enum token is taken as read
 
-    ConfigLexer::Token token = getTokenOfType(lexer, SPI_CONFIG_TOKEN_TYPE_NAME, "Name");
+    EnumBitmaskConstSP bitmask; 
+
+    ConfigLexer::Token token = lexer.getToken();
+
+    if (token.toString() == "bitmask")
+    {
+        token = getTokenOfType(lexer, '(', "bitmask parameters");
+
+        static ParserOptions bitmaskDefaultOptions;
+        if (bitmaskDefaultOptions.size() == 0)
+        {
+            bitmaskDefaultOptions["all"] = StringConstant::Make("ALL");
+            bitmaskDefaultOptions["sep"] = StringConstant::Make(",");
+            bitmaskDefaultOptions["asInt"] = BoolConstant::Make(false);
+            bitmaskDefaultOptions["constructor"] = StringConstant::Make("");
+            bitmaskDefaultOptions["hasFlag"] = StringConstant::Make("");
+            bitmaskDefaultOptions["toMap"] = StringConstant::Make("");
+            bitmaskDefaultOptions["instance"] = StringConstant::Make("value");
+        }
+
+        ParserOptions bitmaskOptions = parseOptions(
+            lexer, ")", bitmaskDefaultOptions, verbose);
+
+        token = getTokenOfType(lexer, ')', "bitmask parameters");
+
+        bitmask = EnumBitmask::Make(
+            getOption(bitmaskOptions, "all")->getString(),
+            getOption(bitmaskOptions, "sep")->getString(),
+            getOption(bitmaskOptions, "asInt")->getBool(),
+            getOption(bitmaskOptions, "constructor")->getString(),
+            getOption(bitmaskOptions, "hasFlag")->getString(),
+            getOption(bitmaskOptions, "toMap")->getString(),
+            getOption(bitmaskOptions, "instance")->getString());
+    }
+    else
+    {
+        lexer.returnToken(token);
+    }
+
+    token = getTokenOfType(lexer, SPI_CONFIG_TOKEN_TYPE_NAME, "Name");
     std::string name(token.value.aName);
     std::string innerName;
     std::string innerHeader;
@@ -1478,6 +1517,7 @@ void enumKeywordHandler(
                 "Expected '>' to match '<' for enum %s - actual was (%s)",
                 name.c_str(), token.toString().c_str());
         }
+
         ParserOptions defaultOptions;
         defaultOptions["innerHeader"]  = StringConstant::Make("");
         defaultOptions["innerValueFormat"] = StringConstant::Make("");
@@ -1605,12 +1645,148 @@ void enumKeywordHandler(
 
     EnumConstSP type = Enum::Make(description, name, module->moduleNamespace(),
         innerName, innerHeader, enumTypedef, enumerands,
-        constructors);
+        constructors, bitmask);
     type->dataType(service, ignore);
 
     if (!ignore)
     {
         module->addEnum(type);
+
+        if (bitmask)
+        {
+            const DataTypeConstSP& myType = service->getDataType(name);
+            std::vector<std::string> noDescription;
+            std::vector<std::string> noExcelOptions;
+
+            // in each of these cases we create the function definition inline
+            // this will include verbatim implementation without line numbers
+            if (!bitmask->constructor().empty())
+            {
+                std::vector<FunctionAttributeConstSP> args;
+
+                const DataTypeConstSP& boolType = service->getDataType("bool");
+
+                size_t N = enumerands.size();
+                for (size_t i = 0; i < N; ++i)
+                {
+                    const EnumerandConstSP& e = enumerands[i];
+                    const std::string& name = spi_util::StringLower(e->name());
+                    args.push_back(FunctionAttribute::Make(
+                        Attribute::Make(e->description(), boolType, name),
+                        false));
+                }
+
+                std::vector<std::string> code;
+                code.push_back("    unsigned int value = 0;");
+                code.push_back("\n");
+                int value = 1;
+                for (size_t i = 0; i < N; ++i)
+                {
+                    const EnumerandConstSP& e = enumerands[i];
+                    const std::string& name = spi_util::StringLower(e->name());
+                    code.push_back(spi_util::StringFormat(
+                        "    if (%s)\n", name.c_str()));
+                    code.push_back(spi_util::StringFormat(
+                        "        value += %d;", value));
+                    value *= 2;
+                }
+                code.push_back("\n");
+                code.push_back("    return value;\n");
+                code.push_back("}");
+
+                VerbatimConstSP implementation = Verbatim::Make(
+                    "", 0, code);
+
+                FunctionConstSP func = Function::Make(
+                    noDescription,
+                    noDescription,
+                    myType,
+                    0,
+                    bitmask->constructor(),
+                    module->moduleNamespace(),
+                    args,
+                    implementation,
+                    true, // noLog
+                    true, // noConvert
+                    noExcelOptions,
+                    0, // cacheSize
+                    false); // optionalReturnType
+
+                module->addConstruct(func);
+            }
+            if (!bitmask->hasFlag().empty())
+            {
+                std::vector<FunctionAttributeConstSP> args;
+
+                args.push_back(FunctionAttribute::Make(
+                    Attribute::Make(noDescription, myType, bitmask->instance()),
+                    false));
+                args.push_back(FunctionAttribute::Make(
+                    Attribute::Make(noDescription, myType, "flag"),
+                    false));
+
+                std::vector<std::string> code;
+                code.push_back(spi_util::StringFormat(
+                    "    return %s.has_flag(flag);",
+                    bitmask->instance().c_str()));
+                code.push_back("}");
+
+                VerbatimConstSP implementation = Verbatim::Make(
+                    "", 0, code);
+
+                FunctionConstSP func = Function::Make(
+                    noDescription,
+                    noDescription,
+                    service->getDataType("bool"),
+                    0,
+                    bitmask->hasFlag(),
+                    module->moduleNamespace(),
+                    args,
+                    implementation,
+                    true, // noLog
+                    true, // noConvert
+                    noExcelOptions,
+                    0, // cacheSize
+                    false); // optionalReturnType
+
+                module->addConstruct(func);
+            }
+            if (!bitmask->toMap().empty())
+            {
+                std::vector<FunctionAttributeConstSP> args;
+
+                args.push_back(FunctionAttribute::Make(
+                    Attribute::Make(description, myType, bitmask->instance()),
+                    false));
+
+                std::vector<std::string> code;
+                code.push_back(spi_util::StringFormat(
+                    "    return spi::MapObject::Make(%s.to_map());", 
+                    bitmask->instance().c_str()));
+                code.push_back("}");
+
+                VerbatimConstSP implementation = Verbatim::Make(
+                    "", 0, code);
+
+                FunctionConstSP func = Function::Make(
+                    noDescription,
+                    noDescription,
+                    service->getDataType("Map"),
+                    0,
+                    bitmask->toMap(),
+                    module->moduleNamespace(),
+                    args,
+                    implementation,
+                    true, // noLog
+                    true, // noConvert
+                    noExcelOptions,
+                    0, // cacheSize
+                    false); // optionalReturnType
+
+                module->addConstruct(func);
+            }
+        }
+
     }
 }
 
@@ -4159,19 +4335,7 @@ void mainLoop(const std::string& fn,
         else
         {
             throw spi::RuntimeError("Cannot handle token (%s)",
-                               token.toString().c_str());
-            desc.clear();
-            if (token.type == '{')
-            {
-                std::vector<std::string> code = lexer.getVerbatim()->getCode();
-                std::cout << "\nCODE_BEGIN" << std::endl;
-                std::cout << "{" << spi::StringJoin("\n", code) << std::endl;
-                std::cout << "CODE_END" << std::endl;
-            }
-            else
-            {
-                std::cout << token.toString() << std::endl;
-            }
+                                    token.toString().c_str());
         }
         token = desc.consume(lexer, verbose);
     }

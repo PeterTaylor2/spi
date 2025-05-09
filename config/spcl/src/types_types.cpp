@@ -59,6 +59,9 @@ PublicType::PublicType(const spi::Value &v)
     case spi::Value::STRING:
         value = from_string(v.getString().c_str());
         break;
+    case spi::Value::UNDEFINED:
+        value = from_string("");
+        break;
     default:
         SPI_THROW_RUNTIME_ERROR("Bad value type: " << spi::Value::TypeToString(v.getType()));
     }
@@ -410,7 +413,7 @@ DataType::inner_type DataType::make_inner(
     // we don't need to split name since ::DataType::Make simply joins
     // them back together
     ::DataTypeConstSP self = ::DataType::Make(
-        name, "", nsService, cppName, outerType, innerType, innerRefType, publicType, 
+        name, "", nsService, cppName, outerType, innerType, innerRefType, publicType,
         objectName, isClosed, noDoc, convertIn, convertOut, copyInner,
         ::DataTypeConstSP(), false, false, ignored);
 
@@ -885,9 +888,11 @@ Enum::inner_type Enum::make_inner(
     std::string innerHeader;
     std::string enumTypedef;
     std::vector<EnumConstructorConstSP> constructors;
+    EnumBitmaskConstSP bitmask;
+
     return ::Enum::Make(
         description, name, ns, innerName, innerHeader, enumTypedef, enumerands,
-        constructors);
+        constructors, bitmask);
 }
 
 Enum::inner_type Enum::get_inner() const
@@ -1062,7 +1067,7 @@ BaseStruct::inner_type BaseStruct::make_inner(
     std::string constructor;
 
     ::StructSP self = ::Struct::Make(
-        description, name, ns, baseClass, noMake, objectName, canPut, noId, isVirtual, asValue, 
+        description, name, ns, baseClass, noMake, objectName, canPut, noId, isVirtual, asValue,
         uuid, byValue, useAccessors, incomplete, constructor);
 
     SPI_POST_CONDITION(self->isAbstract());

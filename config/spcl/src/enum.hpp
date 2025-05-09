@@ -39,6 +39,7 @@ class NamespaceManager;
 class GeneratedOutput;
 
 SPI_DECLARE_RC_CLASS(Enumerand);
+SPI_DECLARE_RC_CLASS(EnumBitmask);
 SPI_DECLARE_RC_CLASS(Enum);
 SPI_DECLARE_RC_CLASS(Attribute);
 SPI_DECLARE_RC_CLASS(Verbatim);
@@ -133,6 +134,48 @@ public:
     const std::vector<std::string>& alternates() const { return m_alternates; }
 };
 
+class EnumBitmask : public spi::RefCounter
+{
+public:
+    static EnumBitmaskConstSP Make(
+        const std::string& all,
+        const std::string& sep,
+        bool asInt,
+        const std::string& constructor,
+        const std::string& hasFlag,
+        const std::string& toMap,
+        const std::string& instance);
+
+protected:
+    EnumBitmask(
+        const std::string& all,
+        const std::string& sep,
+        bool asInt,
+        const std::string& constructor,
+        const std::string& hasFlag,
+        const std::string& toMap,
+        const std::string& instance);
+
+private:
+    // data
+    std::string m_all;
+    std::string m_sep;
+    bool m_asInt;
+    std::string m_constructor;
+    std::string m_hasFlag;
+    std::string m_toMap;
+    std::string m_instance;
+
+public:
+    // data accessors
+    const std::string& all() const { return m_all; }
+    const std::string& sep() const { return m_sep; }
+    bool asInt() const { return m_asInt; }
+    const std::string& constructor() const { return m_constructor; }
+    const std::string& hasFlag() const { return m_hasFlag; }
+    const std::string& toMap() const { return m_toMap; }
+    const std::string& instance() const { return m_instance; }
+};
 
 /**
  * Enumerated type.
@@ -159,7 +202,8 @@ public:
         const std::string& innerHeader,
         const std::string& enumTypedef,
         const std::vector<EnumerandConstSP>& enumerands,
-        const std::vector<EnumConstructorConstSP>& constructors);
+        const std::vector<EnumConstructorConstSP>& constructors,
+        const EnumBitmaskConstSP& bitmask);
 
     // implementation of Construct
     void declare(GeneratedOutput& ostr,
@@ -210,7 +254,8 @@ protected:
         const std::string& innerHeader,
         const std::string& enumTypedef,
         const std::vector<EnumerandConstSP>& enumerands,
-        const std::vector<EnumConstructorConstSP>& constructors);
+        const std::vector<EnumConstructorConstSP>& constructors,
+        const EnumBitmaskConstSP& bitMask);
 
 private:
     std::vector<std::string>      m_description;
@@ -221,6 +266,7 @@ private:
     std::string                   m_enumTypedef;
     std::vector<EnumerandConstSP> m_enumerands;
     std::vector<EnumConstructorConstSP> m_constructors;
+    EnumBitmaskConstSP            m_bitmask;
 
     void VerifyAndComplete();
 
