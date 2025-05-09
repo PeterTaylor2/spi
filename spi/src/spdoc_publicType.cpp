@@ -40,6 +40,9 @@ PublicType::PublicType(const spi::Value &v)
     case spi::Value::INT:
         value = (Enum)v.getInt();
         break;
+    case spi::Value::DOUBLE:
+        value = (Enum)(v.getInt(true));
+        break;
     case spi::Value::SHORT_STRING:
     case spi::Value::STRING:
         value = from_string(v.getString().c_str());

@@ -85,14 +85,14 @@ public:
     ValueType() : value(UNINITIALIZED_VALUE) {}
     ValueType(ValueType::Enum value) : value(value) {}
     ValueType(const char* str) : value(ValueType::from_string(str)) {}
-    ValueType(const std::string & str) : value(ValueType::from_string(str.c_str())) {}
-    ValueType(const spi::Value & value);
+    ValueType(const std::string& str) : value(ValueType::from_string(str.c_str())) {}
+    ValueType(const spi::Value& value);
 
     operator ValueType::Enum() const { return value; }
-    operator std::string() const { return std::string(ValueType::to_string(value)); }
-    operator spi::Value() const { return spi::Value(ValueType::to_string(value)); }
+    operator std::string() const { return to_string(); }
+    operator spi::Value() const { return to_value(); }
     std::string to_string() const { return std::string(ValueType::to_string(value)); }
-    spi::Value to_value() const { return spi::Value(ValueType::to_string(value)); }
+    spi::Value to_value() const { return spi::Value(to_string()); }
 
     static ValueType::Enum from_string(const char*);
     static const char* to_string(ValueType::Enum);
