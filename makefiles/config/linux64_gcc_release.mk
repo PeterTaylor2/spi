@@ -25,7 +25,7 @@ G_CPPFLAGS = $(I_CFLAGS) $(U_LINUX64_CPPFLAGS)
 # Linker flags 
 ############################################################################
 G_OPTIMIZE_LFLAGS = 
-I_LFLAGS = -m64 -o$@ $(G_OPTIMIZE_LFLAGS) $(U_LINUX64_RELEASE_LFLAGS) -Wl,-rpath,.
+I_LFLAGS = -m64 -o$@ $(G_OPTIMIZE_LFLAGS) $(U_LINUX64_RELEASE_LFLAGS) -Wl,-rpath,. -z defs
 I_DLL_LFLAGS = -shared $(G_LINKMAP_SPEC)
 
 G_DLL_LFLAGS = $(I_LFLAGS) $(I_DLL_LFLAGS)
