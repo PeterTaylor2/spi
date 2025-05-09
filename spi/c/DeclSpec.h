@@ -37,22 +37,12 @@
 #ifndef SPI_C_DECLSPEC_H
 #define SPI_C_DECLSPEC_H
 
-#ifdef _MSC_VER
-
-/* microsoft compiler */
+#include <spi_util/ImportExport.h>
 
 #ifdef SPI_C_EXPORT
-#define SPI_C_IMPORT __declspec(dllexport)
+#define SPI_C_IMPORT SPI_UTIL_DECLSPEC_EXPORT
 #else
-#define SPI_C_IMPORT __declspec(dllimport)
-#endif
-
-#else
-
-/* not using a microsoft compiler */
-/* we should also implement something similar for modern gcc compilers */
-#define SPI_C_IMPORT
-
+#define SPI_C_IMPORT SPI_UTIL_DECLSPEC_IMPORT
 #endif
 
 #endif
