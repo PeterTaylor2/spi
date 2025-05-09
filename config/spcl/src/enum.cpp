@@ -787,11 +787,6 @@ void Enum::implementRegistration(
          << "::get_enum_info());\n";
 }
 
-const char* Enum::type() const
-{
-    return "ENUM";
-}
-
 spdoc::ConstructConstSP Enum::getDoc() const
 {
     if (!m_doc)

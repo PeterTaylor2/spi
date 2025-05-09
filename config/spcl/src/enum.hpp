@@ -207,43 +207,44 @@ public:
 
     // implementation of Construct
     void declare(GeneratedOutput& ostr,
-                 const ServiceDefinitionSP& svc,
-                 bool types) const;
+        const ServiceDefinitionSP& svc,
+        bool types) const override;
 
-    bool declareInClasses() const;
+    bool declareInClasses() const override;
 
     void declareHelper(GeneratedOutput& ostr,
-                       const ServiceDefinitionSP& svc,
-                       bool types) const;
+        const ServiceDefinitionSP& svc,
+        bool types) const override;
 
     void implement(GeneratedOutput& ostr,
-                   const ServiceDefinitionSP& svc,
-                   bool types) const;
+        const ServiceDefinitionSP& svc,
+        bool types) const override;
 
     void implementHelper(GeneratedOutput& ostr,
-                         const ServiceDefinitionSP& svc,
-                         bool types) const;
+        const ServiceDefinitionSP& svc,
+        bool types) const override;
 
     void implementRegistration(
         GeneratedOutput& ostr,
         const char* serviceName,
-        bool types) const;
+        bool types) const override;
 
     void declareTypeConversions(
         GeneratedOutput& ostr,
-        const ServiceDefinitionSP& svc) const;
+        const ServiceDefinitionSP& svc) const override;
 
     void writeInnerHeader(
-        GeneratedOutput& ostr) const;
+        GeneratedOutput& ostr) const override;
 
     void writeInnerPreDeclaration(
         GeneratedOutput& ostr,
-        NamespaceManager& nsm) const;
+        NamespaceManager& nsm) const override;
 
-    const char* type() const;
-    spdoc::ConstructConstSP getDoc() const;
+    spdoc::ConstructConstSP getDoc() const override;
 
-    const DataTypeConstSP& dataType(const ServiceDefinitionSP& svc, bool ignored) const;
+    const DataTypeConstSP& dataType(
+        const ServiceDefinitionSP& svc,
+        bool ignored) const;
 
 protected:
     Enum(

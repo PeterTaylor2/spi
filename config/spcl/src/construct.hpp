@@ -102,7 +102,6 @@ public:
         GeneratedOutput& ostr,
         NamespaceManager& nsm) const;
 
-    //virtual const char* type() const = 0;
     virtual spdoc::ConstructConstSP getDoc() const = 0;
 
     static void SplitTypedef(const std::string& td,
