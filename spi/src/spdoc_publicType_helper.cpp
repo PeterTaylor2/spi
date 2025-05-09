@@ -138,8 +138,9 @@ const char* PublicType::to_string(PublicType::Enum v_)
         return "VARIANT";
     case PublicType::UNINITIALIZED_VALUE:
         throw std::runtime_error("Uninitialized value for PublicType");
+    default:
+        throw std::runtime_error("Bad enumerated value");
     }
-    throw std::runtime_error("Bad enumerated value");
 }
 
 spi::Value verifyPrimitiveTypeName_caller(

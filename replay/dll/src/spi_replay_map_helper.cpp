@@ -150,8 +150,9 @@ const char* ValueType::to_string(ValueType::Enum v_)
         return "ERROR";
     case ValueType::UNINITIALIZED_VALUE:
         throw std::runtime_error("Uninitialized value for ValueType");
+    default:
+        throw std::runtime_error("Bad enumerated value");
     }
-    throw std::runtime_error("Bad enumerated value");
 }
 
 spi::Value MapClassName_caller(

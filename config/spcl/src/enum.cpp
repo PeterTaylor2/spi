@@ -728,8 +728,10 @@ void Enum::implementHelper(
             << "        throw std::runtime_error(\"Uninitialized value for "
             << m_name << "\");\n";
     }
-    ostr << "    }\n"
-        << "    throw std::runtime_error(\"Bad enumerated value\");\n"
+    
+    ostr << "    default:\n"
+        << "        throw std::runtime_error(\"Bad enumerated value\");\n"
+        << "    }\n"
         << "}\n";
 
     if (m_bitmask)
