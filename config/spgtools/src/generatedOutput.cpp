@@ -263,60 +263,66 @@ void endSourceFile(
     ostr << "\n";
 }
 
-
 bool writeFileIfChanged(
-    const char*        filename,
+    const char* filename,
     const std::string& newContents,
     bool writeBackup)
 {
     bool writeFile = false;
 
     std::string backup = (std::string)filename + ".bak";
-    std::ifstream original(filename);
-    if (original.good())
+
+    bool exists = spi_util::path::isfile(filename);
+    
+    if (exists)
     {
-        std::stringstream buffer;
-        buffer << original.rdbuf();
-        original.close();
-        std::string oldContents = buffer.str();
-
-        const char* oldc = oldContents.c_str();
-        const char* newc = newContents.c_str();
-
-        // loop through but skip '\r'
-        bool diff = false;
-        do
+        try
         {
-            while (*oldc == '\r')
+            // this is a binary read
+            const std::string& oldContents = spi_util::FileReadContents(filename);
+
+            const char* oldc = oldContents.c_str();
+            const char* newc = newContents.c_str();
+
+            // loop through but skip '\r'
+            bool diff = false;
+            do
+            {
+                while (*oldc == '\r')
+                    ++oldc;
+
+                while (*newc == '\r')
+                    ++newc;
+
+                if (*oldc != *newc)
+                {
+                    diff = true;
+                    break;
+                }
+
                 ++oldc;
-
-            while (*newc == '\r')
                 ++newc;
+            } while (*oldc && *newc);
 
-            if (*oldc != *newc)
-            {
+            if (*oldc || *newc)
                 diff = true;
-                break;
-            }
 
-            ++oldc;
-            ++newc;
-        } while (*oldc && *newc);
+            writeFile = diff;
 
-        if (*oldc || *newc)
-            diff = true;
-
-        writeFile = diff;
-
-        if (writeFile && writeBackup)
-        {
-            std::cout << backup << std::endl;
-            std::ofstream bstr(backup.c_str());
-            if (bstr.good())
+            if (writeFile && writeBackup)
             {
-                bstr.write(oldContents.c_str(), oldContents.length());
-                bstr.close();
+                std::cout << backup << std::endl;
+                std::ofstream bstr(backup.c_str(), std::ios_base::binary);
+                if (bstr.good())
+                {
+                    bstr.write(oldContents.c_str(), oldContents.length());
+                    bstr.close();
+                }
             }
+        }
+        catch (...)
+        {
+            writeFile = true; // ask for permission but forgive anyway
         }
     }
     else
@@ -327,11 +333,11 @@ bool writeFileIfChanged(
     if (writeFile)
     {
         std::cout << filename << std::endl;
-        std::ofstream ostr(filename);
+        // binary => we will be using linux line endings
+        std::ofstream ostr(filename, std::ios_base::binary);
         if (!ostr.good())
         {
-            throw spi::RuntimeError("Could not open %s for writing",
-                                    filename);
+            SPI_THROW_RUNTIME_ERROR("Could not open " << filename << " for writing");
         }
         ostr.write(newContents.c_str(), newContents.length());
         ostr.close();
