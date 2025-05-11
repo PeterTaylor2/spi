@@ -146,6 +146,30 @@ public:
         const std::string& toMap,
         const std::string& instance);
 
+    // functions which are significantly different for enums with bitmask
+    void declare(GeneratedOutput& ostr,
+        const std::string& enumName,
+        const std::vector<EnumerandConstSP>& enumerands,
+        const std::vector<EnumConstructorConstSP>& constructors,
+        const std::vector<std::string>& description,
+        const ServiceDefinitionSP& svc) const;
+
+    void implement(GeneratedOutput& ostr,
+        const std::string& enumName,
+        const std::vector<spdoc::PublicType>& constructorTypes,
+        const std::string& innerName,
+        const std::vector<EnumerandConstSP>& enumerands,
+        const ServiceDefinitionSP& svc) const;
+
+    void implementHelper(
+        GeneratedOutput& ostr,
+        const std::string& enumName,
+        const std::vector<EnumerandConstSP>& enumerands,
+        const std::map<std::string, std::string>& indexEnumerands,
+        const std::vector<std::string>& possibleValues,
+        const std::vector<EnumConstructorConstSP>& constructors,
+        const ServiceDefinitionSP& svc) const;
+
 protected:
     EnumBitmask(
         const std::string& all,
@@ -194,6 +218,8 @@ public:
 class Enum : public Construct
 {
 public:
+    friend class EnumBitmask;
+
     static EnumConstSP Make(
         const std::vector<std::string>& description,
         const std::string& name,

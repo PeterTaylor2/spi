@@ -49,6 +49,122 @@ using spi_util::StringStrip;
 using spi_util::StringStartsWith;
 using spi_util::StringEndsWith;
 
+// helper functions for code which is common between Enum and EnumBitmask
+namespace
+{
+    void write_enumerand_comments(
+        GeneratedOutput& ostr,
+        const std::string& name,
+        const std::vector<EnumerandConstSP>& enumerands)
+    {
+        size_t N = enumerands.size();
+        ostr << "*\n";
+        for (size_t i = 0; i < N; ++i)
+        {
+            const EnumerandConstSP& enumerand = enumerands[i];
+            ostr << "* " << name << "::" << enumerand->name() << "\n";
+            if (enumerand->description().size() > 0)
+                writeComments(ostr, enumerand->description(), 4, 0);
+        }
+    }
+
+    void write_enum_construct_from_value(
+        GeneratedOutput& ostr,
+        const std::string& name,
+        const std::vector<spdoc::PublicType> constructorTypes,
+        bool has_bitmask)
+    {
+        ostr << "\n"
+            << name << "::" << name << "(const spi::Value &v)\n"
+            << "{\n"
+            << "    switch(v.getType())\n"
+            << "    {\n";
+
+        bool hasIntConstructor = false;
+
+        for (size_t i = 0; i < constructorTypes.size(); ++i)
+        {
+            spdoc::PublicType constructorType = constructorTypes[i];
+
+            switch (constructorType)
+            {
+            case spdoc::PublicType::BOOL:
+                ostr << "    case spi::Value::BOOL:\n"
+                    << "        value = Coerce(v.getBool());\n"
+                    << "        break;\n";
+                break;
+            case spdoc::PublicType::INT:
+                hasIntConstructor = true;
+                ostr << "    case spi::Value::INT:\n"
+                    << "        value = Coerce(v.getInt());\n"
+                    << "        break;\n"
+                    << "    case spi::Value::DOUBLE:\n"
+                    << "        value = Coerce(v.getInt(true));\n"
+                    << "        break;\n";
+                break;
+            default:
+                SPI_THROW_RUNTIME_ERROR("Unexpected constructor type " <<
+                    spdoc::PublicType::to_string(constructorType));
+            }
+        }
+
+        if (hasIntConstructor && has_bitmask)
+        {
+            SPI_THROW_RUNTIME_ERROR(
+                "Cannot have an int constructor independently from bitmask");
+        }
+
+        if (!hasIntConstructor)
+        {
+            ostr << "    case spi::Value::INT:\n"
+                << "        value = (Enum)v.getInt();\n"
+                << "        break;\n"
+                << "    case spi::Value::DOUBLE:\n"
+                << "        value = (Enum)(v.getInt(true));\n"
+                << "        break;\n";
+        }
+
+        ostr << "    case spi::Value::SHORT_STRING:\n"
+            << "    case spi::Value::STRING:\n"
+            << "        value = from_string(v.getString().c_str());\n"
+            << "        break;\n"
+            << "    case spi::Value::UNDEFINED:\n"
+            << "        value = from_string(\"\");\n"
+            << "        break;\n"
+            << "    default:\n"
+            << "        SPI_THROW_RUNTIME_ERROR(\"Bad value type: \" << spi::Value::TypeToString(v.getType()));\n"
+            << "    }\n"
+            << "}\n";
+    }
+
+    void write_get_enum_info(
+        GeneratedOutput& ostr,
+        const std::string& name,
+        const std::vector<EnumerandConstSP>& enumerands)
+    {
+        ostr << "\n";
+        ostr << "spi::EnumInfo* " << name << "::get_enum_info()\n"
+            << "{\n"
+            << "    static spi::EnumInfo the_info;\n"
+            << "    if (!the_info.Initialised())\n"
+            << "    {\n"
+            << "        std::vector<std::string> enumerands;\n";
+
+        for (size_t i = 0; i < enumerands.size(); ++i)
+        {
+            ostr << "        enumerands.push_back(\""
+                << enumerands[i]->outputString() << "\");\n";
+        }
+
+        ostr << "        the_info.Initialise(\"" << name << "\", enumerands);\n"
+            << "    }\n"
+            << "    return &the_info;\n"
+            << "}\n";
+    }
+
+
+} // end of anonymous namespace
+
 /*
 ***********************************************************************
 ** Implementation of EnumConstructor
@@ -197,6 +313,351 @@ EnumBitmaskConstSP EnumBitmask::Make(
         all, sep, asInt, constructor, hasFlag, toMap, instance));
 }
 
+void EnumBitmask::declare(
+    GeneratedOutput& ostr,
+    const std::string& enumName,
+    const std::vector<EnumerandConstSP>& enumerands,
+    const std::vector<EnumConstructorConstSP>& constructors,
+    const std::vector<std::string>& description,
+    const ServiceDefinitionSP& svc) const
+{
+    size_t nbEnumerands = enumerands.size();
+
+    writeStartCommentBlock(ostr, true);
+
+    char* enumNameSep;
+
+    enumNameSep = "::";
+    ostr << "* Class " << enumName << " containing enumerated type "
+        << enumName << "::Enum.\n"
+        << "* Whenever " << enumName << " is expected you can use "
+        << enumName << "::Enum,\n"
+        << "* and vice versa, because automatic type conversion is provided by\n"
+        << "* the constructor and cast operator.\n";
+
+    ostr << "*\n"
+        << "* Supports the BitmaskType pattern. As a result value is actually\n"
+        << "* a union of all the flags which have been set in the bitmask.\n";
+
+    if (description.size() != 0)
+    {
+        ostr << "*\n";
+        writeComments(ostr, description);
+    }
+
+    write_enumerand_comments(ostr, enumName, enumerands);
+    ostr << "* " << enumName << enumNameSep << m_all << "\n"
+        << "*     All of the above combined\n";
+
+    writeEndCommentBlock(ostr);
+
+    ostr << "class " << svc->getImport() << " " << enumName << "\n"
+        << "{\n"
+        << "public:\n"
+        << "    enum Enum\n"
+        << "    {\n";
+
+    {
+        int value = 1;
+        int all = 0;
+
+        for (size_t i = 0; i < nbEnumerands; ++i)
+        {
+            ostr << "        " << enumerands[i]->name() << " = " << value << ",\n";
+            all += value;
+            value *= 2;
+        }
+        ostr << "        " << m_all << " = " << all << "\n";
+    }
+
+    ostr << "    };\n"
+        << "\n"
+        << "    static spi::EnumInfo* get_enum_info();\n"
+        << "\n";
+
+    {
+        ostr << "    " << enumName << "() : value((Enum)0) {}\n"
+            << "    " << enumName << "(" << enumName << "::Enum value);\n";
+    }
+
+    ostr << "    " << enumName << "(const std::string& str);\n";
+
+    ostr << "    " << enumName << "(const spi::Value& value);\n";
+
+    // we shouldn't define the equivalent constructor for bitmask
+    // but we can provide the coerce from bool functionality
+    ostr << "    " << enumName << "(int value);\n";
+
+    for (size_t i = 0; i < constructors.size(); ++i)
+    {
+        constructors[i]->declare(ostr, enumName, svc);
+    }
+
+    ostr << "\n"
+        << "    operator " << enumName << "::Enum() const { return value; }\n"
+        << "    operator std::string() const { return to_string(); }\n"
+        << "    operator spi::Value() const { return to_value(); }\n"
+        << "    std::string to_string() const;\n";
+
+    if (m_asInt)
+    {
+        ostr << "    spi::Value to_value() const { return spi::Value((int)value); }\n";
+    }
+    else
+    {
+        ostr << "    spi::Value to_value() const { return spi::Value(to_string());\n";
+    }
+
+    ostr << "\n"
+        << "    static " << enumName << "::Enum from_string(const char*);\n"
+        << "    static const char* to_string(" << enumName << "::Enum);\n";
+
+    ostr << "\n"
+        << "    bool has_flag(" << enumName << "::Enum flag) const; \n"
+        << "    spi::MapConstSP to_map() const;\n";
+
+    ostr << "\n"
+        << "private:\n"
+        << "    " << enumName << "::Enum value;\n";
+
+    for (size_t i = 0; i < constructors.size(); ++i)
+    {
+        constructors[i]->declareCoerce(ostr, enumName, svc);
+    }
+
+    ostr << "};\n";
+}
+
+void EnumBitmask::implement(
+    GeneratedOutput& ostr,
+    const std::string& enumName,
+    const std::vector<spdoc::PublicType>& constructorTypes,
+    const std::string& innerName,
+    const std::vector<EnumerandConstSP>& enumerands,
+    const ServiceDefinitionSP& svc) const
+{
+    write_enum_construct_from_value(ostr, enumName, constructorTypes, true);
+
+    if (!innerName.empty())
+    {
+        // write convert_in from outer type to inner type
+        ostr << "\n"
+            << innerName << " " << enumName << "_convert_in(const " << enumName << "& v_)\n"
+            << "{\n";
+
+        // when we have a bitmask we need to check each flag
+        ostr << "    unsigned int out = 0; \n"
+            << "    unsigned int v = (unsigned int)(" << enumName << "::Enum)(v_);\n"
+            << "\n";
+        for (size_t i = 0; i < enumerands.size(); ++i)
+        {
+            ostr << "    if (v & (unsigned int)" << enumName << "::" << enumerands[i]->name() << ")\n"
+                << "        out += (unsigned int)" << enumerands[i]->value() << ";\n";
+        }
+        ostr << "\n"
+            << "    return (" << innerName << ")out; \n"
+            << "}\n";
+
+        // write convert_out from inner type to outer type
+        ostr << "\n"
+            << enumName << " " << enumName << "_convert_out(" << innerName << " v_)\n"
+            << "{\n";
+
+        ostr << "    unsigned int out = 0;\n"
+            << "    unsigned int v = (unsigned int)v_;\n"
+            << "\n";
+
+        for (size_t i = 0; i < enumerands.size(); ++i)
+        {
+            ostr << "    if (v & (unsigned int)" << enumerands[i]->value() << ")\n"
+                << "        out += (unsigned int)" << enumName << "::" << enumerands[i]->name()
+                << ";\n";
+        }
+        ostr << "\n"
+            << "    return " << enumName << "(out);\n"
+            << "}\n";
+    }
+
+    ostr << "\n"
+        << enumName << "::" << enumName << "(" << enumName << "::Enum v_)\n"
+        << "    : value(v_)\n"
+        << "{\n"
+        << "    if ((unsigned int)value > (unsigned int)"
+        << enumName << "::" << m_all << ")\n"
+        << "    {\n"
+        << "        SPI_THROW_RUNTIME_ERROR(\"Input value out of range\");\n"
+        << "    }\n"
+        << "}\n";
+
+    ostr << "\n"
+        << enumName << "::" << enumName << "(const std::string& str)\n"
+        << "{\n"
+        << "    if (spi::StringUpper(str) == \""
+        << spi_util::StringUpper(m_all) << "\")\n"
+        << "    {\n"
+        << "        value = " << enumName << "::" << m_all << ";\n"
+        << "    }\n"
+        << "    else\n"
+        << "    {\n"
+        << "        const std::vector<std::string> parts = spi_util::StringSplit(str, \""
+        << sep() << "\");\n"
+        << "        unsigned int v = 0;\n"
+        << "        size_t N = parts.size();\n"
+        << "        for (size_t i = 0; i < N; ++i)\n"
+        << "        {\n"
+        << "            const std::string& part = spi_util::StringStrip(parts[i]);\n"
+        << "            Enum p = " << enumName << "::from_string(part.c_str());\n"
+        << "            v += (unsigned int)p;\n"
+        << "        }\n"
+        << "        value = (" << enumName << "::Enum)v;\n"
+        << "    }\n"
+        << "}\n";
+
+    ostr << "\n"
+        << enumName << "::" << enumName << "(int v_)\n"
+        << "{\n"
+        << "    unsigned int v = spi_util::IntegerCast<unsigned int>(v_);\n"
+        << "    if (v > (unsigned int)" << enumName << "::" << m_all << ")\n"
+        << "    {\n"
+        << "        SPI_THROW_RUNTIME_ERROR(\"Input value out of range\");\n"
+        << "    }\n"
+        << "    value = (" << enumName << "::Enum)v; \n"
+        << "}\n";
+}
+
+void EnumBitmask::implementHelper(
+    GeneratedOutput& ostr, 
+    const std::string& enumName,
+    const std::vector<EnumerandConstSP>& enumerands,
+    const std::map<std::string, std::string>& indexEnumerands,
+    const std::vector<std::string>& possibleValues,
+    const std::vector<EnumConstructorConstSP>& constructors,
+    const ServiceDefinitionSP& svc) const
+{
+    write_get_enum_info(ostr, enumName, enumerands);
+
+    ostr << "\n"
+        << "std::string " << enumName << "::to_string() const\n"
+        << "{\n"
+        << "    unsigned int v = (unsigned int)value;\n"
+        << "    std::vector<std::string> parts;\n"
+        << "\n";
+
+    for (size_t i = 0; i < enumerands.size(); ++i)
+    {
+        ostr << "    if (v & (unsigned int)" << enumName << "::" << enumerands[i]->name() << ")\n";
+        ostr << "        parts.push_back(" << enumName << "::to_string("
+            << enumName << "::" << enumerands[i]->name() << "));\n";
+    }
+
+    ostr << "\n"
+        << "    return spi_util::StringJoin(\""
+        << m_sep << "\", parts);\n"
+        << "}\n";
+
+    std::map<std::string, std::string>::const_iterator iter =
+        indexEnumerands.begin();
+
+    ostr << "\n"
+        << enumName << "::Enum " << enumName << "::from_string(const char* str)\n"
+        << "{\n"
+        << "    std::string uc_ = spi::StringUpper(str);\n";
+
+    if (iter->first == "")
+    {
+        ostr << "    if (uc_ == \"\")\n"
+            << "        return " << enumName << "::" << iter->second << ";\n";
+        ++iter;
+    }
+
+    ostr << "    switch(uc_[0])\n"
+        << "    {\n";
+
+    char prevFirstChar = 0;
+    for (; iter != indexEnumerands.end(); ++iter)
+    {
+        char firstChar = iter->first[0];
+        if (firstChar != prevFirstChar)
+        {
+            if (prevFirstChar)
+            {
+                ostr << "        break;\n";
+            }
+            ostr << "    case '" << firstChar << "':\n";
+            prevFirstChar = firstChar;
+        }
+        ostr << "        if (uc_ == \"" << iter->first << "\")\n"
+            << "            return " << enumName << "::" << iter->second << ";\n";
+    }
+
+    ostr << "        break;\n"
+        << "    }\n"
+        << "    throw spi::RuntimeError(\"Cannot convert '%s' to "
+        << enumName << ". Possible values:\\n\"\n"
+        << "       \"'" << spi::StringJoin("', '", possibleValues) << "'\",\n"
+        << "        str);\n"
+        << "}\n";
+
+
+    ostr << "\n"
+        << "const char* " << enumName << "::to_string(" << enumName << "::Enum v_)\n"
+        << "{\n"
+        << "    switch(v_)\n"
+        << "    {\n";
+
+    for (size_t i = 0; i < enumerands.size(); ++i)
+    {
+        ostr << "    case " << enumName << "::" << enumerands[i]->name() << ":\n"
+            << "        return \""
+            << enumerands[i]->outputString()
+            << "\";\n";
+    }
+
+    ostr << "    default:\n"
+        << "        throw std::runtime_error(\"Bad enumerated value\");\n"
+        << "    }\n"
+        << "}\n";
+
+    int all = 0;
+    int value = 1;
+    size_t N = enumerands.size();
+    for (size_t i = 0; i < N; ++i)
+    {
+        all += value;
+        value *= 2;
+    }
+
+    ostr << "\n"
+        << "// this implementation means that we can combine flags in the input\n"
+        << "bool " << enumName << "::has_flag(" << enumName << "::Enum flag) const\n"
+        << "{\n"
+        << "    unsigned int i_flag = (unsigned int)flag;\n"
+        << "    unsigned int i_test = (unsigned int)value & i_flag;\n"
+        << "    return (i_test == i_flag);\n"
+        << "}\n";
+
+    ostr << "\n"
+        << "spi::MapConstSP " << enumName << "::to_map() const\n"
+        << "{\n"
+        << "    spi::MapSP m(new spi::Map(\"" << enumName << "\"));\n"
+        << "\n";
+
+    for (size_t i = 0; i < N; ++i)
+    {
+        const EnumerandConstSP& e = enumerands[i];
+        ostr << "    m->SetValue(\"" << spi_util::StringLower(e->name()) << "\", "
+            << "has_flag(" << enumName << "::" << e->name() << "));\n";
+    }
+    ostr << "\n"
+        << "    return m; \n"
+        << "}\n";
+
+    for (size_t i = 0; i < constructors.size(); ++i)
+    {
+        constructors[i]->implement(ostr, enumName, svc);
+    }
+}
+
 EnumBitmask::EnumBitmask(
     const std::string& all,
     const std::string& sep,
@@ -247,6 +708,18 @@ void Enum::declare(
     const ServiceDefinitionSP& svc,
     bool types) const
 {
+    if (m_bitmask)
+    {
+        m_bitmask->declare(
+            ostr,
+            m_name,
+            m_enumerands,
+            m_constructors,
+            m_description,
+            svc);
+        return;
+    }
+
     size_t nbEnumerands = m_enumerands.size();
 
     writeStartCommentBlock(ostr, true);
@@ -261,13 +734,6 @@ void Enum::declare(
         << "* and vice versa, because automatic type conversion is provided by\n"
         << "* the constructor and cast operator.\n";
 
-    if (m_bitmask)
-    {
-        ostr << "*\n"
-            << "* Supports the BitmaskType pattern. As a result value is actually\n"
-            << "* a union of all the flags which have been set in the bitmask.\n";
-    }
-
     if (m_description.size() != 0)
     {
         ostr << "*\n";
@@ -276,19 +742,7 @@ void Enum::declare(
 
     if (nbEnumerands > 0)
     {
-        ostr << "*\n";
-        for (size_t i = 0; i < nbEnumerands; ++i)
-        {
-            const EnumerandConstSP& enumerand = m_enumerands[i];
-            ostr << "* " << m_name << enumNameSep << enumerand->name() << "\n";
-            if (enumerand->description().size() > 0)
-                writeComments(ostr, enumerand->description(), 4, 0);
-        }
-        if (m_bitmask)
-        {
-            ostr << "* " << m_name << enumNameSep << m_bitmask->all() << "\n"
-                << "*     All of the above combined\n";
-        }
+        write_enumerand_comments(ostr, m_name, m_enumerands);
     }
 
     writeEndCommentBlock(ostr);
@@ -299,61 +753,19 @@ void Enum::declare(
         << "    enum Enum\n"
         << "    {\n";
 
-    if (m_bitmask)
-    {
-        int value = 1;
-        int all = 0;
+    for (size_t i = 0; i < nbEnumerands; ++i)
+        ostr << "        " << m_enumerands[i]->name() << ",\n";
 
-        for (size_t i = 0; i < nbEnumerands; ++i)
-        {
-            ostr << "        " << m_enumerands[i]->name() << " = " << value << ",\n";
-            all += value;
-            value *= 2;
-        }
-        ostr << "        " << m_bitmask->all() << " = " << all << "\n";
-    }
-    else
-    {
-        for (size_t i = 0; i < nbEnumerands; ++i)
-            ostr << "        " << m_enumerands[i]->name() << ",\n";
-        ostr << "        UNINITIALIZED_VALUE\n";
-    }
-
-    ostr << "    };\n"
+    ostr << "        UNINITIALIZED_VALUE\n"
+        << "    };\n"
         << "\n"
         << "    static spi::EnumInfo* get_enum_info();\n"
-        << "\n";
-
-    if (m_bitmask)
-    {
-        ostr << "    " << m_name << "() : value((Enum)0) {}\n"
-            << "    " << m_name << "(" << m_name << "::Enum value);\n";
-    }
-    else
-    {
-        ostr << "    " << m_name << "() : value(UNINITIALIZED_VALUE) {}\n"
-            << "    " << m_name << "(" << m_name << "::Enum value) : value(value) {}\n";
-    }
-
-
-    if (m_bitmask)
-    {
-        ostr << "    " << m_name << "(const std::string& str);\n";
-    }
-    else
-    {
-        ostr << "    " << m_name << "(const char* str) : value(" << m_name << "::from_string(str)) {}\n"
-            << "    " << m_name << "(const std::string& str) : value(" << m_name << "::from_string(str.c_str())) {}\n";
-    }
-
-    ostr << "    " << m_name << "(const spi::Value& value);\n";
-
-    // we shouldn't define the equivalent constructor for bitmask
-    // but we can provide the coerce from bool functionality
-    if (m_bitmask)
-    {
-        ostr << "    " << m_name << "(int value);\n";
-    }
+        << "\n"
+        << "    " << m_name << "() : value(UNINITIALIZED_VALUE) {}\n"
+        << "    " << m_name << "(" << m_name << "::Enum value) : value(value) {}\n"
+        << "    " << m_name << "(const char* str) : value(" << m_name << "::from_string(str)) {}\n"
+        << "    " << m_name << "(const std::string& str) : value(" << m_name << "::from_string(str.c_str())) {}\n"
+        << "    " << m_name << "(const spi::Value& value);\n";
 
     for (size_t i = 0; i < m_constructors.size(); ++i)
     {
@@ -361,42 +773,14 @@ void Enum::declare(
     }
 
     ostr << "\n"
-        << "    operator " << m_name << "::Enum() const { return value; }\n";
-
-    ostr << "    operator std::string() const { return to_string(); }\n"
-        << "    operator spi::Value() const { return to_value(); }\n";
-
-    if (m_bitmask)
-    {
-        ostr << "    std::string to_string() const;\n";
-
-        if (m_bitmask->asInt())
-        {
-            ostr << "    spi::Value to_value() const { return spi::Value((int)value); }\n";
-        }
-        else
-        {
-            ostr << "    spi::Value to_value() const { return spi::Value(to_string());\n";
-        }
-    }
-    else
-    {
-        ostr << "    std::string to_string() const { return std::string(" << m_name << "::to_string(value)); }\n"
-            << "    spi::Value to_value() const { return spi::Value(to_string()); }\n";
-    }
-
-    ostr << "\n"
+        << "    operator " << m_name << "::Enum() const { return value; }\n"
+        << "    operator std::string() const { return to_string(); }\n"
+        << "    operator spi::Value() const { return to_value(); }\n"
+        << "    std::string to_string() const { return std::string(" << m_name << "::to_string(value)); }\n"
+        << "    spi::Value to_value() const { return spi::Value(to_string()); }\n"
+        << "\n"
         << "    static " << m_name << "::Enum from_string(const char*);\n"
-        << "    static const char* to_string(" << m_name << "::Enum);\n";
-
-    if (m_bitmask)
-    {
-        ostr << "\n"
-            << "    bool has_flag(" << m_name << "::Enum flag) const; \n"
-            << "    spi::MapConstSP to_map() const;\n";
-    }
-
-    ostr << "\n"
+        << "    static const char* to_string(" << m_name << "::Enum);\n"<< "\n"
         << "private:\n"
         << "    " << m_name << "::Enum value;\n";
 
@@ -429,67 +813,18 @@ void Enum::implement(
     const ServiceDefinitionSP& svc,
     bool types) const
 {
-    ostr << "\n"
-        << m_name << "::" << m_name << "(const spi::Value &v)\n"
-        << "{\n"
-        << "    switch(v.getType())\n"
-        << "    {\n";
-
-    bool hasIntConstructor = false;
-
-    for (size_t i = 0; i < m_constructorTypes.size(); ++i)
+    if (m_bitmask)
     {
-        spdoc::PublicType constructorType = m_constructorTypes[i];
-
-        switch(constructorType)
-        {
-        case spdoc::PublicType::BOOL:
-            ostr << "    case spi::Value::BOOL:\n"
-                << "        value = Coerce(v.getBool());\n"
-                << "        break;\n";
-            break;
-        case spdoc::PublicType::INT:
-            hasIntConstructor = true;
-            ostr << "    case spi::Value::INT:\n"
-                << "        value = Coerce(v.getInt());\n"
-                << "        break;\n"
-                << "    case spi::Value::DOUBLE:\n"
-                << "        value = Coerce(v.getInt(true));\n"
-                << "        break;\n";
-            break;
-        default:
-            SPI_THROW_RUNTIME_ERROR("Unexpected constructor type " <<
-                spdoc::PublicType::to_string(constructorType));
-        }
+        m_bitmask->implement(
+            ostr,
+            m_name,
+            m_constructorTypes,
+            m_innerName,
+            m_enumerands,
+            svc);
+        return;
     }
-
-    if (hasIntConstructor && m_bitmask)
-    {
-        SPI_THROW_RUNTIME_ERROR(
-            "Cannot have an int constructor independently from bitmask");
-    }
-
-    if (!hasIntConstructor)
-    {
-        ostr << "    case spi::Value::INT:\n"
-            << "        value = (Enum)v.getInt();\n"
-            << "        break;\n"
-            << "    case spi::Value::DOUBLE:\n"
-            << "        value = (Enum)(v.getInt(true));\n"
-            << "        break;\n";
-    }
-
-    ostr << "    case spi::Value::SHORT_STRING:\n"
-        << "    case spi::Value::STRING:\n"
-        << "        value = from_string(v.getString().c_str());\n"
-        << "        break;\n"
-        << "    case spi::Value::UNDEFINED:\n"
-        << "        value = from_string(\"\");\n"
-        << "        break;\n"
-        << "    default:\n"
-        << "        SPI_THROW_RUNTIME_ERROR(\"Bad value type: \" << spi::Value::TypeToString(v.getType()));\n"
-        << "    }\n"
-        << "}\n";
+    write_enum_construct_from_value(ostr, m_name, m_constructorTypes, false);
 
     if (!m_innerName.empty())
     {
@@ -497,123 +832,37 @@ void Enum::implement(
         ostr << "\n"
             << m_innerName << " " << m_name << "_convert_in(const " << m_name << "& v_)\n"
             << "{\n";
-        
-        if (m_bitmask)
-        {
-            // when we have a bitmask we need to check each flag
-            ostr << "    unsigned int out = 0; \n"
-                << "    unsigned int v = (unsigned int)(" << m_name << "::Enum)(v_);\n"
-                << "\n";
-            for (size_t i = 0; i < m_enumerands.size(); ++i)
-            {
-                ostr << "    if (v & (unsigned int)" << m_name << "::" << m_enumerands[i]->name() << ")\n"
-                    << "        out += (unsigned int)" << m_enumerands[i]->value() << ";\n";
-            }
-            ostr << "\n"
-                << "    return (" << m_innerName << ")out; \n"
-                << "}\n";
-        }
-        else
-        {
-            ostr << "    switch((" << m_name << "::Enum)v_)\n"
-                << "    {\n";
 
-            for (size_t i = 0; i < m_enumerands.size(); ++i)
-            {
-                ostr << "    case " << m_name << "::" << m_enumerands[i]->name() << ":\n"
-                    << "        return " << m_enumerands[i]->value() << ";\n";
-            }
-            ostr << "    case " << m_name << "::UNINITIALIZED_VALUE:\n"
-                << "        throw std::runtime_error(\"Uninitialized value for "
-                << m_name << "\");\n"
-                << "    }\n"
-                << "    throw spi::RuntimeError(\"Bad enumerated value\");\n"
-                << "}\n";
+        ostr << "    switch((" << m_name << "::Enum)v_)\n"
+            << "    {\n";
+
+        for (size_t i = 0; i < m_enumerands.size(); ++i)
+        {
+            ostr << "    case " << m_name << "::" << m_enumerands[i]->name() << ":\n"
+                << "        return " << m_enumerands[i]->value() << ";\n";
         }
+        ostr << "    case " << m_name << "::UNINITIALIZED_VALUE:\n"
+            << "        throw std::runtime_error(\"Uninitialized value for "
+            << m_name << "\");\n"
+            << "    }\n"
+            << "    throw spi::RuntimeError(\"Bad enumerated value\");\n"
+            << "}\n";
 
         // write convert_out from inner type to outer type
         ostr << "\n"
-             << m_name << " " << m_name << "_convert_out(" << m_innerName << " v_)\n"
-             << "{\n";
+            << m_name << " " << m_name << "_convert_out(" << m_innerName << " v_)\n"
+            << "{\n";
 
-        if (m_bitmask)
+        // implement as sequence of if statements rather than
+        // switch since the innerType might not be numeric
+        // but could be an enumerated class (or even a string)
+        for (size_t i = 0; i < m_enumerands.size(); ++i)
         {
-            ostr << "    unsigned int out = 0;\n"
-                << "    unsigned int v = (unsigned int)v_;\n"
-                << "\n";
-
-            for (size_t i = 0; i < m_enumerands.size(); ++i)
-            {
-                ostr << "    if (v & (unsigned int)" << m_enumerands[i]->value() << ")\n"
-                    << "        out += (unsigned int)" << m_name << "::" << m_enumerands[i]->name()
-                    << ";\n";
-            }
-            ostr << "\n"
-                << "    return " << m_name << "(out);\n"
-                << "}\n";
+            ostr << "    if (v_ == " << m_enumerands[i]->value() << ")\n"
+                << "        return " << m_name << "::" << m_enumerands[i]->name()
+                << ";\n";
         }
-        else
-        {
-            // implement as sequence of if statements rather than
-            // switch since the innerType might not be numeric
-            // but could be an enumerated class (or even a string)
-            for (size_t i = 0; i < m_enumerands.size(); ++i)
-            {
-                ostr << "    if (v_ == " << m_enumerands[i]->value() << ")\n"
-                    << "        return " << m_name << "::" << m_enumerands[i]->name()
-                    << ";\n";
-            }
-            ostr << "    throw spi::RuntimeError(\"Bad enumerated value\");\n"
-                << "}\n";
-        }
-    }
-
-    if (m_bitmask)
-    {
-        ostr << "\n"
-            << m_name << "::" << m_name << "(" << m_name << "::Enum v_)\n"
-            << "    : value(v_)\n"
-            << "{\n"
-            << "    if ((unsigned int)value > (unsigned int)"
-            << m_name << "::" << m_bitmask->all() << ")\n"
-            << "    {\n"
-            << "        SPI_THROW_RUNTIME_ERROR(\"Input value out of range\");\n"
-            << "    }\n"
-            << "}\n";
-
-        ostr << "\n"
-            << m_name << "::" << m_name << "(const std::string& str)\n"
-            << "{\n"
-            << "    if (spi::StringUpper(str) == \""
-            << spi_util::StringUpper(m_bitmask->all()) << "\")\n"
-            << "    {\n"
-            << "        value = " << m_name << "::" << m_bitmask->all() << ";\n"
-            << "    }\n"
-            << "    else\n"
-            << "    {\n"
-            << "        const std::vector<std::string> parts = spi_util::StringSplit(str, \""
-            << m_bitmask->sep() << "\");\n"
-            << "        unsigned int v = 0;\n"
-            << "        size_t N = parts.size();\n"
-            << "        for (size_t i = 0; i < N; ++i)\n"
-            << "        {\n"
-            << "            const std::string& part = spi_util::StringStrip(parts[i]);\n"
-            << "            Enum p = " << m_name << "::from_string(part.c_str());\n"
-            << "            v += (unsigned int)p;\n"
-            << "        }\n"
-            << "        value = (" << m_name << "::Enum)v;\n"
-            << "    }\n"
-            << "}\n";
-
-        ostr << "\n"
-            << m_name << "::" << m_name << "(int v_)\n"
-            << "{\n"
-            << "    unsigned int v = spi_util::IntegerCast<unsigned int>(v_);\n"
-            << "    if (v > (unsigned int)" << m_name << "::" << m_bitmask->all() << ")\n"
-            << "    {\n"
-            << "        SPI_THROW_RUNTIME_ERROR(\"Input value out of range\");\n"
-            << "    }\n"
-            << "    value = (" << m_name << "::Enum)v; \n"
+        ostr << "    throw spi::RuntimeError(\"Bad enumerated value\");\n"
             << "}\n";
     }
 }
@@ -623,46 +872,20 @@ void Enum::implementHelper(
     const ServiceDefinitionSP& svc,
     bool types) const
 {
-    ostr << "\n";
-    ostr << "spi::EnumInfo* " << m_name << "::get_enum_info()\n"
-         << "{\n"
-         << "    static spi::EnumInfo the_info;\n"
-         << "    if (!the_info.Initialised())\n"
-         << "    {\n"
-         << "        std::vector<std::string> enumerands;\n";
-
-    for (size_t i = 0; i < m_enumerands.size(); ++i)
-    {
-        ostr << "        enumerands.push_back(\""
-             << m_enumerands[i]->outputString() << "\");\n";
-    }
-
-    ostr << "        the_info.Initialise(\"" << m_name << "\", enumerands);\n"
-         << "    }\n"
-         << "    return &the_info;\n"
-         << "}\n";
-
     if (m_bitmask)
     {
-        ostr << "\n"
-            << "std::string " << m_name << "::to_string() const\n"
-            << "{\n"
-            << "    unsigned int v = (unsigned int)value;\n"
-            << "    std::vector<std::string> parts;\n"
-            << "\n";
-
-        for (size_t i = 0; i < m_enumerands.size(); ++i)
-        {
-            ostr << "    if (v & (unsigned int)" << m_name << "::" << m_enumerands[i]->name() << ")\n";
-            ostr << "        parts.push_back(" << m_name << "::to_string("
-                << m_name << "::" << m_enumerands[i]->name() << "));\n";
-        }
-
-        ostr << "\n"
-            << "    return spi_util::StringJoin(\""
-            << m_bitmask->sep() << "\", parts);\n"
-            << "}\n";
+        m_bitmask->implementHelper(
+            ostr,
+            m_name,
+            m_enumerands,
+            m_indexEnumerands,
+            m_possibleValues,
+            m_constructors,
+            svc);
+        return;
     }
+
+    write_get_enum_info(ostr, m_name, m_enumerands);
 
     std::map<std::string,std::string>::const_iterator iter =
          m_indexEnumerands.begin();
@@ -722,54 +945,14 @@ void Enum::implementHelper(
              << "\";\n";
     }
 
-    if (!m_bitmask)
-    {
-        ostr << "    case " << m_name << "::UNINITIALIZED_VALUE:\n"
-            << "        throw std::runtime_error(\"Uninitialized value for "
-            << m_name << "\");\n";
-    }
-    
-    ostr << "    default:\n"
+    ostr << "    case " << m_name << "::UNINITIALIZED_VALUE:\n"
+        << "        throw std::runtime_error(\"Uninitialized value for "
+        << m_name << "\");\n"
+        << "    default:\n"
         << "        throw std::runtime_error(\"Bad enumerated value\");\n"
         << "    }\n"
         << "}\n";
 
-    if (m_bitmask)
-    {
-        int all = 0;
-        int value = 1;
-        size_t N = m_enumerands.size();
-        for (size_t i = 0; i < N; ++i)
-        {
-            all += value;
-            value *= 2;
-        }
-
-        ostr << "\n"
-            << "// this implementation means that we can combine flags in the input\n"
-            << "bool " << m_name << "::has_flag(" << m_name << "::Enum flag) const\n"
-            << "{\n"
-            << "    unsigned int i_flag = (unsigned int)flag;\n"
-            << "    unsigned int i_test = (unsigned int)value & i_flag;\n"
-            << "    return (i_test == i_flag);\n"
-            << "}\n";
-
-        ostr << "\n"
-            << "spi::MapConstSP " << m_name << "::to_map() const\n"
-            << "{\n"
-            << "    spi::MapSP m(new spi::Map(\"" << m_name << "\"));\n"
-            << "\n";
-
-        for (size_t i = 0; i < N; ++i)
-        {
-            const EnumerandConstSP& e = m_enumerands[i];
-            ostr << "    m->SetValue(\"" << spi_util::StringLower(e->name()) << "\", "
-                << "has_flag(" << m_name << "::" << e->name() << "));\n";
-        }
-        ostr << "\n"
-            << "    return m; \n"
-            << "}\n";
-    }
 
     for (size_t i = 0; i < m_constructors.size(); ++i)
     {
