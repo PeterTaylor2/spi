@@ -71,8 +71,7 @@ namespace
     void write_enum_construct_from_value(
         GeneratedOutput& ostr,
         const std::string& name,
-        const std::vector<spdoc::PublicType> constructorTypes,
-        bool has_bitmask)
+        const std::vector<spdoc::PublicType> constructorTypes)
     {
         ostr << "\n"
             << name << "::" << name << "(const spi::Value &v)\n"
@@ -80,49 +79,23 @@ namespace
             << "    switch(v.getType())\n"
             << "    {\n";
 
-        bool hasIntConstructor = false;
-
         for (size_t i = 0; i < constructorTypes.size(); ++i)
         {
             spdoc::PublicType constructorType = constructorTypes[i];
 
-            switch (constructorType)
-            {
-            case spdoc::PublicType::BOOL:
-                ostr << "    case spi::Value::BOOL:\n"
-                    << "        value = Coerce(v.getBool());\n"
-                    << "        break;\n";
-                break;
-            case spdoc::PublicType::INT:
-                hasIntConstructor = true;
-                ostr << "    case spi::Value::INT:\n"
-                    << "        value = Coerce(v.getInt());\n"
-                    << "        break;\n"
-                    << "    case spi::Value::DOUBLE:\n"
-                    << "        value = Coerce(v.getInt(true));\n"
-                    << "        break;\n";
-                break;
-            default:
-                SPI_THROW_RUNTIME_ERROR("Unexpected constructor type " <<
-                    spdoc::PublicType::to_string(constructorType));
-            }
-        }
+            SPI_PRE_CONDITION(constructorType == spdoc::PublicType::BOOL);
 
-        if (hasIntConstructor && has_bitmask)
-        {
-            SPI_THROW_RUNTIME_ERROR(
-                "Cannot have an int constructor independently from bitmask");
-        }
-
-        if (!hasIntConstructor)
-        {
-            ostr << "    case spi::Value::INT:\n"
-                << "        value = (Enum)v.getInt();\n"
-                << "        break;\n"
-                << "    case spi::Value::DOUBLE:\n"
-                << "        value = (Enum)(v.getInt(true));\n"
+            ostr << "    case spi::Value::BOOL:\n"
+                << "        value = Coerce(v.getBool());\n"
                 << "        break;\n";
         }
+
+        ostr << "    case spi::Value::INT:\n"
+            << "        value = " << name << "::from_int(v.getInt());\n"
+            << "        break;\n"
+            << "    case spi::Value::DOUBLE:\n"
+            << "        value = " << name << "::from_int(v.getInt(true));\n"
+            << "        break;\n";
 
         ostr << "    case spi::Value::SHORT_STRING:\n"
             << "    case spi::Value::STRING:\n"
@@ -375,18 +348,12 @@ void EnumBitmask::declare(
         << "    static spi::EnumInfo* get_enum_info();\n"
         << "\n";
 
-    {
-        ostr << "    " << enumName << "() : value((Enum)0) {}\n"
-            << "    " << enumName << "(" << enumName << "::Enum value);\n";
-    }
 
-    ostr << "    " << enumName << "(const std::string& str);\n";
-
-    ostr << "    " << enumName << "(const spi::Value& value);\n";
-
-    // we shouldn't define the equivalent constructor for bitmask
-    // but we can provide the coerce from bool functionality
-    ostr << "    " << enumName << "(int value);\n";
+    ostr << "    " << enumName << "() : value((Enum)0) {}\n"
+        << "    " << enumName << "(" << enumName << "::Enum value);\n"
+        << "    " << enumName << "(const std::string& str);\n"
+        << "    " << enumName << "(const spi::Value& value);\n"
+        << "    " << enumName << "(int value);\n";
 
     for (size_t i = 0; i < constructors.size(); ++i)
     {
@@ -409,14 +376,13 @@ void EnumBitmask::declare(
     }
 
     ostr << "\n"
+        << "    static " << enumName << "::Enum from_int(int);\n"
         << "    static " << enumName << "::Enum from_string(const char*);\n"
-        << "    static const char* to_string(" << enumName << "::Enum);\n";
-
-    ostr << "\n"
+        << "    static const char* to_string(" << enumName << "::Enum);\n"
+        << "\n"
         << "    bool has_flag(" << enumName << "::Enum flag) const; \n"
-        << "    spi::MapConstSP to_map() const;\n";
-
-    ostr << "\n"
+        << "    spi::MapConstSP to_map() const;\n"
+        << "\n"
         << "private:\n"
         << "    " << enumName << "::Enum value;\n";
 
@@ -436,7 +402,7 @@ void EnumBitmask::implement(
     const std::vector<EnumerandConstSP>& enumerands,
     const ServiceDefinitionSP& svc) const
 {
-    write_enum_construct_from_value(ostr, enumName, constructorTypes, true);
+    write_enum_construct_from_value(ostr, enumName, constructorTypes);
 
     if (!innerName.empty())
     {
@@ -514,15 +480,22 @@ void EnumBitmask::implement(
         << "}\n";
 
     ostr << "\n"
-        << enumName << "::" << enumName << "(int v_)\n"
+        << enumName << "::" << enumName << "(int v)\n"
         << "{\n"
-        << "    unsigned int v = spi_util::IntegerCast<unsigned int>(v_);\n"
+        << "    value = " << enumName << "::from_int(v);\n"
+        << "}\n";
+
+    ostr << "\n"
+        << enumName << "::Enum " << enumName << "::from_int(int value)\n"
+        << "{\n"
+        << "    unsigned int v = spi_util::IntegerCast<unsigned int>(value);\n"
         << "    if (v > (unsigned int)" << enumName << "::" << m_all << ")\n"
         << "    {\n"
         << "        SPI_THROW_RUNTIME_ERROR(\"Input value out of range\");\n"
         << "    }\n"
-        << "    value = (" << enumName << "::Enum)v; \n"
+        << "    return (" << enumName << "::Enum)v; \n"
         << "}\n";
+
 }
 
 void EnumBitmask::implementHelper(
@@ -765,7 +738,8 @@ void Enum::declare(
         << "    " << m_name << "(" << m_name << "::Enum value) : value(value) {}\n"
         << "    " << m_name << "(const char* str) : value(" << m_name << "::from_string(str)) {}\n"
         << "    " << m_name << "(const std::string& str) : value(" << m_name << "::from_string(str.c_str())) {}\n"
-        << "    " << m_name << "(const spi::Value& value);\n";
+        << "    " << m_name << "(const spi::Value& value);\n"
+        << "    " << m_name << "(int value);\n";
 
     for (size_t i = 0; i < m_constructors.size(); ++i)
     {
@@ -779,6 +753,7 @@ void Enum::declare(
         << "    std::string to_string() const { return std::string(" << m_name << "::to_string(value)); }\n"
         << "    spi::Value to_value() const { return spi::Value(to_string()); }\n"
         << "\n"
+        << "    static " << m_name << "::Enum from_int(int);\n"
         << "    static " << m_name << "::Enum from_string(const char*);\n"
         << "    static const char* to_string(" << m_name << "::Enum);\n"<< "\n"
         << "private:\n"
@@ -796,17 +771,7 @@ void Enum::declareHelper(
     GeneratedOutput& ostr,
     const ServiceDefinitionSP& svc,
     bool types) const
-{
-    //if (!innerName.empty())
-    //{
-    //    ostr << "\n"
-    //         << svc->getImport() << "\n"
-    //         << innerName << " " << name << "_convert_in(const " << name << "&);\n";
-    //    ostr << "\n"
-    //         << svc->getImport() << "\n"
-    //         << name << " " << name << "_convert_out(" << innerName << ");\n";
-    //}
-}
+{}
 
 void Enum::implement(
     GeneratedOutput& ostr,
@@ -824,7 +789,23 @@ void Enum::implement(
             svc);
         return;
     }
-    write_enum_construct_from_value(ostr, m_name, m_constructorTypes, false);
+    write_enum_construct_from_value(ostr, m_name, m_constructorTypes);
+
+    ostr << "\n"
+        << m_name << "::" << m_name << "(int v)\n"
+        << "{\n"
+        << "    value = " << m_name << "::from_int(v); \n"
+        << "}\n";
+
+    ostr << "\n"
+        << m_name << "::Enum " << m_name << "::from_int(int value)\n"
+        << "{\n"
+        << "    if (value < 0 || value > (int)UNINITIALIZED_VALUE)\n"
+        << "    {\n"
+        << "        SPI_THROW_RUNTIME_ERROR(\"Input value out of range\");\n"
+        << "    }\n"
+        << "    return (" << m_name << "::Enum)value; \n"
+        << "}\n";
 
     if (!m_innerName.empty())
     {
@@ -1174,6 +1155,10 @@ void Enum::VerifyAndComplete()
     for (size_t i = 0; i < m_constructors.size(); ++i)
     {
         spdoc::PublicType constructorType = m_constructors[i]->publicType();
+        if (constructorType != spdoc::PublicType::BOOL)
+        {
+            SPI_THROW_RUNTIME_ERROR("We can only define constructors from bool");
+        }
         if (constructorTypes.count(constructorType))
         {
             SPI_THROW_RUNTIME_ERROR("Cannot define two constructors using "
