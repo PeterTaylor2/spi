@@ -718,7 +718,7 @@ EnumConstructorConstSP parseEnumConstructor(
     const ServiceDefinitionSP& service,
     bool verbose)
 {
-    // we have already parsed the typenamep
+    // we have already parsed the enumName
     // hence we first expect (
     // then one parameter
     // then )
@@ -758,7 +758,10 @@ EnumConstructorConstSP parseEnumConstructor(
     switch (arg->dataType()->publicType())
     {
     case spdoc::PublicType::BOOL:
+        break;
     case spdoc::PublicType::INT:
+        SPI_THROW_RUNTIME_ERROR(
+            "We don't need to define constructor from int since it is automatic");
         break;
     case spdoc::PublicType::ENUM:
         // from C++ this might be nice to support enum to enum coercion
