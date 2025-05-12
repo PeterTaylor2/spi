@@ -190,6 +190,7 @@ true|false|True|False|TRUE|FALSE {
 char        | /* type char */
 int         | /* type int */
 long        | /* type long */
+unsigned    | /* modifier for char, int and long */
 double      | /* type double */
 string      | /* type string */
 size_t      | /* type size_t */
