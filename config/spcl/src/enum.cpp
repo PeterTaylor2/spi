@@ -372,7 +372,7 @@ void EnumBitmask::declare(
     }
     else
     {
-        ostr << "    spi::Value to_value() const { return spi::Value(to_string());\n";
+        ostr << "    spi::Value to_value() const { return spi::Value(to_string()); }\n";
     }
 
     ostr << "\n"
