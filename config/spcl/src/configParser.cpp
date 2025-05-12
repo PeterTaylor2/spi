@@ -1524,10 +1524,10 @@ void enumKeywordHandler(
         ParserOptions defaultOptions;
         defaultOptions["innerHeader"]  = StringConstant::Make("");
         defaultOptions["innerValueFormat"] = StringConstant::Make("");
-        bool integerType = innerName == "int" ||
-            innerName == "long" ||
+        bool integerType = innerName == "int" || innerName == "unsigned int" ||
+            innerName == "long" || innerName == "unsigned long" ||
             innerName == "size_t" ||
-            innerName == "char";
+            innerName == "char" || innerName == "unsigned char";
 
         if (enumDeclared)
         {

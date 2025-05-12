@@ -339,6 +339,24 @@ std::string getCppTypeName(
             return keyword;
         }
 
+        if (keyword == "unsigned")
+        {
+            // get the next keyword which we expect to be int, char or long
+            token = lexer.getToken();
+            if (token.type == SPI_CONFIG_TOKEN_TYPE_KEYWORD)
+            {
+                std::string keyword2(token.value.aKeyword);
+                if (keyword2 == "int" ||
+                    keyword2 == "char" ||
+                    keyword2 == "long")
+                {
+                    return "unsigned " + keyword2;
+                }
+            }
+            throw spi::RuntimeError("Expecting 'int' 'char' or 'long' after unsigned - found %s",
+                token.toString().c_str());
+        }
+
         if (keyword != "::")
             throw spi::RuntimeError("Keyword %s found when looking for c++ typename",
                                     token.value.aKeyword);
