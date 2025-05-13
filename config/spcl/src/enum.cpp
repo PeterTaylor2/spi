@@ -99,10 +99,16 @@ namespace
 
         ostr << "    case spi::Value::SHORT_STRING:\n"
             << "    case spi::Value::STRING:\n"
-            << "        value = from_string(v.getString().c_str());\n"
+            << "        {\n"
+            << "            " << name << " that(v.getString());\n"
+            << "            value = that.value;\n"
+            << "        }\n"
             << "        break;\n"
             << "    case spi::Value::UNDEFINED:\n"
-            << "        value = from_string(\"\");\n"
+            << "        {\n"
+            << "            " << name << " that;\n"
+            << "            value = that.value;\n"
+            << "        }\n"
             << "        break;\n"
             << "    default:\n"
             << "        SPI_THROW_RUNTIME_ERROR(\"Bad value type: \" << spi::Value::TypeToString(v.getType()));\n"
@@ -534,6 +540,9 @@ void EnumBitmask::implementHelper(
     ostr << "\n"
         << enumName << "::Enum " << enumName << "::from_string(const char* str)\n"
         << "{\n"
+        << "    if (!str || !*str)\n"
+        << "        return (" << enumName << "::Enum)0;\n"
+        << "\n"
         << "    std::string uc_ = spi::StringUpper(str);\n";
 
     if (iter->first == "")
