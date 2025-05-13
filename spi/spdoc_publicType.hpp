@@ -105,6 +105,7 @@ public:
     PublicType(const char* str) : value(PublicType::from_string(str)) {}
     PublicType(const std::string& str) : value(PublicType::from_string(str.c_str())) {}
     PublicType(const spi::Value& value);
+    PublicType(int value);
 
     operator PublicType::Enum() const { return value; }
     operator std::string() const { return to_string(); }
@@ -112,6 +113,7 @@ public:
     std::string to_string() const { return std::string(PublicType::to_string(value)); }
     spi::Value to_value() const { return spi::Value(to_string()); }
 
+    static PublicType::Enum from_int(int);
     static PublicType::Enum from_string(const char*);
     static const char* to_string(PublicType::Enum);
 

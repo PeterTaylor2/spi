@@ -39,21 +39,41 @@ ValueType::ValueType(const spi::Value &v)
     switch(v.getType())
     {
     case spi::Value::INT:
-        value = (Enum)v.getInt();
+        value = ValueType::from_int(v.getInt());
         break;
     case spi::Value::DOUBLE:
-        value = (Enum)(v.getInt(true));
+        value = ValueType::from_int(v.getInt(true));
         break;
     case spi::Value::SHORT_STRING:
     case spi::Value::STRING:
-        value = from_string(v.getString().c_str());
+        {
+            ValueType that(v.getString());
+            value = that.value;
+        }
         break;
     case spi::Value::UNDEFINED:
-        value = from_string("");
+        {
+            ValueType that;
+            value = that.value;
+        }
         break;
     default:
         SPI_THROW_RUNTIME_ERROR("Bad value type: " << spi::Value::TypeToString(v.getType()));
     }
+}
+
+ValueType::ValueType(int v)
+{
+    value = ValueType::from_int(v); 
+}
+
+ValueType::Enum ValueType::from_int(int value)
+{
+    if (value < 0 || value > (int)UNINITIALIZED_VALUE)
+    {
+        SPI_THROW_RUNTIME_ERROR("Input value out of range");
+    }
+    return (ValueType::Enum)value; 
 }
 
 SPI_NAMESPACE::Value::Type ValueType_convert_in(const ValueType& v_)
