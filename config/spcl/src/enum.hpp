@@ -310,6 +310,8 @@ public:
     const std::vector<spdoc::PublicType>& constructorTypes() const
     { return m_constructorTypes; }
 
+    bool asInt() const;
+
 };
 
 #endif

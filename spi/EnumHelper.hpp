@@ -140,6 +140,28 @@ std::vector<T> EnumVectorFromStringVector(
 }
 
 template<class T>
+std::vector<int> EnumVectorToIntVector(
+    const std::vector<T>& values)
+{
+    std::vector<int> output;
+    output.reserve(values.size());
+    for (size_t i = 0; i < values.size(); ++i)
+        output.push_back(values[i].to_int());
+    return output;
+}
+
+template<class T>
+std::vector<T> EnumVectorFromIntVector(
+    const std::vector<std::string>& values)
+{
+    std::vector<T> output;
+    output.reserve(values.size());
+    for (size_t i = 0; i < values.size(); ++i)
+        output.push_back(T(values[i]));
+    return output;
+}
+
+template<class T>
 std::vector<T> EnumVectorFromValueVector(
     const std::vector<Value>& values,
     bool isOptional = false,

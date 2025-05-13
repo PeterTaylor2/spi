@@ -374,7 +374,9 @@ void EnumBitmask::declare(
 
     if (m_asInt)
     {
-        ostr << "    spi::Value to_value() const { return spi::Value((int)value); }\n";
+        ostr << "    int to_int() const { return (int)value; }\n"
+            << "    operator int() const { return to_int(); }\n"
+            << "    spi::Value to_value() const { return spi::Value(to_int()); }\n";
     }
     else
     {
@@ -1075,7 +1077,9 @@ const DataTypeConstSP& Enum::dataType(const ServiceDefinitionSP& svc, bool ignor
 
         m_dataType = DataType::Make(m_name, m_ns, svc->getNamespace(),
             outerType, outerType,
-            innerType, innerType, spdoc::PublicType::ENUM, "", false,
+            innerType, innerType, 
+            asInt() ? spdoc::PublicType::ENUM_AS_INT : spdoc::PublicType::ENUM_AS_STRING,
+            "", false,
             false, convertIn, convertOut,
             std::string(), DataTypeConstSP(), false, false, ignored);
 
@@ -1085,7 +1089,8 @@ const DataTypeConstSP& Enum::dataType(const ServiceDefinitionSP& svc, bool ignor
         {
             DataTypeConstSP publicDataType = DataType::Make(
                 m_name, m_ns, svc->getNamespace(), outerType, outerType, "", "",
-                spdoc::PublicType::ENUM, "", false, false);
+                asInt() ? spdoc::PublicType::ENUM_AS_INT : spdoc::PublicType::ENUM_AS_STRING,
+                "", false, false);
 
             publicDataType->setDoc(m_dataType->getDoc());
 
@@ -1177,6 +1182,14 @@ void Enum::VerifyAndComplete()
     }
 
     m_constructorTypes.assign(constructorTypes.begin(), constructorTypes.end());
+}
+
+bool Enum::asInt() const
+{
+    if (m_bitmask)
+        return m_bitmask->asInt();
+
+    return false;
 }
 
 void Enum::declareTypeConversions(

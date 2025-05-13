@@ -1574,8 +1574,12 @@ void writeFromValueInContext(
 {
     spdoc::PublicType publicType = dataType->publicType();
 
-    if (publicType == spdoc::PublicType::ENUM)
+    if (publicType == spdoc::PublicType::ENUM_AS_STRING ||
+        publicType == spdoc::PublicType::ENUM_AS_INT)
     {
+        spdoc::PublicType asType = publicType == spdoc::PublicType::ENUM_AS_STRING ?
+            spdoc::PublicType::STRING : spdoc::PublicType::INT;
+
         switch (arrayDim)
         {
         case 0:
@@ -1589,7 +1593,7 @@ void writeFromValueInContext(
                 }
                 else
                 {
-                    // this should compile but won't translate
+                    // this should compile but won't necessarily translate
                     ostr << "spi::Value()";
                 }
                 ostr << " : " << value << ";\n";
@@ -1607,7 +1611,7 @@ void writeFromValueInContext(
 
             if (isOptional)
             {
-                ostr << ", true, spi::Value(" << defaultValue->toCode(spdoc::PublicType::STRING) << ")";
+                ostr << ", true, spi::Value(" << defaultValue->toCode(asType) << ")";
             }
 
             ostr << ");\n";
@@ -1619,7 +1623,7 @@ void writeFromValueInContext(
 
             if (isOptional)
             {
-                ostr << ", true, spi::Value(" << defaultValue->toCode(spdoc::PublicType::STRING) << ")";
+                ostr << ", true, spi::Value(" << defaultValue->toCode(asType) << ")";
             }
 
             ostr << "); \n";
@@ -1656,10 +1660,16 @@ void writeFromValueInContext(
         case spdoc::PublicType::DATETIME:
             ostr << "in_context->ValueToDateTime";
             break;
-        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_AS_STRING:
             ostr << "spi::EnumVectorFromStringVector<"
                  << dataType->cppName()
                  << ">(in_context->ValueToString";
+            converter = true;
+            break;
+        case spdoc::PublicType::ENUM_AS_INT:
+            ostr << "spi::EnumVectorFromIntVector<"
+                << dataType->cppName()
+                << ">(in_context->ValueToInt";
             converter = true;
             break;
         case spdoc::PublicType::CLASS:
@@ -1764,8 +1774,11 @@ void writeFromValueInContext(
         case spdoc::PublicType::DATETIME:
             ostr << "DateTime";
             break;
-        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_AS_STRING:
             ostr << "String";
+            break;
+        case spdoc::PublicType::ENUM_AS_INT:
+            ostr << "Int";
             break;
         case spdoc::PublicType::CLASS:
             ostr << "Instance<" << dataType->cppName() << " const>";

@@ -49,7 +49,8 @@ spi::EnumInfo* PublicType::get_enum_info()
         enumerands.push_back("STRING");
         enumerands.push_back("DATE");
         enumerands.push_back("DATETIME");
-        enumerands.push_back("ENUM");
+        enumerands.push_back("ENUM_AS_STRING");
+        enumerands.push_back("ENUM_AS_INT");
         enumerands.push_back("CLASS");
         enumerands.push_back("OBJECT");
         enumerands.push_back("MAP");
@@ -83,8 +84,10 @@ PublicType::Enum PublicType::from_string(const char* str)
             return PublicType::DOUBLE;
         break;
     case 'E':
-        if (uc_ == "ENUM")
-            return PublicType::ENUM;
+        if (uc_ == "ENUM_AS_INT")
+            return PublicType::ENUM_AS_INT;
+        if (uc_ == "ENUM_AS_STRING")
+            return PublicType::ENUM_AS_STRING;
         break;
     case 'I':
         if (uc_ == "INT")
@@ -108,7 +111,7 @@ PublicType::Enum PublicType::from_string(const char* str)
         break;
     }
     throw spi::RuntimeError("Cannot convert '%s' to PublicType. Possible values:\n"
-       "'BOOL', 'CHAR', 'INT', 'DOUBLE', 'STRING', 'DATE', 'DATETIME', 'ENUM', 'CLASS', 'OBJECT', 'MAP', 'VARIANT'",
+       "'BOOL', 'CHAR', 'INT', 'DOUBLE', 'STRING', 'DATE', 'DATETIME', 'ENUM_AS_STRING', 'ENUM_AS_INT', 'CLASS', 'OBJECT', 'MAP', 'VARIANT'",
         str);
 }
 
@@ -130,8 +133,10 @@ const char* PublicType::to_string(PublicType::Enum v_)
         return "DATE";
     case PublicType::DATETIME:
         return "DATETIME";
-    case PublicType::ENUM:
-        return "ENUM";
+    case PublicType::ENUM_AS_STRING:
+        return "ENUM_AS_STRING";
+    case PublicType::ENUM_AS_INT:
+        return "ENUM_AS_INT";
     case PublicType::CLASS:
         return "CLASS";
     case PublicType::OBJECT:

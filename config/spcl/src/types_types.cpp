@@ -53,21 +53,41 @@ PublicType::PublicType(const spi::Value &v)
     switch(v.getType())
     {
     case spi::Value::INT:
-        value = (Enum)v.getInt();
+        value = PublicType::from_int(v.getInt());
         break;
     case spi::Value::DOUBLE:
-        value = (Enum)(v.getInt(true));
+        value = PublicType::from_int(v.getInt(true));
         break;
     case spi::Value::SHORT_STRING:
     case spi::Value::STRING:
-        value = from_string(v.getString().c_str());
+        {
+            PublicType that(v.getString());
+            value = that.value;
+        }
         break;
     case spi::Value::UNDEFINED:
-        value = from_string("");
+        {
+            PublicType that;
+            value = that.value;
+        }
         break;
     default:
         SPI_THROW_RUNTIME_ERROR("Bad value type: " << spi::Value::TypeToString(v.getType()));
     }
+}
+
+PublicType::PublicType(int v)
+{
+    value = PublicType::from_int(v); 
+}
+
+PublicType::Enum PublicType::from_int(int value)
+{
+    if (value < 0 || value > (int)UNINITIALIZED_VALUE)
+    {
+        SPI_THROW_RUNTIME_ERROR("Input value out of range");
+    }
+    return (PublicType::Enum)value; 
 }
 
 spdoc::PublicType::Enum PublicType_convert_in(const PublicType& v_)
@@ -88,8 +108,10 @@ spdoc::PublicType::Enum PublicType_convert_in(const PublicType& v_)
         return spdoc::PublicType::DATE;
     case PublicType::DATETIME:
         return spdoc::PublicType::DATETIME;
-    case PublicType::ENUM:
-        return spdoc::PublicType::ENUM;
+    case PublicType::ENUM_AS_STRING:
+        return spdoc::PublicType::ENUM_AS_STRING;
+    case PublicType::ENUM_AS_INT:
+        return spdoc::PublicType::ENUM_AS_INT;
     case PublicType::CLASS:
         return spdoc::PublicType::CLASS;
     case PublicType::OBJECT:
@@ -120,8 +142,10 @@ PublicType PublicType_convert_out(spdoc::PublicType::Enum v_)
         return PublicType::DATE;
     if (v_ == spdoc::PublicType::DATETIME)
         return PublicType::DATETIME;
-    if (v_ == spdoc::PublicType::ENUM)
-        return PublicType::ENUM;
+    if (v_ == spdoc::PublicType::ENUM_AS_STRING)
+        return PublicType::ENUM_AS_STRING;
+    if (v_ == spdoc::PublicType::ENUM_AS_INT)
+        return PublicType::ENUM_AS_INT;
     if (v_ == spdoc::PublicType::CLASS)
         return PublicType::CLASS;
     if (v_ == spdoc::PublicType::OBJECT)
