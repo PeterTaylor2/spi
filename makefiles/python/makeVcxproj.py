@@ -15,7 +15,7 @@ def command_line(compiler, toolsVersion, platformToolset):
     import sys
     import getopt
 
-    opts,args = getopt.getopt(sys.argv[1:], "h:s:c:t:b:H:S:I:j:",
+    opts,args = getopt.getopt(sys.argv[1:], "h:s:c:t:b:H:S:I:j:F:",
                               ["buildSuffix=",
                                "exe=",
                                "makefileTarget=",
@@ -27,11 +27,13 @@ def command_line(compiler, toolsVersion, platformToolset):
     extraHeaderDirs = []
     kwargs          = {}
     includePath     = []
+    extraFiles      = []
     for opt in opts:
         if opt[0] == "-h": headerPatterns.append(opt[1])
         elif opt[0] == "-s": sourcePatterns.append(opt[1])
         elif opt[0] == "-H": extraHeaderDirs.append(opt[1])
         elif opt[0] == "-S": extraSourceDirs.append(opt[1])
+        elif opt[0] == "-F": extraFiles.append(opt[1])
         elif opt[0] == "-c": compiler = opt[1]
         elif opt[0] == "-t": kwargs["makefileTarget"] = opt[1]
         elif opt[0] == "--buildSuffix": kwargs["buildSuffix"] = opt[1]
@@ -68,6 +70,7 @@ def command_line(compiler, toolsVersion, platformToolset):
               platformToolset,
               defaultCompiler,
               defaultBits,
+              extraFiles,
               **kwargs)
 
 def _xmlfiles(filenames, label, filterName=None, indent=4):
@@ -163,6 +166,23 @@ def write_filters(filename, filters, toolsVersion, guids):
         print("removing", (ffn + ".bak"))
         os.remove(ffn + ".bak")
 
+def _get_extra_files(extraFilePatterns):
+    # should return dict of filter : filenames
+    # filter will be the base directory
+    # filename will be the full relative path to the file
+    # filenames will be a set to ensure uniqueness
+
+    out = {}
+    
+    for xfp in extraFilePatterns:
+        for xf in glob.glob(xfp):
+            if os.path.isfile(xf):
+                dn = os.path.dirname(xf)
+                if dn not in out:
+                    out[dn] = set()
+                out[dn].add(xf)
+
+    return out
 
 def _get_header_files(headerPatterns, incDir, srcDir, extraHeaderDirs):
     headerFiles = []
@@ -188,11 +208,15 @@ def get_build_files():
     buildFiles.extend(glob.glob("*.mk"))
     return buildFiles
 
-def _get_item_group_files(sourceFiles, headerFiles, buildFiles):
+def _get_item_group_files(sourceFiles, headerFiles, buildFiles, extraFiles):
     itemGroupFiles = []
     itemGroupFiles.extend(_xmlfiles(sourceFiles, "ClCompile"))
     itemGroupFiles.extend(_xmlfiles(headerFiles, "ClInclude"))
-    itemGroupFiles.extend(_xmlfiles(buildFiles, "None"))
+    
+    noneGroup = buildFiles[:]
+    for xfd in extraFiles:
+        noneGroup.extend(sorted(extraFiles[xfd]))
+    itemGroupFiles.extend(_xmlfiles(noneGroup, "None"))
     return itemGroupFiles
 
 def get_project_configurations(platforms):
@@ -307,6 +331,7 @@ def make_proj(fileName, name, compiler, srcDir, incDir,
              platformToolset,
              defaultCompiler,
              defaultBits,
+             extraFilePatterns,
              buildSuffix="",
              makefileTarget="target",
              cleanTarget="clean",
@@ -315,19 +340,33 @@ def make_proj(fileName, name, compiler, srcDir, incDir,
              parallel=4,
              silent=False):
 
-    guids = guidUtils.read_and_write_guids(fileName, ["Project"])
-    guids.update(guidUtils.read_and_write_guids(fileName + ".filters", ["Header Files", "Source Files"],
-        gfn = guidUtils.guid_file_name(fileName)))
-
+    extraFiles = _get_extra_files(extraFilePatterns)
     headerFiles = _get_header_files(headerPatterns, incDir, srcDir, extraHeaderDirs)
     sourceFiles = _get_source_files(sourcePatterns, srcDir, extraSourceDirs)
 
+    filterNames = set()
+    if len(headerFiles):
+        filterNames.add("Header Files")
+    if len(sourceFiles):
+        filterNames.add("Source Files")
+    for xfdn in extraFiles:
+        filterNames.add(xfdn)
+
+    guids = guidUtils.read_and_write_guids(fileName, ["Project"])
+    
+    if len(filterNames):
+        # import pprint
+        # pprint.pprint(filterNames)
+        # pprint.pprint(extraFiles)
+        guids.update(guidUtils.read_and_write_guids(
+            fileName + ".filters",
+            sorted(filterNames),
+            gfn = guidUtils.guid_file_name(fileName)))
+
     buildFiles  = get_build_files()
 
-    itemGroupFiles = []
-    itemGroupFiles.extend(_xmlfiles(sourceFiles, "ClCompile"))
-    itemGroupFiles.extend(_xmlfiles(headerFiles, "ClInclude"))
-    itemGroupFiles.extend(_xmlfiles(buildFiles, "None"))
+    itemGroupFiles = _get_item_group_files(
+        sourceFiles, headerFiles, buildFiles, extraFiles)
 
     platforms = vstools.platforms(compiler)
 
@@ -374,12 +413,17 @@ def make_proj(fileName, name, compiler, srcDir, incDir,
         print("removing", (fileName + ".bak"))
         os.remove(fileName + ".bak")
 
-    write_filters(fileName,
-                 [("ClCompile", "Source Files", sourceFiles),
-                  ("ClInclude", "Header Files", headerFiles),
-                  ("None", None, buildFiles)],
-                 toolsVersion,
-                 guids)
+    filters = []
+    if len(sourceFiles):
+        filters.append(("ClCompile", "Source Files", sourceFiles))
+    if len(headerFiles):
+        filters.append(("ClInclude", "Header Files", headerFiles))
+    if len(buildFiles):
+        filters.append(("None", None, buildFiles))
+    for xfd in extraFiles:
+        filters.append(("None", xfd, sorted(extraFiles[xfd])))
+        
+    write_filters(fileName, filters, toolsVersion, guids)
 
 _template = """\
 <?xml version="1.0" encoding="utf-8"?>
