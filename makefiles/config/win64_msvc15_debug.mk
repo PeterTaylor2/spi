@@ -4,6 +4,14 @@
 G_ABI=Debug-x64-vc15
 G_BUILD_DIR=win64/msvc15_debug
 
+ifeq ($(G_WIN32_COMPILER),msvc15)
+ifeq ($(G_WIN32_BITS),64)
+G_ABI=Debug
+else
+G_ABI=Debug-x64
+endif
+endif
+
 include $(U_MAKEFILES)/config/win64_msvc15.mk
 
 ###########################################################################
