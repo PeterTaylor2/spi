@@ -95,6 +95,8 @@ dll: $(U_OUTPUT_DIR)/$(G_ABI)/$(G_DLL_PFX)$(SPI_UTIL_DLL)$(G_DLL_EXT)
 dll: $(U_OUTPUT_DIR)/$(G_ABI)/$(G_DLL_PFX)$(U_TARGET)$(G_DLL_EXT)
 dll: $(addprefix $(U_OUTPUT_DIR)/$(G_ABI)/,$(notdir $(U_DLLS)))
 
+dll: $(U_OUTPUT_DIR)/$(G_ABI)/$(U_SERVICE).svo
+
 ifeq ($(G_PLATFORM),win32)
 
 dll: $(U_OUTPUT_DIR)/$(G_ABI)/$(G_DLL_PFX)$(SPI_CURL_DLL)$(G_DLL_EXT)
@@ -115,4 +117,9 @@ ifeq ($(G_PLATFORM),win32)
 	@if [ -f $(basename $<).lib ]; then cp -f $(basename $<).lib $(U_OUTPUT_DIR)/$(G_ABI); fi
 	@if [ -f $(basename $<).pdb ]; then cp -f $(basename $<).pdb $(U_OUTPUT_DIR)/$(G_ABI); fi
 endif
+
+$(U_OUTPUT_DIR)/$(G_ABI)/%.svo: ../config/%.svo
+	@mkdir -p $(U_OUTPUT_DIR)/$(G_ABI)
+	cp -f $< $(U_OUTPUT_DIR)/$(G_ABI)
+
 
