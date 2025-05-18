@@ -30,6 +30,7 @@
 */
 
 #include <spi/spi.hpp>
+#include <spi/spdoc_configTypes.hpp>
 #include "spdoc_dll_decl_spec.h"
 #include "spdoc_namespace.hpp"
 
@@ -58,6 +59,9 @@ const char* spdoc_version();
 
 SPI_IMPORT
 const char* spdoc_startup_directory();
+
+SPI_IMPORT
+spdoc::ServiceConstSP spdoc_service_doc();
 
 SPDOC_END_NAMESPACE
 

@@ -507,7 +507,7 @@ static PyMethodDef Construct_methods[] = {
     {"getType", (PyCFunction)py_spdoc_Construct_getType, METH_VARARGS | METH_KEYWORDS,
         "getType(self)\n\nReturns the type of the Construct - specific to each sub-class of Construct."},
     {"Summary", (PyCFunction)py_spdoc_Construct_Summary, METH_VARARGS | METH_KEYWORDS,
-        "Summary(self)\n\nReturns a short summary of the construct (disregarding description)"},
+        "Summary(self, includeDescription=None)\n\nReturns a short summary of the construct (disregarding description)"},
     {NULL, NULL, 0, NULL} // sentinel
 };
 
@@ -1173,7 +1173,7 @@ static PyMethodDef ClassMethod_methods[] = {
     {"Coerce", (PyCFunction)py_spdoc_ClassMethod_Coerce, METH_VARARGS | METH_STATIC,
         "Coerce ClassMethod from arbitrary value"},
     {"Summary", (PyCFunction)py_spdoc_ClassMethod_Summary, METH_VARARGS | METH_KEYWORDS,
-        "Summary(self)"},
+        "Summary(self, includeDescription=None)"},
     {NULL, NULL, 0, NULL} // sentinel
 };
 
@@ -1288,7 +1288,7 @@ static PyMethodDef CoerceFrom_methods[] = {
     {"Coerce", (PyCFunction)py_spdoc_CoerceFrom_Coerce, METH_VARARGS | METH_STATIC,
         "Coerce CoerceFrom from arbitrary value"},
     {"Summary", (PyCFunction)py_spdoc_CoerceFrom_Summary, METH_VARARGS | METH_KEYWORDS,
-        "Summary(self)"},
+        "Summary(self, includeDescription=None)"},
     {NULL, NULL, 0, NULL} // sentinel
 };
 
@@ -1405,7 +1405,7 @@ static PyMethodDef CoerceTo_methods[] = {
     {"Coerce", (PyCFunction)py_spdoc_CoerceTo_Coerce, METH_VARARGS | METH_STATIC,
         "Coerce CoerceTo from arbitrary value"},
     {"Summary", (PyCFunction)py_spdoc_CoerceTo_Summary, METH_VARARGS | METH_KEYWORDS,
-        "Summary(self)"},
+        "Summary(self, includeDescription=None)"},
     {NULL, NULL, 0, NULL} // sentinel
 };
 
@@ -2035,6 +2035,58 @@ PyObject* py_spdoc_Service_getPropertyClass(PyObject* self, PyObject* args, PyOb
         return spi::pyExceptionHandler("Unknown exception");
     }
 }
+
+PyObject* py_spdoc_Service_getConstructs(PyObject* self, PyObject* args, PyObject* kwargs)
+{
+    static spi::FunctionCaller* func = 0;
+    try
+    {
+        if (!func)
+            func = get_function_caller("Service.getConstructs");
+
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
+        spi::Value output = spi::CallInContext(func, iv, get_input_context());
+        return spi::pyoFromValue(output);
+    }
+    catch (spi::PyException&)
+    {
+        return NULL;
+    }
+    catch (std::exception &e)
+    {
+        return spi::pyExceptionHandler(e.what());
+    }
+    catch (...)
+    {
+        return spi::pyExceptionHandler("Unknown exception");
+    }
+}
+
+PyObject* py_spdoc_Service_getConstruct(PyObject* self, PyObject* args, PyObject* kwargs)
+{
+    static spi::FunctionCaller* func = 0;
+    try
+    {
+        if (!func)
+            func = get_function_caller("Service.getConstruct");
+
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
+        spi::Value output = spi::CallInContext(func, iv, get_input_context());
+        return spi::pyoFromValue(output);
+    }
+    catch (spi::PyException&)
+    {
+        return NULL;
+    }
+    catch (std::exception &e)
+    {
+        return spi::pyExceptionHandler(e.what());
+    }
+    catch (...)
+    {
+        return spi::pyExceptionHandler("Unknown exception");
+    }
+}
 static PyMethodDef Service_methods[] = {
     {"Coerce", (PyCFunction)py_spdoc_Service_Coerce, METH_VARARGS | METH_STATIC,
         "Coerce Service from arbitrary value"},
@@ -2056,6 +2108,10 @@ static PyMethodDef Service_methods[] = {
         "isSubClass(self, cls, name)\n\nReturns whether a given class is a sub-class of the data type of the given name. Needs to be a method on the Service since otherwise we cannot find base class."},
     {"getPropertyClass", (PyCFunction)py_spdoc_Service_getPropertyClass, METH_VARARGS | METH_KEYWORDS,
         "getPropertyClass(self, baseClassName, fieldName)\n\nReturns the name of the class for which the given fieldName is a property. If no such class exists then returns an empty string."},
+    {"getConstructs", (PyCFunction)py_spdoc_Service_getConstructs, METH_VARARGS | METH_KEYWORDS,
+        "getConstructs(self)\n\nReturns a sorted list of constructs defined by the service."},
+    {"getConstruct", (PyCFunction)py_spdoc_Service_getConstruct, METH_VARARGS | METH_KEYWORDS,
+        "getConstruct(self, name)\n\nReturns the construct details for a name."},
     {NULL, NULL, 0, NULL} // sentinel
 };
 

@@ -120,6 +120,10 @@ PyObject* py_spdoc_Service_isSubClass(PyObject* self, PyObject* args, PyObject* 
 
 PyObject* py_spdoc_Service_getPropertyClass(PyObject* self, PyObject* args, PyObject* kwargs);
 
+PyObject* py_spdoc_Service_getConstructs(PyObject* self, PyObject* args, PyObject* kwargs);
+
+PyObject* py_spdoc_Service_getConstruct(PyObject* self, PyObject* args, PyObject* kwargs);
+
 } /* end of extern "C" */
 
 #endif /* _PY_SPDOC_CONFIGTYPES_HPP_*/
