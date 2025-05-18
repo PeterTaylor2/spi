@@ -7,7 +7,6 @@ code generation.
 
 You no longer need to know anything about the inner library or how
 data is translated into the inner library.
-
 """
 
 import os
