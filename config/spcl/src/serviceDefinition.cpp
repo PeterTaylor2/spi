@@ -1143,6 +1143,7 @@ void ServiceDefinition::writeServiceHeaders(
 
     ostr << "\n"
          << "#include <spi/spi.hpp>\n"
+         << "#include <spi/spdoc_configTypes.hpp>\n"
          << "#include \"" << m_declSpecHeader << "\"\n"
          << "#include \"" << m_name << "_namespace.hpp\"\n";
 
@@ -1175,7 +1176,10 @@ void ServiceDefinition::writeServiceHeaders(
         << "const char* " << m_name << "_version();\n"
         << "\n"
         << m_import << "\n"
-        << "const char* " << m_name << "_startup_directory();\n";
+        << "const char* " << m_name << "_startup_directory();\n"
+        << "\n"
+        << m_import << "\n"
+        << "spdoc::ServiceConstSP " << m_name << "_service_doc();\n";
 
     ostr << "\n";
     writeEndNamespace(ostr);
@@ -1288,6 +1292,9 @@ void ServiceDefinition::writeServiceSource(
     {
         ostr << "#include \"" << m_importedTypes[j]->name() << "_dll_service.hpp\"\n";
     }
+
+    ostr << "#include <spi/spdoc_dll_service.hpp>\n"
+        << "#include <spi_util/FileUtil.hpp>\n";
 
     if (m_shutdown)
     {
@@ -1575,6 +1582,15 @@ void ServiceDefinition::writeServiceSource(
     ostr << "const char* " << m_name << "_startup_directory()\n"
         << "{\n"
         << "    return &g_startup_directory[0];\n"
+        << "}\n"
+        << "\n";
+
+    ostr << "spdoc::ServiceConstSP " << m_name << "_service_doc()\n"
+        << "{\n"
+        << "    spdoc::spdoc_start_service();\n"
+        << "    std::string fn = spi_util::path::join(&g_startup_directory[0],\n"
+        << "        \"" << m_name << ".svo\", 0);\n"
+        << "    return spdoc::Service::from_file(fn);\n"
         << "}\n"
         << "\n";
 
