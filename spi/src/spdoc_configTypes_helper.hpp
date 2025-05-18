@@ -148,6 +148,9 @@ public:
 class Service_Helper
 {
 public:
+    static ServiceConstSP CombineSharedServices(
+        const ServiceConstSP& self,
+        const std::vector<ServiceConstSP>& sharedServices);
     static std::vector<std::string> Summary(
         const ServiceConstSP& self,
         bool sort);

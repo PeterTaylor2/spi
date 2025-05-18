@@ -1570,6 +1570,74 @@ Service::Service(
     sharedService(sharedService)
 {}
 
+ServiceConstSP Service::CombineSharedServices(
+    const std::vector<ServiceConstSP>& sharedServices) const
+{
+  bool isLogging = spdoc_begin_function();
+  SPI_PROFILE("spdoc.Service.CombineSharedServices");
+  try
+  {
+    ServiceConstSP self(this);
+    const ServiceConstSP& i_result = Service_Helper::CombineSharedServices(
+        self, sharedServices);
+
+    spdoc_end_function();
+
+    return i_result;
+  }
+  catch (std::exception& e)
+  { throw spdoc_catch_exception(isLogging, "Service.CombineSharedServices", e); }
+  catch (...)
+  { throw spdoc_catch_all(isLogging, "Service.CombineSharedServices"); }
+}
+
+ServiceConstSP Service_Helper::CombineSharedServices(
+    const ServiceConstSP& in_self,
+    const std::vector<ServiceConstSP>& sharedServices)
+{
+    const Service* self = in_self.get();
+
+    SPI_PRE_CONDITION(!self->sharedService);
+
+    std::vector<std::string> description = self->description;
+    std::vector<ModuleConstSP> modules = self->modules;
+    for (const auto& sharedService : sharedServices)
+    {
+        SPI_PRE_CONDITION(sharedService->sharedService);
+        SPI_PRE_CONDITION(sharedService->ns == self->ns);
+
+        const auto& sharedDescription = sharedService->description;
+        const auto& sharedModules = sharedService->modules;
+
+        if (description.size() == 0)
+        {
+            description = sharedDescription;
+        }
+        else if (sharedDescription.size() > 0)
+        {
+            description.push_back(std::string());
+            description.insert(
+                description.end(),
+                sharedDescription.begin(),
+                sharedDescription.end());
+        }
+
+        modules.insert(modules.end(), sharedModules.begin(), sharedModules.end());
+    }
+
+    return Service::Make(
+        self->name,
+        description,
+        self->longName,
+        self->ns,
+        self->declSpec,
+        self->version,
+        modules,
+        self->importedBaseClasses,
+        self->importedEnums,
+        false); // sharedService flag
+}
+
 std::vector<std::string> Service::Summary(
     bool sort) const
 {

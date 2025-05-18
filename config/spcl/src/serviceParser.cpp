@@ -61,6 +61,7 @@ ServiceDefinitionSP serviceKeywordHandler(
     defaultOptions["baseService"] = StringConstant::Make("");
     defaultOptions["noLog"] = BoolConstant::Make(false);
     defaultOptions["useVersionedNamespace"] = BoolConstant::Make(false);
+    defaultOptions["helpFunc"] = StringConstant::Make("");
     ParserOptions options = parseOptions(lexer, ";", defaultOptions, verbose);
     getTokenOfType(lexer, ';');
 
@@ -88,7 +89,8 @@ ServiceDefinitionSP serviceKeywordHandler(
         options["sharedPtrInclude"]->getString(),
         options["noLog"]->getBool(),
         options["useVersionedNamespace"]->getBool(),
-        description);
+        description,
+        options["helpFunc"]->getString());
 
     if (baseService)
     {
@@ -511,6 +513,8 @@ ServiceDefinitionSP serviceParser(
     }
     if (lexer.num_errors > 0)
         throw spi::RuntimeError("Errors detected parsing %s", fn.c_str());
+
+    service->addServiceLevelModule();
     return service;
 }
 

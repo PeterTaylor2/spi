@@ -1802,6 +1802,32 @@ PyObject* py_spdoc_Service_Coerce(PyObject* self, PyObject* args)
     return pyo;
 }
 
+PyObject* py_spdoc_Service_CombineSharedServices(PyObject* self, PyObject* args, PyObject* kwargs)
+{
+    static spi::FunctionCaller* func = 0;
+    try
+    {
+        if (!func)
+            func = get_function_caller("Service.CombineSharedServices");
+
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
+        spi::Value output = spi::CallInContext(func, iv, get_input_context());
+        return spi::pyoFromValue(output);
+    }
+    catch (spi::PyException&)
+    {
+        return NULL;
+    }
+    catch (std::exception &e)
+    {
+        return spi::pyExceptionHandler(e.what());
+    }
+    catch (...)
+    {
+        return spi::pyExceptionHandler("Unknown exception");
+    }
+}
+
 PyObject* py_spdoc_Service_Summary(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
@@ -2090,6 +2116,8 @@ PyObject* py_spdoc_Service_getConstruct(PyObject* self, PyObject* args, PyObject
 static PyMethodDef Service_methods[] = {
     {"Coerce", (PyCFunction)py_spdoc_Service_Coerce, METH_VARARGS | METH_STATIC,
         "Coerce Service from arbitrary value"},
+    {"CombineSharedServices", (PyCFunction)py_spdoc_Service_CombineSharedServices, METH_VARARGS | METH_KEYWORDS,
+        "CombineSharedServices(self, sharedServices=[])"},
     {"Summary", (PyCFunction)py_spdoc_Service_Summary, METH_VARARGS | METH_KEYWORDS,
         "Summary(self, sort)"},
     {"combineSummaries", (PyCFunction)py_spdoc_Service_combineSummaries, METH_VARARGS | METH_KEYWORDS | METH_STATIC,

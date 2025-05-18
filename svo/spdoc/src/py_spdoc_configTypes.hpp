@@ -102,6 +102,8 @@ PyObject* py_spdoc_Module_combineSummaries(PyObject* self, PyObject* args, PyObj
 
 PyObject* py_spdoc_Service_Coerce(PyObject* self, PyObject* args);
 
+PyObject* py_spdoc_Service_CombineSharedServices(PyObject* self, PyObject* args, PyObject* kwargs);
+
 PyObject* py_spdoc_Service_Summary(PyObject* self, PyObject* args, PyObject* kwargs);
 
 PyObject* py_spdoc_Service_combineSummaries(PyObject* self, PyObject* args, PyObject* kwargs);

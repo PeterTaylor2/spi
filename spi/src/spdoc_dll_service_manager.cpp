@@ -188,7 +188,20 @@ spdoc::ServiceConstSP spdoc_service_doc()
     spdoc::spdoc_start_service();
     std::string fn = spi_util::path::join(&g_startup_directory[0],
         "spdoc.svo", 0);
-    return spdoc::Service::from_file(fn);
+    auto service_doc = spdoc::Service::from_file(fn);
+    const std::vector<std::string>& satellites = spdoc_service()->satellites();
+    if (satellites.size() > 0)
+    {
+        std::vector<spdoc::ServiceConstSP> shared_services;
+        for (const auto& satellite : satellites)
+        {
+            fn = spi_util::path::join(&g_startup_directory[0],
+                (satellite + ".svo").c_str(), 0);
+            shared_services.push_back(spdoc::Service::from_file(fn));
+        }
+        service_doc = service_doc->CombineSharedServices(shared_services);
+    }
+    return service_doc;
 }
 
 SPDOC_END_NAMESPACE

@@ -381,6 +381,7 @@ Service::Service(
 {
     SPI_PRE_CONDITION(svc);
     m_typeRegistry.import_types(svc->m_typeRegistry);
+    svc->add_satellite(name);
     Init();
 }
 
@@ -453,6 +454,17 @@ Service::~Service()
         // however we still need to remove the service from the common runtime
         m_commonRuntime->remove_service(this);
     }
+}
+
+void Service::add_satellite(const char* name)
+{
+    if (name)
+        m_satellites.push_back(std::string(name));
+}
+
+std::vector<std::string> Service::satellites() const
+{
+    return m_satellites;
 }
 
 void Service::add_object_type(ObjectType* type)

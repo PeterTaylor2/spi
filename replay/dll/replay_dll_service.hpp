@@ -30,6 +30,7 @@
 */
 
 #include <spi/spi.hpp>
+#include <spi/spdoc_configTypes.hpp>
 #include "replay_dll_decl_spec.h"
 #include "replay_namespace.hpp"
 
@@ -58,6 +59,9 @@ const char* replay_version();
 
 REPLAY_IMPORT
 const char* replay_startup_directory();
+
+REPLAY_IMPORT
+spdoc::ServiceConstSP replay_service_doc();
 
 SPI_REPLAY_END_NAMESPACE
 

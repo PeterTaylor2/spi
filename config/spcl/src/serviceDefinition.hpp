@@ -129,12 +129,14 @@ public:
         const std::string& sharedPtrInclude,
         bool noLog,
         bool useVersionedNamespace,
-        const std::vector<std::string>& description);
+        const std::vector<std::string>& description,
+        const std::string& helpFunc);
 
     // add methods do not allow duplicates
     // get methods return empty rather than throw exception if missing
     void importTypesLibrary(const TypesLibraryConstSP& tl, bool publicImport);
     void addModule(ModuleDefinitionSP& module);
+    void addServiceLevelModule();
     ModuleDefinitionSP getModule(const std::string& name) const;
     const std::vector<ModuleDefinitionSP>& getModules() const;
     // some types (struct or class) can have an incomplete definition defined first
@@ -243,7 +245,8 @@ protected:
         const std::string& sharedPtrInclude,
         bool noLog,
         bool useVersionedNamespace,
-        const std::vector<std::string>& description);
+        const std::vector<std::string>& description,
+        const std::string& helpFunc);
 
 private:
     std::string m_name;
@@ -257,6 +260,7 @@ private:
     std::string m_sharedPtrInclude;
     bool m_noLog;
     bool m_useVersionedNamespace;
+    std::string m_helpFunc; // added to the first module if defined
     std::vector<std::string>        m_description;
     std::vector<DataTypeConstSP>    m_dataTypes;
     std::vector<DataTypeConstSP>    m_publicDataTypes;

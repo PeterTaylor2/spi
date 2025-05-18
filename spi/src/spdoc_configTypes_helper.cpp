@@ -2288,6 +2288,33 @@ spi::FunctionCaller Service_FunctionCaller = {
     Service_caller
 };
 
+spi::Value Service_CombineSharedServices_caller(
+    const spi::InputContext*       in_context,
+    const std::vector<spi::Value>& in_values)
+{
+    const ServiceConstSP& self =
+        in_context->ValueToInstance<Service const>(in_values[0]);
+    std::vector<ServiceConstSP> sharedServices =
+        in_context->ValueToInstanceVector<Service const>(in_values[1]);
+
+    const ServiceConstSP& o_result = self->CombineSharedServices(
+        sharedServices);
+    return spi::ObjectConstSP(o_result);
+}
+
+spi::FunctionCaller Service_CombineSharedServices_FunctionCaller = {
+    "Service.CombineSharedServices",
+    2,
+    {
+        {"self", spi::ArgType::OBJECT, "Service", false, false, false},
+        {"sharedServices", spi::ArgType::OBJECT, "Service", true, false, false}
+    },
+    Service_CombineSharedServices_caller
+};
+
+spi::ObjectType Service_CombineSharedServices_FunctionObjectType =
+    spi::FunctionObjectType("spdoc.Service.CombineSharedServices");
+
 spi::Value Service_Summary_caller(
     const spi::InputContext*       in_context,
     const std::vector<spi::Value>& in_values)
@@ -2632,6 +2659,8 @@ void configTypes_register_object_types(const spi::ServiceSP& svc)
     svc->add_function_caller(&Module_combineSummaries_FunctionCaller);
     svc->add_object_type(&Service::object_type);
     svc->add_function_caller(&Service_FunctionCaller);
+    svc->add_object_type(&Service_CombineSharedServices_FunctionObjectType);
+    svc->add_function_caller(&Service_CombineSharedServices_FunctionCaller);
     svc->add_object_type(&Service_Summary_FunctionObjectType);
     svc->add_function_caller(&Service_Summary_FunctionCaller);
     svc->add_object_type(&Service_combineSummaries_FunctionObjectType);
