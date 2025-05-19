@@ -38,7 +38,32 @@ std::vector<std::string> DescriptionParser::take()
 {
     std::vector<std::string> output;
     output.swap(description);
-    return output;
+    std::vector<std::string> stripped;
+    // only allow blank lines in the middle and then only one at a time
+    bool blankLine = false;
+    for (auto line : output)
+    {
+        // strip white space from the end of the line
+        line = spi_util::StringStrip(line, false, true);
+        if (line.empty())
+        {
+            // we only put the blankLine in later
+            // only one blank line at a time
+            // we do not start or end the description with a blank line
+            blankLine = true;
+            continue;
+        }
+        if (blankLine)
+        {
+            blankLine = false;
+            if (stripped.size() > 0)
+            {
+                stripped.push_back(std::string());
+            }
+        }
+        stripped.push_back(line);
+    }
+    return stripped;
 }
 
 // consumes description tokens from the lexer

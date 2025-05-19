@@ -395,7 +395,8 @@ std::string SimpleType_Helper::getType(
     return "SIMPLE_TYPE";
 }
 
-std::vector<std::string> SimpleType::Summary() const
+std::vector<std::string> SimpleType::Summary(
+    bool includeDescription) const
 {
   bool isLogging = spdoc_begin_function();
   SPI_PROFILE("spdoc.SimpleType.Summary");
@@ -403,7 +404,7 @@ std::vector<std::string> SimpleType::Summary() const
   {
     SimpleTypeConstSP self(this);
     const std::vector<std::string>& i_result = SimpleType_Helper::Summary(
-        self);
+        self, includeDescription);
 
     spdoc_end_function();
 
@@ -416,13 +417,19 @@ std::vector<std::string> SimpleType::Summary() const
 }
 
 std::vector<std::string> SimpleType_Helper::Summary(
-    const SimpleTypeConstSP& in_self)
+    const SimpleTypeConstSP& in_self,
+    bool includeDescription)
 {
     const SimpleType* self = in_self.get();
 
     std::vector<std::string> summary;
     if (!self->noDoc)
     {
+        if (includeDescription)
+        {
+            for (auto const& item : self->description)
+                summary.push_back("# " + item);
+        }
         std::ostringstream oss;
         oss << "typedef " << self->typeName << " " << self->name << ";";
         summary.push_back(oss.str());
@@ -600,14 +607,16 @@ int Function_Helper::objectCount(
     return objectCount;
 }
 
-std::vector<std::string> Function::Summary() const
+std::vector<std::string> Function::Summary(
+    bool includeDescription) const
 {
   bool isLogging = spdoc_begin_function();
   SPI_PROFILE("spdoc.Function.Summary");
   try
   {
     FunctionConstSP self(this);
-    const std::vector<std::string>& i_result = Function_Helper::Summary(self);
+    const std::vector<std::string>& i_result = Function_Helper::Summary(self,
+        includeDescription);
 
     spdoc_end_function();
 
@@ -620,11 +629,18 @@ std::vector<std::string> Function::Summary() const
 }
 
 std::vector<std::string> Function_Helper::Summary(
-    const FunctionConstSP& in_self)
+    const FunctionConstSP& in_self,
+    bool includeDescription)
 {
     const Function* self = in_self.get();
 
     std::vector<std::string> summary;
+    if (includeDescription)
+    {
+        for (auto const& item : self->description)
+            summary.push_back("# " + item);
+    }
+
     std::ostringstream oss;
     if (self->returnType)
     {
@@ -646,10 +662,17 @@ std::vector<std::string> Function_Helper::Summary(
     {
         summary.push_back(oss.str());
         std::vector<std::string> args;
+        std::vector<std::vector<std::string>> argsDescription;
         for (size_t i = 0; i < self->inputs.size(); ++i)
+        {
             args.push_back(self->inputs[i]->encoding(false));
+            argsDescription.push_back(self->inputs[i]->description);
+        }
         for (size_t i = 0; i < self->outputs.size(); ++i)
+        {
             args.push_back(self->outputs[i]->encoding(true));
+            argsDescription.push_back(self->outputs[i]->description);
+        }
         size_t numArgs = args.size();
         for (size_t i = 0; i < numArgs; ++i)
         {
@@ -663,9 +686,21 @@ std::vector<std::string> Function_Helper::Summary(
             {
                 oss << ",";
             }
+            if (includeDescription)
+            {
+                for (auto const& item : argsDescription[i])
+                    summary.push_back("# " + item);
+            }
             summary.push_back(oss.str());
         }
     }
+
+    if (includeDescription)
+    {
+        for (auto const& item : self->returnTypeDescription)
+            summary.push_back("# " + item);
+    }
+
     return summary;
 }
 
@@ -812,14 +847,16 @@ std::string Enum_Helper::getType(
     return "ENUM";
 }
 
-std::vector<std::string> Enum::Summary() const
+std::vector<std::string> Enum::Summary(
+    bool includeDescription) const
 {
   bool isLogging = spdoc_begin_function();
   SPI_PROFILE("spdoc.Enum.Summary");
   try
   {
     EnumConstSP self(this);
-    const std::vector<std::string>& i_result = Enum_Helper::Summary(self);
+    const std::vector<std::string>& i_result = Enum_Helper::Summary(self,
+        includeDescription);
 
     spdoc_end_function();
 
@@ -832,12 +869,18 @@ std::vector<std::string> Enum::Summary() const
 }
 
 std::vector<std::string> Enum_Helper::Summary(
-    const EnumConstSP& in_self)
+    const EnumConstSP& in_self,
+    bool includeDescription)
 {
     const Enum* self = in_self.get();
 
     std::vector<std::string> summary;
 
+    if (includeDescription)
+    {
+        for (auto const& item : self->description)
+            summary.push_back("# " + item);
+    }
     size_t numEnumerands = self->enumerands.size();
 
     if (numEnumerands > 0)
@@ -849,6 +892,11 @@ std::vector<std::string> Enum_Helper::Summary(
         for (size_t i = 0; i < numEnumerands; ++i)
         {
             std::ostringstream oss;
+            if (includeDescription)
+            {
+                for (auto const& item : self->enumerands[i]->description)
+                    summary.push_back("# " + item);
+            }
             oss << "    " << self->enumerands[i]->code;
             if ((i+1) < numEnumerands)
                 oss << ",";
@@ -902,7 +950,8 @@ ClassMethod::ClassMethod(
     implements(implements)
 {}
 
-std::vector<std::string> ClassMethod::Summary() const
+std::vector<std::string> ClassMethod::Summary(
+    bool includeDescription) const
 {
   bool isLogging = spdoc_begin_function();
   SPI_PROFILE("spdoc.ClassMethod.Summary");
@@ -910,7 +959,7 @@ std::vector<std::string> ClassMethod::Summary() const
   {
     ClassMethodConstSP self(this);
     const std::vector<std::string>& i_result = ClassMethod_Helper::Summary(
-        self);
+        self, includeDescription);
 
     spdoc_end_function();
 
@@ -923,17 +972,32 @@ std::vector<std::string> ClassMethod::Summary() const
 }
 
 std::vector<std::string> ClassMethod_Helper::Summary(
-    const ClassMethodConstSP& in_self)
+    const ClassMethodConstSP& in_self,
+    bool includeDescription)
 {
     const ClassMethod* self = in_self.get();
 
     std::vector<std::string> summary;
-    std::vector<std::string> funcSummary = self->function->Summary();
+    std::vector<std::string> funcSummary = self->function->Summary(includeDescription);
 
     size_t numLines = funcSummary.size();
     if (numLines == 0)
         return summary;
     summary.reserve(numLines);
+
+    //if (self->isConst)
+    //{
+    //    std::string lastLine = spi_util::StringReplace(funcSummary[numLines-1], ";", " const;");
+    //    funcSummary[numLines-1] = lastLine;
+    //}
+    size_t j = 0;
+    for (j = 0; j < numLines; ++j)
+    {
+        if (funcSummary[j][0] == '#')
+            summary.push_back("    " + funcSummary[j]);
+        else
+            break;
+    }
 
     std::ostringstream oss;
     oss << "    ";
@@ -942,19 +1006,18 @@ std::vector<std::string> ClassMethod_Helper::Summary(
     if (self->isStatic)
         oss << "static ";
 
-    if (self->isConst)
-    {
-        std::string lastLine = spi_util::StringReplace(funcSummary[numLines-1], ";", " const;");
-        funcSummary[numLines-1] = lastLine;
-    }
-    oss << funcSummary[0];
+    oss << funcSummary[j];
     summary.push_back(oss.str());
 
-    for (size_t i = 1; i < numLines; ++i)
+    for (size_t i = j+1; i < numLines; ++i)
     {
-        std::ostringstream oss;
-        oss << "    " << funcSummary[i];
-        summary.push_back(oss.str());
+        std::string line = funcSummary[i];
+        // there might be description of the return type after the ";" which ends the function
+        if (self->isConst && line[0] != '#' && line[line.size() - 1] == ';')
+        {
+            line = line.substr(0, line.size() - 2) + " const;";
+        }
+        summary.push_back("    " + line);
     }
 
     return summary;
@@ -983,7 +1046,8 @@ CoerceFrom::CoerceFrom(
     coerceFrom(coerceFrom)
 {}
 
-std::vector<std::string> CoerceFrom::Summary() const
+std::vector<std::string> CoerceFrom::Summary(
+    bool includeDescription) const
 {
   bool isLogging = spdoc_begin_function();
   SPI_PROFILE("spdoc.CoerceFrom.Summary");
@@ -991,7 +1055,7 @@ std::vector<std::string> CoerceFrom::Summary() const
   {
     CoerceFromConstSP self(this);
     const std::vector<std::string>& i_result = CoerceFrom_Helper::Summary(
-        self);
+        self, includeDescription);
 
     spdoc_end_function();
 
@@ -1004,12 +1068,19 @@ std::vector<std::string> CoerceFrom::Summary() const
 }
 
 std::vector<std::string> CoerceFrom_Helper::Summary(
-    const CoerceFromConstSP& in_self)
+    const CoerceFromConstSP& in_self,
+    bool includeDescription)
 {
     const CoerceFrom* self = in_self.get();
 
     std::string encoding = self->coerceFrom->encoding(false);
     std::vector<std::string> summary;
+
+    if (includeDescription)
+    {
+        for (auto const& item : self->description)
+            summary.push_back("# " + item);
+    }
     std::ostringstream oss;
     oss << "    static Coerce(" << encoding << ");";
     summary.push_back(oss.str());
@@ -1042,14 +1113,16 @@ CoerceTo::CoerceTo(
     classType(classType)
 {}
 
-std::vector<std::string> CoerceTo::Summary() const
+std::vector<std::string> CoerceTo::Summary(
+    bool includeDescription) const
 {
   bool isLogging = spdoc_begin_function();
   SPI_PROFILE("spdoc.CoerceTo.Summary");
   try
   {
     CoerceToConstSP self(this);
-    const std::vector<std::string>& i_result = CoerceTo_Helper::Summary(self);
+    const std::vector<std::string>& i_result = CoerceTo_Helper::Summary(self,
+        includeDescription);
 
     spdoc_end_function();
 
@@ -1062,11 +1135,17 @@ std::vector<std::string> CoerceTo::Summary() const
 }
 
 std::vector<std::string> CoerceTo_Helper::Summary(
-    const CoerceToConstSP& in_self)
+    const CoerceToConstSP& in_self,
+    bool includeDescription)
 {
     const CoerceTo* self = in_self.get();
 
     std::vector<std::string> summary;
+    if (includeDescription)
+    {
+        for (auto const& item : self->description)
+            summary.push_back("# " + item);
+    }
     std::ostringstream oss;
     oss << "    operator " << self->className << "();";
     summary.push_back(oss.str());
@@ -1146,14 +1225,16 @@ Class::Class(
     constructor(constructor)
 {}
 
-std::vector<std::string> Class::Summary() const
+std::vector<std::string> Class::Summary(
+    bool includeDescription) const
 {
   bool isLogging = spdoc_begin_function();
   SPI_PROFILE("spdoc.Class.Summary");
   try
   {
     ClassConstSP self(this);
-    const std::vector<std::string>& i_result = Class_Helper::Summary(self);
+    const std::vector<std::string>& i_result = Class_Helper::Summary(self,
+        includeDescription);
 
     spdoc_end_function();
 
@@ -1166,11 +1247,17 @@ std::vector<std::string> Class::Summary() const
 }
 
 std::vector<std::string> Class_Helper::Summary(
-    const ClassConstSP& in_self)
+    const ClassConstSP& in_self,
+    bool includeDescription)
 {
     const Class* self = in_self.get();
 
     std::vector<std::string> summary;
+    if (includeDescription)
+    {
+        for (auto const& item : self->description)
+            summary.push_back("# " + item);
+    }
     std::ostringstream oss;
     oss << "class " << self->name;
     if (!self->baseClassName.empty())
@@ -1185,6 +1272,11 @@ std::vector<std::string> Class_Helper::Summary(
         std::string encoding = self->attributes[i]->encoding();
         if (!encoding.empty())
         {
+            if (includeDescription)
+            {
+                for (auto const& item : self->attributes[i]->description)
+                    summary.push_back("# " + item);
+            }
             oss << "    " << encoding << ";";
             summary.push_back(oss.str());
             started = true;
@@ -1196,6 +1288,11 @@ std::vector<std::string> Class_Helper::Summary(
         std::string encoding = self->properties[i]->encoding();
         if (!encoding.empty())
         {
+            if (includeDescription)
+            {
+                for (auto const& item : self->properties[i]->description)
+                    summary.push_back("# " + item);
+            }
             oss << "    property " << encoding << ";";
             summary.push_back(oss.str());
             started = true;
@@ -1203,7 +1300,7 @@ std::vector<std::string> Class_Helper::Summary(
     }
     for (size_t i = 0; i < self->methods.size(); ++i)
     {
-        std::vector<std::string> mSummary = self->methods[i]->Summary();
+        std::vector<std::string> mSummary = self->methods[i]->Summary(includeDescription);
         if (started)
             summary.push_back("");
         else
@@ -1213,7 +1310,7 @@ std::vector<std::string> Class_Helper::Summary(
     }
     for (size_t i = 0; i < self->coerceFrom.size(); ++i)
     {
-        std::vector<std::string> cfSummary = self->coerceFrom[i]->Summary();
+        std::vector<std::string> cfSummary = self->coerceFrom[i]->Summary(includeDescription);
         if (started)
             summary.push_back("");
         else
@@ -1222,7 +1319,7 @@ std::vector<std::string> Class_Helper::Summary(
     }
     for (size_t i = 0; i < self->coerceTo.size(); ++i)
     {
-        std::vector<std::string> ctSummary = self->coerceTo[i]->Summary();
+        std::vector<std::string> ctSummary = self->coerceTo[i]->Summary(includeDescription);
         if (started)
             summary.push_back("");
         else
@@ -1472,6 +1569,74 @@ Service::Service(
     importedEnums(importedEnums),
     sharedService(sharedService)
 {}
+
+ServiceConstSP Service::CombineSharedServices(
+    const std::vector<ServiceConstSP>& sharedServices) const
+{
+  bool isLogging = spdoc_begin_function();
+  SPI_PROFILE("spdoc.Service.CombineSharedServices");
+  try
+  {
+    ServiceConstSP self(this);
+    const ServiceConstSP& i_result = Service_Helper::CombineSharedServices(
+        self, sharedServices);
+
+    spdoc_end_function();
+
+    return i_result;
+  }
+  catch (std::exception& e)
+  { throw spdoc_catch_exception(isLogging, "Service.CombineSharedServices", e); }
+  catch (...)
+  { throw spdoc_catch_all(isLogging, "Service.CombineSharedServices"); }
+}
+
+ServiceConstSP Service_Helper::CombineSharedServices(
+    const ServiceConstSP& in_self,
+    const std::vector<ServiceConstSP>& sharedServices)
+{
+    const Service* self = in_self.get();
+
+    SPI_PRE_CONDITION(!self->sharedService);
+
+    std::vector<std::string> description = self->description;
+    std::vector<ModuleConstSP> modules = self->modules;
+    for (const auto& sharedService : sharedServices)
+    {
+        SPI_PRE_CONDITION(sharedService->sharedService);
+        SPI_PRE_CONDITION(sharedService->ns == self->ns);
+
+        const auto& sharedDescription = sharedService->description;
+        const auto& sharedModules = sharedService->modules;
+
+        if (description.size() == 0)
+        {
+            description = sharedDescription;
+        }
+        else if (sharedDescription.size() > 0)
+        {
+            description.push_back(std::string());
+            description.insert(
+                description.end(),
+                sharedDescription.begin(),
+                sharedDescription.end());
+        }
+
+        modules.insert(modules.end(), sharedModules.begin(), sharedModules.end());
+    }
+
+    return Service::Make(
+        self->name,
+        description,
+        self->longName,
+        self->ns,
+        self->declSpec,
+        self->version,
+        modules,
+        self->importedBaseClasses,
+        self->importedEnums,
+        false); // sharedService flag
+}
 
 std::vector<std::string> Service::Summary(
     bool sort) const
@@ -1886,6 +2051,83 @@ std::string Service_Helper::getPropertyClass(
     return self->getPropertyClass(baseClass->baseClassName, fieldName);
 }
 
+/*
+****************************************************************************
+* Returns a sorted list of constructs defined by the service.
+****************************************************************************
+*/
+
+std::vector<std::string> Service::getConstructs() const
+{
+  bool isLogging = spdoc_begin_function();
+  SPI_PROFILE("spdoc.Service.getConstructs");
+  try
+  {
+    ServiceConstSP self(this);
+    const std::vector<std::string>& i_result = Service_Helper::getConstructs(
+        self);
+
+    spdoc_end_function();
+
+    return i_result;
+  }
+  catch (std::exception& e)
+  { throw spdoc_catch_exception(isLogging, "Service.getConstructs", e); }
+  catch (...)
+  { throw spdoc_catch_all(isLogging, "Service.getConstructs"); }
+}
+
+std::vector<std::string> Service_Helper::getConstructs(
+    const ServiceConstSP& in_self)
+{
+    const Service* self = in_self.get();
+
+    self->buildIndexConstructs();
+    std::vector<std::string> names;
+    for (auto iter = self->indexConstructs.begin(); iter != self->indexConstructs.end(); ++iter)
+        names.push_back(iter->first);
+    return names;
+}
+
+/*
+****************************************************************************
+* Returns the construct details for a name.
+****************************************************************************
+*/
+
+ConstructConstSP Service::getConstruct(
+    const std::string& name) const
+{
+  bool isLogging = spdoc_begin_function();
+  SPI_PROFILE("spdoc.Service.getConstruct");
+  try
+  {
+    ServiceConstSP self(this);
+    const ConstructConstSP& i_result = Service_Helper::getConstruct(self, name);
+
+    spdoc_end_function();
+
+    return i_result;
+  }
+  catch (std::exception& e)
+  { throw spdoc_catch_exception(isLogging, "Service.getConstruct", e); }
+  catch (...)
+  { throw spdoc_catch_all(isLogging, "Service.getConstruct"); }
+}
+
+ConstructConstSP Service_Helper::getConstruct(
+    const ServiceConstSP& in_self,
+    const std::string& name)
+{
+    const Service* self = in_self.get();
+
+    self->buildIndexConstructs();
+    auto iter = self->indexConstructs.find(name);
+    if (iter == self->indexConstructs.end())
+        SPI_THROW_RUNTIME_ERROR("'" << name << "' not found");
+    return iter->second;
+}
+
 void Service::buildIndexEnums() const
 {
     if (indexEnums.empty())
@@ -1939,6 +2181,34 @@ void Service::buildIndexClasses() const
         }
     }
 }
+
+void Service::buildIndexConstructs() const
+{
+    if (indexConstructs.empty())
+    {
+        for (const ModuleConstSP& module : modules)
+        {
+            const std::string& ns = module->ns;
+            for (const ConstructConstSP& construct : module->constructs)
+            {
+                // this test is a way of ignoring noDoc SIMPLE_TYPEs
+                if (construct->Summary().size() == 0)
+                    continue;
+
+                const std::string& name = construct->getName();
+                if (ns.empty())
+                {
+                    indexConstructs.insert({ name, construct });
+                }
+                else
+                {
+                    indexConstructs.insert({ ns + "." + name, construct });
+                }
+            }
+        }
+    }
+}
+
 
 SPDOC_END_NAMESPACE
 

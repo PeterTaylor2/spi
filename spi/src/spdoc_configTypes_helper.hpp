@@ -59,7 +59,8 @@ public:
     static std::string getType(
         const ConstructConstSP& self);
     static std::vector<std::string> Summary(
-        const ConstructConstSP& self);
+        const ConstructConstSP& self,
+        bool includeDescription);
 };
 
 class SimpleType_Helper
@@ -68,7 +69,8 @@ public:
     static std::string getType(
         const SimpleTypeConstSP& self);
     static std::vector<std::string> Summary(
-        const SimpleTypeConstSP& self);
+        const SimpleTypeConstSP& self,
+        bool includeDescription);
 };
 
 class Function_Helper
@@ -81,7 +83,8 @@ public:
     static int objectCount(
         const FunctionConstSP& self);
     static std::vector<std::string> Summary(
-        const FunctionConstSP& self);
+        const FunctionConstSP& self,
+        bool includeDescription);
     static std::string getType(
         const FunctionConstSP& self);
 };
@@ -92,35 +95,40 @@ public:
     static std::string getType(
         const EnumConstSP& self);
     static std::vector<std::string> Summary(
-        const EnumConstSP& self);
+        const EnumConstSP& self,
+        bool includeDescription);
 };
 
 class ClassMethod_Helper
 {
 public:
     static std::vector<std::string> Summary(
-        const ClassMethodConstSP& self);
+        const ClassMethodConstSP& self,
+        bool includeDescription);
 };
 
 class CoerceFrom_Helper
 {
 public:
     static std::vector<std::string> Summary(
-        const CoerceFromConstSP& self);
+        const CoerceFromConstSP& self,
+        bool includeDescription);
 };
 
 class CoerceTo_Helper
 {
 public:
     static std::vector<std::string> Summary(
-        const CoerceToConstSP& self);
+        const CoerceToConstSP& self,
+        bool includeDescription);
 };
 
 class Class_Helper
 {
 public:
     static std::vector<std::string> Summary(
-        const ClassConstSP& self);
+        const ClassConstSP& self,
+        bool includeDescription);
     static std::string getType(
         const ClassConstSP& self);
     static std::string ObjectName(
@@ -140,6 +148,9 @@ public:
 class Service_Helper
 {
 public:
+    static ServiceConstSP CombineSharedServices(
+        const ServiceConstSP& self,
+        const std::vector<ServiceConstSP>& sharedServices);
     static std::vector<std::string> Summary(
         const ServiceConstSP& self,
         bool sort);
@@ -167,6 +178,11 @@ public:
         const ServiceConstSP& self,
         const std::string& baseClassName,
         const std::string& fieldName);
+    static std::vector<std::string> getConstructs(
+        const ServiceConstSP& self);
+    static ConstructConstSP getConstruct(
+        const ServiceConstSP& self,
+        const std::string& name);
 };
 
 void configTypes_register_object_types(const spi::ServiceSP& svc);

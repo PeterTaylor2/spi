@@ -644,16 +644,20 @@ spi::Value Construct_Summary_caller(
 {
     const ConstructConstSP& self =
         in_context->ValueToInstance<Construct const>(in_values[0]);
+    bool includeDescription =
+        in_context->ValueToBool(in_values[1], true, false);
 
-    const std::vector<std::string>& o_result = self->Summary();
+    const std::vector<std::string>& o_result = self->Summary(
+        includeDescription);
     return o_result;
 }
 
 spi::FunctionCaller Construct_Summary_FunctionCaller = {
     "Construct.Summary",
-    1,
+    2,
     {
-        {"self", spi::ArgType::OBJECT, "Construct", false, false, false}
+        {"self", spi::ArgType::OBJECT, "Construct", false, false, false},
+        {"includeDescription", spi::ArgType::BOOL, "bool", false, true, false}
     },
     Construct_Summary_caller
 };
@@ -1452,16 +1456,20 @@ spi::Value ClassMethod_Summary_caller(
 {
     const ClassMethodConstSP& self =
         in_context->ValueToInstance<ClassMethod const>(in_values[0]);
+    bool includeDescription =
+        in_context->ValueToBool(in_values[1], true, false);
 
-    const std::vector<std::string>& o_result = self->Summary();
+    const std::vector<std::string>& o_result = self->Summary(
+        includeDescription);
     return o_result;
 }
 
 spi::FunctionCaller ClassMethod_Summary_FunctionCaller = {
     "ClassMethod.Summary",
-    1,
+    2,
     {
-        {"self", spi::ArgType::OBJECT, "ClassMethod", false, false, false}
+        {"self", spi::ArgType::OBJECT, "ClassMethod", false, false, false},
+        {"includeDescription", spi::ArgType::BOOL, "bool", false, true, false}
     },
     ClassMethod_Summary_caller
 };
@@ -1578,16 +1586,20 @@ spi::Value CoerceFrom_Summary_caller(
 {
     const CoerceFromConstSP& self =
         in_context->ValueToInstance<CoerceFrom const>(in_values[0]);
+    bool includeDescription =
+        in_context->ValueToBool(in_values[1], true, false);
 
-    const std::vector<std::string>& o_result = self->Summary();
+    const std::vector<std::string>& o_result = self->Summary(
+        includeDescription);
     return o_result;
 }
 
 spi::FunctionCaller CoerceFrom_Summary_FunctionCaller = {
     "CoerceFrom.Summary",
-    1,
+    2,
     {
-        {"self", spi::ArgType::OBJECT, "CoerceFrom", false, false, false}
+        {"self", spi::ArgType::OBJECT, "CoerceFrom", false, false, false},
+        {"includeDescription", spi::ArgType::BOOL, "bool", false, true, false}
     },
     CoerceFrom_Summary_caller
 };
@@ -1710,16 +1722,20 @@ spi::Value CoerceTo_Summary_caller(
 {
     const CoerceToConstSP& self =
         in_context->ValueToInstance<CoerceTo const>(in_values[0]);
+    bool includeDescription =
+        in_context->ValueToBool(in_values[1], true, false);
 
-    const std::vector<std::string>& o_result = self->Summary();
+    const std::vector<std::string>& o_result = self->Summary(
+        includeDescription);
     return o_result;
 }
 
 spi::FunctionCaller CoerceTo_Summary_FunctionCaller = {
     "CoerceTo.Summary",
-    1,
+    2,
     {
-        {"self", spi::ArgType::OBJECT, "CoerceTo", false, false, false}
+        {"self", spi::ArgType::OBJECT, "CoerceTo", false, false, false},
+        {"includeDescription", spi::ArgType::BOOL, "bool", false, true, false}
     },
     CoerceTo_Summary_caller
 };
@@ -2272,6 +2288,33 @@ spi::FunctionCaller Service_FunctionCaller = {
     Service_caller
 };
 
+spi::Value Service_CombineSharedServices_caller(
+    const spi::InputContext*       in_context,
+    const std::vector<spi::Value>& in_values)
+{
+    const ServiceConstSP& self =
+        in_context->ValueToInstance<Service const>(in_values[0]);
+    std::vector<ServiceConstSP> sharedServices =
+        in_context->ValueToInstanceVector<Service const>(in_values[1]);
+
+    const ServiceConstSP& o_result = self->CombineSharedServices(
+        sharedServices);
+    return spi::ObjectConstSP(o_result);
+}
+
+spi::FunctionCaller Service_CombineSharedServices_FunctionCaller = {
+    "Service.CombineSharedServices",
+    2,
+    {
+        {"self", spi::ArgType::OBJECT, "Service", false, false, false},
+        {"sharedServices", spi::ArgType::OBJECT, "Service", true, false, false}
+    },
+    Service_CombineSharedServices_caller
+};
+
+spi::ObjectType Service_CombineSharedServices_FunctionObjectType =
+    spi::FunctionObjectType("spdoc.Service.CombineSharedServices");
+
 spi::Value Service_Summary_caller(
     const spi::InputContext*       in_context,
     const std::vector<spi::Value>& in_values)
@@ -2508,6 +2551,55 @@ spi::FunctionCaller Service_getPropertyClass_FunctionCaller = {
 spi::ObjectType Service_getPropertyClass_FunctionObjectType =
     spi::FunctionObjectType("spdoc.Service.getPropertyClass");
 
+spi::Value Service_getConstructs_caller(
+    const spi::InputContext*       in_context,
+    const std::vector<spi::Value>& in_values)
+{
+    const ServiceConstSP& self =
+        in_context->ValueToInstance<Service const>(in_values[0]);
+
+    const std::vector<std::string>& o_result = self->getConstructs();
+    return o_result;
+}
+
+spi::FunctionCaller Service_getConstructs_FunctionCaller = {
+    "Service.getConstructs",
+    1,
+    {
+        {"self", spi::ArgType::OBJECT, "Service", false, false, false}
+    },
+    Service_getConstructs_caller
+};
+
+spi::ObjectType Service_getConstructs_FunctionObjectType =
+    spi::FunctionObjectType("spdoc.Service.getConstructs");
+
+spi::Value Service_getConstruct_caller(
+    const spi::InputContext*       in_context,
+    const std::vector<spi::Value>& in_values)
+{
+    const ServiceConstSP& self =
+        in_context->ValueToInstance<Service const>(in_values[0]);
+    const std::string& name =
+        in_context->ValueToString(in_values[1]);
+
+    const ConstructConstSP& o_result = self->getConstruct(name);
+    return spi::ObjectConstSP(o_result);
+}
+
+spi::FunctionCaller Service_getConstruct_FunctionCaller = {
+    "Service.getConstruct",
+    2,
+    {
+        {"self", spi::ArgType::OBJECT, "Service", false, false, false},
+        {"name", spi::ArgType::STRING, "string", false, false, true}
+    },
+    Service_getConstruct_caller
+};
+
+spi::ObjectType Service_getConstruct_FunctionObjectType =
+    spi::FunctionObjectType("spdoc.Service.getConstruct");
+
 void configTypes_register_object_types(const spi::ServiceSP& svc)
 {
     svc->add_object_type(&DataType::object_type);
@@ -2567,6 +2659,8 @@ void configTypes_register_object_types(const spi::ServiceSP& svc)
     svc->add_function_caller(&Module_combineSummaries_FunctionCaller);
     svc->add_object_type(&Service::object_type);
     svc->add_function_caller(&Service_FunctionCaller);
+    svc->add_object_type(&Service_CombineSharedServices_FunctionObjectType);
+    svc->add_function_caller(&Service_CombineSharedServices_FunctionCaller);
     svc->add_object_type(&Service_Summary_FunctionObjectType);
     svc->add_function_caller(&Service_Summary_FunctionCaller);
     svc->add_object_type(&Service_combineSummaries_FunctionObjectType);
@@ -2585,6 +2679,10 @@ void configTypes_register_object_types(const spi::ServiceSP& svc)
     svc->add_function_caller(&Service_isSubClass_FunctionCaller);
     svc->add_object_type(&Service_getPropertyClass_FunctionObjectType);
     svc->add_function_caller(&Service_getPropertyClass_FunctionCaller);
+    svc->add_object_type(&Service_getConstructs_FunctionObjectType);
+    svc->add_function_caller(&Service_getConstructs_FunctionCaller);
+    svc->add_object_type(&Service_getConstruct_FunctionObjectType);
+    svc->add_function_caller(&Service_getConstruct_FunctionCaller);
 }
 
 SPDOC_END_NAMESPACE

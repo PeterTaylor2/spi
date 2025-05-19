@@ -102,6 +102,8 @@ PyObject* py_spdoc_Module_combineSummaries(PyObject* self, PyObject* args, PyObj
 
 PyObject* py_spdoc_Service_Coerce(PyObject* self, PyObject* args);
 
+PyObject* py_spdoc_Service_CombineSharedServices(PyObject* self, PyObject* args, PyObject* kwargs);
+
 PyObject* py_spdoc_Service_Summary(PyObject* self, PyObject* args, PyObject* kwargs);
 
 PyObject* py_spdoc_Service_combineSummaries(PyObject* self, PyObject* args, PyObject* kwargs);
@@ -119,6 +121,10 @@ PyObject* py_spdoc_Service_getClass(PyObject* self, PyObject* args, PyObject* kw
 PyObject* py_spdoc_Service_isSubClass(PyObject* self, PyObject* args, PyObject* kwargs);
 
 PyObject* py_spdoc_Service_getPropertyClass(PyObject* self, PyObject* args, PyObject* kwargs);
+
+PyObject* py_spdoc_Service_getConstructs(PyObject* self, PyObject* args, PyObject* kwargs);
+
+PyObject* py_spdoc_Service_getConstruct(PyObject* self, PyObject* args, PyObject* kwargs);
 
 } /* end of extern "C" */
 

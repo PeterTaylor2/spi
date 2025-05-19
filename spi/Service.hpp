@@ -146,6 +146,10 @@ public:
     // calls shut_down if it has not already been called
     ~Service();
 
+    // record the satellites that use this service as a base service
+    void add_satellite(const char* name);
+    std::vector<std::string> satellites() const;
+
     // object registry functions
     void add_object_type(ObjectType* type);
     ObjectType* get_object_type(const char* className) const;
@@ -227,6 +231,7 @@ private:
     std::map<std::string, EnumInfo*> m_enums;
     int                    m_connections;
     bool                   m_isLogging;
+    std::vector<std::string> m_satellites;
 
     CommonRuntimeSP        m_commonRuntime;
     void set_logging(bool logging);

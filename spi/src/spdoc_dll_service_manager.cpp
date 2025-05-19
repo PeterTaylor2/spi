@@ -28,6 +28,8 @@
 
 #include "spdoc_dll_service_manager.hpp"
 #include "spdoc_dll_time_out.hpp"
+#include <spi/spdoc_dll_service.hpp>
+#include <spi_util/FileUtil.hpp>
 
 #include "spdoc_publicType_helper.hpp"
 #include "spdoc_constant_helper.hpp"
@@ -179,6 +181,27 @@ void spdoc_check_permission()
 const char* spdoc_startup_directory()
 {
     return &g_startup_directory[0];
+}
+
+spdoc::ServiceConstSP spdoc_service_doc()
+{
+    spdoc::spdoc_start_service();
+    std::string fn = spi_util::path::join(&g_startup_directory[0],
+        "spdoc.svo", 0);
+    auto service_doc = spdoc::Service::from_file(fn);
+    const std::vector<std::string>& satellites = spdoc_service()->satellites();
+    if (satellites.size() > 0)
+    {
+        std::vector<spdoc::ServiceConstSP> shared_services;
+        for (const auto& satellite : satellites)
+        {
+            fn = spi_util::path::join(&g_startup_directory[0],
+                (satellite + ".svo").c_str(), 0);
+            shared_services.push_back(spdoc::Service::from_file(fn));
+        }
+        service_doc = service_doc->CombineSharedServices(shared_services);
+    }
+    return service_doc;
 }
 
 SPDOC_END_NAMESPACE

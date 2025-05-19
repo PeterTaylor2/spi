@@ -270,12 +270,13 @@ ServiceDefinitionSP ServiceDefinition::Make(
     const std::string& sharedPtrInclude,
     bool noLog,
     bool useVersionedNamespace,
-    const std::vector<std::string>& description)
+    const std::vector<std::string>& description,
+    const std::string& helpFunc)
 {
     return ServiceDefinitionSP(
         new ServiceDefinition(name, dllName, longName, ns, version, declSpec,
                               sharedPtr, /*spDynamicCast,*/ sharedPtrInclude,
-                              noLog, useVersionedNamespace, description));
+                              noLog, useVersionedNamespace, description, helpFunc));
 }
 
 ServiceDefinition::ServiceDefinition(
@@ -290,7 +291,8 @@ ServiceDefinition::ServiceDefinition(
     const std::string& sharedPtrInclude,
     bool noLog,
     bool useVersionedNamespace,
-    const std::vector<std::string>& description)
+    const std::vector<std::string>& description,
+    const std::string& helpFunc)
     :
     m_name(name),
     m_dllName(dllName),
@@ -304,6 +306,7 @@ ServiceDefinition::ServiceDefinition(
     m_noLog(noLog),
     m_useVersionedNamespace(useVersionedNamespace),
     m_description(description),
+    m_helpFunc(helpFunc),
     m_dataTypes(),
     m_publicDataTypes(),
     m_classes(),
@@ -438,6 +441,63 @@ void ServiceDefinition::addModule(ModuleDefinitionSP& module)
     }
     addModuleToIndex(module);
     m_modules.push_back(module); // only after we tested for duplicates
+}
+
+void ServiceDefinition::addServiceLevelModule()
+{
+    std::vector<ConstructConstSP> constructs;
+
+    if (!m_helpFunc.empty())
+    {
+        std::vector<std::string> description = {
+            "Provides help for a given component or lists all components" };
+        std::vector<std::string> returnTypeDescription = {
+            "If name is undefined, then we return the list of all components.",
+            "",
+            "Otherwise we describe the component for the given name.",
+            "Comments will start with #",
+            "",
+            "In order to get the information the file " + m_name + ".svo needs to be found in the startup directory" };
+
+        const DataTypeConstSP stringType = getDataType("string");
+        std::vector<std::string> code = {
+            "    static spdoc::ServiceConstSP doc;"
+            "    if (!doc)"
+            "        doc = " + m_name + "_service_doc();"
+            "",
+            "    if (name.empty())"
+            "        return doc->getConstructs();"
+            "    return doc->getConstruct(name)->Summary(true);"
+            "}"
+        };
+
+        FunctionConstSP func = Function::Make(
+            description,
+            returnTypeDescription,
+            stringType,
+            1,
+            m_helpFunc,
+            "",
+            { FunctionAttribute::Make(
+                Attribute::Make({}, stringType, "name", 0, true, StringConstant::Make("")),
+                false) },
+            Verbatim::Make("", 0, code),
+            true, // noLog
+            true, // noConvert
+            {}, // excel options
+            0, // cache size
+            false); // optional return type
+
+        constructs.push_back(func);
+    }
+
+    if (constructs.size() > 0)
+    {
+        ModuleDefinitionSP module = ModuleDefinition::Make("service_level", {}, {});
+        for (const auto& construct : constructs)
+            module->addConstruct(construct);
+        addModule(module);
+    }
 }
 
 ModuleDefinitionSP ServiceDefinition::getModule(const std::string& name) const
@@ -1143,6 +1203,7 @@ void ServiceDefinition::writeServiceHeaders(
 
     ostr << "\n"
          << "#include <spi/spi.hpp>\n"
+         << "#include <spi/spdoc_configTypes.hpp>\n"
          << "#include \"" << m_declSpecHeader << "\"\n"
          << "#include \"" << m_name << "_namespace.hpp\"\n";
 
@@ -1175,7 +1236,14 @@ void ServiceDefinition::writeServiceHeaders(
         << "const char* " << m_name << "_version();\n"
         << "\n"
         << m_import << "\n"
-        << "const char* " << m_name << "_startup_directory();\n";
+        << "const char* " << m_name << "_startup_directory();\n"
+        << "\n";
+
+    if (!m_baseService)
+    {
+        ostr << m_import << "\n"
+            << "spdoc::ServiceConstSP " << m_name << "_service_doc();\n";
+    }
 
     ostr << "\n";
     writeEndNamespace(ostr);
@@ -1288,6 +1356,9 @@ void ServiceDefinition::writeServiceSource(
     {
         ostr << "#include \"" << m_importedTypes[j]->name() << "_dll_service.hpp\"\n";
     }
+
+    ostr << "#include <spi/spdoc_dll_service.hpp>\n"
+        << "#include <spi_util/FileUtil.hpp>\n";
 
     if (m_shutdown)
     {
@@ -1577,6 +1648,31 @@ void ServiceDefinition::writeServiceSource(
         << "    return &g_startup_directory[0];\n"
         << "}\n"
         << "\n";
+
+    if (!m_baseService)
+    {
+        ostr << "spdoc::ServiceConstSP " << m_name << "_service_doc()\n"
+            << "{\n"
+            << "    spdoc::spdoc_start_service();\n"
+            << "    std::string fn = spi_util::path::join(&g_startup_directory[0],\n"
+            << "        \"" << m_name << ".svo\", 0);\n"
+            << "    auto service_doc = spdoc::Service::from_file(fn);\n"
+            << "    const std::vector<std::string>& satellites = " << m_name << "_service()->satellites();\n"
+            << "    if (satellites.size() > 0)\n"
+            << "    {\n"
+            << "        std::vector<spdoc::ServiceConstSP> shared_services;\n"
+            << "        for (const auto& satellite : satellites)\n"
+            << "        {\n"
+            << "            fn = spi_util::path::join(&g_startup_directory[0],\n"
+            << "                (satellite + \".svo\").c_str(), 0);\n"
+            << "            shared_services.push_back(spdoc::Service::from_file(fn));\n"
+            << "        }\n"
+            << "        service_doc = service_doc->CombineSharedServices(shared_services);\n"
+            << "    }\n"
+            << "    return service_doc;\n"
+            << "}\n"
+            << "\n";
+    }
 
     nsman.endAllNamespaces(ostr);
     writeEndNamespace(ostr);

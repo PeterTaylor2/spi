@@ -68,8 +68,8 @@ public:
         const std::string& valueTypeName,
         PublicType publicType,
         bool noDoc,
-        const std::string& nsService,
-        bool objectAsValue);
+        const std::string& nsService = "",
+        bool objectAsValue = false);
 
     /**
     ************************************************************************
@@ -128,7 +128,7 @@ public:
         const DataTypeConstSP& dataType,
         int arrayDim,
         bool isOptional,
-        const ConstantConstSP& defaultValue);
+        const ConstantConstSP& defaultValue = {});
 
     /**
     ************************************************************************
@@ -138,7 +138,7 @@ public:
     ************************************************************************
     */
     std::string encoding(
-        bool isOutput) const;
+        bool isOutput = false) const;
 
     typedef spi::ObjectSmartPtr<Attribute> outer_type;
 
@@ -250,9 +250,12 @@ public:
     * Returns a short summary of the construct (disregarding description)
     *
     * If the construct is undocumented then this will be a zero size array
+    *
+    * @param includeDescription
     ************************************************************************
     */
-    virtual std::vector<std::string> Summary() const = 0;
+    virtual std::vector<std::string> Summary(
+        bool includeDescription = false) const = 0;
 
     typedef spi::ObjectSmartPtr<Construct> outer_type;
 
@@ -290,9 +293,12 @@ public:
     /**
     ************************************************************************
     * No description.
+    *
+    * @param includeDescription
     ************************************************************************
     */
-    std::vector<std::string> Summary() const;
+    std::vector<std::string> Summary(
+        bool includeDescription = false) const;
 
     typedef spi::ObjectSmartPtr<SimpleType> outer_type;
 
@@ -331,10 +337,10 @@ public:
         const std::vector<std::string>& returnTypeDescription,
         const DataTypeConstSP& returnType,
         int returnArrayDim,
-        const std::vector<AttributeConstSP>& inputs,
-        const std::vector<AttributeConstSP>& outputs,
-        const std::vector<std::string>& excelOptions,
-        bool optionalReturnType);
+        const std::vector<AttributeConstSP>& inputs = {},
+        const std::vector<AttributeConstSP>& outputs = {},
+        const std::vector<std::string>& excelOptions = {},
+        bool optionalReturnType = false);
 
     /**
     ************************************************************************
@@ -360,9 +366,12 @@ public:
     /**
     ************************************************************************
     * No description.
+    *
+    * @param includeDescription
     ************************************************************************
     */
-    std::vector<std::string> Summary() const;
+    std::vector<std::string> Summary(
+        bool includeDescription = false) const;
 
     /**
     ************************************************************************
@@ -414,8 +423,8 @@ class SPI_IMPORT Enumerand : public spi::Object
 public:
     static EnumerandConstSP Make(
         const std::string& code,
-        const std::vector<std::string>& strings,
-        const std::vector<std::string>& description);
+        const std::vector<std::string>& strings = {},
+        const std::vector<std::string>& description = {});
 
     typedef spi::ObjectSmartPtr<Enumerand> outer_type;
 
@@ -445,7 +454,7 @@ class SPI_IMPORT EnumConstructor : public spi::Object
 public:
     static EnumConstructorConstSP Make(
         PublicType constructorType,
-        const std::vector<std::string>& description);
+        const std::vector<std::string>& description = {});
 
     typedef spi::ObjectSmartPtr<EnumConstructor> outer_type;
 
@@ -473,9 +482,9 @@ class SPI_IMPORT Enum : public Construct
 public:
     static EnumConstSP Make(
         const std::string& name,
-        const std::vector<std::string>& description,
-        const std::vector<EnumerandConstSP>& enumerands,
-        const std::vector<EnumConstructorConstSP>& constructors);
+        const std::vector<std::string>& description = {},
+        const std::vector<EnumerandConstSP>& enumerands = {},
+        const std::vector<EnumConstructorConstSP>& constructors = {});
 
     /**
     ************************************************************************
@@ -487,9 +496,12 @@ public:
     /**
     ************************************************************************
     * No description.
+    *
+    * @param includeDescription
     ************************************************************************
     */
-    std::vector<std::string> Summary() const;
+    std::vector<std::string> Summary(
+        bool includeDescription = false) const;
 
     typedef spi::ObjectSmartPtr<Enum> outer_type;
 
@@ -528,14 +540,17 @@ public:
         bool isVirtual,
         bool isStatic,
         bool isImplementation,
-        const std::string& implements);
+        const std::string& implements = "");
 
     /**
     ************************************************************************
     * No description.
+    *
+    * @param includeDescription
     ************************************************************************
     */
-    std::vector<std::string> Summary() const;
+    std::vector<std::string> Summary(
+        bool includeDescription = false) const;
 
     typedef spi::ObjectSmartPtr<ClassMethod> outer_type;
 
@@ -577,9 +592,12 @@ public:
     /**
     ************************************************************************
     * No description.
+    *
+    * @param includeDescription
     ************************************************************************
     */
-    std::vector<std::string> Summary() const;
+    std::vector<std::string> Summary(
+        bool includeDescription = false) const;
 
     typedef spi::ObjectSmartPtr<CoerceFrom> outer_type;
 
@@ -614,9 +632,12 @@ public:
     /**
     ************************************************************************
     * No description.
+    *
+    * @param includeDescription
     ************************************************************************
     */
-    std::vector<std::string> Summary() const;
+    std::vector<std::string> Summary(
+        bool includeDescription = false) const;
 
     typedef spi::ObjectSmartPtr<CoerceTo> outer_type;
 
@@ -661,15 +682,18 @@ public:
         bool isDelegate,
         bool canPut,
         bool hasDynamicAttributes,
-        bool asValue,
-        const std::string& constructor);
+        bool asValue = false,
+        const std::string& constructor = "");
 
     /**
     ************************************************************************
     * No description.
+    *
+    * @param includeDescription
     ************************************************************************
     */
-    std::vector<std::string> Summary() const;
+    std::vector<std::string> Summary(
+        bool includeDescription = false) const;
 
     /**
     ************************************************************************
@@ -756,7 +780,7 @@ public:
         const std::string& name,
         const std::vector<std::string>& description,
         const std::string& ns,
-        const std::vector<ConstructConstSP>& constructs);
+        const std::vector<ConstructConstSP>& constructs = {});
 
     /**
     ************************************************************************
@@ -805,10 +829,20 @@ public:
         const std::string& ns,
         const std::string& declSpec,
         const std::string& version,
-        const std::vector<ModuleConstSP>& modules,
-        const std::vector<ClassConstSP>& importedBaseClasses,
-        const std::vector<EnumConstSP>& importedEnums,
-        bool sharedService);
+        const std::vector<ModuleConstSP>& modules = {},
+        const std::vector<ClassConstSP>& importedBaseClasses = {},
+        const std::vector<EnumConstSP>& importedEnums = {},
+        bool sharedService = false);
+
+    /**
+    ************************************************************************
+    * No description.
+    *
+    * @param sharedServices
+    ************************************************************************
+    */
+    ServiceConstSP CombineSharedServices(
+        const std::vector<ServiceConstSP>& sharedServices = {}) const;
 
     /**
     ************************************************************************
@@ -902,6 +936,23 @@ public:
         const std::string& baseClassName,
         const std::string& fieldName) const;
 
+    /**
+    ************************************************************************
+    * Returns a sorted list of constructs defined by the service.
+    ************************************************************************
+    */
+    std::vector<std::string> getConstructs() const;
+
+    /**
+    ************************************************************************
+    * Returns the construct details for a name.
+    *
+    * @param name
+    ************************************************************************
+    */
+    ConstructConstSP getConstruct(
+        const std::string& name) const;
+
     typedef spi::ObjectSmartPtr<Service> outer_type;
 
     SPI_DECLARE_OBJECT_TYPE(Service);
@@ -938,8 +989,10 @@ private:
 
     mutable std::map<std::string, EnumConstSP> indexEnums;
     mutable std::map<std::string, ClassConstSP> indexClasses;
+    mutable std::map<std::string, ConstructConstSP> indexConstructs;
     void buildIndexEnums() const;
     void buildIndexClasses() const;
+    void buildIndexConstructs() const;
 
 };
 

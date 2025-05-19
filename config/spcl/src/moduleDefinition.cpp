@@ -41,6 +41,7 @@
 #include "verbatim.hpp"
 #include "verbatimConstruct.hpp"
 #include "options.hpp"
+#include "function.hpp"
 
 #include <spgtools/licenseTools.hpp>
 
