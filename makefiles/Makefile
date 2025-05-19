@@ -1,4 +1,4 @@
-# makefile responsible for updating the all.vcxproj files
+# makefile responsible for updating the makefiles.vcxproj files
 
 target: v17.vcxproj 
 
