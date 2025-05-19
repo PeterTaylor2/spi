@@ -734,7 +734,8 @@ std::string writeTexClass(
 
             switch(publicType)
             {
-            case spdoc::PublicType::ENUM:
+            case spdoc::PublicType::ENUM_AS_STRING:
+            case spdoc::PublicType::ENUM_AS_INT:
                 ostr << "\nSee " << texEscape(dataType->name)
                      << " (page \\pageref{type_" << dataType->name << "}).\n";
                 break;

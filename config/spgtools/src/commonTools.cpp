@@ -136,7 +136,7 @@ std::string TranslateFromValue(
             throw spi::RuntimeError("PROGRAM_BUG");
         }
         break;
-    case spdoc::PublicType::ENUM:
+    case spdoc::PublicType::ENUM_AS_STRING:
         if (arrayDim > 0)
         {
             // FIXME
@@ -146,6 +146,20 @@ std::string TranslateFromValue(
         // whenever we use Value since we might need to log it
          oss << spi::StringReplace(dataTypeName, ".", "::")
              << "(" << value << ".getString())";
+        //oss << "(" << spi::StringReplace(dataTypeName, ".", "::")
+        //    << "::Enum)(" << value << ".getInt())";
+
+        break;
+    case spdoc::PublicType::ENUM_AS_INT:
+        if (arrayDim > 0)
+        {
+            // FIXME
+            throw spi::RuntimeError("%s: Array of enum is not supported", __FUNCTION__);
+        }
+        // unfortunately we need to represent an enum as a STRING
+        // whenever we use Value since we might need to log it
+        oss << spi::StringReplace(dataTypeName, ".", "::")
+            << "(" << value << ".getInt())";
         //oss << "(" << spi::StringReplace(dataTypeName, ".", "::")
         //    << "::Enum)(" << value << ".getInt())";
 
@@ -253,7 +267,7 @@ std::string TranslateToValue(
             throw spi::RuntimeError("arrayDim out of range");
         }
         break;
-    case spdoc::PublicType::ENUM:
+    case spdoc::PublicType::ENUM_AS_STRING:
         // for an enum although it seems inefficient we need to convert the
         // enumerated value to a string first
         switch (arrayDim)
@@ -263,6 +277,22 @@ std::string TranslateToValue(
             break;
         case 1:
             oss << "::spi::Value" << "(::spi::EnumVectorToStringVector(" << value << "))";
+            break;
+        case 2:
+            // FIXME
+            throw spi::RuntimeError("%s: Matrix of enum is not supported", __FUNCTION__);
+        default:
+            throw spi::RuntimeError("arrayDim out of range");
+        }
+        break;
+    case spdoc::PublicType::ENUM_AS_INT:
+        switch (arrayDim)
+        {
+        case 0:
+            oss << "::spi::Value" << "(" << value << ".to_int())";
+            break;
+        case 1:
+            oss << "::spi::Value" << "(::spi::EnumVectorToIntVector(" << value << "))";
             break;
         case 2:
             // FIXME

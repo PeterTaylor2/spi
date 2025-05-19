@@ -524,7 +524,8 @@ std::string DataType::toMapCode(
         else if (canBeHidden)
             hideCondition << "!" << data;
         break;
-    case spdoc::PublicType::ENUM:
+    case spdoc::PublicType::ENUM_AS_STRING:
+    case spdoc::PublicType::ENUM_AS_INT:
         oss << objMap;
         if (arrayDim == 1)
         {
@@ -536,9 +537,17 @@ std::string DataType::toMapCode(
         }
         else
         {
-            // automatic type coercion will get the string
-            oss << "->SetString";
-            // TBA: could we do better knowing we have an enumerated type?
+            bool asInt = m_publicType == spdoc::PublicType::ENUM_AS_INT;
+            if (asInt)
+            {
+                // for ENUM_AS_INT operator int() is provided
+                oss << "->SetInt";
+            }
+            else
+            {
+                oss << "->SetString";
+            }
+
             if (canBeHidden)
             {
                 if (valueToHide)
@@ -548,7 +557,9 @@ std::string DataType::toMapCode(
                     {
                         // we need to apply the cast-operator on the enumerated type class
                         // applying on the valueToHide doesn't work
-                        hideCondition << "(std::string)" << data << " == " << code;
+                        //
+                        // note that ENUM_AS_STRING and ENUM_AS_INT both support to_string()
+                        hideCondition << data << ".to_string()" << " == " << code;
                     }
                     else
                     {
@@ -713,7 +724,8 @@ std::string DataType::fromMapCode(
         else if (arrayDim == 2)
             oss << "Matrix";
         break;
-    case spdoc::PublicType::ENUM:
+    case spdoc::PublicType::ENUM_AS_STRING:
+    case spdoc::PublicType::ENUM_AS_INT:
         oss << objMap;
         if (arrayDim == 1)
         {
@@ -723,10 +735,19 @@ std::string DataType::fromMapCode(
         {
             oss << "->GetEnumMatrix<" << m_name << ">";
         }
-        else
+        else if (m_publicType == spdoc::PublicType::ENUM_AS_STRING)
         {
-            // automatic type coercion will convert from string
-            oss << "->GetString";
+            bool asInt = m_publicType == spdoc::PublicType::ENUM_AS_INT;
+            if (asInt)
+            {
+                // we can construct the type from int
+                oss << "->GetInt";
+            }
+            else
+            {
+                // we can construct the type from std::string
+                oss << "->GetString";
+            }
         }
         break;
     case spdoc::PublicType::CLASS:
@@ -816,7 +837,8 @@ std::string DataType::fromMapCode(
                 case spdoc::PublicType::CHAR:
                 case spdoc::PublicType::INT:
                 case spdoc::PublicType::DOUBLE:
-                case spdoc::PublicType::ENUM:
+                case spdoc::PublicType::ENUM_AS_STRING:
+                case spdoc::PublicType::ENUM_AS_INT:
                     oss << ", " << defaultValue->toCode(m_publicType);
                     break;
                 case spdoc::PublicType::STRING:
@@ -853,7 +875,8 @@ std::string DataType::fromMapCode(
             case spdoc::PublicType::INT:
             case spdoc::PublicType::DOUBLE:
             case spdoc::PublicType::STRING:
-            case spdoc::PublicType::ENUM:
+            case spdoc::PublicType::ENUM_AS_INT:
+            case spdoc::PublicType::ENUM_AS_STRING:
             case spdoc::PublicType::DATE:
             case spdoc::PublicType::DATETIME:
                 break;
@@ -897,11 +920,23 @@ std::string DataType::toValueCode(
         return data;
     case spdoc::PublicType::DATETIME:
         return data;
-    case spdoc::PublicType::ENUM:
+    case spdoc::PublicType::ENUM_AS_STRING:
         switch (arrayDim)
         {
         case 1:
             oss << "spi::EnumVectorToStringVector(" << data << ")";
+            return oss.str();
+        case 0:
+            return data;
+        default:
+            SPI_THROW_RUNTIME_ERROR("Array of enum (dim=" << arrayDim << ") is not supported");
+        }
+        break;
+    case spdoc::PublicType::ENUM_AS_INT:
+        switch (arrayDim)
+        {
+        case 1:
+            oss << "spi::EnumVectorToIntVector(" << data << ")";
             return oss.str();
         case 0:
             return data;
@@ -977,13 +1012,21 @@ std::string DataType::castOuterTypeToValue(
         else
             oss << "spi::Value(" << data << ")";
         break;
-    case spdoc::PublicType::ENUM:
+    case spdoc::PublicType::ENUM_AS_STRING:
         if (arrayDim > 1)
             throw spi::RuntimeError("Matrix of enum is not supported");
         if (arrayDim == 1)
             oss << "spi::Value(spi::EnumVectorToStringVector(" << data << "))";
         else
             oss << "spi::Value(" << data << ".to_string())";
+        break;
+    case spdoc::PublicType::ENUM_AS_INT:
+        if (arrayDim > 1)
+            throw spi::RuntimeError("Matrix of enum is not supported");
+        if (arrayDim == 1)
+            oss << "spi::Value(spi::EnumVectorToIntVector(" << data << "))";
+        else
+            oss << "spi::Value(" << data << ".to_int())";
         break;
     case spdoc::PublicType::CHAR:
         if (arrayDim > 0)
@@ -1088,7 +1131,8 @@ std::string DataType::argType() const
         return "DATE";
     case spdoc::PublicType::DATETIME:
         return "DATETIME";
-    case spdoc::PublicType::ENUM:
+    case spdoc::PublicType::ENUM_AS_STRING:
+    case spdoc::PublicType::ENUM_AS_INT:
         return "ENUM";
     case spdoc::PublicType::CLASS:
     case spdoc::PublicType::OBJECT:

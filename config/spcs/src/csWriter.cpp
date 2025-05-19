@@ -172,7 +172,8 @@ void WriteDefaultValue(
     case spdoc::PublicType::DATETIME:
         ostr << "default(System.DateTime)";
         break;
-    case spdoc::PublicType::ENUM:
+    case spdoc::PublicType::ENUM_AS_STRING:
+    case spdoc::PublicType::ENUM_AS_INT:
     {
         spdoc::EnumConstSP e = svc->getEnum(dataType->name);
         std::string str = defaultValue->getString();
@@ -2158,7 +2159,8 @@ std::string CDataType::cName() const
         return "spi_Date";
     case spdoc::PublicType::DATETIME:
         return "spi_DateTime";
-    case spdoc::PublicType::ENUM:
+    case spdoc::PublicType::ENUM_AS_STRING:
+    case spdoc::PublicType::ENUM_AS_INT:
         return StringFormat("%s_%s",
             dataType->nsService.c_str(),
             StringReplace(dataType->name, ".", "_").c_str());
@@ -2203,7 +2205,8 @@ std::string CDataType::csiType(int arrayDim) const
         return "int";
     case spdoc::PublicType::DATETIME:
         return "double";
-    case spdoc::PublicType::ENUM:
+    case spdoc::PublicType::ENUM_AS_STRING:
+    case spdoc::PublicType::ENUM_AS_INT:
         oss << dataType->nsService << "." << dataType->name;
         return oss.str();
     case spdoc::PublicType::CLASS:
@@ -2252,7 +2255,8 @@ std::string CDataType::csType(int arrayDim, bool isOptional, bool inputArg) cons
     case spdoc::PublicType::DATETIME:
         scalarType = "System.DateTime";
         break;
-    case spdoc::PublicType::ENUM:
+    case spdoc::PublicType::ENUM_AS_STRING:
+    case spdoc::PublicType::ENUM_AS_INT:
         oss << /* service->nsGlobal() << "." << */ dataType->nsService << "." << dataType->name;
         scalarType = oss.str();
         break;
@@ -2349,7 +2353,8 @@ void CDataType::cs_to_c_decl(
         case spdoc::PublicType::DATETIME:
             oss << "spi.DateTimeVectorFromArray(" << service->rename(name, true) << ")";
             break;
-        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_AS_STRING:
+        case spdoc::PublicType::ENUM_AS_INT:
             oss << forArrayTranslations(csType(0, false)) << "_VectorFromArray(" << service->rename(name, true) << ")";
             break;
         case spdoc::PublicType::CLASS:
@@ -2393,7 +2398,8 @@ void CDataType::cs_to_c_decl(
         case spdoc::PublicType::VARIANT:
             oss << "spi.SpiVariantMatrixFromArray(" << service->rename(name, true) << ")";
             break;
-        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_AS_STRING:
+        case spdoc::PublicType::ENUM_AS_INT:
             oss << forArrayTranslations(csType(0, false)) << "_MatrixFromArray(" << service->rename(name, true) << ")";
             break;
         case spdoc::PublicType::CLASS:
@@ -2451,7 +2457,8 @@ std::string CDataType::cs_to_c(int arrayDim, const std::string& name) const
         case spdoc::PublicType::OBJECT:
             oss << "spi.SpiObject.get_inner(" << service->rename(name, true) << ")";
             break;
-        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_AS_STRING:
+        case spdoc::PublicType::ENUM_AS_INT:
             break;
         case spdoc::PublicType::MAP:
             oss << "spi.SpiMap.get_inner(" << service->rename(name, true) << ")";
@@ -2473,7 +2480,8 @@ std::string CDataType::cs_to_c(int arrayDim, const std::string& name) const
         case spdoc::PublicType::STRING:
         case spdoc::PublicType::DATE:
         case spdoc::PublicType::DATETIME:
-        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_AS_STRING:
+        case spdoc::PublicType::ENUM_AS_INT:
         case spdoc::PublicType::CLASS:
         case spdoc::PublicType::VARIANT:
         case spdoc::PublicType::OBJECT:
@@ -2496,7 +2504,8 @@ std::string CDataType::cs_to_c(int arrayDim, const std::string& name) const
         case spdoc::PublicType::DATE:
         case spdoc::PublicType::DATETIME:
         case spdoc::PublicType::VARIANT:
-        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_AS_STRING:
+        case spdoc::PublicType::ENUM_AS_INT:
         case spdoc::PublicType::CLASS:
         case spdoc::PublicType::OBJECT:
             oss << "h_m_" << name << ".get_inner()";
@@ -2546,7 +2555,8 @@ std::string CDataType::c_to_csi(int arrayDim, const std::string& name) const
             break;
         case spdoc::PublicType::DATETIME:
             break;
-        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_AS_STRING:
+        case spdoc::PublicType::ENUM_AS_INT:
             break;
         // should we capture these types at once?
         // this is in case there are failures in translating out
@@ -2581,7 +2591,8 @@ std::string CDataType::c_to_csi(int arrayDim, const std::string& name) const
         case spdoc::PublicType::DATETIME:
             oss << "using var o_" << name << " = spi.DateTimeVectorToHandle(c_" << name << ")";
             break;
-        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_AS_STRING:
+        case spdoc::PublicType::ENUM_AS_INT:
         case spdoc::PublicType::CLASS:
             oss << "using var o_" << name << " = " << forArrayTranslations(csType(0, false)) << "_VectorToHandle(c_" << name << ")";
             break;
@@ -2618,7 +2629,8 @@ std::string CDataType::c_to_csi(int arrayDim, const std::string& name) const
         case spdoc::PublicType::DATETIME:
             oss << "using var o_" << name << " = spi.DateTimeMatrixToHandle(c_" << name << ")";
             break;
-        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_AS_STRING:
+        case spdoc::PublicType::ENUM_AS_INT:
         case spdoc::PublicType::CLASS:
             oss << "using var o_" << name << " = " << forArrayTranslations(csType(0, false)) << "_MatrixToHandle(c_" << name << ")";
             break;
@@ -2673,7 +2685,8 @@ std::string CDataType::csi_to_cs(
         case spdoc::PublicType::DATETIME:
             oss << "spi.DateTimeFromCDateTime(c_" << name << ")";
             break;
-        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_AS_STRING:
+        case spdoc::PublicType::ENUM_AS_INT:
             break;
         case spdoc::PublicType::CLASS:
             oss << service->nsGlobal() << "." << dataType->nsService << "."
@@ -2717,7 +2730,8 @@ std::string CDataType::csi_to_cs(
         case spdoc::PublicType::VARIANT:
             oss << "spi.SpiVariantVectorToArray(o_" << name << ")";
             break;
-        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_AS_STRING:
+        case spdoc::PublicType::ENUM_AS_INT:
             oss << forArrayTranslations(csType(0, false))
                 << "_VectorToArray(o_" << name << ")";
             break;
@@ -2758,7 +2772,8 @@ std::string CDataType::csi_to_cs(
         case spdoc::PublicType::VARIANT:
             oss << "spi.SpiVariantMatrixToArray(o_" << name << ")";
             break;
-        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_AS_STRING:
+        case spdoc::PublicType::ENUM_AS_INT:
             oss << forArrayTranslations(csType(0, false))
                 << "_MatrixToArray(o_" << name << ")";
             break;

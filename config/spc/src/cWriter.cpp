@@ -106,7 +106,8 @@ void CService::updateUsage(
     spdoc::PublicType::Enum publicType = dataType->publicType;
     switch (publicType)
     {
-    case spdoc::PublicType::ENUM:
+    case spdoc::PublicType::ENUM_AS_STRING:
+    case spdoc::PublicType::ENUM_AS_INT:
     case spdoc::PublicType::CLASS:
         break;
     default:
@@ -2003,7 +2004,8 @@ std::string CDataType::cType(int arrayDim) const
         scalarType = "spi_DateTime";
         arrayType = "spi_DateTime";
         break;
-    case spdoc::PublicType::ENUM:
+    case spdoc::PublicType::ENUM_AS_STRING:
+    case spdoc::PublicType::ENUM_AS_INT:
         scalarType = spi_util::StringFormat("%s_%s",
             dataType->nsService.c_str(),
             spi_util::StringReplace(dataType->name, ".", "_").c_str());
@@ -2074,7 +2076,8 @@ std::string CDataType::cppName() const
         return "spi::Date";
     case spdoc::PublicType::DATETIME:
         return "spi::DateTime";
-    case spdoc::PublicType::ENUM:
+    case spdoc::PublicType::ENUM_AS_STRING:
+    case spdoc::PublicType::ENUM_AS_INT:
         return spi_util::StringFormat("%s::%s",
             dataType->nsService.c_str(),
             spi_util::StringReplace(dataType->name, ".", "::").c_str());
@@ -2136,7 +2139,8 @@ std::string CDataType::c_to_cpp(int arrayDim, const std::string& name) const
             return spi_util::StringFormat("spi::Date(%s)", name.c_str());
         case spdoc::PublicType::DATETIME:
             return spi_util::StringFormat("spi::DateTime(%s)", name.c_str());
-        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_AS_STRING:
+        case spdoc::PublicType::ENUM_AS_INT:
             return spi_util::StringFormat("%s((%s::Enum)(%s))",
                 cppType.c_str(), cppType.c_str(), name.c_str());
         case spdoc::PublicType::CLASS:
@@ -2174,7 +2178,8 @@ std::string CDataType::c_to_cpp(int arrayDim, const std::string& name) const
         case spdoc::PublicType::STRING:
         case spdoc::PublicType::DATE:
         case spdoc::PublicType::DATETIME:
-        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_AS_STRING:
+        case spdoc::PublicType::ENUM_AS_INT:
         case spdoc::PublicType::CLASS:
         case spdoc::PublicType::OBJECT:
         case spdoc::PublicType::VARIANT:
@@ -2200,7 +2205,8 @@ std::string CDataType::c_to_cpp(int arrayDim, const std::string& name) const
         case spdoc::PublicType::STRING:
         case spdoc::PublicType::DATE:
         case spdoc::PublicType::DATETIME:
-        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_AS_STRING:
+        case spdoc::PublicType::ENUM_AS_INT:
         case spdoc::PublicType::CLASS:
         case spdoc::PublicType::OBJECT:
         case spdoc::PublicType::VARIANT:
@@ -2243,7 +2249,8 @@ std::string CDataType::cpp_to_c(int arrayDim, const std::string & name) const
             return spi_util::StringFormat("(spi_Date)(%s)", name.c_str());
         case spdoc::PublicType::DATETIME:
             return spi_util::StringFormat("(spi_DateTime)(%s)", name.c_str());
-        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_AS_STRING:
+        case spdoc::PublicType::ENUM_AS_INT:
             return spi_util::StringFormat("%s((%s::Enum)(%s))",
                 cType().c_str(), cppType(0).c_str(), name.c_str());
         case spdoc::PublicType::CLASS:
@@ -2278,7 +2285,8 @@ std::string CDataType::cpp_to_c(int arrayDim, const std::string & name) const
         case spdoc::PublicType::STRING:
         case spdoc::PublicType::DATE:
         case spdoc::PublicType::DATETIME:
-        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_AS_STRING:
+        case spdoc::PublicType::ENUM_AS_INT:
         case spdoc::PublicType::CLASS:
         case spdoc::PublicType::OBJECT:
         case spdoc::PublicType::VARIANT:
@@ -2304,7 +2312,8 @@ std::string CDataType::cpp_to_c(int arrayDim, const std::string & name) const
         case spdoc::PublicType::STRING:
         case spdoc::PublicType::DATE:
         case spdoc::PublicType::DATETIME:
-        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_AS_STRING:
+        case spdoc::PublicType::ENUM_AS_INT:
         case spdoc::PublicType::CLASS:
         case spdoc::PublicType::OBJECT:
         case spdoc::PublicType::VARIANT:
@@ -2341,7 +2350,8 @@ std::string CDataType::c_to_value(int arrayDim, const std::string & name) const
         case spdoc::PublicType::DATE:
         case spdoc::PublicType::DATETIME:
             break;
-        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_AS_STRING:
+        case spdoc::PublicType::ENUM_AS_INT:
             return StringFormat("%s.to_value()", cpp.c_str());
         case spdoc::PublicType::CLASS:
             return spi_util::StringFormat("spi::Object::to_value(%s)", cpp.c_str());
@@ -2365,7 +2375,8 @@ std::string CDataType::c_to_value(int arrayDim, const std::string & name) const
         case spdoc::PublicType::STRING:
         case spdoc::PublicType::DATE:
         case spdoc::PublicType::DATETIME:
-        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_AS_STRING:
+        case spdoc::PublicType::ENUM_AS_INT:
             break;
         case spdoc::PublicType::CLASS:
             return spi_util::StringFormat("spi::Object::to_value(spi::MakeObjectVector< %s >(%s))", 
@@ -2389,7 +2400,8 @@ std::string CDataType::c_to_value(int arrayDim, const std::string & name) const
         case spdoc::PublicType::STRING:
         case spdoc::PublicType::DATE:
         case spdoc::PublicType::DATETIME:
-        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_AS_STRING:
+        case spdoc::PublicType::ENUM_AS_INT:
             break;
         case spdoc::PublicType::CLASS:
         case spdoc::PublicType::OBJECT:

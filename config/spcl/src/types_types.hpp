@@ -74,7 +74,8 @@ SPI_DECLARE_OBJECT_CLASS(TypesLibrary);
 * PublicType::STRING
 * PublicType::DATE
 * PublicType::DATETIME
-* PublicType::ENUM
+* PublicType::ENUM_AS_STRING
+* PublicType::ENUM_AS_INT
 * PublicType::CLASS
 * PublicType::OBJECT
 * PublicType::MAP
@@ -93,7 +94,8 @@ public:
         STRING,
         DATE,
         DATETIME,
-        ENUM,
+        ENUM_AS_STRING,
+        ENUM_AS_INT,
         CLASS,
         OBJECT,
         MAP,
@@ -108,6 +110,7 @@ public:
     PublicType(const char* str) : value(PublicType::from_string(str)) {}
     PublicType(const std::string& str) : value(PublicType::from_string(str.c_str())) {}
     PublicType(const spi::Value& value);
+    PublicType(int value);
 
     operator PublicType::Enum() const { return value; }
     operator std::string() const { return to_string(); }
@@ -115,6 +118,7 @@ public:
     std::string to_string() const { return std::string(PublicType::to_string(value)); }
     spi::Value to_value() const { return spi::Value(to_string()); }
 
+    static PublicType::Enum from_int(int);
     static PublicType::Enum from_string(const char*);
     static const char* to_string(PublicType::Enum);
 

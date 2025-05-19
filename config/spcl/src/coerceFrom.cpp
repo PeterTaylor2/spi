@@ -362,7 +362,8 @@ bool CoerceFrom::implement(
                 oss << "Matrix";
             oss << "(value)";
             break;
-        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_AS_STRING:
+        case spdoc::PublicType::ENUM_AS_INT:
             throw spi::RuntimeError("Cannot coerce from enumerated type");
         case spdoc::PublicType::CLASS:
             throw spi::RuntimeError("Cannot coerce from object in coerce_from_value");
