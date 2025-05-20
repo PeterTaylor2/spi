@@ -461,13 +461,13 @@ void ServiceDefinition::addServiceLevelModule()
 
         const DataTypeConstSP stringType = getDataType("string");
         std::vector<std::string> code = {
-            "    static spdoc::ServiceConstSP doc;"
-            "    if (!doc)"
-            "        doc = " + m_name + "_service_doc();"
+            "    static spdoc::ServiceConstSP doc;",
+            "    if (!doc)",
+            "        doc = " + m_name + "_service_doc();",
             "",
-            "    if (name.empty())"
-            "        return doc->getConstructs();"
-            "    return doc->getConstruct(name)->Summary(true);"
+            "    if (name.empty())",
+            "        return doc->getConstructs();",
+            "    return doc->getConstruct(name)->Summary(true);",
             "}"
         };
 
