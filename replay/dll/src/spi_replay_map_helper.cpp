@@ -60,6 +60,8 @@ spi::EnumInfo* ValueType::get_enum_info()
 ValueType::Enum ValueType::from_string(const char* str)
 {
     std::string uc_ = spi::StringUpper(str);
+    if (uc_ == "")
+        return ValueType::UNINITIALIZED_VALUE;
     switch(uc_[0])
     {
     case 'A':

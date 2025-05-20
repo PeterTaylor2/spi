@@ -63,6 +63,8 @@ spi::EnumInfo* PublicType::get_enum_info()
 PublicType::Enum PublicType::from_string(const char* str)
 {
     std::string uc_ = spi::StringUpper(str);
+    if (uc_ == "")
+        return PublicType::UNINITIALIZED_VALUE;
     switch(uc_[0])
     {
     case 'B':

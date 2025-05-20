@@ -34,6 +34,7 @@
 */
 
 #include <spi/spi.hpp>
+#include <spi/spdoc_configTypes.hpp>
 #include "types_dll_decl_spec.h"
 #include "types_namespace.hpp"
 
@@ -62,6 +63,9 @@ const char* types_version();
 
 SPI_IMPORT
 const char* types_startup_directory();
+
+SPI_IMPORT
+spdoc::ServiceConstSP types_service_doc();
 
 TYPES_END_NAMESPACE
 

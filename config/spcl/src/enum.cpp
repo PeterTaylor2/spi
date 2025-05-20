@@ -887,11 +887,18 @@ void Enum::implementHelper(
          << "{\n"
          << "    std::string uc_ = spi::StringUpper(str);\n";
 
+    ostr << "    if (uc_ == \"\")\n";
+
     if (iter->first == "")
     {
-        ostr << "    if (uc_ == \"\")\n"
-             << "        return " << m_name << "::" << iter->second << ";\n";
-        ++iter;
+        // we have an enumerand matching the empty string
+        ostr << "        return " << m_name << "::" << iter->second << ";\n";
+        ++iter; // to be excluded from the switch statements
+    }
+    else
+    {
+        // empty string corresponds to UNINITIALIZED_VALUE
+        ostr << "        return " << m_name << "::UNINITIALIZED_VALUE;\n";
     }
 
     ostr << "    switch(uc_[0])\n"
