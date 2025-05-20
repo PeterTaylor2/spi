@@ -46,6 +46,7 @@ static std::string g_time_out_error;
 static spi::ServiceSP MakeService()
 {
     spi::ServiceSP svc = spi::Service::Make("replay", "spi_replay", "1.0.0.0");
+    svc->add_svo("replay.svo");
     g_is_logging = svc->is_logging_flag();
 
     map_register_object_types(svc);
@@ -184,20 +185,22 @@ const char* replay_startup_directory()
 spdoc::ServiceConstSP replay_service_doc()
 {
     spdoc::spdoc_start_service();
-    std::string fn = spi_util::path::join(&g_startup_directory[0],
-        "replay.svo", 0);
-    auto service_doc = spdoc::Service::from_file(fn);
-    const std::vector<std::string>& satellites = replay_service()->satellites();
-    if (satellites.size() > 0)
+    spdoc::ServiceConstSP service_doc;
+    const std::vector<std::string>& svos = replay_service()->svos();
+    for (const std::string& svo : svos)
     {
-        std::vector<spdoc::ServiceConstSP> shared_services;
-        for (const auto& satellite : satellites)
+        std::string fn = spi_util::path::join(
+            &g_startup_directory[0], svo.c_str(), 0);
+
+        auto this_doc = spdoc::Service::from_file(fn);
+        if (!service_doc)
         {
-            fn = spi_util::path::join(&g_startup_directory[0],
-                (satellite + ".svo").c_str(), 0);
-            shared_services.push_back(spdoc::Service::from_file(fn));
+            service_doc = this_doc;
         }
-        service_doc = service_doc->CombineSharedServices(shared_services);
+        else
+        {
+            service_doc = service_doc->CombineSharedServices({ this_doc });
+        }
     }
     return service_doc;
 }

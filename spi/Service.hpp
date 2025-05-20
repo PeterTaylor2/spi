@@ -147,8 +147,8 @@ public:
     ~Service();
 
     // record the satellites that use this service as a base service
-    void add_satellite(const char* name);
-    std::vector<std::string> satellites() const;
+    void add_svo(const char* name);
+    std::vector<std::string> svos() const;
 
     // object registry functions
     void add_object_type(ObjectType* type);
@@ -231,7 +231,7 @@ private:
     std::map<std::string, EnumInfo*> m_enums;
     int                    m_connections;
     bool                   m_isLogging;
-    std::vector<std::string> m_satellites;
+    std::vector<std::string> m_svos;
 
     CommonRuntimeSP        m_commonRuntime;
     void set_logging(bool logging);

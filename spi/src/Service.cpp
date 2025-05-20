@@ -381,7 +381,6 @@ Service::Service(
 {
     SPI_PRE_CONDITION(svc);
     m_typeRegistry.import_types(svc->m_typeRegistry);
-    svc->add_satellite(name);
     Init();
 }
 
@@ -456,15 +455,15 @@ Service::~Service()
     }
 }
 
-void Service::add_satellite(const char* name)
+void Service::add_svo(const char* name)
 {
     if (name)
-        m_satellites.push_back(std::string(name));
+        m_svos.push_back(std::string(name));
 }
 
-std::vector<std::string> Service::satellites() const
+std::vector<std::string> Service::svos() const
 {
-    return m_satellites;
+    return m_svos;
 }
 
 void Service::add_object_type(ObjectType* type)

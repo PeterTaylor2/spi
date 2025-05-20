@@ -39,6 +39,7 @@ ServiceDefinitionSP serviceKeywordHandler(
     ConfigLexer& lexer,
     const std::vector<std::string>& description,
     const std::string& commandLineVersion,
+    const std::string& svoFileName,
     bool verbose)
 {
     ParserOptions defaultOptions;
@@ -71,7 +72,8 @@ ServiceDefinitionSP serviceKeywordHandler(
 
     if (!baseServiceName.empty())
     {
-        baseService = serviceParser(baseServiceName, commandLineVersion, verbose);
+        baseService = serviceParser(
+            baseServiceName, commandLineVersion, svoFileName, verbose);
     }
 
     std::string version = baseServiceName.empty() ?
@@ -90,7 +92,8 @@ ServiceDefinitionSP serviceKeywordHandler(
         options["noLog"]->getBool(),
         options["useVersionedNamespace"]->getBool(),
         description,
-        options["helpFunc"]->getString());
+        options["helpFunc"]->getString(),
+        svoFileName);
 
     if (baseService)
     {
@@ -436,6 +439,7 @@ void commandHandler(ServiceDefinitionSP& service,
 
 ServiceDefinitionSP serviceParser(
     const std::string& fn,
+    const std::string& svoFileName,
     const std::string& commandLineVersion,
     bool verbose)
 {
@@ -461,7 +465,7 @@ ServiceDefinitionSP serviceParser(
                 if (service)
                     throw spi::RuntimeError("Multiple definitions of %%service");
                 service = serviceKeywordHandler(lexer, desc.take(),
-                    commandLineVersion, verbose);
+                    commandLineVersion, svoFileName, verbose);
             }
             else if (keyword == "%export")
             {

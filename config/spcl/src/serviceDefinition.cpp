@@ -266,17 +266,17 @@ ServiceDefinitionSP ServiceDefinition::Make(
     const std::string& version,
     const std::string& declSpec,
     const std::string& sharedPtr,
-    //const std::string& spDynamicCast,
     const std::string& sharedPtrInclude,
     bool noLog,
     bool useVersionedNamespace,
     const std::vector<std::string>& description,
-    const std::string& helpFunc)
+    const std::string& helpFunc,
+    const std::string& svoFileName)
 {
-    return ServiceDefinitionSP(
-        new ServiceDefinition(name, dllName, longName, ns, version, declSpec,
-                              sharedPtr, /*spDynamicCast,*/ sharedPtrInclude,
-                              noLog, useVersionedNamespace, description, helpFunc));
+    return ServiceDefinitionSP(new ServiceDefinition(
+        name, dllName, longName, ns, version, declSpec, sharedPtr,
+        sharedPtrInclude, noLog, useVersionedNamespace, description,
+        helpFunc, svoFileName));
 }
 
 ServiceDefinition::ServiceDefinition(
@@ -287,12 +287,12 @@ ServiceDefinition::ServiceDefinition(
     const std::string& version,
     const std::string& declSpec,
     const std::string& sharedPtr,
-    //const std::string& spDynamicCast,
     const std::string& sharedPtrInclude,
     bool noLog,
     bool useVersionedNamespace,
     const std::vector<std::string>& description,
-    const std::string& helpFunc)
+    const std::string& helpFunc,
+    const std::string& svoFileName)
     :
     m_name(name),
     m_dllName(dllName),
@@ -301,12 +301,12 @@ ServiceDefinition::ServiceDefinition(
     m_version(version),
     m_declSpec(declSpec),
     m_sharedPtr(sharedPtr),
-    //m_spDynamicCast(spDynamicCast),
     m_sharedPtrInclude(sharedPtrInclude),
     m_noLog(noLog),
     m_useVersionedNamespace(useVersionedNamespace),
     m_description(description),
     m_helpFunc(helpFunc),
+    m_svoFileName(svoFileName),
     m_dataTypes(),
     m_publicDataTypes(),
     m_classes(),
@@ -1041,10 +1041,12 @@ void ServiceDefinition::writeMakefileProperties(
     GeneratedOutput ostr(fn, cwd, false);
 
     ostr << "U_SERVICE?=" << m_name << "\n"
-         << "U_SERVICE_DLL?=" << m_dllName << "\n"
-         << "U_SERVICE_DEBUG?=" << spi::StringUpper(m_namespace) << "_DEBUG\n"
-         << "U_SERVICE_NAMESPACE=" << m_namespace << "\n"
-         << "U_DECLSPEC=" << m_declSpec << "\n";
+        << "U_SERVICE_DLL?=" << m_dllName << "\n"
+        << "U_SERVICE_DEBUG?=" << spi::StringUpper(m_namespace) << "_DEBUG\n"
+        << "U_SERVICE_NAMESPACE=" << m_namespace << "\n"
+        << "U_DECLSPEC=" << m_declSpec << "\n"
+        << "U_SERVICE_SVO=" << m_svoFileName << "\n";
+
 
     if (!outputDir.empty())
     {
@@ -1460,6 +1462,7 @@ void ServiceDefinition::writeServiceSource(
         ostr << "    spi::ServiceSP svc = spi::Service::Make(\"" << m_name
             << "\", \"" << m_namespace << "\", \"" << m_version.versionString() << "\");\n";
     }
+    ostr << "    svc->add_svo(\"" << m_svoFileName << "\");\n";
     ostr << "    g_is_logging = svc->is_logging_flag();\n";
 
     if (m_serviceInit)
@@ -1654,20 +1657,22 @@ void ServiceDefinition::writeServiceSource(
         ostr << "spdoc::ServiceConstSP " << m_name << "_service_doc()\n"
             << "{\n"
             << "    spdoc::spdoc_start_service();\n"
-            << "    std::string fn = spi_util::path::join(&g_startup_directory[0],\n"
-            << "        \"" << m_name << ".svo\", 0);\n"
-            << "    auto service_doc = spdoc::Service::from_file(fn);\n"
-            << "    const std::vector<std::string>& satellites = " << m_name << "_service()->satellites();\n"
-            << "    if (satellites.size() > 0)\n"
+            << "    spdoc::ServiceConstSP service_doc;\n"
+            << "    const std::vector<std::string>& svos = " << m_name << "_service()->svos();\n"
+            << "    for (const std::string& svo : svos)\n"
             << "    {\n"
-            << "        std::vector<spdoc::ServiceConstSP> shared_services;\n"
-            << "        for (const auto& satellite : satellites)\n"
+            << "        std::string fn = spi_util::path::join(\n"
+            << "            &g_startup_directory[0], svo.c_str(), 0);\n"
+            << "\n"
+            << "        auto this_doc = spdoc::Service::from_file(fn);\n"
+            << "        if (!service_doc)\n"
             << "        {\n"
-            << "            fn = spi_util::path::join(&g_startup_directory[0],\n"
-            << "                (satellite + \".svo\").c_str(), 0);\n"
-            << "            shared_services.push_back(spdoc::Service::from_file(fn));\n"
+            << "            service_doc = this_doc;\n"
             << "        }\n"
-            << "        service_doc = service_doc->CombineSharedServices(shared_services);\n"
+            << "        else\n"
+            << "        {\n"
+            << "            service_doc = service_doc->CombineSharedServices({ this_doc });\n"
+            << "        }\n"
             << "    }\n"
             << "    return service_doc;\n"
             << "}\n"

@@ -130,7 +130,8 @@ public:
         bool noLog,
         bool useVersionedNamespace,
         const std::vector<std::string>& description,
-        const std::string& helpFunc);
+        const std::string& helpFunc,
+        const std::string& svoFileName);
 
     // add methods do not allow duplicates
     // get methods return empty rather than throw exception if missing
@@ -174,7 +175,6 @@ public:
     const std::string& getDeclSpec() const;
     const std::string& getDeclSpecHeader() const;
     const std::string& getSharedPtr() const;
-    //const std::string& getSpDynamicCast() const;
     const std::string& getSharedPtrInclude() const;
     bool noLog() const;
     bool useVersionedNamespace() const;
@@ -241,12 +241,12 @@ protected:
         const std::string& version,
         const std::string& declSpec,
         const std::string& sharedPtr,
-        //const std::string& spDynamicCast,
         const std::string& sharedPtrInclude,
         bool noLog,
         bool useVersionedNamespace,
         const std::vector<std::string>& description,
-        const std::string& helpFunc);
+        const std::string& helpFunc,
+        const std::string& svoFileName);
 
 private:
     std::string m_name;
@@ -262,6 +262,7 @@ private:
     bool m_useVersionedNamespace;
     std::vector<std::string>        m_description;
     std::string m_helpFunc;
+    std::string m_svoFileName;
 
     std::vector<DataTypeConstSP>    m_dataTypes;
     std::vector<DataTypeConstSP>    m_publicDataTypes;

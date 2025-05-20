@@ -25,6 +25,7 @@
 
 ServiceDefinitionSP serviceParser(
     const std::string& fn,
+    const std::string& svoFileName,
     const std::string& commandLineVersion,
     bool verbose);
 
