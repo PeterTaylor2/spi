@@ -260,8 +260,9 @@ private:
     std::string m_sharedPtrInclude;
     bool m_noLog;
     bool m_useVersionedNamespace;
-    std::string m_helpFunc; // added to the first module if defined
     std::vector<std::string>        m_description;
+    std::string m_helpFunc;
+
     std::vector<DataTypeConstSP>    m_dataTypes;
     std::vector<DataTypeConstSP>    m_publicDataTypes;
     std::vector<ClassConstSP>       m_classes;
