@@ -104,9 +104,10 @@ namespace
             << "            value = that.value;\n"
             << "        }\n"
             << "        break;\n"
-            << "    case spi::Value::UNDEFINED:\n"
+            << "    case spi::Value::UNDEFINED:\n" // will be equivalent to an empty string
             << "        {\n"
-            << "            " << name << " that;\n"
+            << "            std::string undefined;\n"
+            << "            " << name << " that(undefined);\n"
             << "            value = that.value;\n"
             << "        }\n"
             << "        break;\n"

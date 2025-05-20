@@ -53,7 +53,8 @@ ValueType::ValueType(const spi::Value &v)
         break;
     case spi::Value::UNDEFINED:
         {
-            ValueType that;
+            std::string undefined;
+            ValueType that(undefined);
             value = that.value;
         }
         break;

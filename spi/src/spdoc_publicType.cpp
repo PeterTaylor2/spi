@@ -52,7 +52,8 @@ PublicType::PublicType(const spi::Value &v)
         break;
     case spi::Value::UNDEFINED:
         {
-            PublicType that;
+            std::string undefined;
+            PublicType that(undefined);
             value = that.value;
         }
         break;
