@@ -447,8 +447,10 @@ void ServiceDefinition::addServiceLevelModule()
 {
     std::vector<ConstructConstSP> constructs;
 
-    if (!m_helpFunc.empty())
+    if (!m_helpFunc.empty() && !isSharedService())
     {
+        // a shared service does not have a service_doc function
+        // essentially the HELP function is for the root of the shared services
         std::vector<std::string> description = {
             "Provides help for a given component or lists all components" };
         std::vector<std::string> returnTypeDescription = {
@@ -933,12 +935,6 @@ const std::string& ServiceDefinition::getSharedPtr() const
     return m_sharedPtr;
 }
 
-//const std::string& ServiceDefinition::getSpDynamicCast() const
-//{
-//    return m_spDynamicCast;
-//}
-
-
 const std::string& ServiceDefinition::getSharedPtrInclude() const
 {
     return m_sharedPtrInclude;
@@ -1023,14 +1019,9 @@ spdoc::ServiceConstSP ServiceDefinition::getDoc() const
             importedEnums.push_back(enums[i]->getDoc());
     }
 
-    // note that all imported types have the same namespace
-    // this is validated by TypesLibrary::RemoveDuplicates function
-
-    bool sharedService = m_importedTypes.size() > 0 && (m_importedTypes[0]->ns() == m_namespace);
-
     return spdoc::Service::Make(m_name, m_description, m_longName,
         m_namespace, m_declSpec, m_version.versionString(), moduleDocs,
-        importedBaseClasses, importedEnums, sharedService);
+        importedBaseClasses, importedEnums, isSharedService());
 }
 
 void ServiceDefinition::writeMakefileProperties(
@@ -1241,7 +1232,7 @@ void ServiceDefinition::writeServiceHeaders(
         << "const char* " << m_name << "_startup_directory();\n"
         << "\n";
 
-    if (!m_baseService)
+    if (!isSharedService())
     {
         ostr << m_import << "\n"
             << "spdoc::ServiceConstSP " << m_name << "_service_doc();\n";
@@ -1447,7 +1438,7 @@ void ServiceDefinition::writeServiceSource(
         ostr << "    spi::ServiceSP baseSvc = " << m_baseService->m_name << "_exported_service();\n"
              << "    spi::ServiceSP svc = spi::Service::Make(\"" << m_name << "\", baseSvc);\n";
     }
-    else if (m_importedTypes.size() > 0 && m_importedTypes[0]->ns() == m_namespace)
+    else if (isSharedService())
     {
         // note that all imported types have the same namespace
         // the service is defined for the namespace
@@ -1652,7 +1643,7 @@ void ServiceDefinition::writeServiceSource(
         << "}\n"
         << "\n";
 
-    if (!m_baseService)
+    if (!isSharedService())
     {
         ostr << "spdoc::ServiceConstSP " << m_name << "_service_doc()\n"
             << "{\n"
@@ -1966,6 +1957,14 @@ void ServiceDefinition::writeUsingImportedConverters(
             }
         }
     }
+}
+
+bool ServiceDefinition::isSharedService() const
+{
+    // note that all imported types have the same namespace
+    // this is validated by TypesLibrary::RemoveDuplicates function
+
+    return (m_importedTypes.size() > 0 && m_importedTypes[0]->ns() == m_namespace);
 }
 
 bool ServiceDefinition::writePreviousModuleInclude(

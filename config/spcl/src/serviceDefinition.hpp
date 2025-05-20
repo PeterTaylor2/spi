@@ -231,6 +231,7 @@ public:
         GeneratedOutput& ostr);
     void writeUsingImportedConverters(
         GeneratedOutput& ostr);
+    bool isSharedService() const;
 
 protected:
     ServiceDefinition(
@@ -256,11 +257,10 @@ private:
     spi_util::FourPartVersion m_version;
     std::string m_declSpec;
     std::string m_sharedPtr;
-    //std::string m_spDynamicCast;
     std::string m_sharedPtrInclude;
     bool m_noLog;
     bool m_useVersionedNamespace;
-    std::vector<std::string>        m_description;
+    std::vector<std::string> m_description;
     std::string m_helpFunc;
     std::string m_svoFileName;
 
