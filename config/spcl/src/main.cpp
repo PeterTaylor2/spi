@@ -77,6 +77,16 @@ static void generate(
     spdoc::ServiceConstSP serviceDoc = service->getDoc();
     serviceDoc->to_file(outfilename.c_str());
 
+    std::string fn2 = spi_util::path::join(
+        dirname.c_str(),
+        spi_util::path::basename(outfilename).c_str(),
+        nullptr);
+
+    if (fn2 != outfilename)
+    {
+        serviceDoc->to_file(fn2.c_str());
+    }
+
     types::TypesLibraryConstSP typesLibrary = types::TypesLibrary::Wrap(
         service->getTypesLibrary());
     typesLibrary->to_file(outfilename2.c_str());
@@ -277,7 +287,9 @@ int main(int argc, char* argv[])
             spdoc::spdoc_start_service();
             types::types_start_service();
             setGeneratorToolsOptions(options);
-            ServiceDefinitionSP service = serviceParser(infilename, version, verbose);
+            std::string svoFileName = spi_util::path::basename(outfilename);
+            ServiceDefinitionSP service = serviceParser(
+                infilename, svoFileName, version, verbose);
             generate(service, outfilename, outfilename2, dirname, options, verbose);
             if (types)
                 generateTypes(service, tdirname, options);

@@ -169,7 +169,7 @@ G_EXCEL_ADDINS_DIR?=$(abspath $(APPDATA))/Microsoft/AddIns
 
 dll: $(U_OUTPUT_DIR)/$(G_XL_ABI)/$(U_TARGET).xll
 dll: $(U_OUTPUT_DIR)/$(G_XL_ABI)/$(SPI_DLL)-xl$(G_XL_VERSION).dll
-dll: $(U_OUTPUT_DIR)/$(G_XL_ABI)/$(U_SERVICE).svo
+dll: $(U_OUTPUT_DIR)/$(G_XL_ABI)/$(U_SERVICE_SVO)
 
 $(U_OUTPUT_DIR)/$(G_XL_ABI)/$(SPI_DLL)-xl$(G_XL_VERSION).dll: $(I_SPI_RUNTIME_BIN_DIR)/xl$(G_XL_VERSION)/$(SPI_DLL)-xl$(G_XL_VERSION).dll
 	@mkdir -p $(U_OUTPUT_DIR)/$(G_XL_ABI)
@@ -198,7 +198,7 @@ I_INSTALL_TARGET_DIR=$(abspath $(APPDATA))/Microsoft/Addins/$(U_SERVICE_NAMESPAC
 I_INSTALL_FILES=\
 $(U_OUTPUT_DIR)/$(G_XL_ABI)/$(U_TARGET).xll\
 $(U_OUTPUT_DIR)/$(G_XL_ABI)/$(SPI_DLL)-xl$(G_XL_VERSION).dll\
-$(U_OUTPUT_DIR)/$(G_ABI)/$(U_SERVICE).svo\
+$(U_OUTPUT_DIR)/$(G_ABI)/$(U_SERVICE_SVO)\
 $(U_OUTPUT_DIR)/$(G_ABI)/$(U_SERVICE_DLL).dll\
 $(U_OUTPUT_DIR)/$(G_ABI)/$(SPI_DLL).dll\
 $(U_OUTPUT_DIR)/$(G_ABI)/$(SPI_UTIL_DLL).dll\
