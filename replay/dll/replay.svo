@@ -1,7 +1,6 @@
 <spi>
 Service {
  name = "replay"
- description = [0]
  longName = "replay"
  ns = "spi_replay"
  declSpec = "REPLAY"
@@ -10,13 +9,10 @@ Service {
  {
   Module {
    name = "map"
-   description = [0]
-   ns = ""
    constructs = [5]
    {
     Enum {
      name = "ValueType"
-     description = [0]
      enumerands = [14]
      {
       Enumerand {
@@ -25,7 +21,6 @@ Service {
        {
         "UNDEFINED"
        }
-       description = [0]
       }
       Enumerand {
        code = "CHAR"
@@ -33,7 +28,6 @@ Service {
        {
         "CHAR"
        }
-       description = [0]
       }
       Enumerand {
        code = "SHORT_STRING"
@@ -41,7 +35,6 @@ Service {
        {
         "SHORT_STRING"
        }
-       description = [0]
       }
       Enumerand {
        code = "STRING"
@@ -49,7 +42,6 @@ Service {
        {
         "STRING"
        }
-       description = [0]
       }
       Enumerand {
        code = "INT"
@@ -57,7 +49,6 @@ Service {
        {
         "INT"
        }
-       description = [0]
       }
       Enumerand {
        code = "DOUBLE"
@@ -65,7 +56,6 @@ Service {
        {
         "DOUBLE"
        }
-       description = [0]
       }
       Enumerand {
        code = "BOOL"
@@ -73,7 +63,6 @@ Service {
        {
         "BOOL"
        }
-       description = [0]
       }
       Enumerand {
        code = "DATE"
@@ -81,7 +70,6 @@ Service {
        {
         "DATE"
        }
-       description = [0]
       }
       Enumerand {
        code = "DATETIME"
@@ -89,7 +77,6 @@ Service {
        {
         "DATETIME"
        }
-       description = [0]
       }
       Enumerand {
        code = "MAP"
@@ -97,7 +84,6 @@ Service {
        {
         "MAP"
        }
-       description = [0]
       }
       Enumerand {
        code = "OBJECT"
@@ -105,7 +91,6 @@ Service {
        {
         "OBJECT"
        }
-       description = [0]
       }
       Enumerand {
        code = "OBJECT_REF"
@@ -113,7 +98,6 @@ Service {
        {
         "OBJECT_REF"
        }
-       description = [0]
       }
       Enumerand {
        code = "ARRAY"
@@ -121,7 +105,6 @@ Service {
        {
         "ARRAY"
        }
-       description = [0]
       }
       Enumerand {
        code = "ERROR"
@@ -129,14 +112,11 @@ Service {
        {
         "ERROR"
        }
-       description = [0]
       }
      }
     }
     Function {
      name = "MapClassName"
-     description = [0]
-     returnTypeDescription = [0]
      returnType = DataType 1 {
       name = "string"
       passByReference = true
@@ -146,12 +126,10 @@ Service {
       noDoc = true
       nsService = ""
      }
-     returnArrayDim = 0
      inputs = [1]
      {
       Attribute {
        name = "m"
-       description = [0]
        dataType = DataType 2 {
         name = "Map"
         passByReference = true
@@ -161,38 +139,23 @@ Service {
         noDoc = true
         nsService = ""
        }
-       arrayDim = 0
-       isOptional = false
-       defaultValue = NULL
       }
      }
-     outputs = [0]
-     excelOptions = [0]
     }
     Function {
      name = "MapFieldNames"
-     description = [0]
-     returnTypeDescription = [0]
      returnType = DataType *1
      returnArrayDim = 1
      inputs = [1]
      {
       Attribute {
        name = "m"
-       description = [0]
        dataType = DataType *2
-       arrayDim = 0
-       isOptional = false
-       defaultValue = NULL
       }
      }
-     outputs = [0]
-     excelOptions = [0]
     }
     Function {
      name = "MapRef"
-     description = [0]
-     returnTypeDescription = [0]
      returnType = DataType 3 {
       name = "int"
       passByReference = false
@@ -202,20 +165,13 @@ Service {
       noDoc = true
       nsService = ""
      }
-     returnArrayDim = 0
      inputs = [1]
      {
       Attribute {
        name = "m"
-       description = [0]
        dataType = DataType *2
-       arrayDim = 0
-       isOptional = false
-       defaultValue = NULL
       }
      }
-     outputs = [0]
-     excelOptions = [0]
     }
     Function {
      name = "MapGetValue"
@@ -226,33 +182,22 @@ Service {
       "Sometimes the same primitive type is returned for different value types -"
       "hence the need to return the value type to distinguish."
      }
-     returnTypeDescription = [0]
      returnType = NULL
-     returnArrayDim = 0
      inputs = [2]
      {
       Attribute {
        name = "m"
-       description = [0]
        dataType = DataType *2
-       arrayDim = 0
-       isOptional = false
-       defaultValue = NULL
       }
       Attribute {
        name = "name"
-       description = [0]
        dataType = DataType *1
-       arrayDim = 0
-       isOptional = false
-       defaultValue = NULL
       }
      }
      outputs = [2]
      {
       Attribute {
        name = "value"
-       description = [0]
        dataType = DataType 4 {
         name = "Variant"
         passByReference = true
@@ -262,13 +207,9 @@ Service {
         noDoc = true
         nsService = ""
        }
-       arrayDim = 0
-       isOptional = false
-       defaultValue = NULL
       }
       Attribute {
        name = "valueType"
-       description = [0]
        dataType = DataType 5 {
         name = "ValueType"
         passByReference = false
@@ -278,30 +219,17 @@ Service {
         noDoc = false
         nsService = "spi_replay"
        }
-       arrayDim = 0
-       isOptional = false
-       defaultValue = NULL
       }
      }
-     excelOptions = [0]
     }
    }
   }
   Module {
    name = "replay"
-   description = [0]
-   ns = ""
    constructs = [5]
    {
     Class {
      name = "ReplayAction"
-     description = [0]
-     baseClassName = ""
-     attributes = [0]
-     properties = [0]
-     methods = [0]
-     coerceFrom = [0]
-     coerceTo = [0]
      isAbstract = true
      noMake = true
      objectName = ""
@@ -314,43 +242,25 @@ Service {
       noDoc = false
       nsService = "spi_replay"
      }
-     isDelegate = false
-     canPut = false
-     hasDynamicAttributes = false
     }
     Class {
      name = "ReplayFunctionAction"
-     description = [0]
      baseClassName = "ReplayAction"
      attributes = [2]
      {
       ClassAttribute {
        name = "inputs"
-       description = [0]
        dataType = DataType *2
-       arrayDim = 0
-       isOptional = false
-       defaultValue = NULL
        accessible = true
        accessor = "inputs()"
       }
       ClassAttribute {
        name = "output"
-       description = [0]
        dataType = DataType *2
-       arrayDim = 0
-       isOptional = false
-       defaultValue = NULL
        accessible = true
        accessor = "output()"
       }
      }
-     properties = [0]
-     methods = [0]
-     coerceFrom = [0]
-     coerceTo = [0]
-     isAbstract = false
-     noMake = false
      objectName = ""
      dataType = DataType 7 {
       name = "ReplayFunctionAction"
@@ -361,33 +271,19 @@ Service {
       noDoc = false
       nsService = "spi_replay"
      }
-     isDelegate = false
-     canPut = false
-     hasDynamicAttributes = false
     }
     Class {
      name = "ReplayObjectAction"
-     description = [0]
      baseClassName = "ReplayAction"
      attributes = [1]
      {
       ClassAttribute {
        name = "inputs"
-       description = [0]
        dataType = DataType *2
-       arrayDim = 0
-       isOptional = false
-       defaultValue = NULL
        accessible = true
        accessor = "inputs()"
       }
      }
-     properties = [0]
-     methods = [0]
-     coerceFrom = [0]
-     coerceTo = [0]
-     isAbstract = false
-     noMake = false
      objectName = ""
      dataType = DataType 8 {
       name = "ReplayObjectAction"
@@ -398,73 +294,40 @@ Service {
       noDoc = false
       nsService = "spi_replay"
      }
-     isDelegate = false
-     canPut = false
-     hasDynamicAttributes = false
     }
     Class {
      name = "ReplayCodeGenerator"
-     description = [0]
-     baseClassName = ""
-     attributes = [0]
-     properties = [0]
      methods = [2]
      {
       ClassMethod {
        function = Function {
         name = "GenerateFunction"
-        description = [0]
-        returnTypeDescription = [0]
         returnType = NULL
-        returnArrayDim = 0
         inputs = [1]
         {
          Attribute {
           name = "action"
-          description = [0]
           dataType = DataType *7
-          arrayDim = 0
-          isOptional = false
-          defaultValue = NULL
          }
         }
-        outputs = [0]
-        excelOptions = [0]
        }
        isConst = false
-       isVirtual = false
-       isStatic = false
-       isImplementation = false
       }
       ClassMethod {
        function = Function {
         name = "GenerateObject"
-        description = [0]
-        returnTypeDescription = [0]
         returnType = NULL
-        returnArrayDim = 0
         inputs = [1]
         {
          Attribute {
           name = "action"
-          description = [0]
           dataType = DataType *8
-          arrayDim = 0
-          isOptional = false
-          defaultValue = NULL
          }
         }
-        outputs = [0]
-        excelOptions = [0]
        }
        isConst = false
-       isVirtual = false
-       isStatic = false
-       isImplementation = false
       }
      }
-     coerceFrom = [0]
-     coerceTo = [0]
      isAbstract = true
      noMake = true
      objectName = ""
@@ -478,60 +341,38 @@ Service {
       nsService = "spi_replay"
      }
      isDelegate = true
-     canPut = false
-     hasDynamicAttributes = false
     }
     Class {
      name = "ReplayLog"
-     description = [0]
-     baseClassName = ""
      attributes = [1]
      {
       ClassAttribute {
        name = "items"
-       description = [0]
        dataType = DataType *2
        arrayDim = 1
-       isOptional = false
-       defaultValue = NULL
        accessible = true
        accessor = "items()"
       }
      }
-     properties = [0]
      methods = [2]
      {
       ClassMethod {
        function = Function {
         name = "generateCode"
-        description = [0]
-        returnTypeDescription = [0]
         returnType = NULL
-        returnArrayDim = 0
         inputs = [1]
         {
          Attribute {
           name = "generator"
-          description = [0]
           dataType = DataType *9
-          arrayDim = 0
-          isOptional = false
-          defaultValue = NULL
          }
         }
-        outputs = [0]
-        excelOptions = [0]
        }
        isConst = false
-       isVirtual = false
-       isStatic = false
-       isImplementation = false
       }
       ClassMethod {
        function = Function {
         name = "Read"
-        description = [0]
-        returnTypeDescription = [0]
         returnType = DataType 10 {
          name = "ReplayLog"
          passByReference = true
@@ -541,40 +382,23 @@ Service {
          noDoc = false
          nsService = "spi_replay"
         }
-        returnArrayDim = 0
         inputs = [1]
         {
          Attribute {
           name = "infilename"
-          description = [0]
           dataType = DataType *1
-          arrayDim = 0
-          isOptional = false
-          defaultValue = NULL
          }
         }
-        outputs = [0]
-        excelOptions = [0]
        }
        isConst = false
-       isVirtual = false
        isStatic = true
-       isImplementation = false
       }
      }
-     coerceFrom = [0]
-     coerceTo = [0]
-     isAbstract = false
      noMake = true
      objectName = ""
      dataType = DataType *10
-     isDelegate = false
-     canPut = false
-     hasDynamicAttributes = false
     }
    }
   }
  }
- importedBaseClasses = [0]
- importedEnums = [0]
 }

@@ -274,7 +274,7 @@ static PyMethodDef Attribute_methods[] = {
     {"Coerce", (PyCFunction)py_spdoc_Attribute_Coerce, METH_VARARGS | METH_STATIC,
         "Coerce Attribute from arbitrary value"},
     {"encoding", (PyCFunction)py_spdoc_Attribute_encoding, METH_VARARGS | METH_KEYWORDS,
-        "encoding(self, isOutput=None)"},
+        "encoding(self, isOutput=None, showDefault=None)"},
     {NULL, NULL, 0, NULL} // sentinel
 };
 
@@ -299,7 +299,7 @@ static PyTypeObject Attribute_PyObjectType = {
     0, /*tp_setattro*/
     0, /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT, /*tp_flags*/
-    "Defines an attribute which is an input to a function call or output from a function call.\n\n__init__(self, name, description=[], dataType, arrayDim, isOptional, defaultValue=None)", /* tp_doc */
+    "Defines an attribute which is an input to a function call or output from a function call.\n\n__init__(self, name, description=[], dataType, arrayDim=None, isOptional=None, defaultValue=None)", /* tp_doc */
     0, /* tp_traverse */
     0, /* tp_clear */
     0, /* tp_richcompare */
@@ -365,8 +365,6 @@ static PyGetSetDef ClassAttribute_properties[] = {
         (void*) "accessor"},
     {"isArray", (getter)(spi_py_object_getter), NULL, NULL,
         (void*) "isArray"},
-    {"encoding", (getter)(spi_py_object_getter), NULL, NULL,
-        (void*) "encoding"},
     {NULL} // sentinel
 };
 
@@ -375,9 +373,37 @@ PyObject* py_spdoc_ClassAttribute_Coerce(PyObject* self, PyObject* args)
     PyObject* pyo = get_python_service()->ObjectCoerce("ClassAttribute", args);
     return pyo;
 }
+
+PyObject* py_spdoc_ClassAttribute_encoding(PyObject* self, PyObject* args, PyObject* kwargs)
+{
+    static spi::FunctionCaller* func = 0;
+    try
+    {
+        if (!func)
+            func = get_function_caller("ClassAttribute.encoding");
+
+        const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
+        spi::Value output = spi::CallInContext(func, iv, get_input_context());
+        return spi::pyoFromValue(output);
+    }
+    catch (spi::PyException&)
+    {
+        return NULL;
+    }
+    catch (std::exception &e)
+    {
+        return spi::pyExceptionHandler(e.what());
+    }
+    catch (...)
+    {
+        return spi::pyExceptionHandler("Unknown exception");
+    }
+}
 static PyMethodDef ClassAttribute_methods[] = {
     {"Coerce", (PyCFunction)py_spdoc_ClassAttribute_Coerce, METH_VARARGS | METH_STATIC,
         "Coerce ClassAttribute from arbitrary value"},
+    {"encoding", (PyCFunction)py_spdoc_ClassAttribute_encoding, METH_VARARGS | METH_KEYWORDS,
+        "encoding(self, showDefault=None)"},
     {NULL, NULL, 0, NULL} // sentinel
 };
 
@@ -402,7 +428,7 @@ static PyTypeObject ClassAttribute_PyObjectType = {
     0, /*tp_setattro*/
     0, /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT, /*tp_flags*/
-    "Defines an attribute of a class.\n\n__init__(self, name, description=[], dataType, arrayDim, isOptional, defaultValue=None, accessible, accessor)", /* tp_doc */
+    "Defines an attribute of a class.\n\n__init__(self, name, description=[], dataType, arrayDim=None, isOptional=None, defaultValue=None, accessible, accessor)", /* tp_doc */
     0, /* tp_traverse */
     0, /* tp_clear */
     0, /* tp_richcompare */
@@ -623,7 +649,7 @@ static PyTypeObject SimpleType_PyObjectType = {
     0, /*tp_setattro*/
     0, /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT, /*tp_flags*/
-    "Defines a simple type.\n\n__init__(self, name, description=[], typeName, noDoc)", /* tp_doc */
+    "Defines a simple type.\n\n__init__(self, name, description=[], typeName, noDoc=None)", /* tp_doc */
     0, /* tp_traverse */
     0, /* tp_clear */
     0, /* tp_richcompare */
@@ -808,7 +834,7 @@ static PyTypeObject Function_PyObjectType = {
     0, /*tp_setattro*/
     0, /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT, /*tp_flags*/
-    "Defines a function.\n\n__init__(self, name, description=[], returnTypeDescription=[], returnType, returnArrayDim, inputs=[], outputs=[], excelOptions=[], optionalReturnType=None)", /* tp_doc */
+    "Defines a function.\n\n__init__(self, name, description=[], returnTypeDescription=[], returnType, returnArrayDim=None, inputs=[], outputs=[], excelOptions=[], optionalReturnType=None)", /* tp_doc */
     0, /* tp_traverse */
     0, /* tp_clear */
     0, /* tp_richcompare */
@@ -1198,7 +1224,7 @@ static PyTypeObject ClassMethod_PyObjectType = {
     0, /*tp_setattro*/
     0, /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT, /*tp_flags*/
-    "Defines a class method.\n\n__init__(self, function, isConst, isVirtual, isStatic, isImplementation, implements=None)", /* tp_doc */
+    "Defines a class method.\n\n__init__(self, function, isConst, isVirtual=None, isStatic=None, isImplementation=None, implements=None)", /* tp_doc */
     0, /* tp_traverse */
     0, /* tp_clear */
     0, /* tp_richcompare */
@@ -1605,7 +1631,7 @@ static PyTypeObject Class_PyObjectType = {
     0, /*tp_setattro*/
     0, /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT, /*tp_flags*/
-    "Defines a class.\n\n__init__(self, name, ns=None, description=[], baseClassName, attributes=[], properties=[], methods=[], coerceFrom=[], coerceTo=[], isAbstract, noMake, objectName, dataType, isDelegate, canPut, hasDynamicAttributes, asValue=None, constructor=None)", /* tp_doc */
+    "Defines a class.\n\n__init__(self, name, ns=None, description=[], baseClassName=None, attributes=[], properties=[], methods=[], coerceFrom=[], coerceTo=[], isAbstract=None, noMake=None, objectName, dataType, isDelegate=None, canPut=None, hasDynamicAttributes=None, asValue=None, constructor=None)", /* tp_doc */
     0, /* tp_traverse */
     0, /* tp_clear */
     0, /* tp_richcompare */
@@ -1724,7 +1750,7 @@ static PyTypeObject Module_PyObjectType = {
     0, /*tp_setattro*/
     0, /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT, /*tp_flags*/
-    "Defines a module.\n\n__init__(self, name, description=[], ns, constructs=[])", /* tp_doc */
+    "Defines a module.\n\n__init__(self, name, description=[], ns=None, constructs=[])", /* tp_doc */
     0, /* tp_traverse */
     0, /* tp_clear */
     0, /* tp_richcompare */

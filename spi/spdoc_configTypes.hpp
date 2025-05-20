@@ -126,8 +126,8 @@ public:
         const std::string& name,
         const std::vector<std::string>& description,
         const DataTypeConstSP& dataType,
-        int arrayDim,
-        bool isOptional,
+        int arrayDim = 0,
+        bool isOptional = false,
         const ConstantConstSP& defaultValue = {});
 
     /**
@@ -135,10 +135,12 @@ public:
     * No description.
     *
     * @param isOutput
+    * @param showDefault
     ************************************************************************
     */
     std::string encoding(
-        bool isOutput = false) const;
+        bool isOutput = false,
+        bool showDefault = false) const;
 
     typedef spi::ObjectSmartPtr<Attribute> outer_type;
 
@@ -190,6 +192,16 @@ public:
     */
     operator AttributeConstSP() const;
 
+    /**
+    ************************************************************************
+    * No description.
+    *
+    * @param showDefault
+    ************************************************************************
+    */
+    std::string encoding(
+        bool showDefault = false) const;
+
     typedef spi::ObjectSmartPtr<ClassAttribute> outer_type;
 
     SPI_DECLARE_OBJECT_TYPE(ClassAttribute);
@@ -220,7 +232,6 @@ public:
     const bool accessible;
     const std::string accessor;
     bool isArray() const;
-    std::string encoding() const;
 };
 
 /**
@@ -281,7 +292,7 @@ public:
         const std::string& name,
         const std::vector<std::string>& description,
         const std::string& typeName,
-        bool noDoc);
+        bool noDoc = false);
 
     /**
     ************************************************************************
@@ -336,7 +347,7 @@ public:
         const std::vector<std::string>& description,
         const std::vector<std::string>& returnTypeDescription,
         const DataTypeConstSP& returnType,
-        int returnArrayDim,
+        int returnArrayDim = 0,
         const std::vector<AttributeConstSP>& inputs = {},
         const std::vector<AttributeConstSP>& outputs = {},
         const std::vector<std::string>& excelOptions = {},
@@ -537,9 +548,9 @@ public:
     static ClassMethodConstSP Make(
         const FunctionConstSP& function,
         bool isConst,
-        bool isVirtual,
-        bool isStatic,
-        bool isImplementation,
+        bool isVirtual = false,
+        bool isStatic = false,
+        bool isImplementation = false,
         const std::string& implements = "");
 
     /**
@@ -679,9 +690,9 @@ public:
         bool noMake,
         const std::string& objectName,
         const DataTypeConstSP& dataType,
-        bool isDelegate,
-        bool canPut,
-        bool hasDynamicAttributes,
+        bool isDelegate = false,
+        bool canPut = false,
+        bool hasDynamicAttributes = false,
         bool asValue = false,
         const std::string& constructor = "");
 
@@ -778,8 +789,8 @@ class SPI_IMPORT Module : public spi::Object
 public:
     static ModuleConstSP Make(
         const std::string& name,
-        const std::vector<std::string>& description,
-        const std::string& ns,
+        const std::vector<std::string>& description = {},
+        const std::string& ns = "",
         const std::vector<ConstructConstSP>& constructs = {});
 
     /**

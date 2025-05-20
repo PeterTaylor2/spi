@@ -280,11 +280,11 @@ void Attribute::to_map(
     spi::IObjectMap* obj_map, bool public_only) const
 {
     obj_map->SetString("name", name);
-    obj_map->SetStringVector("description", description);
+    obj_map->SetStringVector("description", description, !public_only && (description.size() == 0));
     obj_map->SetObject("dataType", dataType);
-    obj_map->SetInt("arrayDim", arrayDim);
-    obj_map->SetBool("isOptional", isOptional);
-    obj_map->SetObject("defaultValue", defaultValue);
+    obj_map->SetInt("arrayDim", arrayDim, !public_only && (arrayDim == 0));
+    obj_map->SetBool("isOptional", isOptional, !public_only && (isOptional == false));
+    obj_map->SetObject("defaultValue", defaultValue, !public_only && (!defaultValue));
     if (public_only)
     {
         obj_map->SetBool("isArray", isArray());
@@ -302,9 +302,9 @@ spi::ObjectConstSP Attribute::object_from_map(
     const DataTypeConstSP& dataType
         = obj_map->GetInstance<DataType const>("dataType", value_to_object);
     int arrayDim
-        = obj_map->GetInt("arrayDim");
+        = obj_map->GetInt("arrayDim", true, 0);
     bool isOptional
-        = obj_map->GetBool("isOptional");
+        = obj_map->GetBool("isOptional", true, false);
     const ConstantConstSP& defaultValue
         = obj_map->GetInstance<Constant const>("defaultValue", value_to_object, true);
 
@@ -325,9 +325,9 @@ spi::Value Attribute_caller(
     const DataTypeConstSP& dataType =
         in_context->ValueToInstance<DataType const>(in_values[2]);
     int arrayDim =
-        in_context->ValueToInt(in_values[3]);
+        in_context->ValueToInt(in_values[3], true, 0);
     bool isOptional =
-        in_context->ValueToBool(in_values[4]);
+        in_context->ValueToBool(in_values[4], true, false);
     const ConstantConstSP& defaultValue =
         in_context->ValueToInstance<Constant const>(in_values[5], true);
 
@@ -343,8 +343,8 @@ spi::FunctionCaller Attribute_FunctionCaller = {
         {"name", spi::ArgType::STRING, "string", false, false, false},
         {"description", spi::ArgType::STRING, "string", true, false, false},
         {"dataType", spi::ArgType::OBJECT, "DataType", false, false, false},
-        {"arrayDim", spi::ArgType::INT, "int", false, false, false},
-        {"isOptional", spi::ArgType::BOOL, "bool", false, false, false},
+        {"arrayDim", spi::ArgType::INT, "int", false, true, false},
+        {"isOptional", spi::ArgType::BOOL, "bool", false, true, false},
         {"defaultValue", spi::ArgType::OBJECT, "Constant", false, true, false}
     },
     Attribute_caller
@@ -358,17 +358,20 @@ spi::Value Attribute_encoding_caller(
         in_context->ValueToInstance<Attribute const>(in_values[0]);
     bool isOutput =
         in_context->ValueToBool(in_values[1], true, false);
+    bool showDefault =
+        in_context->ValueToBool(in_values[2], true, false);
 
-    const std::string& o_result = self->encoding(isOutput);
+    const std::string& o_result = self->encoding(isOutput, showDefault);
     return o_result;
 }
 
 spi::FunctionCaller Attribute_encoding_FunctionCaller = {
     "Attribute.encoding",
-    2,
+    3,
     {
         {"self", spi::ArgType::OBJECT, "Attribute", false, false, false},
-        {"isOutput", spi::ArgType::BOOL, "bool", false, true, true}
+        {"isOutput", spi::ArgType::BOOL, "bool", false, true, true},
+        {"showDefault", spi::ArgType::BOOL, "bool", false, true, true}
     },
     Attribute_encoding_caller
 };
@@ -447,17 +450,16 @@ void ClassAttribute::to_map(
     spi::IObjectMap* obj_map, bool public_only) const
 {
     obj_map->SetString("name", name);
-    obj_map->SetStringVector("description", description);
+    obj_map->SetStringVector("description", description, !public_only && (description.size() == 0));
     obj_map->SetObject("dataType", dataType);
-    obj_map->SetInt("arrayDim", arrayDim);
-    obj_map->SetBool("isOptional", isOptional);
-    obj_map->SetObject("defaultValue", defaultValue);
+    obj_map->SetInt("arrayDim", arrayDim, !public_only && (arrayDim == 0));
+    obj_map->SetBool("isOptional", isOptional, !public_only && (isOptional == false));
+    obj_map->SetObject("defaultValue", defaultValue, !public_only && (!defaultValue));
     obj_map->SetBool("accessible", accessible);
     obj_map->SetString("accessor", accessor);
     if (public_only)
     {
         obj_map->SetBool("isArray", isArray());
-        obj_map->SetString("encoding", encoding());
     }
 }
 
@@ -472,9 +474,9 @@ spi::ObjectConstSP ClassAttribute::object_from_map(
     const DataTypeConstSP& dataType
         = obj_map->GetInstance<DataType const>("dataType", value_to_object);
     int arrayDim
-        = obj_map->GetInt("arrayDim");
+        = obj_map->GetInt("arrayDim", true, 0);
     bool isOptional
-        = obj_map->GetBool("isOptional");
+        = obj_map->GetBool("isOptional", true, false);
     const ConstantConstSP& defaultValue
         = obj_map->GetInstance<Constant const>("defaultValue", value_to_object, true);
     bool accessible
@@ -499,9 +501,9 @@ spi::Value ClassAttribute_caller(
     const DataTypeConstSP& dataType =
         in_context->ValueToInstance<DataType const>(in_values[2]);
     int arrayDim =
-        in_context->ValueToInt(in_values[3]);
+        in_context->ValueToInt(in_values[3], true, 0);
     bool isOptional =
-        in_context->ValueToBool(in_values[4]);
+        in_context->ValueToBool(in_values[4], true, false);
     const ConstantConstSP& defaultValue =
         in_context->ValueToInstance<Constant const>(in_values[5], true);
     bool accessible =
@@ -522,14 +524,40 @@ spi::FunctionCaller ClassAttribute_FunctionCaller = {
         {"name", spi::ArgType::STRING, "string", false, false, false},
         {"description", spi::ArgType::STRING, "string", true, false, false},
         {"dataType", spi::ArgType::OBJECT, "DataType", false, false, false},
-        {"arrayDim", spi::ArgType::INT, "int", false, false, false},
-        {"isOptional", spi::ArgType::BOOL, "bool", false, false, false},
+        {"arrayDim", spi::ArgType::INT, "int", false, true, false},
+        {"isOptional", spi::ArgType::BOOL, "bool", false, true, false},
         {"defaultValue", spi::ArgType::OBJECT, "Constant", false, true, false},
         {"accessible", spi::ArgType::BOOL, "bool", false, false, false},
         {"accessor", spi::ArgType::STRING, "string", false, false, false}
     },
     ClassAttribute_caller
 };
+
+spi::Value ClassAttribute_encoding_caller(
+    const spi::InputContext*       in_context,
+    const std::vector<spi::Value>& in_values)
+{
+    const ClassAttributeConstSP& self =
+        in_context->ValueToInstance<ClassAttribute const>(in_values[0]);
+    bool showDefault =
+        in_context->ValueToBool(in_values[1], true, false);
+
+    const std::string& o_result = self->encoding(showDefault);
+    return o_result;
+}
+
+spi::FunctionCaller ClassAttribute_encoding_FunctionCaller = {
+    "ClassAttribute.encoding",
+    2,
+    {
+        {"self", spi::ArgType::OBJECT, "ClassAttribute", false, false, false},
+        {"showDefault", spi::ArgType::BOOL, "bool", false, true, true}
+    },
+    ClassAttribute_encoding_caller
+};
+
+spi::ObjectType ClassAttribute_encoding_FunctionObjectType =
+    spi::FunctionObjectType("spdoc.ClassAttribute.encoding");
 
 /*
 ****************************************************************************
@@ -727,9 +755,9 @@ void SimpleType::to_map(
     spi::IObjectMap* obj_map, bool public_only) const
 {
     obj_map->SetString("name", name);
-    obj_map->SetStringVector("description", description);
+    obj_map->SetStringVector("description", description, !public_only && (description.size() == 0));
     obj_map->SetString("typeName", typeName);
-    obj_map->SetBool("noDoc", noDoc);
+    obj_map->SetBool("noDoc", noDoc, !public_only && (noDoc == false));
 }
 
 spi::ObjectConstSP SimpleType::object_from_map(
@@ -743,7 +771,7 @@ spi::ObjectConstSP SimpleType::object_from_map(
     const std::string& typeName
         = obj_map->GetString("typeName");
     bool noDoc
-        = obj_map->GetBool("noDoc");
+        = obj_map->GetBool("noDoc", true, false);
 
     return new SimpleType(name, description, typeName, noDoc);
 }
@@ -761,7 +789,7 @@ spi::Value SimpleType_caller(
     const std::string& typeName =
         in_context->ValueToString(in_values[2]);
     bool noDoc =
-        in_context->ValueToBool(in_values[3]);
+        in_context->ValueToBool(in_values[3], true, false);
 
     const SimpleTypeConstSP& o_result = spdoc::SimpleType::Make(name,
         description, typeName, noDoc);
@@ -775,7 +803,7 @@ spi::FunctionCaller SimpleType_FunctionCaller = {
         {"name", spi::ArgType::STRING, "string", false, false, false},
         {"description", spi::ArgType::STRING, "string", true, false, false},
         {"typeName", spi::ArgType::STRING, "string", false, false, false},
-        {"noDoc", spi::ArgType::BOOL, "bool", false, false, false}
+        {"noDoc", spi::ArgType::BOOL, "bool", false, true, false}
     },
     SimpleType_caller
 };
@@ -842,13 +870,13 @@ void Function::to_map(
     spi::IObjectMap* obj_map, bool public_only) const
 {
     obj_map->SetString("name", name);
-    obj_map->SetStringVector("description", description);
-    obj_map->SetStringVector("returnTypeDescription", returnTypeDescription);
+    obj_map->SetStringVector("description", description, !public_only && (description.size() == 0));
+    obj_map->SetStringVector("returnTypeDescription", returnTypeDescription, !public_only && (returnTypeDescription.size() == 0));
     obj_map->SetObject("returnType", returnType);
-    obj_map->SetInt("returnArrayDim", returnArrayDim);
-    obj_map->SetInstanceVector<Attribute const>("inputs", inputs);
-    obj_map->SetInstanceVector<Attribute const>("outputs", outputs);
-    obj_map->SetStringVector("excelOptions", excelOptions);
+    obj_map->SetInt("returnArrayDim", returnArrayDim, !public_only && (returnArrayDim == 0));
+    obj_map->SetInstanceVector<Attribute const>("inputs", inputs, !public_only && (inputs.size() == 0));
+    obj_map->SetInstanceVector<Attribute const>("outputs", outputs, !public_only && (outputs.size() == 0));
+    obj_map->SetStringVector("excelOptions", excelOptions, !public_only && (excelOptions.size() == 0));
     obj_map->SetBool("optionalReturnType", optionalReturnType, !public_only && (optionalReturnType == false));
 }
 
@@ -865,7 +893,7 @@ spi::ObjectConstSP Function::object_from_map(
     const DataTypeConstSP& returnType
         = obj_map->GetInstance<DataType const>("returnType", value_to_object);
     int returnArrayDim
-        = obj_map->GetInt("returnArrayDim");
+        = obj_map->GetInt("returnArrayDim", true, 0);
     const std::vector<AttributeConstSP>& inputs
         = obj_map->GetInstanceVector<Attribute const>("inputs", value_to_object);
     const std::vector<AttributeConstSP>& outputs
@@ -894,7 +922,7 @@ spi::Value Function_caller(
     const DataTypeConstSP& returnType =
         in_context->ValueToInstance<DataType const>(in_values[3]);
     int returnArrayDim =
-        in_context->ValueToInt(in_values[4]);
+        in_context->ValueToInt(in_values[4], true, 0);
     std::vector<AttributeConstSP> inputs =
         in_context->ValueToInstanceVector<Attribute const>(in_values[5]);
     std::vector<AttributeConstSP> outputs =
@@ -918,7 +946,7 @@ spi::FunctionCaller Function_FunctionCaller = {
         {"description", spi::ArgType::STRING, "string", true, false, false},
         {"returnTypeDescription", spi::ArgType::STRING, "string", true, false, false},
         {"returnType", spi::ArgType::OBJECT, "DataType", false, false, false},
-        {"returnArrayDim", spi::ArgType::INT, "int", false, false, false},
+        {"returnArrayDim", spi::ArgType::INT, "int", false, true, false},
         {"inputs", spi::ArgType::OBJECT, "Attribute", true, false, false},
         {"outputs", spi::ArgType::OBJECT, "Attribute", true, false, false},
         {"excelOptions", spi::ArgType::STRING, "string", true, false, false},
@@ -1058,8 +1086,8 @@ void Enumerand::to_map(
     spi::IObjectMap* obj_map, bool public_only) const
 {
     obj_map->SetString("code", code);
-    obj_map->SetStringVector("strings", strings);
-    obj_map->SetStringVector("description", description);
+    obj_map->SetStringVector("strings", strings, !public_only && (strings.size() == 0));
+    obj_map->SetStringVector("description", description, !public_only && (description.size() == 0));
 }
 
 spi::ObjectConstSP Enumerand::object_from_map(
@@ -1269,7 +1297,7 @@ void Enum::to_map(
     spi::IObjectMap* obj_map, bool public_only) const
 {
     obj_map->SetString("name", name);
-    obj_map->SetStringVector("description", description);
+    obj_map->SetStringVector("description", description, !public_only && (description.size() == 0));
     obj_map->SetInstanceVector<Enumerand const>("enumerands", enumerands);
     obj_map->SetInstanceVector<EnumConstructor const>("constructors", constructors, !public_only && (constructors.size() == 0));
 }
@@ -1385,9 +1413,9 @@ void ClassMethod::to_map(
 {
     obj_map->SetObject("function", function);
     obj_map->SetBool("isConst", isConst);
-    obj_map->SetBool("isVirtual", isVirtual);
-    obj_map->SetBool("isStatic", isStatic);
-    obj_map->SetBool("isImplementation", isImplementation);
+    obj_map->SetBool("isVirtual", isVirtual, !public_only && (isVirtual == false));
+    obj_map->SetBool("isStatic", isStatic, !public_only && (isStatic == false));
+    obj_map->SetBool("isImplementation", isImplementation, !public_only && (isImplementation == false));
     obj_map->SetString("implements", implements, !public_only && (implements.empty()));
 }
 
@@ -1400,11 +1428,11 @@ spi::ObjectConstSP ClassMethod::object_from_map(
     bool isConst
         = obj_map->GetBool("isConst");
     bool isVirtual
-        = obj_map->GetBool("isVirtual");
+        = obj_map->GetBool("isVirtual", true, false);
     bool isStatic
-        = obj_map->GetBool("isStatic");
+        = obj_map->GetBool("isStatic", true, false);
     bool isImplementation
-        = obj_map->GetBool("isImplementation");
+        = obj_map->GetBool("isImplementation", true, false);
     const std::string& implements
         = obj_map->GetString("implements", true);
 
@@ -1423,11 +1451,11 @@ spi::Value ClassMethod_caller(
     bool isConst =
         in_context->ValueToBool(in_values[1]);
     bool isVirtual =
-        in_context->ValueToBool(in_values[2]);
+        in_context->ValueToBool(in_values[2], true, false);
     bool isStatic =
-        in_context->ValueToBool(in_values[3]);
+        in_context->ValueToBool(in_values[3], true, false);
     bool isImplementation =
-        in_context->ValueToBool(in_values[4]);
+        in_context->ValueToBool(in_values[4], true, false);
     const std::string& implements =
         in_context->ValueToString(in_values[5], true, "");
 
@@ -1442,9 +1470,9 @@ spi::FunctionCaller ClassMethod_FunctionCaller = {
     {
         {"function", spi::ArgType::OBJECT, "Function", false, false, false},
         {"isConst", spi::ArgType::BOOL, "bool", false, false, false},
-        {"isVirtual", spi::ArgType::BOOL, "bool", false, false, false},
-        {"isStatic", spi::ArgType::BOOL, "bool", false, false, false},
-        {"isImplementation", spi::ArgType::BOOL, "bool", false, false, false},
+        {"isVirtual", spi::ArgType::BOOL, "bool", false, true, false},
+        {"isStatic", spi::ArgType::BOOL, "bool", false, true, false},
+        {"isImplementation", spi::ArgType::BOOL, "bool", false, true, false},
         {"implements", spi::ArgType::STRING, "string", false, true, false}
     },
     ClassMethod_caller
@@ -1538,7 +1566,7 @@ CoerceFrom::Coerce(const spi::ObjectConstSP& o)
 void CoerceFrom::to_map(
     spi::IObjectMap* obj_map, bool public_only) const
 {
-    obj_map->SetStringVector("description", description);
+    obj_map->SetStringVector("description", description, !public_only && (description.size() == 0));
     obj_map->SetObject("coerceFrom", coerceFrom);
 }
 
@@ -1668,7 +1696,7 @@ CoerceTo::Coerce(const spi::ObjectConstSP& o)
 void CoerceTo::to_map(
     spi::IObjectMap* obj_map, bool public_only) const
 {
-    obj_map->SetStringVector("description", description);
+    obj_map->SetStringVector("description", description, !public_only && (description.size() == 0));
     obj_map->SetString("className", className);
     obj_map->SetObject("classType", classType);
 }
@@ -1806,20 +1834,20 @@ void Class::to_map(
 {
     obj_map->SetString("name", name);
     obj_map->SetString("ns", ns, !public_only && (ns.empty()));
-    obj_map->SetStringVector("description", description);
-    obj_map->SetString("baseClassName", baseClassName);
-    obj_map->SetInstanceVector<ClassAttribute const>("attributes", attributes);
-    obj_map->SetInstanceVector<ClassAttribute const>("properties", properties);
-    obj_map->SetInstanceVector<ClassMethod const>("methods", methods);
-    obj_map->SetInstanceVector<CoerceFrom const>("coerceFrom", coerceFrom);
-    obj_map->SetInstanceVector<CoerceTo const>("coerceTo", coerceTo);
-    obj_map->SetBool("isAbstract", isAbstract);
-    obj_map->SetBool("noMake", noMake);
+    obj_map->SetStringVector("description", description, !public_only && (description.size() == 0));
+    obj_map->SetString("baseClassName", baseClassName, !public_only && (baseClassName.empty()));
+    obj_map->SetInstanceVector<ClassAttribute const>("attributes", attributes, !public_only && (attributes.size() == 0));
+    obj_map->SetInstanceVector<ClassAttribute const>("properties", properties, !public_only && (properties.size() == 0));
+    obj_map->SetInstanceVector<ClassMethod const>("methods", methods, !public_only && (methods.size() == 0));
+    obj_map->SetInstanceVector<CoerceFrom const>("coerceFrom", coerceFrom, !public_only && (coerceFrom.size() == 0));
+    obj_map->SetInstanceVector<CoerceTo const>("coerceTo", coerceTo, !public_only && (coerceTo.size() == 0));
+    obj_map->SetBool("isAbstract", isAbstract, !public_only && (isAbstract == false));
+    obj_map->SetBool("noMake", noMake, !public_only && (noMake == false));
     obj_map->SetString("objectName", objectName);
     obj_map->SetObject("dataType", dataType);
-    obj_map->SetBool("isDelegate", isDelegate);
-    obj_map->SetBool("canPut", canPut);
-    obj_map->SetBool("hasDynamicAttributes", hasDynamicAttributes);
+    obj_map->SetBool("isDelegate", isDelegate, !public_only && (isDelegate == false));
+    obj_map->SetBool("canPut", canPut, !public_only && (canPut == false));
+    obj_map->SetBool("hasDynamicAttributes", hasDynamicAttributes, !public_only && (hasDynamicAttributes == false));
     obj_map->SetBool("asValue", asValue, !public_only && (asValue == false));
     obj_map->SetString("constructor", constructor, !public_only && (constructor.empty()));
 }
@@ -1835,7 +1863,7 @@ spi::ObjectConstSP Class::object_from_map(
     const std::vector<std::string>& description
         = obj_map->GetStringVector("description");
     const std::string& baseClassName
-        = obj_map->GetString("baseClassName");
+        = obj_map->GetString("baseClassName", true);
     const std::vector<ClassAttributeConstSP>& attributes
         = obj_map->GetInstanceVector<ClassAttribute const>("attributes", value_to_object);
     const std::vector<ClassAttributeConstSP>& properties
@@ -1847,19 +1875,19 @@ spi::ObjectConstSP Class::object_from_map(
     const std::vector<CoerceToConstSP>& coerceTo
         = obj_map->GetInstanceVector<CoerceTo const>("coerceTo", value_to_object);
     bool isAbstract
-        = obj_map->GetBool("isAbstract");
+        = obj_map->GetBool("isAbstract", true, false);
     bool noMake
-        = obj_map->GetBool("noMake");
+        = obj_map->GetBool("noMake", true, false);
     const std::string& objectName
         = obj_map->GetString("objectName");
     const DataTypeConstSP& dataType
         = obj_map->GetInstance<DataType const>("dataType", value_to_object);
     bool isDelegate
-        = obj_map->GetBool("isDelegate");
+        = obj_map->GetBool("isDelegate", true, false);
     bool canPut
-        = obj_map->GetBool("canPut");
+        = obj_map->GetBool("canPut", true, false);
     bool hasDynamicAttributes
-        = obj_map->GetBool("hasDynamicAttributes");
+        = obj_map->GetBool("hasDynamicAttributes", true, false);
     bool asValue
         = obj_map->GetBool("asValue", true, false);
     const std::string& constructor
@@ -1884,7 +1912,7 @@ spi::Value Class_caller(
     std::vector<std::string> description =
         in_context->ValueToStringVector(in_values[2]);
     const std::string& baseClassName =
-        in_context->ValueToString(in_values[3]);
+        in_context->ValueToString(in_values[3], true, "");
     std::vector<ClassAttributeConstSP> attributes =
         in_context->ValueToInstanceVector<ClassAttribute const>(in_values[4]);
     std::vector<ClassAttributeConstSP> properties =
@@ -1896,19 +1924,19 @@ spi::Value Class_caller(
     std::vector<CoerceToConstSP> coerceTo =
         in_context->ValueToInstanceVector<CoerceTo const>(in_values[8]);
     bool isAbstract =
-        in_context->ValueToBool(in_values[9]);
+        in_context->ValueToBool(in_values[9], true, false);
     bool noMake =
-        in_context->ValueToBool(in_values[10]);
+        in_context->ValueToBool(in_values[10], true, false);
     const std::string& objectName =
         in_context->ValueToString(in_values[11]);
     const DataTypeConstSP& dataType =
         in_context->ValueToInstance<DataType const>(in_values[12]);
     bool isDelegate =
-        in_context->ValueToBool(in_values[13]);
+        in_context->ValueToBool(in_values[13], true, false);
     bool canPut =
-        in_context->ValueToBool(in_values[14]);
+        in_context->ValueToBool(in_values[14], true, false);
     bool hasDynamicAttributes =
-        in_context->ValueToBool(in_values[15]);
+        in_context->ValueToBool(in_values[15], true, false);
     bool asValue =
         in_context->ValueToBool(in_values[16], true, false);
     const std::string& constructor =
@@ -1928,19 +1956,19 @@ spi::FunctionCaller Class_FunctionCaller = {
         {"name", spi::ArgType::STRING, "string", false, false, false},
         {"ns", spi::ArgType::STRING, "string", false, true, false},
         {"description", spi::ArgType::STRING, "string", true, false, false},
-        {"baseClassName", spi::ArgType::STRING, "string", false, false, false},
+        {"baseClassName", spi::ArgType::STRING, "string", false, true, false},
         {"attributes", spi::ArgType::OBJECT, "ClassAttribute", true, false, false},
         {"properties", spi::ArgType::OBJECT, "ClassAttribute", true, false, false},
         {"methods", spi::ArgType::OBJECT, "ClassMethod", true, false, false},
         {"coerceFrom", spi::ArgType::OBJECT, "CoerceFrom", true, false, false},
         {"coerceTo", spi::ArgType::OBJECT, "CoerceTo", true, false, false},
-        {"isAbstract", spi::ArgType::BOOL, "bool", false, false, false},
-        {"noMake", spi::ArgType::BOOL, "bool", false, false, false},
+        {"isAbstract", spi::ArgType::BOOL, "bool", false, true, false},
+        {"noMake", spi::ArgType::BOOL, "bool", false, true, false},
         {"objectName", spi::ArgType::STRING, "string", false, false, false},
         {"dataType", spi::ArgType::OBJECT, "DataType", false, false, false},
-        {"isDelegate", spi::ArgType::BOOL, "bool", false, false, false},
-        {"canPut", spi::ArgType::BOOL, "bool", false, false, false},
-        {"hasDynamicAttributes", spi::ArgType::BOOL, "bool", false, false, false},
+        {"isDelegate", spi::ArgType::BOOL, "bool", false, true, false},
+        {"canPut", spi::ArgType::BOOL, "bool", false, true, false},
+        {"hasDynamicAttributes", spi::ArgType::BOOL, "bool", false, true, false},
         {"asValue", spi::ArgType::BOOL, "bool", false, true, false},
         {"constructor", spi::ArgType::STRING, "string", false, true, false}
     },
@@ -2055,9 +2083,9 @@ void Module::to_map(
     spi::IObjectMap* obj_map, bool public_only) const
 {
     obj_map->SetString("name", name);
-    obj_map->SetStringVector("description", description);
-    obj_map->SetString("ns", ns);
-    obj_map->SetInstanceVector<Construct const>("constructs", constructs);
+    obj_map->SetStringVector("description", description, !public_only && (description.size() == 0));
+    obj_map->SetString("ns", ns, !public_only && (ns.empty()));
+    obj_map->SetInstanceVector<Construct const>("constructs", constructs, !public_only && (constructs.size() == 0));
 }
 
 spi::ObjectConstSP Module::object_from_map(
@@ -2069,7 +2097,7 @@ spi::ObjectConstSP Module::object_from_map(
     const std::vector<std::string>& description
         = obj_map->GetStringVector("description");
     const std::string& ns
-        = obj_map->GetString("ns");
+        = obj_map->GetString("ns", true);
     const std::vector<ConstructConstSP>& constructs
         = obj_map->GetInstanceVector<Construct const>("constructs", value_to_object);
 
@@ -2087,7 +2115,7 @@ spi::Value Module_caller(
     std::vector<std::string> description =
         in_context->ValueToStringVector(in_values[1]);
     const std::string& ns =
-        in_context->ValueToString(in_values[2]);
+        in_context->ValueToString(in_values[2], true, "");
     std::vector<ConstructConstSP> constructs =
         in_context->ValueToInstanceVector<Construct const>(in_values[3]);
 
@@ -2102,7 +2130,7 @@ spi::FunctionCaller Module_FunctionCaller = {
     {
         {"name", spi::ArgType::STRING, "string", false, false, false},
         {"description", spi::ArgType::STRING, "string", true, false, false},
-        {"ns", spi::ArgType::STRING, "string", false, false, false},
+        {"ns", spi::ArgType::STRING, "string", false, true, false},
         {"constructs", spi::ArgType::OBJECT, "Construct", true, false, false}
     },
     Module_caller
@@ -2197,14 +2225,14 @@ void Service::to_map(
     spi::IObjectMap* obj_map, bool public_only) const
 {
     obj_map->SetString("name", name);
-    obj_map->SetStringVector("description", description);
+    obj_map->SetStringVector("description", description, !public_only && (description.size() == 0));
     obj_map->SetString("longName", longName);
     obj_map->SetString("ns", ns);
     obj_map->SetString("declSpec", declSpec);
     obj_map->SetString("version", version);
-    obj_map->SetInstanceVector<Module const>("modules", modules);
-    obj_map->SetInstanceVector<Class const>("importedBaseClasses", importedBaseClasses);
-    obj_map->SetInstanceVector<Enum const>("importedEnums", importedEnums);
+    obj_map->SetInstanceVector<Module const>("modules", modules, !public_only && (modules.size() == 0));
+    obj_map->SetInstanceVector<Class const>("importedBaseClasses", importedBaseClasses, !public_only && (importedBaseClasses.size() == 0));
+    obj_map->SetInstanceVector<Enum const>("importedEnums", importedEnums, !public_only && (importedEnums.size() == 0));
     obj_map->SetBool("sharedService", sharedService, !public_only && (sharedService == false));
 }
 
@@ -2614,6 +2642,8 @@ void configTypes_register_object_types(const spi::ServiceSP& svc)
     svc->add_function_caller(&Attribute_encoding_FunctionCaller);
     svc->add_object_type(&ClassAttribute::object_type);
     svc->add_function_caller(&ClassAttribute_FunctionCaller);
+    svc->add_object_type(&ClassAttribute_encoding_FunctionObjectType);
+    svc->add_function_caller(&ClassAttribute_encoding_FunctionCaller);
     svc->add_object_type(&Construct::object_type);
     svc->add_object_type(&Construct_getType_FunctionObjectType);
     svc->add_function_caller(&Construct_getType_FunctionCaller);

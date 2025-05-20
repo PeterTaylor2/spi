@@ -56,6 +56,8 @@ PyObject* py_spdoc_Attribute_encoding(PyObject* self, PyObject* args, PyObject* 
 
 PyObject* py_spdoc_ClassAttribute_Coerce(PyObject* self, PyObject* args);
 
+PyObject* py_spdoc_ClassAttribute_encoding(PyObject* self, PyObject* args, PyObject* kwargs);
+
 PyObject* py_spdoc_Construct_Coerce(PyObject* self, PyObject* args);
 
 PyObject* py_spdoc_Construct_getType(PyObject* self, PyObject* args, PyObject* kwargs);

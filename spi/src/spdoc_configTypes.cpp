@@ -208,14 +208,16 @@ try
 }
 
 std::string Attribute::encoding(
-    bool isOutput) const
+    bool isOutput,
+    bool showDefault) const
 {
   bool isLogging = spdoc_begin_function();
   SPI_PROFILE("spdoc.Attribute.encoding");
   try
   {
     AttributeConstSP self(this);
-    const std::string& i_result = Attribute_Helper::encoding(self, isOutput);
+    const std::string& i_result = Attribute_Helper::encoding(self, isOutput,
+        showDefault);
     clear_public_map();
 
     spdoc_end_function();
@@ -230,7 +232,8 @@ std::string Attribute::encoding(
 
 std::string Attribute_Helper::encoding(
     const AttributeConstSP& in_self,
-    bool isOutput)
+    bool isOutput,
+    bool showDefault)
 {
     const Attribute* self = in_self.get();
 
@@ -240,7 +243,24 @@ std::string Attribute_Helper::encoding(
         oss << "&";
     oss << self->name;
     if (self->isOptional)
-        oss << "?";
+    {
+        if (showDefault && self->defaultValue && self->arrayDim == 0)
+        {
+            const std::string& docString = self->defaultValue->docString();
+            if (docString.empty())
+            {
+                oss << "?";
+            }
+            else
+            {
+                oss << " = " << docString;
+            }
+        }
+        else
+        {
+            oss << "?";
+        }
+    }
     for (int i = 0; i < self->arrayDim; ++i)
         oss << "[]";
     return oss.str();
@@ -307,22 +327,58 @@ ClassAttribute::operator AttributeConstSP() const
     return Attribute::Make(name, description, dataType, arrayDim, isOptional, defaultValue);
 }
 
+std::string ClassAttribute::encoding(
+    bool showDefault) const
+{
+  bool isLogging = spdoc_begin_function();
+  SPI_PROFILE("spdoc.ClassAttribute.encoding");
+  try
+  {
+    ClassAttributeConstSP self(this);
+    const std::string& i_result = ClassAttribute_Helper::encoding(self,
+        showDefault);
+    clear_public_map();
+
+    spdoc_end_function();
+
+    return i_result;
+  }
+  catch (std::exception& e)
+  { throw spdoc_catch_exception(isLogging, "ClassAttribute.encoding", e); }
+  catch (...)
+  { throw spdoc_catch_all(isLogging, "ClassAttribute.encoding"); }
+}
+
+std::string ClassAttribute_Helper::encoding(
+    const ClassAttributeConstSP& in_self,
+    bool showDefault)
+{
+    const ClassAttribute* self = in_self.get();
+
+    if (!self->accessible)
+        return std::string();
+    std::ostringstream oss;
+    oss << self->dataType->name << " " << self->name;
+    if (self->isOptional)
+    {
+        const std::string& docString = self->defaultValue->docString();
+        if (docString.empty())
+        {
+            oss << "?";
+        }
+        else
+        {
+            oss << " = " << docString;
+        }
+    }
+    for (int i = 0; i < self->arrayDim; ++i)
+        oss << "[]";
+    return oss.str();
+}
+
 bool ClassAttribute::isArray() const
 {
     return arrayDim > 0;
-}
-
-std::string ClassAttribute::encoding() const
-{
-    if (!accessible)
-        return std::string();
-    std::ostringstream oss;
-    oss << dataType->name << " " << name;
-    if (isOptional)
-        oss << "?";
-    for (int i = 0; i < arrayDim; ++i)
-        oss << "[]";
-    return oss.str();
 }
 
 /*
@@ -665,12 +721,12 @@ std::vector<std::string> Function_Helper::Summary(
         std::vector<std::vector<std::string>> argsDescription;
         for (size_t i = 0; i < self->inputs.size(); ++i)
         {
-            args.push_back(self->inputs[i]->encoding(false));
+            args.push_back(self->inputs[i]->encoding(false, includeDescription));
             argsDescription.push_back(self->inputs[i]->description);
         }
         for (size_t i = 0; i < self->outputs.size(); ++i)
         {
-            args.push_back(self->outputs[i]->encoding(true));
+            args.push_back(self->outputs[i]->encoding(true, includeDescription));
             argsDescription.push_back(self->outputs[i]->description);
         }
         size_t numArgs = args.size();
@@ -1073,7 +1129,7 @@ std::vector<std::string> CoerceFrom_Helper::Summary(
 {
     const CoerceFrom* self = in_self.get();
 
-    std::string encoding = self->coerceFrom->encoding(false);
+    std::string encoding = self->coerceFrom->encoding(false, includeDescription);
     std::vector<std::string> summary;
 
     if (includeDescription)
@@ -1269,7 +1325,7 @@ std::vector<std::string> Class_Helper::Summary(
     for (size_t i = 0; i < self->attributes.size(); ++i)
     {
         std::ostringstream oss;
-        std::string encoding = self->attributes[i]->encoding();
+        std::string encoding = self->attributes[i]->encoding(includeDescription);
         if (!encoding.empty())
         {
             if (includeDescription)

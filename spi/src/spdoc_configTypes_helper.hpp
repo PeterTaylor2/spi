@@ -48,7 +48,16 @@ class Attribute_Helper
 public:
     static std::string encoding(
         const AttributeConstSP& self,
-        bool isOutput);
+        bool isOutput,
+        bool showDefault);
+};
+
+class ClassAttribute_Helper
+{
+public:
+    static std::string encoding(
+        const ClassAttributeConstSP& self,
+        bool showDefault);
 };
 
 class Construct_Helper
