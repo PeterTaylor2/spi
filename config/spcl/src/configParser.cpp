@@ -1428,7 +1428,6 @@ void enumKeywordHandler(
         {
             bitmaskDefaultOptions["all"] = StringConstant::Make("ALL");
             bitmaskDefaultOptions["sep"] = StringConstant::Make(",");
-            bitmaskDefaultOptions["asInt"] = BoolConstant::Make(true); // but ignored anyway
             bitmaskDefaultOptions["constructor"] = StringConstant::Make("");
             bitmaskDefaultOptions["hasFlag"] = StringConstant::Make("");
             bitmaskDefaultOptions["toMap"] = StringConstant::Make("");
