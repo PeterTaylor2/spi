@@ -109,10 +109,10 @@ spdoc::PublicType::Enum PublicType_convert_in(const PublicType& v_)
         return spdoc::PublicType::DATE;
     case PublicType::DATETIME:
         return spdoc::PublicType::DATETIME;
-    case PublicType::ENUM_AS_STRING:
-        return spdoc::PublicType::ENUM_AS_STRING;
-    case PublicType::ENUM_AS_INT:
-        return spdoc::PublicType::ENUM_AS_INT;
+    case PublicType::ENUM:
+        return spdoc::PublicType::ENUM;
+    case PublicType::ENUM_BITMASK:
+        return spdoc::PublicType::ENUM_BITMASK;
     case PublicType::CLASS:
         return spdoc::PublicType::CLASS;
     case PublicType::OBJECT:
@@ -143,10 +143,10 @@ PublicType PublicType_convert_out(spdoc::PublicType::Enum v_)
         return PublicType::DATE;
     if (v_ == spdoc::PublicType::DATETIME)
         return PublicType::DATETIME;
-    if (v_ == spdoc::PublicType::ENUM_AS_STRING)
-        return PublicType::ENUM_AS_STRING;
-    if (v_ == spdoc::PublicType::ENUM_AS_INT)
-        return PublicType::ENUM_AS_INT;
+    if (v_ == spdoc::PublicType::ENUM)
+        return PublicType::ENUM;
+    if (v_ == spdoc::PublicType::ENUM_BITMASK)
+        return PublicType::ENUM_BITMASK;
     if (v_ == spdoc::PublicType::CLASS)
         return PublicType::CLASS;
     if (v_ == spdoc::PublicType::OBJECT)

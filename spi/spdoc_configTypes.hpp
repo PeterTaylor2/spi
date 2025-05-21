@@ -495,7 +495,8 @@ public:
         const std::string& name,
         const std::vector<std::string>& description = {},
         const std::vector<EnumerandConstSP>& enumerands = {},
-        const std::vector<EnumConstructorConstSP>& constructors = {});
+        const std::vector<EnumConstructorConstSP>& constructors = {},
+        bool isBitmask = false);
 
     /**
     ************************************************************************
@@ -524,7 +525,8 @@ protected:
         const std::string& name,
         const std::vector<std::string>& description,
         const std::vector<EnumerandConstSP>& enumerands,
-        const std::vector<EnumConstructorConstSP>& constructors);
+        const std::vector<EnumConstructorConstSP>& constructors,
+        bool isBitmask);
 
 public:
 
@@ -532,6 +534,7 @@ public:
     const std::vector<std::string> description;
     const std::vector<EnumerandConstSP> enumerands;
     const std::vector<EnumConstructorConstSP> constructors;
+    const bool isBitmask;
 
 public:
     std::string getName() const { return name; }

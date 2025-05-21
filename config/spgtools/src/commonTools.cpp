@@ -136,7 +136,7 @@ std::string TranslateFromValue(
             throw spi::RuntimeError("PROGRAM_BUG");
         }
         break;
-    case spdoc::PublicType::ENUM_AS_STRING:
+    case spdoc::PublicType::ENUM:
         if (arrayDim > 0)
         {
             // FIXME
@@ -150,7 +150,7 @@ std::string TranslateFromValue(
         //    << "::Enum)(" << value << ".getInt())";
 
         break;
-    case spdoc::PublicType::ENUM_AS_INT:
+    case spdoc::PublicType::ENUM_BITMASK:
         if (arrayDim > 0)
         {
             // FIXME
@@ -267,7 +267,7 @@ std::string TranslateToValue(
             throw spi::RuntimeError("arrayDim out of range");
         }
         break;
-    case spdoc::PublicType::ENUM_AS_STRING:
+    case spdoc::PublicType::ENUM:
         // for an enum although it seems inefficient we need to convert the
         // enumerated value to a string first
         switch (arrayDim)
@@ -285,7 +285,7 @@ std::string TranslateToValue(
             throw spi::RuntimeError("arrayDim out of range");
         }
         break;
-    case spdoc::PublicType::ENUM_AS_INT:
+    case spdoc::PublicType::ENUM_BITMASK:
         switch (arrayDim)
         {
         case 0:

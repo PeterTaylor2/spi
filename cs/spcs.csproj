@@ -4,11 +4,11 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <AssemblyName>spcs8</AssemblyName>
+    <AssemblyName>spcs</AssemblyName>
     <RootNamespace>spi</RootNamespace>
     <Title>Sartorial Programming C# Interface (v8)</Title>
     <Company>Sartorial Programming Ltd (now defunct)</Company>
-    <Product>Sartorial Programming C# Interface (v8)</Product>
+    <Product>Sartorial Programming C# Interface)</Product>
     <Copyright>Copyleft Sartorial Progamming 2023</Copyright>
   </PropertyGroup>
 

@@ -65,12 +65,11 @@ SPDOC_BEGIN_NAMESPACE
 * PublicType::DATETIME
 *     DateTime - represented externally by the spi::DateTime class which
 *     supports the standard calendar + time (without timezone information)
-* PublicType::ENUM_AS_STRING
-*     Any enumerated type. Representally externally via its string
-*     equivalent.
-* PublicType::ENUM_AS_INT
-*     Any enumerated type. Representally externally via its integer
-*     equivalent.
+* PublicType::ENUM
+*     An enumerated type. Representally externally via its string equivalent.
+* PublicType::ENUM_BITMASK
+*     An enumerated type supporting the bitmask pattern. Representally externally
+*     via its integer equivalent.
 * PublicType::CLASS
 *     An object of a specific class.
 * PublicType::OBJECT
@@ -93,8 +92,8 @@ public:
         STRING,
         DATE,
         DATETIME,
-        ENUM_AS_STRING,
-        ENUM_AS_INT,
+        ENUM,
+        ENUM_BITMASK,
         CLASS,
         OBJECT,
         MAP,

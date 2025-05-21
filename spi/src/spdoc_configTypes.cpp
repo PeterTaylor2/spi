@@ -851,23 +851,26 @@ EnumConstSP Enum::Make(
     const std::string& name,
     const std::vector<std::string>& description,
     const std::vector<EnumerandConstSP>& enumerands,
-    const std::vector<EnumConstructorConstSP>& constructors)
+    const std::vector<EnumConstructorConstSP>& constructors,
+    bool isBitmask)
 {
     spdoc_check_permission();
     return EnumConstSP(
-        new Enum(name, description, enumerands, constructors));
+        new Enum(name, description, enumerands, constructors, isBitmask));
 }
 
 Enum::Enum(
     const std::string& name,
     const std::vector<std::string>& description,
     const std::vector<EnumerandConstSP>& enumerands,
-    const std::vector<EnumConstructorConstSP>& constructors)
+    const std::vector<EnumConstructorConstSP>& constructors,
+    bool isBitmask)
     :
     name(name),
     description(description),
     enumerands(enumerands),
-    constructors(constructors)
+    constructors(constructors),
+    isBitmask(isBitmask)
 {}
 
 /*
@@ -942,7 +945,10 @@ std::vector<std::string> Enum_Helper::Summary(
     if (numEnumerands > 0)
     {
         std::ostringstream oss;
-        oss << "enum " << self->name;
+        oss << "enum ";
+        if (self->isBitmask)
+            oss << "bitmask ";
+        oss << self->name;
         summary.push_back(oss.str());
         summary.push_back("{");
         for (size_t i = 0; i < numEnumerands; ++i)

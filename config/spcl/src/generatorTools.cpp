@@ -1574,10 +1574,10 @@ void writeFromValueInContext(
 {
     spdoc::PublicType publicType = dataType->publicType();
 
-    if (publicType == spdoc::PublicType::ENUM_AS_STRING ||
-        publicType == spdoc::PublicType::ENUM_AS_INT)
+    if (publicType == spdoc::PublicType::ENUM ||
+        publicType == spdoc::PublicType::ENUM_BITMASK)
     {
-        spdoc::PublicType asType = publicType == spdoc::PublicType::ENUM_AS_STRING ?
+        spdoc::PublicType asType = publicType == spdoc::PublicType::ENUM ?
             spdoc::PublicType::STRING : spdoc::PublicType::INT;
 
         switch (arrayDim)
@@ -1660,13 +1660,13 @@ void writeFromValueInContext(
         case spdoc::PublicType::DATETIME:
             ostr << "in_context->ValueToDateTime";
             break;
-        case spdoc::PublicType::ENUM_AS_STRING:
+        case spdoc::PublicType::ENUM:
             ostr << "spi::EnumVectorFromStringVector<"
                  << dataType->cppName()
                  << ">(in_context->ValueToString";
             converter = true;
             break;
-        case spdoc::PublicType::ENUM_AS_INT:
+        case spdoc::PublicType::ENUM_BITMASK:
             ostr << "spi::EnumVectorFromIntVector<"
                 << dataType->cppName()
                 << ">(in_context->ValueToInt";
@@ -1774,10 +1774,10 @@ void writeFromValueInContext(
         case spdoc::PublicType::DATETIME:
             ostr << "DateTime";
             break;
-        case spdoc::PublicType::ENUM_AS_STRING:
+        case spdoc::PublicType::ENUM:
             ostr << "String";
             break;
-        case spdoc::PublicType::ENUM_AS_INT:
+        case spdoc::PublicType::ENUM_BITMASK:
             ostr << "Int";
             break;
         case spdoc::PublicType::CLASS:

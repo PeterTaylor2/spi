@@ -74,8 +74,8 @@ SPI_DECLARE_OBJECT_CLASS(TypesLibrary);
 * PublicType::STRING
 * PublicType::DATE
 * PublicType::DATETIME
-* PublicType::ENUM_AS_STRING
-* PublicType::ENUM_AS_INT
+* PublicType::ENUM
+* PublicType::ENUM_BITMASK
 * PublicType::CLASS
 * PublicType::OBJECT
 * PublicType::MAP
@@ -94,8 +94,8 @@ public:
         STRING,
         DATE,
         DATETIME,
-        ENUM_AS_STRING,
-        ENUM_AS_INT,
+        ENUM,
+        ENUM_BITMASK,
         CLASS,
         OBJECT,
         MAP,

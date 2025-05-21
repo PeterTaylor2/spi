@@ -172,8 +172,7 @@ void WriteDefaultValue(
     case spdoc::PublicType::DATETIME:
         ostr << "default(System.DateTime)";
         break;
-    case spdoc::PublicType::ENUM_AS_STRING:
-    case spdoc::PublicType::ENUM_AS_INT:
+    case spdoc::PublicType::ENUM:
     {
         spdoc::EnumConstSP e = svc->getEnum(dataType->name);
         std::string str = defaultValue->getString();
@@ -206,6 +205,9 @@ void WriteDefaultValue(
         }
         break;
     }
+    case spdoc::PublicType::ENUM_BITMASK:
+        ostr << "0";
+        break;
     default:
         SPI_THROW_RUNTIME_ERROR("don't understand defaults for public type "
             << (int)dataType->publicType);
@@ -714,15 +716,31 @@ bool CModule::updateEnumExtensions(
         std::string ename = svc->ns + "." + makeNamespaceSep(module->ns, ".") + e->name;
         std::string name = svc->ns + "_" + makeNamespaceSep(module->ns, "_") + e->name;
 
+        if (e->isBitmask)
+        {
+            ostr << "\n"
+                << "static public int to_int(this " << ename << " value)\n"
+                << "{\n"
+                << "    return " << ename << "_to_int(value);\n"
+                << "}\n";
+        }
+        else
+        {
+            ostr << "\n"
+                << "static public string to_string(this " << ename << " value)\n"
+                << "{\n"
+                << "    return " << ename << "_to_string(value);\n"
+                << "}\n";
+        }
         ostr << "\n"
-            << "static public string to_string(this " << ename << " value)\n"
-            << "{\n"
-            << "    return " << ename << "_to_string(value);\n"
-            << "}\n"
-            << "\n"
             << "static public " << ename << " " << name << "(this string str)\n"
             << "{\n"
-            << "    return " << ename << "_from_string(str); \n"
+            << "    return " << ename << "_from_string(str);\n"
+            << "}\n"
+            << "\n"
+            << "static public " << ename << " " << name << "(this int i)\n"
+            << "{\n"
+            << "    return " << ename << "_from_int(i);\n"
             << "}\n";
     }
     return hasEnums;
@@ -1929,16 +1947,26 @@ void CModule::implementEnum(
 
     ostr << "\n";
     xmlWriteDescription(ostr, "summary", "", "", enumType->description);
+    if (enumType->isBitmask)
+    {
+        ostr << "[Flags]\n";
+    }
     ostr << "public enum " << enumType->name << " {";
 
     const char* nullable = service->nullable() ? "?" : "";
 
     const char* sep = "\n";
+    int bitmaskValue = 1;
     for (size_t i = 0; i < enumType->enumerands.size(); ++i)
     {
         ostr << sep;
         xmlWriteDescription(ostr, "summary", "", "    ", enumType->enumerands[i]->description);
         ostr << "    " << enumType->enumerands[i]->code;
+        if (enumType->isBitmask)
+        {
+            ostr << " = " << bitmaskValue;
+            bitmaskValue *= 2;
+        }
         sep = ",\n";
     }
     ostr << "}\n";
@@ -1950,9 +1978,24 @@ void CModule::implementEnum(
         << "\n"
         << service->csDllImport() << "\n"
         << "private static extern int " << cname
-        << "_to_string(" << enumType->name << " value, out string str);\n";
+        << "_from_int(int i, out " << enumType->name << " value);\n";
 
-    // string conversion functions for the enumerated type
+    if (enumType->isBitmask)
+    {
+        ostr << "\n"
+            << service->csDllImport() << "\n"
+            << "private static extern int " << cname
+            << "_to_int(" << enumType->name << " value, out int i);\n";
+    }
+    else
+    {
+        ostr << "\n"
+            << service->csDllImport() << "\n"
+            << "private static extern int " << cname
+            << "_to_string(" << enumType->name << " value, out string str);\n";
+    }
+
+    // conversion functions for the enumerated type
     // note we also provide extensions so that for the enumerated type we can
     // use the to_string() method and for the string class we can use the parse_<enum> method
     ostr << "\n"
@@ -1964,13 +2007,36 @@ void CModule::implementEnum(
         << "    return value;\n"
         << "}\n"
         << "\n"
-        << "public static string " << enumType->name
-        << "_to_string(" << enumType->name << " value)\n"
+        << "public static " << enumType->name << " " << enumType->name
+        << "_from_int(int i)\n"
         << "{\n"
-        << "    if (" << cname << "_to_string(value, out string str) != 0)\n"
+        << "    if (" << cname << "_from_int(i, out " << enumType->name << " value) != 0)\n"
         << "        throw spi.ErrorToException();\n"
-        << "    return str;\n"
+        << "    return value;\n"
         << "}\n";
+
+    if (enumType->isBitmask)
+    {
+        ostr << "\n"
+            << "public static int " << enumType->name
+            << "_to_int(" << enumType->name << " value)\n"
+            << "{\n"
+            << "    if (" << cname << "_to_int(value, out int i) != 0)\n"
+            << "        throw spi.ErrorToException();\n"
+            << "    return i;\n"
+            << "}\n";
+    }
+    else
+    {
+        ostr << "\n"
+            << "public static string " << enumType->name
+            << "_to_string(" << enumType->name << " value)\n"
+            << "{\n"
+            << "    if (" << cname << "_to_string(value, out string str) != 0)\n"
+            << "        throw spi.ErrorToException();\n"
+            << "    return str;\n"
+            << "}\n";
+    }
 
     ostr << "\n"
         << service->csDllImport() << "\n"
@@ -2159,8 +2225,8 @@ std::string CDataType::cName() const
         return "spi_Date";
     case spdoc::PublicType::DATETIME:
         return "spi_DateTime";
-    case spdoc::PublicType::ENUM_AS_STRING:
-    case spdoc::PublicType::ENUM_AS_INT:
+    case spdoc::PublicType::ENUM:
+    case spdoc::PublicType::ENUM_BITMASK:
         return StringFormat("%s_%s",
             dataType->nsService.c_str(),
             StringReplace(dataType->name, ".", "_").c_str());
@@ -2205,8 +2271,8 @@ std::string CDataType::csiType(int arrayDim) const
         return "int";
     case spdoc::PublicType::DATETIME:
         return "double";
-    case spdoc::PublicType::ENUM_AS_STRING:
-    case spdoc::PublicType::ENUM_AS_INT:
+    case spdoc::PublicType::ENUM:
+    case spdoc::PublicType::ENUM_BITMASK:
         oss << dataType->nsService << "." << dataType->name;
         return oss.str();
     case spdoc::PublicType::CLASS:
@@ -2255,8 +2321,8 @@ std::string CDataType::csType(int arrayDim, bool isOptional, bool inputArg) cons
     case spdoc::PublicType::DATETIME:
         scalarType = "System.DateTime";
         break;
-    case spdoc::PublicType::ENUM_AS_STRING:
-    case spdoc::PublicType::ENUM_AS_INT:
+    case spdoc::PublicType::ENUM:
+    case spdoc::PublicType::ENUM_BITMASK:
         oss << /* service->nsGlobal() << "." << */ dataType->nsService << "." << dataType->name;
         scalarType = oss.str();
         break;
@@ -2353,8 +2419,8 @@ void CDataType::cs_to_c_decl(
         case spdoc::PublicType::DATETIME:
             oss << "spi.DateTimeVectorFromArray(" << service->rename(name, true) << ")";
             break;
-        case spdoc::PublicType::ENUM_AS_STRING:
-        case spdoc::PublicType::ENUM_AS_INT:
+        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_BITMASK:
             oss << forArrayTranslations(csType(0, false)) << "_VectorFromArray(" << service->rename(name, true) << ")";
             break;
         case spdoc::PublicType::CLASS:
@@ -2398,8 +2464,8 @@ void CDataType::cs_to_c_decl(
         case spdoc::PublicType::VARIANT:
             oss << "spi.SpiVariantMatrixFromArray(" << service->rename(name, true) << ")";
             break;
-        case spdoc::PublicType::ENUM_AS_STRING:
-        case spdoc::PublicType::ENUM_AS_INT:
+        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_BITMASK:
             oss << forArrayTranslations(csType(0, false)) << "_MatrixFromArray(" << service->rename(name, true) << ")";
             break;
         case spdoc::PublicType::CLASS:
@@ -2457,8 +2523,8 @@ std::string CDataType::cs_to_c(int arrayDim, const std::string& name) const
         case spdoc::PublicType::OBJECT:
             oss << "spi.SpiObject.get_inner(" << service->rename(name, true) << ")";
             break;
-        case spdoc::PublicType::ENUM_AS_STRING:
-        case spdoc::PublicType::ENUM_AS_INT:
+        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_BITMASK:
             break;
         case spdoc::PublicType::MAP:
             oss << "spi.SpiMap.get_inner(" << service->rename(name, true) << ")";
@@ -2480,8 +2546,8 @@ std::string CDataType::cs_to_c(int arrayDim, const std::string& name) const
         case spdoc::PublicType::STRING:
         case spdoc::PublicType::DATE:
         case spdoc::PublicType::DATETIME:
-        case spdoc::PublicType::ENUM_AS_STRING:
-        case spdoc::PublicType::ENUM_AS_INT:
+        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_BITMASK:
         case spdoc::PublicType::CLASS:
         case spdoc::PublicType::VARIANT:
         case spdoc::PublicType::OBJECT:
@@ -2504,8 +2570,8 @@ std::string CDataType::cs_to_c(int arrayDim, const std::string& name) const
         case spdoc::PublicType::DATE:
         case spdoc::PublicType::DATETIME:
         case spdoc::PublicType::VARIANT:
-        case spdoc::PublicType::ENUM_AS_STRING:
-        case spdoc::PublicType::ENUM_AS_INT:
+        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_BITMASK:
         case spdoc::PublicType::CLASS:
         case spdoc::PublicType::OBJECT:
             oss << "h_m_" << name << ".get_inner()";
@@ -2555,8 +2621,8 @@ std::string CDataType::c_to_csi(int arrayDim, const std::string& name) const
             break;
         case spdoc::PublicType::DATETIME:
             break;
-        case spdoc::PublicType::ENUM_AS_STRING:
-        case spdoc::PublicType::ENUM_AS_INT:
+        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_BITMASK:
             break;
         // should we capture these types at once?
         // this is in case there are failures in translating out
@@ -2591,8 +2657,8 @@ std::string CDataType::c_to_csi(int arrayDim, const std::string& name) const
         case spdoc::PublicType::DATETIME:
             oss << "using var o_" << name << " = spi.DateTimeVectorToHandle(c_" << name << ")";
             break;
-        case spdoc::PublicType::ENUM_AS_STRING:
-        case spdoc::PublicType::ENUM_AS_INT:
+        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_BITMASK:
         case spdoc::PublicType::CLASS:
             oss << "using var o_" << name << " = " << forArrayTranslations(csType(0, false)) << "_VectorToHandle(c_" << name << ")";
             break;
@@ -2629,8 +2695,8 @@ std::string CDataType::c_to_csi(int arrayDim, const std::string& name) const
         case spdoc::PublicType::DATETIME:
             oss << "using var o_" << name << " = spi.DateTimeMatrixToHandle(c_" << name << ")";
             break;
-        case spdoc::PublicType::ENUM_AS_STRING:
-        case spdoc::PublicType::ENUM_AS_INT:
+        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_BITMASK:
         case spdoc::PublicType::CLASS:
             oss << "using var o_" << name << " = " << forArrayTranslations(csType(0, false)) << "_MatrixToHandle(c_" << name << ")";
             break;
@@ -2685,8 +2751,8 @@ std::string CDataType::csi_to_cs(
         case spdoc::PublicType::DATETIME:
             oss << "spi.DateTimeFromCDateTime(c_" << name << ")";
             break;
-        case spdoc::PublicType::ENUM_AS_STRING:
-        case spdoc::PublicType::ENUM_AS_INT:
+        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_BITMASK:
             break;
         case spdoc::PublicType::CLASS:
             oss << service->nsGlobal() << "." << dataType->nsService << "."
@@ -2730,8 +2796,8 @@ std::string CDataType::csi_to_cs(
         case spdoc::PublicType::VARIANT:
             oss << "spi.SpiVariantVectorToArray(o_" << name << ")";
             break;
-        case spdoc::PublicType::ENUM_AS_STRING:
-        case spdoc::PublicType::ENUM_AS_INT:
+        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_BITMASK:
             oss << forArrayTranslations(csType(0, false))
                 << "_VectorToArray(o_" << name << ")";
             break;
@@ -2772,8 +2838,8 @@ std::string CDataType::csi_to_cs(
         case spdoc::PublicType::VARIANT:
             oss << "spi.SpiVariantMatrixToArray(o_" << name << ")";
             break;
-        case spdoc::PublicType::ENUM_AS_STRING:
-        case spdoc::PublicType::ENUM_AS_INT:
+        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_BITMASK:
             oss << forArrayTranslations(csType(0, false))
                 << "_MatrixToArray(o_" << name << ")";
             break;

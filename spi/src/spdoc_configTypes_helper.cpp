@@ -1300,6 +1300,7 @@ void Enum::to_map(
     obj_map->SetStringVector("description", description, !public_only && (description.size() == 0));
     obj_map->SetInstanceVector<Enumerand const>("enumerands", enumerands);
     obj_map->SetInstanceVector<EnumConstructor const>("constructors", constructors, !public_only && (constructors.size() == 0));
+    obj_map->SetBool("isBitmask", isBitmask, !public_only && (isBitmask == false));
 }
 
 spi::ObjectConstSP Enum::object_from_map(
@@ -1314,8 +1315,10 @@ spi::ObjectConstSP Enum::object_from_map(
         = obj_map->GetInstanceVector<Enumerand const>("enumerands", value_to_object);
     const std::vector<EnumConstructorConstSP>& constructors
         = obj_map->GetInstanceVector<EnumConstructor const>("constructors", value_to_object);
+    bool isBitmask
+        = obj_map->GetBool("isBitmask", true, false);
 
-    return new Enum(name, description, enumerands, constructors);
+    return new Enum(name, description, enumerands, constructors, isBitmask);
 }
 
 SPI_IMPLEMENT_OBJECT_TYPE(Enum, "Enum", spdoc_service, true, 0);
@@ -1332,20 +1335,23 @@ spi::Value Enum_caller(
         in_context->ValueToInstanceVector<Enumerand const>(in_values[2]);
     std::vector<EnumConstructorConstSP> constructors =
         in_context->ValueToInstanceVector<EnumConstructor const>(in_values[3]);
+    bool isBitmask =
+        in_context->ValueToBool(in_values[4], true, false);
 
     const EnumConstSP& o_result = spdoc::Enum::Make(name, description,
-        enumerands, constructors);
+        enumerands, constructors, isBitmask);
     return spi::ObjectConstSP(o_result);
 }
 
 spi::FunctionCaller Enum_FunctionCaller = {
     "Enum",
-    4,
+    5,
     {
         {"name", spi::ArgType::STRING, "string", false, false, false},
         {"description", spi::ArgType::STRING, "string", true, false, false},
         {"enumerands", spi::ArgType::OBJECT, "Enumerand", true, false, false},
-        {"constructors", spi::ArgType::OBJECT, "EnumConstructor", true, false, false}
+        {"constructors", spi::ArgType::OBJECT, "EnumConstructor", true, false, false},
+        {"isBitmask", spi::ArgType::BOOL, "bool", false, true, false}
     },
     Enum_caller
 };

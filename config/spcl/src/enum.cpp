@@ -283,14 +283,13 @@ const std::string& Enumerand::outputString() const
 EnumBitmaskConstSP EnumBitmask::Make(
     const std::string& all,
     const std::string& sep,
-    bool asInt,
     const std::string& constructor,
     const std::string& hasFlag,
     const std::string& toMap,
     const std::string& instance)
 {
     return EnumBitmaskConstSP(new EnumBitmask(
-        all, sep, asInt, constructor, hasFlag, toMap, instance));
+        all, sep, constructor, hasFlag, toMap, instance));
 }
 
 void EnumBitmask::declare(
@@ -373,27 +372,21 @@ void EnumBitmask::declare(
         << "    operator spi::Value() const { return to_value(); }\n"
         << "    std::string to_string() const;\n";
 
-    if (m_asInt)
-    {
-        ostr << "    int to_int() const { return (int)value; }\n"
-            << "    operator int() const { return to_int(); }\n"
-            << "    spi::Value to_value() const { return spi::Value(to_int()); }\n";
-    }
-    else
-    {
-        ostr << "    spi::Value to_value() const { return spi::Value(to_string()); }\n";
-    }
+    ostr << "    int to_int() const { return (int)value; }\n"
+        << "    operator int() const { return to_int(); }\n"
+        << "    spi::Value to_value() const { return spi::Value(to_int()); }\n";
 
     ostr << "\n"
         << "    static " << enumName << "::Enum from_int(int);\n"
         << "    static " << enumName << "::Enum from_string(const char*);\n"
-        << "    static const char* to_string(" << enumName << "::Enum);\n"
+        << "    static int to_int(" << enumName << "::Enum value) { return (int)value; }\n"
         << "\n"
         << "    bool has_flag(" << enumName << "::Enum flag) const; \n"
         << "    spi::MapConstSP to_map() const;\n"
         << "\n"
         << "private:\n"
-        << "    " << enumName << "::Enum value;\n";
+        << "    " << enumName << "::Enum value;\n"
+        << "    static const char* to_string(" << enumName << "::Enum);\n";
 
     for (size_t i = 0; i < constructors.size(); ++i)
     {
@@ -646,7 +639,6 @@ void EnumBitmask::implementHelper(
 EnumBitmask::EnumBitmask(
     const std::string& all,
     const std::string& sep,
-    bool asInt,
     const std::string& constructor,
     const std::string& hasFlag,
     const std::string& toMap,
@@ -654,7 +646,6 @@ EnumBitmask::EnumBitmask(
     :
     m_all(all),
     m_sep(sep),
-    m_asInt(asInt),
     m_constructor(constructor),
     m_hasFlag(hasFlag),
     m_toMap(toMap),
@@ -992,7 +983,7 @@ spdoc::ConstructConstSP Enum::getDoc() const
         }
 
         m_doc = spdoc::Enum::Make(m_name, m_description, enumerandDocs,
-            constructorDocs);
+            constructorDocs, !!m_bitmask);
     }
     return m_doc;
 }
@@ -1086,7 +1077,7 @@ const DataTypeConstSP& Enum::dataType(const ServiceDefinitionSP& svc, bool ignor
         m_dataType = DataType::Make(m_name, m_ns, svc->getNamespace(),
             outerType, outerType,
             innerType, innerType, 
-            asInt() ? spdoc::PublicType::ENUM_AS_INT : spdoc::PublicType::ENUM_AS_STRING,
+            m_bitmask ? spdoc::PublicType::ENUM_BITMASK : spdoc::PublicType::ENUM,
             "", false,
             false, convertIn, convertOut,
             std::string(), DataTypeConstSP(), false, false, ignored);
@@ -1097,7 +1088,7 @@ const DataTypeConstSP& Enum::dataType(const ServiceDefinitionSP& svc, bool ignor
         {
             DataTypeConstSP publicDataType = DataType::Make(
                 m_name, m_ns, svc->getNamespace(), outerType, outerType, "", "",
-                asInt() ? spdoc::PublicType::ENUM_AS_INT : spdoc::PublicType::ENUM_AS_STRING,
+                m_bitmask ? spdoc::PublicType::ENUM_BITMASK : spdoc::PublicType::ENUM,
                 "", false, false);
 
             publicDataType->setDoc(m_dataType->getDoc());
@@ -1190,14 +1181,6 @@ void Enum::VerifyAndComplete()
     }
 
     m_constructorTypes.assign(constructorTypes.begin(), constructorTypes.end());
-}
-
-bool Enum::asInt() const
-{
-    if (m_bitmask)
-        return m_bitmask->asInt();
-
-    return false;
 }
 
 void Enum::declareTypeConversions(

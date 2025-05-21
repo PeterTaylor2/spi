@@ -140,7 +140,6 @@ public:
     static EnumBitmaskConstSP Make(
         const std::string& all,
         const std::string& sep,
-        bool asInt,
         const std::string& constructor,
         const std::string& hasFlag,
         const std::string& toMap,
@@ -174,7 +173,6 @@ protected:
     EnumBitmask(
         const std::string& all,
         const std::string& sep,
-        bool asInt,
         const std::string& constructor,
         const std::string& hasFlag,
         const std::string& toMap,
@@ -184,7 +182,6 @@ private:
     // data
     std::string m_all;
     std::string m_sep;
-    bool m_asInt;
     std::string m_constructor;
     std::string m_hasFlag;
     std::string m_toMap;
@@ -194,7 +191,6 @@ public:
     // data accessors
     const std::string& all() const { return m_all; }
     const std::string& sep() const { return m_sep; }
-    bool asInt() const { return m_asInt; }
     const std::string& constructor() const { return m_constructor; }
     const std::string& hasFlag() const { return m_hasFlag; }
     const std::string& toMap() const { return m_toMap; }
@@ -309,9 +305,6 @@ public:
     const std::vector<EnumerandConstSP>& enumerands() const { return m_enumerands; }
     const std::vector<spdoc::PublicType>& constructorTypes() const
     { return m_constructorTypes; }
-
-    bool asInt() const;
-
 };
 
 #endif

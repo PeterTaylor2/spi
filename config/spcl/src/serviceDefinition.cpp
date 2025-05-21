@@ -1880,8 +1880,8 @@ void ServiceDefinition::writeUsingImportedTypes(
             // anything else is a simple type where the outer type is primitive
             switch (spdoc::PublicType::Enum(publicType))
             {
-            case spdoc::PublicType::ENUM_AS_STRING:
-            case spdoc::PublicType::ENUM_AS_INT:
+            case spdoc::PublicType::ENUM:
+            case spdoc::PublicType::ENUM_BITMASK:
                 ostr << "using " << importedNamespace << "::"
                     << dataType->outerValueType() << ";\n";
                 break;

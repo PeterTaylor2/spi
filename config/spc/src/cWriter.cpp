@@ -106,8 +106,8 @@ void CService::updateUsage(
     spdoc::PublicType::Enum publicType = dataType->publicType;
     switch (publicType)
     {
-    case spdoc::PublicType::ENUM_AS_STRING:
-    case spdoc::PublicType::ENUM_AS_INT:
+    case spdoc::PublicType::ENUM:
+    case spdoc::PublicType::ENUM_BITMASK:
     case spdoc::PublicType::CLASS:
         break;
     default:
@@ -579,8 +579,7 @@ std::string CModule::writeSourceFile(const std::string& dirname) const
         << "#include <spi/ObjectPut.hpp>\n"
         << "#include <spi_util/Utils.hpp>\n"
         << "\n"
-        << "#define to_int spi_util::IntegerCast<int>\n"
-        << "#define to_size_t spi_util::IntegerCast<size_t>\n";
+        << "#define TO_SIZE_T spi_util::IntegerCast<size_t>\n";
 
     size_t nbConstructs = module->constructs.size();
 
@@ -1573,13 +1572,21 @@ void CModule::declareEnum(GeneratedOutput& ostr,
     oss << service->ns() << "_" << makeNamespaceSep(module->ns, "_") << enumType->name;
     std::string cname = oss.str();
 
-    ostr << "\n"
-        << "enum class " << cname << " {";
+    ostr << "\n";
+    if (enumType->isBitmask)
+        ostr << "// bitmask type\n";
+    ostr << "enum class " << cname << " {";
 
+    int bitmaskValue = 1;
     const char* sep = "\n    ";
     for (size_t i = 0; i < enumType->enumerands.size(); ++i)
     {
         ostr << sep << /* cname << "_" << */ enumType->enumerands[i]->code;
+        if (enumType->isBitmask)
+        {
+            ostr << " = " << bitmaskValue;
+            bitmaskValue *= 2;
+        }
         sep = ",\n    ";
     }
     ostr << "};\n";
@@ -1589,7 +1596,21 @@ void CModule::declareEnum(GeneratedOutput& ostr,
         << "int " << cname << "_from_string(char* str, " << cname << "* value);\n"
         << "\n"
         << service->import() << "\n"
-        << "int " << cname << "_to_string(" << cname << " value, char** str);\n";
+        << "int " << cname << "_from_int(int i, " << cname << "* value);\n";
+
+    if (enumType->isBitmask)
+    {
+        ostr << "\n"
+            << service->import() << "\n"
+            << "int " << cname << "_to_int(" << cname << " value, int* i);\n";
+    }
+    else
+    {
+        ostr << "\n"
+            << service->import() << "\n"
+            << "int " << cname << "_to_string(" << cname << " value, char** str);\n";
+
+    }
 
     ostr << "\n"
         << "typedef struct _" << cname << "_Vector " << cname << "_Vector;\n"
@@ -1684,18 +1705,17 @@ void CModule::implementEnum(GeneratedOutput & ostr,
         << "    }\n"
         << "}\n"
         << "\n"
-        << "int " << cname << "_to_string(" << cname << " value, char** str)\n"
+        << "int " << cname << "_from_int(int i, " << cname << "* value)\n"
         << "{\n"
         << "    SPI_C_LOCK_GUARD;\n"
         << "    try\n"
         << "    {\n"
-        << "        if (!str)\n"
+        << "        if (!value)\n"
         << "        {\n"
         << "            SPI_THROW_RUNTIME_ERROR(\"Null inputs\");\n"
         << "        }\n"
-        << "        " << cppname << "::Enum i_value = (" << cppname << "::Enum)value;\n"
-        << "        const char* i_str = " << cppname << "::to_string(i_value);\n"
-        << "        *str = spi_String_copy(i_str);\n"
+        << "        " << cppname << "::Enum i_value = " << cppname << "::from_int(i);\n"
+        << "        *value = (" << cname << ")i_value;\n"
         << "        return 0;\n"
         << "    }\n"
         << "    catch (std::exception& e)\n"
@@ -1704,6 +1724,54 @@ void CModule::implementEnum(GeneratedOutput & ostr,
         << "        return -1;\n"
         << "    }\n"
         << "}\n";
+
+    if (enumType->isBitmask)
+    {
+        ostr << "\n"
+            << "int " << cname << "_to_int(" << cname << " value, int* i)\n"
+            << "{\n"
+            << "    SPI_C_LOCK_GUARD;\n"
+            << "    try\n"
+            << "    {\n"
+            << "        if (!i)\n"
+            << "        {\n"
+            << "            SPI_THROW_RUNTIME_ERROR(\"Null inputs\");\n"
+            << "        }\n"
+            << "        " << cppname << "::Enum i_value = (" << cppname << "::Enum)value;\n"
+            << "        *i = " << cppname << "::to_int(i_value);\n"
+            << "        return 0;\n"
+            << "    }\n"
+            << "    catch (std::exception& e)\n"
+            << "    {\n"
+            << "        spi_Error_set_function(__FUNCTION__, e.what());\n"
+            << "        return -1;\n"
+            << "    }\n"
+            << "}\n";
+    }
+    else
+    {
+        ostr << "\n"
+            << "int " << cname << "_to_string(" << cname << " value, char** str)\n"
+            << "{\n"
+            << "    SPI_C_LOCK_GUARD;\n"
+            << "    try\n"
+            << "    {\n"
+            << "        if (!str)\n"
+            << "        {\n"
+            << "            SPI_THROW_RUNTIME_ERROR(\"Null inputs\");\n"
+            << "        }\n"
+            << "        " << cppname << "::Enum i_value = (" << cppname << "::Enum)value;\n"
+            << "        const char* i_str = " << cppname << "::to_string(i_value);\n"
+            << "        *str = spi_String_copy(i_str);\n"
+            << "        return 0;\n"
+            << "    }\n"
+            << "    catch (std::exception& e)\n"
+            << "    {\n"
+            << "        spi_Error_set_function(__FUNCTION__, e.what());\n"
+            << "        return -1;\n"
+            << "    }\n"
+            << "}\n";
+    }
 
     ostr << "\n"
         << "void " << cname << "_Vector_delete(" << cname << "_Vector* c)\n"
@@ -1722,7 +1790,7 @@ void CModule::implementEnum(GeneratedOutput & ostr,
         << "    SPI_C_LOCK_GUARD;"
         << "    try\n"
         << "    {\n"
-        << "        auto out = new std::vector<" << cppname << ">(to_size_t(N));\n"
+        << "        auto out = new std::vector<" << cppname << ">(TO_SIZE_T(N));\n"
         << "        return (" << cname << "_Vector*)(out);\n"
         << "    }\n"
         << "    catch (std::exception& e)\n"
@@ -1748,7 +1816,7 @@ void CModule::implementEnum(GeneratedOutput & ostr,
         << "    try\n"
         << "    {\n"
         << "        auto cpp = (const std::vector<" << cppname << ">*)(v);\n"
-        << "        size_t i = to_size_t(ii);\n"
+        << "        size_t i = TO_SIZE_T(ii);\n"
         << "        if (i >= cpp->size())\n"
         << "        {\n"
         << "             spi_Error_set_function(__FUNCTION__, \"Array bounds mismatch\");\n"
@@ -1779,7 +1847,7 @@ void CModule::implementEnum(GeneratedOutput & ostr,
         << "    try\n"
         << "    {\n"
         << "        auto cpp = (std::vector<" << cppname << ">*)(v);\n"
-        << "        size_t i = to_size_t(ii);\n"
+        << "        size_t i = TO_SIZE_T(ii);\n"
         << "        if (i >= cpp->size())\n"
         << "        {\n"
         << "             spi_Error_set_function(__FUNCTION__, \"Array bounds mismatch\");\n"
@@ -1826,7 +1894,7 @@ void CModule::implementEnum(GeneratedOutput & ostr,
         << "    SPI_C_LOCK_GUARD;\n"
         << "    try\n"
         << "    {\n"
-        << "        auto out = new spi::MatrixData<" << cppname << ">(to_size_t(nr), to_size_t(nc));\n"
+        << "        auto out = new spi::MatrixData<" << cppname << ">(TO_SIZE_T(nr), TO_SIZE_T(nc));\n"
         << "        return (" << cname << "_Matrix*)(out);\n"
         << "    }\n"
         << "    catch (std::exception& e)\n"
@@ -1852,8 +1920,8 @@ void CModule::implementEnum(GeneratedOutput & ostr,
         << "    try\n"
         << "    {\n"
         << "        auto cpp = (const spi::MatrixData<" << cppname << ">*)(m);\n"
-        << "        size_t r = to_size_t(ir);\n"
-        << "        size_t c = to_size_t(ic);\n"
+        << "        size_t r = TO_SIZE_T(ir);\n"
+        << "        size_t c = TO_SIZE_T(ic);\n"
         << "        if (r >= cpp->Rows() || c >= cpp->Cols())\n"
         << "        {\n"
         << "             spi_Error_set_function(__FUNCTION__, \"Array bounds mismatch\");\n"
@@ -1884,8 +1952,8 @@ void CModule::implementEnum(GeneratedOutput & ostr,
         << "    try\n"
         << "    {\n"
         << "        auto cpp = (spi::MatrixData<" << cppname << ">*)(m);\n"
-        << "        size_t r = to_size_t(ir);\n"
-        << "        size_t c = to_size_t(ic);\n"
+        << "        size_t r = TO_SIZE_T(ir);\n"
+        << "        size_t c = TO_SIZE_T(ic);\n"
         << "        if (r >= cpp->Rows() || c << cpp->Cols())\n"
         << "        {\n"
         << "             spi_Error_set_function(__FUNCTION__, \"Array bounds mismatch\");\n"
@@ -2004,8 +2072,8 @@ std::string CDataType::cType(int arrayDim) const
         scalarType = "spi_DateTime";
         arrayType = "spi_DateTime";
         break;
-    case spdoc::PublicType::ENUM_AS_STRING:
-    case spdoc::PublicType::ENUM_AS_INT:
+    case spdoc::PublicType::ENUM:
+    case spdoc::PublicType::ENUM_BITMASK:
         scalarType = spi_util::StringFormat("%s_%s",
             dataType->nsService.c_str(),
             spi_util::StringReplace(dataType->name, ".", "_").c_str());
@@ -2076,8 +2144,8 @@ std::string CDataType::cppName() const
         return "spi::Date";
     case spdoc::PublicType::DATETIME:
         return "spi::DateTime";
-    case spdoc::PublicType::ENUM_AS_STRING:
-    case spdoc::PublicType::ENUM_AS_INT:
+    case spdoc::PublicType::ENUM:
+    case spdoc::PublicType::ENUM_BITMASK:
         return spi_util::StringFormat("%s::%s",
             dataType->nsService.c_str(),
             spi_util::StringReplace(dataType->name, ".", "::").c_str());
@@ -2139,8 +2207,8 @@ std::string CDataType::c_to_cpp(int arrayDim, const std::string& name) const
             return spi_util::StringFormat("spi::Date(%s)", name.c_str());
         case spdoc::PublicType::DATETIME:
             return spi_util::StringFormat("spi::DateTime(%s)", name.c_str());
-        case spdoc::PublicType::ENUM_AS_STRING:
-        case spdoc::PublicType::ENUM_AS_INT:
+        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_BITMASK:
             return spi_util::StringFormat("%s((%s::Enum)(%s))",
                 cppType.c_str(), cppType.c_str(), name.c_str());
         case spdoc::PublicType::CLASS:
@@ -2178,8 +2246,8 @@ std::string CDataType::c_to_cpp(int arrayDim, const std::string& name) const
         case spdoc::PublicType::STRING:
         case spdoc::PublicType::DATE:
         case spdoc::PublicType::DATETIME:
-        case spdoc::PublicType::ENUM_AS_STRING:
-        case spdoc::PublicType::ENUM_AS_INT:
+        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_BITMASK:
         case spdoc::PublicType::CLASS:
         case spdoc::PublicType::OBJECT:
         case spdoc::PublicType::VARIANT:
@@ -2205,8 +2273,8 @@ std::string CDataType::c_to_cpp(int arrayDim, const std::string& name) const
         case spdoc::PublicType::STRING:
         case spdoc::PublicType::DATE:
         case spdoc::PublicType::DATETIME:
-        case spdoc::PublicType::ENUM_AS_STRING:
-        case spdoc::PublicType::ENUM_AS_INT:
+        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_BITMASK:
         case spdoc::PublicType::CLASS:
         case spdoc::PublicType::OBJECT:
         case spdoc::PublicType::VARIANT:
@@ -2249,8 +2317,8 @@ std::string CDataType::cpp_to_c(int arrayDim, const std::string & name) const
             return spi_util::StringFormat("(spi_Date)(%s)", name.c_str());
         case spdoc::PublicType::DATETIME:
             return spi_util::StringFormat("(spi_DateTime)(%s)", name.c_str());
-        case spdoc::PublicType::ENUM_AS_STRING:
-        case spdoc::PublicType::ENUM_AS_INT:
+        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_BITMASK:
             return spi_util::StringFormat("%s((%s::Enum)(%s))",
                 cType().c_str(), cppType(0).c_str(), name.c_str());
         case spdoc::PublicType::CLASS:
@@ -2285,8 +2353,8 @@ std::string CDataType::cpp_to_c(int arrayDim, const std::string & name) const
         case spdoc::PublicType::STRING:
         case spdoc::PublicType::DATE:
         case spdoc::PublicType::DATETIME:
-        case spdoc::PublicType::ENUM_AS_STRING:
-        case spdoc::PublicType::ENUM_AS_INT:
+        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_BITMASK:
         case spdoc::PublicType::CLASS:
         case spdoc::PublicType::OBJECT:
         case spdoc::PublicType::VARIANT:
@@ -2312,8 +2380,8 @@ std::string CDataType::cpp_to_c(int arrayDim, const std::string & name) const
         case spdoc::PublicType::STRING:
         case spdoc::PublicType::DATE:
         case spdoc::PublicType::DATETIME:
-        case spdoc::PublicType::ENUM_AS_STRING:
-        case spdoc::PublicType::ENUM_AS_INT:
+        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_BITMASK:
         case spdoc::PublicType::CLASS:
         case spdoc::PublicType::OBJECT:
         case spdoc::PublicType::VARIANT:
@@ -2350,8 +2418,8 @@ std::string CDataType::c_to_value(int arrayDim, const std::string & name) const
         case spdoc::PublicType::DATE:
         case spdoc::PublicType::DATETIME:
             break;
-        case spdoc::PublicType::ENUM_AS_STRING:
-        case spdoc::PublicType::ENUM_AS_INT:
+        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_BITMASK:
             return StringFormat("%s.to_value()", cpp.c_str());
         case spdoc::PublicType::CLASS:
             return spi_util::StringFormat("spi::Object::to_value(%s)", cpp.c_str());
@@ -2375,8 +2443,8 @@ std::string CDataType::c_to_value(int arrayDim, const std::string & name) const
         case spdoc::PublicType::STRING:
         case spdoc::PublicType::DATE:
         case spdoc::PublicType::DATETIME:
-        case spdoc::PublicType::ENUM_AS_STRING:
-        case spdoc::PublicType::ENUM_AS_INT:
+        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_BITMASK:
             break;
         case spdoc::PublicType::CLASS:
             return spi_util::StringFormat("spi::Object::to_value(spi::MakeObjectVector< %s >(%s))", 
@@ -2400,8 +2468,8 @@ std::string CDataType::c_to_value(int arrayDim, const std::string & name) const
         case spdoc::PublicType::STRING:
         case spdoc::PublicType::DATE:
         case spdoc::PublicType::DATETIME:
-        case spdoc::PublicType::ENUM_AS_STRING:
-        case spdoc::PublicType::ENUM_AS_INT:
+        case spdoc::PublicType::ENUM:
+        case spdoc::PublicType::ENUM_BITMASK:
             break;
         case spdoc::PublicType::CLASS:
         case spdoc::PublicType::OBJECT:

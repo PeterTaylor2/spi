@@ -763,8 +763,8 @@ EnumConstructorConstSP parseEnumConstructor(
         SPI_THROW_RUNTIME_ERROR(
             "We don't need to define constructor from int since it is automatic");
         break;
-    case spdoc::PublicType::ENUM_AS_STRING:
-    case spdoc::PublicType::ENUM_AS_INT:
+    case spdoc::PublicType::ENUM:
+    case spdoc::PublicType::ENUM_BITMASK:
         // from C++ this might be nice to support enum to enum coercion
         // however from Excel/Python the enum is defined as a string
         SPI_THROW_RUNTIME_ERROR("We cannot define constructor from another enum");
@@ -1428,7 +1428,7 @@ void enumKeywordHandler(
         {
             bitmaskDefaultOptions["all"] = StringConstant::Make("ALL");
             bitmaskDefaultOptions["sep"] = StringConstant::Make(",");
-            bitmaskDefaultOptions["asInt"] = BoolConstant::Make(false);
+            bitmaskDefaultOptions["asInt"] = BoolConstant::Make(true); // but ignored anyway
             bitmaskDefaultOptions["constructor"] = StringConstant::Make("");
             bitmaskDefaultOptions["hasFlag"] = StringConstant::Make("");
             bitmaskDefaultOptions["toMap"] = StringConstant::Make("");
@@ -1443,7 +1443,6 @@ void enumKeywordHandler(
         bitmask = EnumBitmask::Make(
             getOption(bitmaskOptions, "all")->getString(),
             getOption(bitmaskOptions, "sep")->getString(),
-            getOption(bitmaskOptions, "asInt")->getBool(),
             getOption(bitmaskOptions, "constructor")->getString(),
             getOption(bitmaskOptions, "hasFlag")->getString(),
             getOption(bitmaskOptions, "toMap")->getString(),

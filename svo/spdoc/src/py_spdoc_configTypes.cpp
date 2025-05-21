@@ -1066,6 +1066,8 @@ static PyGetSetDef Enum_properties[] = {
         (void*) "enumerands"},
     {"constructors", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
         (void*) "constructors"},
+    {"isBitmask", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
+        (void*) "isBitmask"},
     {NULL} // sentinel
 };
 
@@ -1101,7 +1103,7 @@ static PyTypeObject Enum_PyObjectType = {
     0, /*tp_setattro*/
     0, /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT, /*tp_flags*/
-    "Defines an enumerated type.\n\n__init__(self, name, description=[], enumerands=[], constructors=[])", /* tp_doc */
+    "Defines an enumerated type.\n\n__init__(self, name, description=[], enumerands=[], constructors=[], isBitmask=None)", /* tp_doc */
     0, /* tp_traverse */
     0, /* tp_clear */
     0, /* tp_richcompare */

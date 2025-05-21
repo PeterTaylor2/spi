@@ -397,8 +397,8 @@ std::string UndefinedConstant::toCode(spdoc::PublicType publicType) const
         return "spi::Date()";
     case spdoc::PublicType::DATETIME:
         return "spi::DateTime()";
-    case spdoc::PublicType::ENUM_AS_STRING:
-    case spdoc::PublicType::ENUM_AS_INT:
+    case spdoc::PublicType::ENUM:
+    case spdoc::PublicType::ENUM_BITMASK:
     case spdoc::PublicType::CLASS:
     case spdoc::PublicType::OBJECT:
     case spdoc::PublicType::MAP:
