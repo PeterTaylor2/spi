@@ -215,7 +215,7 @@ Service {
         passByReference = false
         refTypeName = "ValueType"
         valueTypeName = "ValueType"
-        publicType = "ENUM_AS_STRING"
+        publicType = "ENUM"
         noDoc = false
         nsService = "spi_replay"
        }
