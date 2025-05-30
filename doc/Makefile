@@ -28,7 +28,7 @@ endif
 all: doc
 
 ###########################################################################
-# Commands to generate the parser_autodoc.tex file
+# Commands to generate the parser-autodoc.tex file
 ###########################################################################
 U_SPCL?=spcl
 
@@ -39,17 +39,14 @@ endif
 
 tex: spi-user-guide/parser-autodoc.tex
 
-spi-user-guide/parser_autodoc.tex: $(I_SPCL)
-	$(I_SPCL) -d spi-user-guide/parser_autodoc.tex
+spi-user-guide/parser-autodoc.tex: $(I_SPCL)
+	$(I_SPCL) -d spi-user-guide/parser-autodoc.tex
 	
 ###########################################################################
 # commands for creating the PDF file
 ###########################################################################
 
-ifdef G_PDFLATEX_BIN_DIR
-PATH:=$(G_PDFLATEX_BIN_DIR):$(PATH)
-export PATH
-endif
+G_PDFLATEX?=pdflatex
 
 pdf: spi-user-guide.pdf
 
@@ -57,17 +54,21 @@ TEX_SOURCE=spi-user-guide.tex $(wildcard spi-user-guide/*.tex) $(I_SPCL)
 
 spi-user-guide.pdf: $(TEX_SOURCE)
 	@rm -f *.aux *.bbl *.blg *.log *.out *.toc
-	@echo "pdflatex spi-user-guide.tex"
-ifeq ($(G_PLATFORM),win32)
-	@pdflatex --quiet spi-user-guide.tex
-	@pdflatex --quiet spi-user-guide.tex
-	@pdflatex --quiet spi-user-guide.tex
+ifeq ($(G_PDFLATEX),pdflatex)
+	@echo "`which pdflatex` spi-user-guide.tex"
 else
-	@pdflatex spi-user-guide.tex > /dev/null
-	@pdflatex spi-user-guide.tex > /dev/null
-	@pdflatex spi-user-guide.tex > /dev/null
+	@echo "$(G_PDFLATEX) spi-user-guide.tex"
 endif
-	@rm -f *.aux *.bbl *.blg *.log *.out *.toc
+ifeq ($(G_PLATFORM),win32)
+	@$(G_PDFLATEX) --quiet spi-user-guide.tex
+	@$(G_PDFLATEX) --quiet spi-user-guide.tex
+	@$(G_PDFLATEX) --quiet spi-user-guide.tex
+else
+	@$(G_PDFLATEX) spi-user-guide.tex > /dev/null
+	@$(G_PDFLATEX) spi-user-guide.tex > /dev/null
+	@$(G_PDFLATEX) spi-user-guide.tex > /dev/null
+endif
+	@rm -f *.aux *.bbl *.blg *.out *.toc
 
 ###########################################################################
 # clean-up command

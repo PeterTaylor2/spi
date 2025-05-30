@@ -88,21 +88,21 @@ ifeq ($(G_PLATFORM),win32)
 
 $(U_SERVICE_DOC).pdf: $(U_SERVICE).svo $(U_SERVICE_DOC).tex
 	@rm -f *.aux *.bbl *.blg *.log *.out *.toc
-	@echo "pdflatex $(U_SERVICE_DOC).tex"
+	@echo "`which pdflatex` $(U_SERVICE_DOC).tex"
 	@pdflatex --quiet $(U_SERVICE_DOC).tex
 	@pdflatex --quiet $(U_SERVICE_DOC).tex
-	pdflatex --quiet $(U_SERVICE_DOC).tex
-	@rm -f *.aux *.bbl *.blg *.log *.out *.toc
+	@pdflatex --quiet $(U_SERVICE_DOC).tex
+	@rm -f *.aux *.bbl *.blg *.out *.toc
 
 else
 
 $(U_SERVICE_DOC).pdf: $(U_SERVICE).svo $(U_SERVICE_DOC).tex
 	@rm -f *.aux *.bbl *.blg *.log *.out *.toc
-	@echo "pdflatex $(U_SERVICE_DOC).tex"
+	@echo "`which pdflatex` $(U_SERVICE_DOC).tex"
 	@pdflatex $(U_SERVICE_DOC).tex > /dev/null
 	@pdflatex $(U_SERVICE_DOC).tex > /dev/null
 	@pdflatex $(U_SERVICE_DOC).tex > /dev/null
-	@rm -f *.aux *.bbl *.blg *.log *.out *.toc
+	@rm -f *.aux *.bbl *.blg *.out *.toc
 
 endif
 
