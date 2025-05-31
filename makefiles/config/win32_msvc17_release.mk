@@ -5,11 +5,7 @@ G_ABI=Release-x86-vc17
 G_BUILD_DIR=win32/msvc17_release
 
 ifeq ($(G_WIN32_COMPILER),msvc17)
-ifeq ($(G_WIN32_BITS),32)
-G_ABI=Release
-else
 G_ABI=Release-x86
-endif
 endif
 
 include $(U_MAKEFILES)/config/win32_msvc17.mk

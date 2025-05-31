@@ -257,6 +257,12 @@ def get_import_property_sheets(platforms):
     return "\n".join(lines)
 
 def get_abi(compiler, bits, debug, defaultCompiler, defaultBits):
+    # defaultBits is ignored now in the windows makfile configuration
+    #
+    # msvc9 => 32-bit default
+    # msvc15+ => 64-bit default
+    defaultBits = 32 if compiler == "msvc9" else 64
+
     if bits != 32 and bits != 64:
         raise Exception("bits (%s) must be 32 or 64" % bits)
     if debug != "Debug" and debug != "Release":

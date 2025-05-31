@@ -5,11 +5,7 @@ G_ABI=Debug-x64-vc17
 G_BUILD_DIR=win64/msvc17_debug
 
 ifeq ($(G_WIN32_COMPILER),msvc17)
-ifeq ($(G_WIN32_BITS),64)
 G_ABI=Debug
-else
-G_ABI=Debug-x64
-endif
 endif
 
 include $(U_MAKEFILES)/config/win64_msvc17.mk
