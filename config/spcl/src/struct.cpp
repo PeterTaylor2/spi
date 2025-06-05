@@ -371,8 +371,11 @@ void Struct::declare(
         {
             ostr << "private:\n"
                 << "\n";
+
             // this is the declaration of the class attributes
-            writeDeclareArgs(ostr, false, m_attributes, 4, "m_", true);
+            // when we use accessors there is no need for the attributes
+            // to be declared as const
+            writeDeclareArgs(ostr, false, m_attributes, 4, "m_", false);
 
             bool first = true;
             for (size_t i = 0; i < m_classAttributes.size(); ++i)
@@ -394,7 +397,10 @@ void Struct::declare(
         {
             ostr << "public:\n"
                 << "\n";
+
             // this is the declaration of the struct attributes
+            // since the fields are public we define them as const
+
             writeDeclareArgs(ostr, false, m_attributes, 4, "", true);
             for (size_t i = 0; i < m_classProperties.size(); ++i)
             {

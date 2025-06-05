@@ -27,6 +27,8 @@
 #include "JSONLexer.hpp"
 #include "JSONValue.hpp"
 
+#include <math.h>
+
 #define BEGIN_ANONYMOUS_NAMESPACE namespace {
 #define END_ANONYMOUS_NAMESPACE }
 
@@ -209,8 +211,24 @@ void JSONValueToStream(
         JSONMapToStream(ostr, value.GetMap(), noNewLine, indent);
         break;
     case JSONValue::Number:
-        ostr << StringFormat("%.15g", value.GetNumber());
+    {
+        double d = value.GetNumber();
+        if (isnan(d))
+        {
+            ostr << "NaN";
+        }
+        else if (isinf(d))
+        {
+            if (d < 0.0)
+                ostr << "-";
+            ostr << "Infinity";
+        }
+        else
+        {
+            ostr << StringFormat("%.15g", value.GetNumber());
+        }
         break;
+    }
     case JSONValue::Bool:
         if (value.GetBool())
             ostr << "true";

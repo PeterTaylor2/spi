@@ -38,11 +38,6 @@
 #include <math.h>
 #include "platform.h"
 
-#ifdef __GNUC__
-using std::isnan;
-using std::isinf;
-#endif
-
 #undef SPI_UTIL_CLOCK_EVENTS
 #include <spi_util/ClockUtil.hpp>
 
@@ -238,9 +233,16 @@ void WriteValue(std::ostream& ostr,
         double d = value.getDouble();
         char   buf[64];
         if (isnan(d))
+        {
             strcpy(buf, "NAN");
+        }
         else if (isinf(d))
-            strcpy(buf, "INF");
+        {
+            if (d < 0.0)
+                strcpy(buf, "-INF");
+            else
+                strcpy(buf, "INF");
+        }
         else
         {
             sprintf(buf, numFormat, d);

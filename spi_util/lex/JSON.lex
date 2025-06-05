@@ -66,6 +66,7 @@
 #include "JSONLexerImpl.hpp"
 #include "StringUtil.hpp"
 #include <stdarg.h> // for variable argument list methods
+#include <limits> // for std::numeric_limits
 
 #ifdef _MSC_VER
 /* this disables the warning message about dividing by zero */
@@ -145,6 +146,27 @@ true|false {
     return SPI_JSON_TOKEN_TYPE_BOOL;
 }
 
+ /*
+ * these values are not in the official JSON syntax but are supported
+ * by the Python JSON parser. Hence we will output these values.
+ */
+NaN {
+    tokenValue->aDouble = std::numeric_limits<double>::quiet_NaN();
+    dprintf ("DOUBLE: %f\n", tokenValue->aDouble);
+    return SPI_JSON_TOKEN_TYPE_DOUBLE;
+}
+
+Infinity {
+    tokenValue->aDouble = std::numeric_limits<double>::infinity();
+    dprintf ("DOUBLE: %f\n", tokenValue->aDouble);
+    return SPI_JSON_TOKEN_TYPE_DOUBLE;
+}
+
+-Infinity {
+    tokenValue->aDouble = -std::numeric_limits<double>::infinity();
+    dprintf ("DOUBLE: %f\n", tokenValue->aDouble);
+    return SPI_JSON_TOKEN_TYPE_DOUBLE;
+}
 
  /*
  * We will support various punctuation marks as follows: ,{}:[]

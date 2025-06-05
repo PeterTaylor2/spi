@@ -29,19 +29,22 @@
 #include "Service.hpp"
 
 #include <ctype.h>
-#include <float.h>
-#include <math.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include <limits>
 
 #undef SPI_UTIL_CLOCK_EVENTS
 #include <spi_util/ClockUtil.hpp>
 #include <spi_util/FileUtil.hpp>
+#include <spi_util/Utils.hpp>
 
 #ifdef _MSC_VER
 /* this disables the warning message about dividing by zero */
 #pragma warning( disable : 4723 )
 #endif
+
+#define TO_INT(x) spi_util::IntegerCast<int>(x)
 
 SPI_BEGIN_NAMESPACE
 
@@ -160,16 +163,7 @@ namespace {
                 long day = strtol(ep + 1, &ep, 10);
                 if (*ep == '\0')
                 {
-                    int iyear = (int)year;
-                    int imonth = (int)month;
-                    int iday = (int)day;
-
-                    if ((year == (long)iyear) &&
-                        (month == (long)imonth) &&
-                        (day == (long)iday))
-                    {
-                        return NumericValue::Date(Date(iyear, imonth, iday));
-                    }
+                    return NumericValue::Date(Date(TO_INT(year), TO_INT(month), TO_INT(day)));
                 }
             }
         }
@@ -182,28 +176,20 @@ namespace {
                 long seconds = strtol(ep + 1, &ep, 10);
                 if (*ep == '\0')
                 {
-                    int ihours = (int)hours;
-                    int iminutes = (int)minutes;
-                    int iseconds = (int)seconds;
-
-                    if ((hours == (long)ihours) &&
-                        (minutes == (long)iminutes) &&
-                        (seconds == (long)iseconds))
-                    {
-                        return NumericValue::Time(NumericValue::HMS, spi_util::HMSToTime(hours, minutes, seconds));
-                    }
+                    return NumericValue::Time(NumericValue::HMS, 
+                        spi_util::HMSToTime(
+                            TO_INT(hours),
+                            TO_INT(minutes),
+                            TO_INT(seconds)));
                 }
             }
             else if (*ep == '\0')
             {
-                int ihours = (int)hours;
-                int iminutes = (int)minutes;
-
-                if ((hours == (long)ihours) &&
-                    (minutes == (long)iminutes))
-                {
-                    return NumericValue::Time(NumericValue::HM, spi_util::HMSToTime(hours, minutes, 0));
-                }
+                return NumericValue::Time(NumericValue::HM,
+                    spi_util::HMSToTime(
+                        TO_INT(hours),
+                        TO_INT(minutes),
+                        0));
             }
         }
         else if (*ep == '.' || *ep == 'e' || *ep == 'E')
@@ -654,6 +640,8 @@ namespace {
         // name        [a-zA-Z_][a-zA-Z0-9_\.]*
         // NAN, INF, NULL, true, false
         //
+        // we also need to support -INF for completeness
+        //
         // note:
         // 1. only a double has '.'
         // 2. only a date has interior minus signs
@@ -666,6 +654,13 @@ namespace {
             case '1': case '2': case '3': case '4': case '5':
             case '6': case '7': case '8': case '9': case '0':
             {
+                if (symbol[1] == 'I')
+                {
+                    if (strcmp(symbol, "-INF") == 0)
+                    {
+                        return Value(-std::numeric_limits<double>::infinity());
+                    }
+                }
                 NumericValue nv = NumericValueFromToken(symbol);
                 switch (nv.type)
                 {
@@ -714,8 +709,7 @@ namespace {
             case 'N':
                 if (strcmp(symbol, "NAN") == 0)
                 {
-                    double i = sqrt(-1.0);
-                    return Value(i);
+                    return Value(std::numeric_limits<double>::quiet_NaN());
                 }
                 if (strcmp(symbol, "NULL") == 0)
                 {
@@ -729,11 +723,7 @@ namespace {
             case 'I':
                 if (strcmp(symbol, "INF") == 0)
                 {
-                    double one  = 1.0;
-                    double zero = 0.0;
-                    double infinity = one / zero;
-
-                    return Value(infinity);
+                    return Value(std::numeric_limits<double>::infinity());
                 }
                 break;
             case 't':
