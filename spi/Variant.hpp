@@ -115,6 +115,7 @@ public:
     operator bool() const;
     operator double() const;
     operator Date() const;
+    operator DateTime() const;
     operator ObjectConstSP() const;
 
     std::vector<std::string>      ToStringVector(bool optional = false, const char* defaultValue = "") const;
@@ -149,6 +150,7 @@ public:
     Variant (double value);
     Variant (bool value);
     Variant (const Date &value);
+    Variant (const DateTime& value);
     Variant (const ObjectConstSP &value);
 
     template<typename T>

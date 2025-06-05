@@ -213,6 +213,11 @@ Variant::operator Date() const
     return ToDate();
 }
 
+Variant::operator DateTime() const
+{
+    return ToDateTime();
+}
+
 Variant::operator ObjectConstSP() const
 {
     return ToConstObject();
@@ -315,6 +320,13 @@ Variant::Variant (const Date& value)
 m_value(value),
 m_context(InputContext::NoContext())
 {}
+
+Variant::Variant(const DateTime & value)
+:
+m_value(value),
+m_context(InputContext::NoContext())
+{
+}
 
 Variant::Variant (const ObjectConstSP& value)
 :
