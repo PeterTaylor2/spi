@@ -20,6 +20,7 @@ def command_line(compiler, toolsVersion, platformToolset):
                                "exe=",
                                "makefileTarget=",
                                "cleanTarget=",
+                               "vcTarget=",
                                "silent"])
     headerPatterns  = ["*.hpp", "*.h"]
     sourcePatterns  = ["*.cpp", "*.c"]
@@ -39,6 +40,7 @@ def command_line(compiler, toolsVersion, platformToolset):
         elif opt[0] == "--buildSuffix": kwargs["buildSuffix"] = opt[1]
         elif opt[0] == "--makefileTarget": kwargs["makefileTarget"] = opt[1]
         elif opt[0] == "--cleanTarget": kwargs["cleanTarget"] = opt[1]
+        elif opt[0] == "--vcTarget": kwargs["vcTarget"] = opt[1]
         elif opt[0] == "--exe": kwargs["exeName"] = opt[1]
         elif opt[0] == "--silent": kwargs["silent"] = True
         elif opt[0] == "-I": includePath.append(opt[1])
@@ -275,7 +277,7 @@ def get_abi(compiler, bits, debug, defaultCompiler, defaultBits):
         abi = "%s-%s-%s" % (debug, "x64" if bits == 64 else "x86", compiler.replace("msvc", "vc"))
     return abi
 
-def _get_property_groups(platforms, makefileTarget, cleanTarget, compiler, defaultCompiler, defaultBits,
+def _get_property_groups(platforms, makefileTarget, cleanTarget, vcTarget, compiler, defaultCompiler, defaultBits,
         bin, buildSuffix, includePath, parallel, exeName, silent):
 
     vsIncludePath = []
@@ -288,6 +290,8 @@ def _get_property_groups(platforms, makefileTarget, cleanTarget, compiler, defau
             vsIncludePath.append("$(MSBuildProjectDirectory)\\%s" % os.path.normpath(include))
     if len(vsIncludePath): vsIncludePath.append("")
     vsIncludePath = ";".join(vsIncludePath)
+
+    if len(vcTarget) > 0: cleanTarget = "%s %s" % (cleanTarget, vcTarget)
 
     lines = []
     make = "make -s" if silent else "make"
@@ -341,6 +345,7 @@ def make_proj(fileName, name, compiler, srcDir, incDir,
              buildSuffix="",
              makefileTarget="target",
              cleanTarget="clean",
+             vcTarget="",
              bin=r"C:\cygwin\bin",
              exeName=None,
              parallel=4,
@@ -381,7 +386,7 @@ def make_proj(fileName, name, compiler, srcDir, incDir,
         platforms, platformToolset)
     importPropertySheets   = get_import_property_sheets(platforms)
     propertyGroups         = _get_property_groups(
-        platforms, makefileTarget, cleanTarget, compiler, defaultCompiler, defaultBits,
+        platforms, makefileTarget, cleanTarget, vcTarget, compiler, defaultCompiler, defaultBits,
         bin, buildSuffix, includePath, parallel, exeName, silent)
 
     data = {"name" : name,
