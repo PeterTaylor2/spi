@@ -35,6 +35,7 @@
 
 #include <spi/RuntimeError.hpp>
 #include <spi/StringUtil.hpp>
+#include <spi/CommonRuntime.hpp>
 
 #define NEW(T)         (T*)calloc(sizeof(T),1)
 #define NEW_ARRAY(T,n) (T*)calloc(sizeof(T),n)
@@ -514,6 +515,15 @@ void xlInitializeState()
                 TempStrConst("Could not get major version number from version string"),
                 TempInt(2));
         }
+    }
+
+    try
+    {
+        spi::CommonRuntime::AddContext("EXCEL");
+    }
+    catch (std::exception& e)
+    {
+        Excel(xlcAlert, 0, 2, TempStrConst(e.what()), TempInt(2));
     }
 }
 
