@@ -176,6 +176,7 @@ std::string PythonService::writePydSourceFile(const std::string& dirname) const
     }
 
     ostr << "\n"
+         << "#include <spi/CommonRuntime.hpp>\n"
          << "#include <spi/ObjectHandle.hpp>\n"
          << "#include <spi/python/pyService.hpp>\n"
          << "#include <spi/python/pyUtil.hpp>\n"
@@ -286,6 +287,7 @@ std::string PythonService::writePydSourceFile(const std::string& dirname) const
         << "#endif\n"
         << "{\n"
         << "  try {\n"
+        << "    spi::CommonRuntime::AddContext(\"PYTHON\");\n"
         // perhaps we could check an environment variable to see whether we
         // want to "enter to continue" at start-up time - this variable can
         // then be defined on the command line when launching Python
