@@ -39,6 +39,10 @@ def copyFile(src, dst):
         raise Exception("Source file %s is not a file" % os.path.normpath(src))
     if not os.path.isfile(dst):
         copySource = True
+        ddn = os.path.dirname(dst)
+        if ddn and not os.path.isdir(ddn):
+            print("creating directory %s" % ddn)
+            os.makedirs(ddn)
     else: copySource = not filecmp.cmp(src, dst)
 
     if copySource:
