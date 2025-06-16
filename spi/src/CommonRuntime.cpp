@@ -102,6 +102,21 @@ CommonRuntimeSP CommonRuntime::Make()
     return crt;
 }
 
+std::vector<std::string> CommonRuntime::GetContextNames()
+{
+    return Make()->get_client_names();
+}
+
+void CommonRuntime::AddContext(const char* contextName)
+{
+    return Make()->add_client(contextName);
+}
+
+bool CommonRuntime::HasContext(const char* contextName)
+{
+    return Make()->has_client(contextName);
+}
+
 ObjectConstSP CommonRuntime::object_from_read_cache(
     const std::string & filename,
     double timestamp)
