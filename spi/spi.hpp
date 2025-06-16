@@ -53,6 +53,7 @@
 #include "Value.hpp"
 #include "Variant.hpp"
 #include "Function.hpp"
+#include "CommonRuntime.hpp"
 #include "Service.hpp"
 #include "ObjectHelper.hpp"
 #include "EnumHelper.hpp"
