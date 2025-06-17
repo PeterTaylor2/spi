@@ -79,7 +79,7 @@ public:
     static CommonRuntimeSP Make();
     static std::vector<std::string> GetContextNames();
     static void AddContext(const char* contextName);
-    bool HasContext(const char* contextName);
+    static bool HasContext(const char* contextName);
 
     bool use_read_cache;
     ObjectConstSP object_from_read_cache(
