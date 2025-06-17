@@ -13,7 +13,8 @@ def command_line(compiler, toolsVersion, platformToolset):
     import getopt
 
     opts,args = getopt.getopt(sys.argv[1:], "x:s:c:t:b:I:f:",
-                              ["compiler="])
+                              ["vcTarget=",
+                               "compiler="])
     configPatterns  = ["*.cfg"]
     servicePatterns = ["*.svc"]
     extraSourceDirs = []
@@ -29,6 +30,7 @@ def command_line(compiler, toolsVersion, platformToolset):
         elif opt[0] == "-b": kwargs["bin"] = opt[1]
         elif opt[0] == "-I": includePath.append(opt[1])
         elif opt[0] == "--compiler": compiler = opt[1]
+        elif opt[0] == "--vcTarget": kwargs["vcTarget"] = opt[1]
 
     if len(args) != 4:
         print((" ".join(sys.argv)))
@@ -56,7 +58,7 @@ def _xmlfiles(filenames, label, indent=4):
              for filename in filenames]
     return "\n".join(lines)
 
-def _get_property_groups(platforms, target, makefileTarget, cleanTarget, bin,
+def _get_property_groups(platforms, target, makefileTarget, vcTarget, cleanTarget, bin,
                       compiler, includePath):
 
     vsIncludePath = []
@@ -66,6 +68,8 @@ def _get_property_groups(platforms, target, makefileTarget, cleanTarget, bin,
             "$(MSBuildProjectDirectory)\\%s" % os.path.normpath(include))
     if len(vsIncludePath): vsIncludePath.append("")
     vsIncludePath = ";".join(vsIncludePath)
+
+    if len(vcTarget) > 0: cleanTarget = "%s %s" % (cleanTarget, vcTarget)
 
     lines = []
     for platform in platforms:
@@ -169,7 +173,9 @@ def make_proj(fileName, name, target, srcDir,
              toolsVersion, platformToolset, projectFileVersion,
              extraSourceDirs,
              configFilters,
-             makefileTarget="target", bin=r"C:\cygwin\bin"):
+             makefileTarget="target", 
+             vcTarget="",
+             bin=r"C:\cygwin\bin"):
 
     guids = guidUtils.read_and_write_guids(fileName, ["Project"])
     allConfigFilters = ["Config Files"]
@@ -200,7 +206,7 @@ def make_proj(fileName, name, target, srcDir,
         platforms, platformToolset)
     importPropertySheets   = makeVcxproj.get_import_property_sheets(platforms)
     propertyGroups         = _get_property_groups(
-        platforms, target, makefileTarget, "clean", bin, compiler, includePath)
+        platforms, target, makefileTarget, vcTarget, "clean", bin, compiler, includePath)
 
     data = {"name" : name,
             "tools_version" : toolsVersion,

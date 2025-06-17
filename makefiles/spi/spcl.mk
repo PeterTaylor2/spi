@@ -48,11 +48,11 @@ clean::
 	rm -f $(U_SERVICE).svo 
 
 v15.vcxproj:
-	$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/makeVcproj15Config.py $(U_VCXPROJ_OPTIONS) -b $(U_MAKEFILES)/cygwin32/bin $(U_VCPROJ).v15.vcxproj $(U_VCPROJ) . $(U_SERVICE).svo
+	$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/makeVcproj15Config.py --vcTarget=v15.vcxproj $(U_VCXPROJ_OPTIONS) -b $(U_MAKEFILES)/cygwin32/bin $(U_VCPROJ).v15.vcxproj $(U_VCPROJ) . $(U_SERVICE).svo
 
 v16.vcxproj:
-	$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/makeVcproj16Config.py $(U_VCXPROJ_OPTIONS) -b $(U_MAKEFILES)/cygwin32/bin $(U_VCPROJ).v16.vcxproj $(U_VCPROJ) . $(U_SERVICE).svo
+	$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/makeVcproj16Config.py --vcTarget=v16.vcxproj $(U_VCXPROJ_OPTIONS) -b $(U_MAKEFILES)/cygwin32/bin $(U_VCPROJ).v16.vcxproj $(U_VCPROJ) . $(U_SERVICE).svo
 
 v17.vcxproj:
-	$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/makeVcproj17Config.py $(U_VCXPROJ_OPTIONS) -b $(U_MAKEFILES)/cygwin32/bin $(U_VCPROJ).v17.vcxproj $(U_VCPROJ) . $(U_SERVICE).svo
+	$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/makeVcproj17Config.py --vcTarget=v17.vcxproj $(U_VCXPROJ_OPTIONS) -b $(U_MAKEFILES)/cygwin32/bin $(U_VCPROJ).v17.vcxproj $(U_VCPROJ) . $(U_SERVICE).svo
 
