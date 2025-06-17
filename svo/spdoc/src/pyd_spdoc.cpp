@@ -32,6 +32,7 @@
 #include "py_spdoc_constant.hpp"
 #include "py_spdoc_configTypes.hpp"
 
+#include <spi/CommonRuntime.hpp>
 #include <spi/ObjectHandle.hpp>
 #include <spi/python/pyService.hpp>
 #include <spi/python/pyUtil.hpp>
@@ -103,6 +104,7 @@ void initpy_spdoc(void)
 #endif
 {
   try {
+    spi::CommonRuntime::AddContext("PYTHON");
     theService.reset(new spi::PythonService("py_spdoc", spdoc::spdoc_exported_service()));
     spi::PythonService* svc = theService.get();
 
