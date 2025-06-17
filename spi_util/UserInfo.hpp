@@ -44,7 +44,7 @@ std::string UserName();
 
 // returns the name of the current computer
 SPI_UTIL_IMPORT
-std::string ComputerName();
+std::string ComputerName(bool fullyQualified = false);
 
 // returns the names of the groups to which the a given user belongs
 // by default the current user is used if no userName provided

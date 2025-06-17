@@ -36,6 +36,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/types.h>
+#include <netdb.h>
 
 #endif
 
@@ -84,12 +85,26 @@ std::string UserName()
 }
 
 // returns the name of the current computer
-std::string ComputerName()
+std::string ComputerName(bool fullyQualified)
 {
     TCHAR computerName[256];
     DWORD size = 256;
-    if (!GetComputerName(computerName, &size))
-        SPI_UTIL_THROW_RUNTIME_ERROR("GetComputerName failed");
+    if (fullyQualified)
+    {
+        BOOL rc = GetComputerNameExA(ComputerNameDnsFullyQualified, computerName, &size);
+        if (!rc)
+        {
+            throw RuntimeError("GetComputerNameExA failed: %d", GetLastError());
+        }
+    }
+    else
+    {
+        BOOL rc = GetComputerNameA(computerName, &size);
+        if (!rc)
+        {
+            throw RuntimeError("GetComputerNameA failed: %ld", GetLastError());
+        }
+    }
 
     return std::string(computerName);
 }
@@ -190,13 +205,41 @@ std::string UserName()
 }
 
 // returns the name of the current computer
-std::string ComputerName()
+std::string ComputerName(bool fullyQualified)
 {
     char hostName[256];
     int rc = gethostname(&hostName[0], 256);
     if (rc != 0)
-        SPI_UTIL_THROW_RUNTIME_ERROR("gethostname failed with code " << rc);
-    return std::string(&hostName[0]);
+    {
+        throw RuntimeError("gethostname failed with code %d", rc);
+    }
+
+    if (fullyQualified)
+    {
+        struct hostent h2;
+        struct hostent* h;
+        char w[1024]; // work buffer
+        int err;
+
+        rc = gethostbyname2_r(hostName, AF_INET, &h2, w, sizeof(w), &h, &err);
+
+        if (rc != 0)
+        {
+            rc = gethostbyname2_r(hostName, AF_INET6, &h2, w, sizeof(w), &h, &err);
+        }
+
+        if (rc != 0)
+        {
+            throw RuntimeError("gethostbyname2_r failed with code %d", rc);
+        }
+
+        SPI_UTIL_POST_CONDITION(h == &h2);
+        return std::string(h2.h_name);
+    }
+    else
+    {
+        return std::string(&hostName[0]);
+    }
 }
 
 // returns the names of the groups to which the current user belongs
