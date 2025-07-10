@@ -1160,6 +1160,7 @@ void WrapperClass::implementHelper(
 
     std::string coerce_from_value;
     const std::vector<ClassAttributeConstSP>& allClassAttributes = AllClassAttributes();
+    const std::vector<ClassAttributeConstSP>& allProperties = AllProperties();
 
     if (hasCoerceFrom)
     {
@@ -1222,6 +1223,26 @@ void WrapperClass::implementHelper(
              << "    spi::IObjectMap* obj_map, bool public_only) const\n"
              << "{\n";
 
+        // we no longer declare properties as local variables
+        // 
+        // we do declare attributes as local variables since we may want to test
+        // the value before deciding to put them in the map or not
+        //
+        // in contrast properties are always in the (public_only) map so there
+        // is not need to test the value
+        //
+        // this might mean some hideIf statements need to be changed since the
+        // property has not been declared (so you may need to call the property
+        // function instead
+
+
+        // designed to handle duplicate declarations
+        //
+        // this used to be necessary for properties - probably no longer required
+        // unless somebody has defined the same attribute in the base class as
+        // the derived class
+        std::set<std::string> done;
+
         if (!m_innerClass->m_isOpen)
         {
             ostr << "    if (has_constructor())\n"
@@ -1230,34 +1251,23 @@ void WrapperClass::implementHelper(
                  << "        return;\n"
                  << "    }\n";
 
-            // we need to declare properties - we can avoid duplicates using
-            // done, but there is a slight risk that base class properties
-            // will match class variables - I don't think this is all that
-            // serious a problem in fact - it just means that the local
-            // variable will trump the class variable and as long as it is
-            // logically correct you won't go far wrong
-            std::set<std::string> done;
-            writeGetClassAttributesForMap(ostr, getBaseClassProperties(), done, 4);
             writeGetClassAttributesForMap(ostr, allClassAttributes, done, 4, true);
-            writeGetClassAttributesForMap(ostr, m_classProperties, done, 4);
         }
         else
         {
-            // use done to avoid duplicates
-            // NOTE: we still add them twice (in case of duplicates) but we
-            // won't fetch or declare them twice!
-            // NOTE: duplicates can arise if the base class has a property
-            // which is an attribute of the concrete class
-            std::set<std::string> done;
-            writeGetClassAttributesForMap(ostr, getBaseClassProperties(), done, 4);
             writeGetClassAttributesForMap(ostr, allClassAttributes, done, 4);
-            writeGetClassAttributesForMap(ostr, m_classProperties, done, 4);
         }
-        // FIXME: validate there are no clashing names between baseClassProperties
-        // and attributes/properties defined for this class
-        writePropertiesToMap(ostr, getBaseClassProperties(), "obj_map", "%s", 4);
+
+        // writeToMap writes full class attributes
+        // writePropertiesToMap only writes properties within the public_only map
         writeToMap(ostr, allClassAttributes, "obj_map", "%s", 4);
-        writePropertiesToMap(ostr, m_classProperties, "obj_map", "%s", 4,
+
+        // we use this-> in case that we have a property (from the base class)
+        // that matches the name of an attribute
+        //
+        // in that case we will be putting the property into the public_only map
+        // when it is already there - not a big deal
+        writePropertiesToMap(ostr, allProperties, "obj_map", "this->%s()", 4,
             !!m_dynamicPropertiesCode );
         ostr << "}\n";
 
@@ -1665,6 +1675,32 @@ std::vector<ClassAttributeConstSP> WrapperClass::AllClassAttributes() const
 
     std::vector<ClassAttributeConstSP> all = m_baseClass->AllClassAttributes();
     all.insert(all.end(), m_classAttributes.begin(), m_classAttributes.end());
+
+    return all;
+}
+
+std::vector<ClassAttributeConstSP> WrapperClass::AllProperties() const
+{
+    std::set<std::string> names;
+    std::vector<ClassAttributeConstSP> all = getBaseClassProperties();
+
+    for (auto iter = all.begin(); iter != all.end(); ++iter)
+    {
+        const ClassAttributeConstSP& prop = *iter;
+        const std::string& name = prop->attribute()->name();
+        names.insert(name);
+    }
+
+    for (auto iter = m_classProperties.begin(); iter != m_classProperties.end(); ++iter)
+    {
+        const ClassAttributeConstSP& prop = *iter;
+        const std::string& name = prop->attribute()->name();
+        if (names.count(name))
+            continue;
+
+        all.push_back(prop);
+        names.insert(name);
+    }
 
     return all;
 }

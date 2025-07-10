@@ -142,6 +142,7 @@ public:
     std::vector<ClassAttributeConstSP> getBaseClassProperties() const;
     std::vector<AttributeConstSP> AllAttributes() const;
     std::vector<ClassAttributeConstSP> AllClassAttributes() const;
+    std::vector<ClassAttributeConstSP> AllProperties() const;
 
 protected:
     WrapperClass(
