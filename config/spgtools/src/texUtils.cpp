@@ -111,6 +111,9 @@ std::string texEscape(const std::string& plainText, bool keepQuotes)
         case '#':
             oss << "\\" << c;
             break;
+        case '^':
+            oss << "\\verb|" << c << "|";
+            break;
         case '>':
         case '<':
             oss << '$' << c << '$';
