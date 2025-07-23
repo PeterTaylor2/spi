@@ -1648,7 +1648,7 @@ void enumKeywordHandler(
     EnumConstSP type = Enum::Make(description, name, module->moduleNamespace(),
         innerName, innerHeader, enumTypedef, enumerands,
         constructors, bitmask);
-    type->dataType(service, ignore);
+    const DataTypeConstSP& myType = type->dataType(service, ignore);
 
     if (!ignore)
     {
@@ -1656,7 +1656,6 @@ void enumKeywordHandler(
 
         if (bitmask)
         {
-            const DataTypeConstSP& myType = service->getDataType(name);
             std::vector<std::string> noDescription;
             std::vector<std::string> noExcelOptions;
 
