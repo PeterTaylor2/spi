@@ -236,6 +236,24 @@ PyObject* spi_py_object_put (PyObject* self, PyObject* args)
     }
 }
 
+PyObject* spi_py_object_update_meta_data(PyObject* self, PyObject* args)
+{
+    try
+    {
+        spi::PythonService* svc = spi::PythonService::CommonService();
+
+        return svc->ObjectUpdateMetaData(args);
+    }
+    catch (spi::PyException&)
+    {
+        return NULL;
+    }
+    catch (std::exception& e)
+    {
+        return spi::pyExceptionHandler(e.what());
+    }
+}
+
 PyObject* spi_py_object_copy(PyObject* self)
 {
     try

@@ -99,6 +99,7 @@ public:
     PyObject* ObjectToFile(PyObject* self, PyObject* args);
     PyObject* ObjectGet(PyObject* args);
     PyObject* ObjectPut(PyObject* args);
+    PyObject* ObjectUpdateMetaData(PyObject* args);
     // we need two version of ObjectCoerce
     // one called from within the class which knows the className
     // and a static version which has the class name as the first arg
