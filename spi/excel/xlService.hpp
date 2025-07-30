@@ -91,6 +91,7 @@ public:
         const std::string& objectFromString = std::string("object_from_string"),
         const std::string& objectGet = std::string("object_get"),
         const std::string& objectPut = std::string("object_put"),
+        const std::string& objectUpdateMetaData = std::string("object_update_meta_data"),
         const std::string& objectToFile = std::string("object_to_file"),
         const std::string& objectFromFile = std::string("object_from_file"),
         const std::string& objectCount = std::string("object_count"),
@@ -188,6 +189,12 @@ public:
 
     XLOPER* ObjectGet(XLOPER* handle, XLOPER* name);
     XLOPER* ObjectPut(XLOPER* baseName, XLOPER* handle, XLOPER* names,
+        XLOPER* v1, XLOPER* v2, XLOPER* v3, XLOPER* v4, XLOPER* v5,
+        XLOPER* v6, XLOPER* v7, XLOPER* v8, XLOPER* v9, XLOPER* v10,
+        XLOPER* v11, XLOPER* v12, XLOPER* v13, XLOPER* v14, XLOPER* v15,
+        XLOPER* v16, XLOPER* v17, XLOPER* v18, XLOPER* v19, XLOPER* v20,
+        XLOPER* v21, XLOPER* v22, XLOPER* v23, XLOPER* v24, XLOPER* v25);
+    XLOPER* ObjectUpdateMetaData(XLOPER* baseName, XLOPER* handle, XLOPER* names,
         XLOPER* v1, XLOPER* v2, XLOPER* v3, XLOPER* v4, XLOPER* v5,
         XLOPER* v6, XLOPER* v7, XLOPER* v8, XLOPER* v9, XLOPER* v10,
         XLOPER* v11, XLOPER* v12, XLOPER* v13, XLOPER* v14, XLOPER* v15,

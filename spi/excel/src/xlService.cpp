@@ -190,7 +190,8 @@ void ExcelService::RegisterStandardFunctions(const std::string& xll,
     const std::string& objectToString, 
     const std::string& objectFromString, 
     const std::string& objectGet, 
-    const std::string& objectPut, 
+    const std::string& objectPut,
+    const std::string& objectUpdateMetaData,
     const std::string& objectToFile, 
     const std::string& objectFromFile, 
     const std::string& objectCount, 
@@ -359,6 +360,53 @@ void ExcelService::RegisterStandardFunctions(const std::string& xll,
             nsReg,
             args,
             "Puts fields into an object returning a new object",
+            help);
+    }
+
+    if (!objectUpdateMetaData.empty())
+    {
+        std::string regFunc = m_upperCase ? StringUpper(objectUpdateMetaData) : objectUpdateMetaData;
+        args.clear();
+        help.clear();
+        args.push_back("handle?");
+        help.push_back("Object handle string");
+        args.push_back("baseName?");
+        help.push_back("Base name of object handle string");
+        args.push_back("names[]");
+        help.push_back("List of field names to be added to meta data - can include type specification.");
+        args.push_back("v1?");
+        help.push_back("Value to be added for corresponding name");
+        args.push_back("v2?");
+        args.push_back("v3?");
+        args.push_back("v4?");
+        args.push_back("v5?");
+        args.push_back("v6?");
+        args.push_back("v7?");
+        args.push_back("v8?");
+        args.push_back("v9?");
+        args.push_back("v10?");
+        args.push_back("v11?");
+        args.push_back("v12?");
+        args.push_back("v13?");
+        args.push_back("v14?");
+        args.push_back("v15?");
+        args.push_back("v16?");
+        args.push_back("v17?");
+        args.push_back("v18?");
+        args.push_back("v19?");
+        args.push_back("v20?");
+        args.push_back("v21?");
+        args.push_back("v22?");
+        args.push_back("v23?");
+        args.push_back("v24?");
+        args.push_back("v25?");
+        RegisterFunction(
+            xll,
+            StringFormat("xl_%s_object_update_meta_data", ns.c_str()),
+            StringFormat("%s%s%s", nsReg.c_str(), m_sep, regFunc.c_str()),
+            nsReg,
+            args,
+            "Updates the meta_data of an object",
             help);
     }
 
@@ -1514,6 +1562,48 @@ XLOPER* ExcelService::ObjectPut(XLOPER* baseName, XLOPER* handle, XLOPER* names,
     return xloperOutput(xlo);
 
 }
+
+XLOPER* ExcelService::ObjectUpdateMetaData(XLOPER* baseName, XLOPER* handle, XLOPER* names,
+    XLOPER* v1, XLOPER* v2, XLOPER* v3, XLOPER* v4, XLOPER* v5,
+    XLOPER* v6, XLOPER* v7, XLOPER* v8, XLOPER* v9, XLOPER* v10,
+    XLOPER* v11, XLOPER* v12, XLOPER* v13, XLOPER* v14, XLOPER* v15,
+    XLOPER* v16, XLOPER* v17, XLOPER* v18, XLOPER* v19, XLOPER* v20,
+    XLOPER* v21, XLOPER* v22, XLOPER* v23, XLOPER* v24, XLOPER* v25)
+{
+    XLOPER* xlo = NULL;
+
+    try
+    {
+        Value output = spi::ObjectUpdateMetaData(
+            xloperToValue(handle),
+            xloperToValue(names),
+            xloperToValue(v1), xloperToValue(v2), xloperToValue(v3),
+            xloperToValue(v4), xloperToValue(v5), xloperToValue(v6),
+            xloperToValue(v7), xloperToValue(v8), xloperToValue(v9),
+            xloperToValue(v10), xloperToValue(v11), xloperToValue(v12),
+            xloperToValue(v13), xloperToValue(v14), xloperToValue(v15),
+            xloperToValue(v16), xloperToValue(v17), xloperToValue(v18),
+            xloperToValue(v19), xloperToValue(v20), xloperToValue(v21),
+            xloperToValue(v22), xloperToValue(v23), xloperToValue(v24),
+            xloperToValue(v25),
+            getInputContext());
+
+        xlo = xloperMakeFromValue(output, false, 1,
+            xloperToValue(baseName), mandatoryBaseName());
+    }
+    catch (ExcelInputError&)
+    {
+        return xloperInputError();
+    }
+    catch (std::exception& e)
+    {
+        return ErrorHandler(e.what());
+    }
+    return xloperOutput(xlo);
+
+}
+
+
 
 XLOPER* ExcelService::ObjectToMap(XLOPER* baseName, XLOPER* handle)
 {
