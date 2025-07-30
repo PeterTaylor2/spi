@@ -177,6 +177,9 @@ private:
     ObjectWrapperCache& operator =(const ObjectWrapperCache&);
 };
 
+/* extracts the date time part from the standard objectId */
+DateTime ObjectIdDateTime(const std::string& objectId);
+
 SPI_END_NAMESPACE
 
 

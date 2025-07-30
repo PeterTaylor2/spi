@@ -690,6 +690,28 @@ Value ObjectGet(const Object* obj, const char* name)
     return value;
 }
 
+DateTime ObjectIdDateTime(const std::string& objectId)
+{
+    const size_t lenDateTime = 10 + 8 + 1; // YYYY:MM:DD HH:MM:SS
+
+    size_t size = objectId.size();
+    if (size >= lenDateTime)
+    {
+        const std::string& dtPart = objectId.substr(size - lenDateTime, lenDateTime);
+        try
+        {
+            DateTime dt = DateTime::FromString(dtPart);
+            return dt;
+        }
+        catch (...)
+        {
+            // ignore failures
+        }
+    }
+    
+    return DateTime(); // don't throw an exception
+}
+
 ObjectWrapperCache::ObjectWrapperCache(const char* name)
     :
     m_name(!name ? "(NULL)" : name),
