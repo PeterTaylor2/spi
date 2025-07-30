@@ -96,6 +96,8 @@ namespace
             return "BOOL";
         case Value::DATE:
             return "DATE";
+        case Value::DATETIME:
+            return "DATETIME";
         case Value::MAP:
         case Value::OBJECT:
             return "OBJECT";

@@ -739,6 +739,11 @@ public:
                             xm->SetValue(nm, context->ValueToDouble(value, true));
                             continue;
                         }
+                        else if (dataType == "DATETIME")
+                        {
+                            xm->SetValue(nm, context->ValueToDateTime(value, true));
+                            continue;
+                        }
                         else if (dataType == "DATE[]")
                         {
                             xm->SetValue(nm, context->ValueToDateVector(value, true));
@@ -747,6 +752,11 @@ public:
                         else if (dataType == "DOUBLE[]")
                         {
                             xm->SetValue(nm, context->ValueToDoubleVector(value, true));
+                            continue;
+                        }                        
+                        else if (dataType == "DATETIME[]")
+                        {
+                            xm->SetValue(nm, context->ValueToDateTime(value, true));
                             continue;
                         }
                         break;

@@ -900,6 +900,10 @@ static Value ObjectMapGet(
         {
             return Value(value.getDouble());
         }
+        else if (dataType == "DATETIME")
+        {
+            return Value(value.getDateTime());
+        }
         else if (dataType == "DATE[]")
         {
             return Value(value.getDateVector());
@@ -907,6 +911,10 @@ static Value ObjectMapGet(
         else if (dataType == "DOUBLE[]")
         {
             return Value(value.getDoubleVector());
+        }
+        else if (dataType == "DATETIME[]")
+        {
+            return Value(value.getDateTimeVector());
         }
         break;
     case 'S':
