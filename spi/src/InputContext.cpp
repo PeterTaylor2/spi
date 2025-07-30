@@ -1148,6 +1148,68 @@ Value ObjectPut(
     return Value(modifiedObject);
 }
 
+Value ObjectUpdateMetaData(
+    const Value& objectHandle,
+    const Value& namesValue,
+    const Value& v1,
+    const Value& v2,
+    const Value& v3,
+    const Value& v4,
+    const Value& v5,
+    const Value& v6,
+    const Value& v7,
+    const Value& v8,
+    const Value& v9,
+    const Value& v10,
+    const Value& v11,
+    const Value& v12,
+    const Value& v13,
+    const Value& v14,
+    const Value& v15,
+    const Value& v16,
+    const Value& v17,
+    const Value& v18,
+    const Value& v19,
+    const Value& v20,
+    const Value& v21,
+    const Value& v22,
+    const Value& v23,
+    const Value& v24,
+    const Value& v25,
+    const InputContext* context)
+{
+    ObjectConstSP object = context->ValueToObject(objectHandle, nullptr, true);
+
+    Value values[25] = { v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14,
+        v15, v16, v17, v18, v19, v20, v21, v22, v23, v24, v25 };
+
+    std::vector<std::string> names = namesValue.getStringVector(true);
+
+    size_t numNames = names.size();
+
+    if (numNames > 25)
+        throw RuntimeError("More than 25 names provided");
+
+    std::vector<std::string> newNames;
+    std::vector<Value> newValues;
+
+    for (size_t i = 0; i < numNames; ++i)
+    {
+        if (names[i].length() == 0)
+        {
+            if (!values[i].isUndefined())
+                throw RuntimeError("No name for v%d", (int)i + 1);
+            continue;
+        }
+
+        newNames.push_back(names[i]);
+        newValues.push_back(values[i]);
+    }
+
+    ObjectUpdateMetaData(object, newNames, newValues, context);
+    return Value(object);
+}
+
 Value ObjectToMap(
     const Value& handle,
     const InputContext* context)

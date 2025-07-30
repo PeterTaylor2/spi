@@ -908,4 +908,40 @@ ObjectConstSP ObjectPut(
     return modifiedObject;
 }
 
+void ObjectUpdateMetaData(
+    const ObjectConstSP& obj,
+    const char* name,
+    const Value& value,
+    const InputContext* context)
+{
+    ObjectPut(obj, { name }, { value }, context);
+}
+
+void ObjectUpdateMetaData(
+    const ObjectConstSP& obj,
+    const std::vector<std::string>& names,
+    const std::vector<Value>& values,
+    const InputContext* context)
+{
+    if (!context)
+        context = InputContext::NoContext();
+
+    const MapSP& omd = obj->get_meta_data();
+
+    SPI_PRE_CONDITION(names.size() == values.size());
+
+    ObjectMap om(omd);
+    ObjectPutMap opm(&om, names, values, context);
+
+    const MapSP& combined = opm.ExportMap();
+
+    // so close - combined is the correct type but in the wrong place
+    // so we need to add one value at a time
+
+    for (const auto& name : combined->FieldNames())
+    {
+        omd->SetValue(name, combined->GetValue(name));
+    }
+}
+
 SPI_END_NAMESPACE

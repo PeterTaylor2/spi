@@ -67,19 +67,19 @@ ObjectConstSP ObjectPut(
     const std::vector<Value>& values,
     const InputContext* context = NULL);
 
-//class MapObject : public Object
-//{
-//public:
-//    MapObject(
-//        const std::vector<std::string>& names,
-//        const std::vector<Value>&       values,
-//        const InputContext*             context);
-//
-//    SPI_DECLARE_OBJECT_TYPE(MapObject);
-//
-//private:
-//    MapSP m_map;
-//};
+SPI_IMPORT
+void ObjectUpdateMetaData(
+    const ObjectConstSP& obj,
+    const char* name,
+    const Value& value,
+    const InputContext* context = NULL);
+
+SPI_IMPORT
+void ObjectUpdateMetaData(
+    const ObjectConstSP& obj,
+    const std::vector<std::string>& names,
+    const std::vector<Value>& values,
+    const InputContext* context = NULL);
 
 SPI_END_NAMESPACE
 

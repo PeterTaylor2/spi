@@ -391,6 +391,37 @@ Value ObjectPut(
     const InputContext* context);
 
 SPI_IMPORT
+Value ObjectUpdateMetaData(
+    const Value& objectHandle,
+    const Value& names,
+    const Value& v1,
+    const Value& v2,
+    const Value& v3,
+    const Value& v4,
+    const Value& v5,
+    const Value& v6,
+    const Value& v7,
+    const Value& v8,
+    const Value& v9,
+    const Value& v10,
+    const Value& v11,
+    const Value& v12,
+    const Value& v13,
+    const Value& v14,
+    const Value& v15,
+    const Value& v16,
+    const Value& v17,
+    const Value& v18,
+    const Value& v19,
+    const Value& v20,
+    const Value& v21,
+    const Value& v22,
+    const Value& v23,
+    const Value& v24,
+    const Value& v25,
+    const InputContext* context);
+
+SPI_IMPORT
 Value ObjectCount(
     const Value&        className,
     const InputContext* context);
