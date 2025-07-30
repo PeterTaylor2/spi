@@ -373,7 +373,7 @@ ObjectConstSP Service::object_from_file(const std::string& filename) const
     if (spi_util::StringStartsWith(filename, "http://") ||
         spi_util::StringStartsWith(filename, "file://"))
     {
-        const int timeout = 4000;
+        const int timeout = 10; // measured in seconds
         return object_from_url(share_this(this), filename, timeout);
     }
 #endif
