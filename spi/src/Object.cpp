@@ -363,6 +363,11 @@ const std::string& Object::get_object_id() const
     return m_object_id;
 }
 
+DateTime Object::get_timestamp() const
+{
+    return ObjectIdDateTime(m_object_id);
+}
+
 Value Object::to_value(const ObjectConstSP& o)
 {
     if (!o)

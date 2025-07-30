@@ -35,6 +35,7 @@
 #include "Declare.hpp"
 #include "RefCounter.hpp"
 #include "RuntimeError.hpp"
+#include "DateTime.hpp"
 #include <map>
 #include <vector>
 #include <string.h>
@@ -198,6 +199,7 @@ public:
 
     const MapSP& get_meta_data() const;
     const std::string& get_object_id() const;
+    DateTime get_timestamp() const; // derived from object_id
 
     static bool g_add_object_id_file;
     static bool g_add_object_id_string;
