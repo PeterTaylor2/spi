@@ -934,14 +934,7 @@ void ObjectUpdateMetaData(
     ObjectPutMap opm(&om, names, values, context);
 
     const MapSP& combined = opm.ExportMap();
-
-    // so close - combined is the correct type but in the wrong place
-    // so we need to add one value at a time
-
-    for (const auto& name : combined->FieldNames())
-    {
-        omd->SetValue(name, combined->GetValue(name));
-    }
+    obj->set_meta_data(combined);
 }
 
 SPI_END_NAMESPACE

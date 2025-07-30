@@ -547,6 +547,15 @@ const MapSP& Object::get_meta_data() const
     return m_meta_data;
 }
 
+void Object::set_meta_data(const MapSP& meta_data) const
+{
+    for (const auto& name : meta_data->FieldNames())
+    {
+        m_meta_data->SetValue(name, meta_data->GetValue(name));
+    }
+    clear_public_map();
+}
+
 int Object::get_id() const
 {
     return m_id;
