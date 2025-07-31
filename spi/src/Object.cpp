@@ -549,13 +549,21 @@ const MapSP& Object::get_meta_data() const
     return m_meta_data;
 }
 
-void Object::set_meta_data(const MapSP& meta_data) const
+void Object::update_meta_data(const MapConstSP& meta_data) const
 {
-    for (const auto& name : meta_data->FieldNames())
+    if (meta_data)
     {
-        m_meta_data->SetValue(name, meta_data->GetValue(name));
+        for (const auto& name : meta_data->FieldNames())
+        {
+            m_meta_data->SetValue(name, meta_data->GetValue(name));
+        }
+        if (m_meta_data->FieldNames().size() > 0)
+        {
+            m_meta_data->SetClassName("Map");
+        }
+
+        clear_public_map();
     }
-    clear_public_map();
 }
 
 int Object::get_id() const

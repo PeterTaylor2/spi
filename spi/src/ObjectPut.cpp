@@ -935,10 +935,7 @@ void ObjectUpdateMetaData(
 
     const MapSP& combined = opm.ExportMap();
 
-    if (combined->FieldNames().size() > 0 && combined->ClassName().empty())
-        combined->SetClassName("Map");
-
-    obj->set_meta_data(combined);
+    obj->update_meta_data(combined);
 }
 
 SPI_END_NAMESPACE

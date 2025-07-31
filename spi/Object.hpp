@@ -198,7 +198,7 @@ public:
     virtual void* get_py_object() const;
 
     const MapSP& get_meta_data() const;
-    void set_meta_data(const MapSP& meta_data) const;
+    void update_meta_data(const MapConstSP& meta_data) const;
     const std::string& get_object_id() const;
     DateTime get_timestamp() const; // derived from object_id
 
