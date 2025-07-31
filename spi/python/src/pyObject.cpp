@@ -34,6 +34,7 @@
 #include <spi/python/pyUtil.hpp>
 #include <spi/python/pyOutput.hpp>
 #include <spi/python/pyService.hpp>
+#include <spi/Map.hpp>
 #include <spi/Value.hpp>
 #include <spi/Object.hpp>
 #include <spi/ObjectPut.hpp>
@@ -236,13 +237,21 @@ PyObject* spi_py_object_put (PyObject* self, PyObject* args)
     }
 }
 
-PyObject* spi_py_object_update_meta_data(PyObject* self, PyObject* args)
+PyObject* spi_py_object_set_meta_data(SpiPyObject* self, PyObject* args)
 {
     try
     {
-        spi::PythonService* svc = spi::PythonService::CommonService();
+        std::vector<spi::Value> inputs = spi::pyTupleToValueVector(
+            "Object.set_meta_data", 2, args); 
 
-        return svc->ObjectUpdateMetaData(args);
+        const std::string& name = inputs[0].getString();
+
+        self->obj->get_meta_data()->SetValue(name, inputs[1]);
+        self->obj->get_meta_data()->SetClassName("Map"); // just in case
+
+        PyObject* out = (PyObject*)self; // support a fluent interface
+        Py_INCREF(out);
+        return out;
     }
     catch (spi::PyException&)
     {
@@ -567,6 +576,10 @@ PyTypeObject* SpiPyObjectType(/*const char* ns*/)
         {"sha_256", (PyCFunction)spi_py_object_sha_256, METH_NOARGS,
             "sha_256(self)\n\n"
             "Return the SHA256 hash for an object as a string."
+        },
+        {"set_meta_data", (PyCFunction)spi_py_object_set_meta_data, METH_VARARGS,
+            "object_set_meta_data(self, names, value)\n\n"
+            "Adds one item to the object's meta data. Returns the object so you can repeat the call many times in the same statement (a so-called fluent interface)."
         },
         { "register_class", (PyCFunction)spi_py_object_register_class,
             METH_VARARGS | METH_STATIC,

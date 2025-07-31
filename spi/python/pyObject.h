@@ -73,7 +73,7 @@ extern "C"
     PyObject* spi_py_object_put(PyObject* self, PyObject* args);
 
     SPI_PY_IMPORT
-    PyObject* spi_py_object_update_meta_data(PyObject* self, PyObject* args);
+    PyObject* spi_py_object_set_meta_data(SpiPyObject* self, PyObject* args);
 
     SPI_PY_IMPORT
     PyObject* spi_py_object_copy(PyObject* pyo);
