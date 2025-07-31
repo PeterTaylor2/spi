@@ -273,6 +273,7 @@ ExcelService::writeXllSourceFile(const std::string& dirname) const
                 << " \"\","
                 << " \"\","
                 << " \"\","
+                << " \"\","
                 << " \"\"";
         }
         else
@@ -281,6 +282,7 @@ ExcelService::writeXllSourceFile(const std::string& dirname) const
                 << " \"" << m_options.objectFromString << "\","
                 << " \"" << m_options.objectGet << "\","
                 << " \"" << m_options.objectPut << "\","
+                << " \"\"," // objectUpdateMetaData not yet supported
                 << "\n        "
                 << "\"" << m_options.objectToFile << "\","
                 << " \"" << m_options.objectFromFile << "\","
