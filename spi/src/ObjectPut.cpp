@@ -914,7 +914,10 @@ void ObjectUpdateMetaData(
     const Value& value,
     const InputContext* context)
 {
-    ObjectUpdateMetaData(obj, { name }, { value }, context);
+    std::vector<std::string> names(1, name);
+    std::vector<Value> values(1, value);
+
+    ObjectUpdateMetaData(obj, names, values, context);
 }
 
 void ObjectUpdateMetaData(
