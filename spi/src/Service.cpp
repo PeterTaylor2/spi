@@ -32,6 +32,7 @@
 #include "InputValues.hpp"
 #include "StringUtil.hpp"
 #include "Session.hpp"
+#include "ObjectPut.hpp"
 
 #ifndef SPI_STATIC
 #include "ObjectURL.hpp"
@@ -364,7 +365,16 @@ ObjectConstSP Service::object_from_string(
     std::istringstream iss(objectString);
 
     // strings are always in text format so we won't try binary formats
-    return object_from_data(objectString, std::string(), false);
+    ObjectConstSP obj = object_from_data(objectString, std::string(), false);
+
+    DateTime timestamp = obj->get_timestamp(); // from object_id if it exists
+    if (!timestamp)
+        timestamp = DateTime::Now(true); // universal time
+
+    ObjectUpdateMetaData(obj, "timestamp", timestamp);
+
+    return obj;
+
 }
 
 ObjectConstSP Service::object_from_file(const std::string& filename) const
