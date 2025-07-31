@@ -171,14 +171,15 @@ public:
     XLOPER* ClearTimings();
     XLOPER* GetTimings();
 
-    XLOPER* ObjectToString(XLOPER* handle, XLOPER* format, XLOPER* options, XLOPER* hMetaData);
+    XLOPER* ObjectToString(XLOPER* handle, XLOPER* format, XLOPER* options,
+        XLOPER* hMetaData, XLOPER* mergeMetaData);
     XLOPER* ObjectFromString(XLOPER* baseName, XLOPER* strings);
 #if SPI_XL_VERSION >= 12
     XLOPER* ObjectFromString(XLOPER* baseName, XLOPER12* str);
 #endif
 
     XLOPER* ObjectToFile(XLOPER* handle, XLOPER* fileName, XLOPER* format,
-        XLOPER* options, XLOPER* hMetaData);
+        XLOPER* options, XLOPER* hMetaData, XLOPER* mergeMetaData);
     XLOPER* ObjectFromFile(XLOPER* baseName, XLOPER* fileName);
     XLOPER* ObjectFromURL(XLOPER* baseName, XLOPER* url, XLOPER* timeout,
         XLOPER* names, 

@@ -707,6 +707,7 @@ Value ObjectToString(
     const Value&        in_format,
     const Value&        in_options,
     const Value&        metaDataHandle,
+    const Value&        in_mergeMetaData,
     const InputContext* context,
     bool splitString)
 {
@@ -715,8 +716,9 @@ Value ObjectToString(
     std::string   options = context->ValueToString(in_options, true);
     ObjectConstSP oMeta = context->ValueToObject(metaDataHandle, &MapObject::object_type, true);
     MapConstSP metaData = oMeta ? MapObject::Coerce(oMeta)->get_inner() : MapConstSP();
+    bool mergeMetaData  = context->ValueToBool(in_mergeMetaData, true, false);
 
-    std::string str = object->to_string(format.c_str(), options.c_str(), metaData);
+    std::string str = object->to_string(format.c_str(), options.c_str(), metaData, mergeMetaData);
 
     if (!splitString)
         return Value(str);
@@ -753,6 +755,7 @@ Value ObjectToFile(
     const Value&        in_format,
     const Value&        in_options,
     const Value&        metaDataHandle,
+    const Value&        in_mergeMetaData,
     const InputContext* context)
 {
     ObjectConstSP object = context->ValueToObject(objectHandle);
@@ -761,8 +764,9 @@ Value ObjectToFile(
     std::string options  = context->ValueToString(in_options, true);
     ObjectConstSP oMeta  = context->ValueToObject(metaDataHandle, &MapObject::object_type, true);
     MapConstSP metaData  = oMeta ? MapObject::Coerce(oMeta)->get_inner() : MapConstSP();
+    bool mergeMetaData   = context->ValueToBool(in_mergeMetaData, true, false);
 
-    object->to_file(fileName.c_str(), format.c_str(), options.c_str(), metaData);
+    object->to_file(fileName.c_str(), format.c_str(), options.c_str(), metaData, mergeMetaData);
 
     return Value(fileName);
 }

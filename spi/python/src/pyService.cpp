@@ -753,10 +753,10 @@ PyObject* PythonService::ObjectToString(PyObject* self, PyObject* args)
             throw std::runtime_error("Object.to_string: self is None");
 
         std::vector<Value> inputs = pyTupleToValueVector(
-            "ObjectToString", 3, args);
+            "ObjectToString", 4, args);
 
         Value output = spi::ObjectToString(obj, inputs[0], inputs[1], inputs[2],
-            GetInputContext());
+            inputs[3], GetInputContext());
 
         return pyoFromValue(output);
     }
@@ -779,10 +779,10 @@ PyObject* PythonService::ObjectToFile(PyObject* self, PyObject* args)
             throw std::runtime_error("Object.to_file: self is None");
 
         std::vector<Value> inputs = pyTupleToValueVector(
-            "ObjectToFile", 4, args);
+            "ObjectToFile", 5, args);
 
         Value output = spi::ObjectToFile(obj, inputs[0], inputs[1], inputs[2], inputs[3],
-            GetInputContext());
+            inputs[4], GetInputContext());
 
         return pyoFromValue(output);
     }

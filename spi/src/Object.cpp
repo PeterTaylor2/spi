@@ -408,7 +408,8 @@ bool Object::to_stream(
     const char* format,
     const char* options,
     const MapConstSP& metaData,
-    bool addObjectId) const
+    bool addObjectId,
+    bool mergeMetaData) const
 {
     std::string key = format ? std::string(format) : std::string();
     IObjectStreamerSP streamer = IObjectStreamer::MakeWriter(key, options);
@@ -423,9 +424,10 @@ bool Object::to_stream(
 
     MapConstSP metaDataStreamed;
 
-    // we need to preserve existing meta_data (if it has contents)
-    // we cannot use update_meta_data since we don't want to amend Object
-    if (m_meta_data->FieldNames().size() > 0)
+    // mergeMetaData says that we we need to preserve existing meta_data
+    // (if it has contents), but we cnnot use update_meta_data since we don't
+    // want to amend Object
+    if (mergeMetaData && m_meta_data->FieldNames().size() > 0)
     {
         MapSP combined(new Map("Map"));
         for (const auto& name : m_meta_data->FieldNames())
@@ -455,10 +457,11 @@ bool Object::to_stream(
 std::string Object::to_string(
     const char* format,
     const char* options,
-    const MapConstSP& metaData) const
+    const MapConstSP& metaData,
+    bool mergeMetaData) const
 {
     std::ostringstream oss;
-    bool isBinary = to_stream(oss, format, options, metaData, g_add_object_id_string);
+    bool isBinary = to_stream(oss, format, options, metaData, g_add_object_id_string, mergeMetaData);
 
     if (isBinary)
         throw RuntimeError("Object::to_string: Format requested is binary");
@@ -470,7 +473,8 @@ void Object::to_file(
     const char* filename,
     const char* format,
     const char* options,
-    const MapConstSP& metaData) const
+    const MapConstSP& metaData,
+    bool mergeMetaData) const
 {
     // we stream in memory and then write the file afterwards in one hit
     //
@@ -480,7 +484,7 @@ void Object::to_file(
     // also on slow file systems it is best to keep the file open for
     // as short a time as possible
     std::stringstream oss;
-    bool isBinary = to_stream(oss, format, options, metaData, g_add_object_id_file);
+    bool isBinary = to_stream(oss, format, options, metaData, g_add_object_id_file, mergeMetaData);
 
     std::ios_base::openmode mode = std::ios_base::out;
     if (isBinary)

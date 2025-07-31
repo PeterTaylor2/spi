@@ -268,6 +268,8 @@ void ExcelService::RegisterStandardFunctions(const std::string& xll,
         help.push_back("Formatting options - format specific");
         args.push_back("metaData?");
         help.push_back("meta data for the object");
+        args.push_back("mergeMetaData?");
+        help.push_back("whether to merge the existing meta data when creating the string");
         RegisterFunction(
             xll,
             StringFormat("xl_%s_object_to_string", ns.c_str()),
@@ -425,6 +427,8 @@ void ExcelService::RegisterStandardFunctions(const std::string& xll,
         help.push_back("Formatting options - format specific");
         args.push_back("metaData?");
         help.push_back("meta data for the object");
+        args.push_back("mergeMetaData?");
+        help.push_back("whether to merge the existing meta data when writing to file");
         RegisterFunction(
             xll,
             StringFormat("xl_%s_object_to_file", ns.c_str()),
@@ -1291,7 +1295,8 @@ XLOPER* ExcelService::ObjectToString(
     XLOPER* xl_handle,
     XLOPER* xl_format,
     XLOPER* xl_options,
-    XLOPER* xl_hMetaData)
+    XLOPER* xl_hMetaData,
+    XLOPER* xl_mergeMetaData)
 {
     XLOPER *xlo = NULL;
 
@@ -1302,6 +1307,7 @@ XLOPER* ExcelService::ObjectToString(
             xloperToValue(xl_format),
             xloperToValue(xl_options),
             xloperToValue(xl_hMetaData),
+            xloperToValue(xl_mergeMetaData),
             getInputContext(),
             true);
         xlo = xloperMakeFromValue(output, true);
@@ -1377,7 +1383,8 @@ XLOPER* ExcelService::ObjectToFile(
     XLOPER* xl_fileName,
     XLOPER* xl_format,
     XLOPER* xl_options,
-    XLOPER* xl_hMetaData)
+    XLOPER* xl_hMetaData,
+    XLOPER* xl_mergeMetaData)
 {
     XLOPER *xlo = NULL;
 
@@ -1389,6 +1396,7 @@ XLOPER* ExcelService::ObjectToFile(
             xloperToValue(xl_format),
             xloperToValue(xl_options),
             xloperToValue(xl_hMetaData),
+            xloperToValue(xl_mergeMetaData),
             getInputContext());
         xlo = xloperMakeFromValue(output);
     }

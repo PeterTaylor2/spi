@@ -165,14 +165,16 @@ public:
         const char* format = "",
         const char* options = "",
         const MapConstSP& metaData = MapConstSP(),
-        bool addObjectId = false) const;
+        bool addObjectId = false,
+        bool mergeMetaData = false) const;
 
     // converts object to string for the given format
     // fails if the format is a binary format
     std::string to_string(
         const char* format = "",
         const char* options = "",
-        const MapConstSP& metaData = MapConstSP()) const;
+        const MapConstSP& metaData = MapConstSP(),
+        bool mergeMetaData = false) const;
 
     // writes object to file for the given format
     // for binary formats, this is done in binary format without a trailing new line
@@ -180,7 +182,8 @@ public:
     void to_file(const char* filename,
         const char* format = "",
         const char* options = "",
-        const MapConstSP& metaData = MapConstSP()) const;
+        const MapConstSP& metaData = MapConstSP(),
+        bool mergeMetaData = false) const;
 
     // these two currently needed for .NET only
     // delete if possible

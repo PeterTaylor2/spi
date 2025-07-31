@@ -300,6 +300,7 @@ Value ObjectToString(
     const Value&        format,
     const Value&        options,
     const Value&        metaDataHandle,
+    const Value&        mergeMetaData,
     const InputContext* context,
     bool splitString=false);
 
@@ -317,6 +318,7 @@ Value ObjectToFile(
     const Value&        format,
     const Value&        options,
     const Value&        metaDataHandle,
+    const Value&        mergeMetaData,
     const InputContext* context);
 
 SPI_IMPORT

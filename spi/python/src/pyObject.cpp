@@ -535,11 +535,11 @@ PyTypeObject* SpiPyObjectType(/*const char* ns*/)
     };
     static PyMethodDef methods[] = {
         {"to_string", (PyCFunction)spi_py_object_to_string, METH_VARARGS,
-            "to_string(self, format=None, options=None, meta_data=None)\n\n"
+            "to_string(self, format=None, options=None, meta_data=None, merge_meta_data=False)\n\n"
             "Return the serialised object as a single string."
         },
         {"to_file", (PyCFunction)spi_py_object_to_file, METH_VARARGS,
-            "to_file(self, filename, format=None, options=None, meta_data=None)\n\n"
+            "to_file(self, filename, format=None, options=None, meta_data=None, merge_meta_data=False)\n\n"
             "Write the serialised object to file."
         },
         {"from_string", (PyCFunction)spi_py_object_from_string,
