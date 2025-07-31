@@ -914,7 +914,7 @@ void ObjectUpdateMetaData(
     const Value& value,
     const InputContext* context)
 {
-    ObjectPut(obj, { name }, { value }, context);
+    ObjectUpdateMetaData(obj, { name }, { value }, context);
 }
 
 void ObjectUpdateMetaData(
@@ -934,6 +934,10 @@ void ObjectUpdateMetaData(
     ObjectPutMap opm(&om, names, values, context);
 
     const MapSP& combined = opm.ExportMap();
+
+    if (combined->FieldNames().size() > 0 && combined->ClassName().empty())
+        combined->SetClassName("Map");
+
     obj->set_meta_data(combined);
 }
 
