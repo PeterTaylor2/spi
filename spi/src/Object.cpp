@@ -420,7 +420,9 @@ bool Object::to_stream(
         if (!isBinary)
             ostr << '\n';
     }
-    streamer->to_stream(ostr, this, metaData, addObjectId);
+    const MapConstSP& combinedMetaData = Map::Combine(m_meta_data, metaData);
+
+    streamer->to_stream(ostr, this, combinedMetaData, addObjectId);
 
     return isBinary;
 }
