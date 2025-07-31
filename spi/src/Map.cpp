@@ -282,10 +282,18 @@ size_t Map::NumFields() const
 MapConstSP Map::Combine(const MapConstSP& one, const MapConstSP& two)
 {
     if (!two)
+    {
+        if (!one || one->m_fieldNames.size() == 0)
+            return MapConstSP();
         return one;
+    }
 
     if (!one)
+    {
+        if (two->m_fieldNames.size() == 0)
+            return MapConstSP();
         return two;
+    }
 
     if (one->m_className != two->m_className ||
         one->m_ref != two->m_ref ||
@@ -307,6 +315,9 @@ MapConstSP Map::Combine(const MapConstSP& one, const MapConstSP& two)
     {
         combined->SetValue(name, two->GetValue(name));
     }
+
+    if (combined->m_fieldNames.size() == 0)
+        return MapConstSP();
 
     return combined;
 }
