@@ -150,9 +150,6 @@ public:
      */
     size_t NumFields() const;
 
-    // combines two named maps - basic definitions must agree (className, ref, permissive, type)
-    static MapConstSP Combine(const MapConstSP& one, const MapConstSP& two);
-
 private:
 
     typedef std::/*tr1::unordered_*/map<std::string, Value> DictType;

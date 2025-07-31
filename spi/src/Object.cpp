@@ -420,9 +420,34 @@ bool Object::to_stream(
         if (!isBinary)
             ostr << '\n';
     }
-    const MapConstSP& combinedMetaData = Map::Combine(m_meta_data, metaData);
 
-    streamer->to_stream(ostr, this, combinedMetaData, addObjectId);
+    MapConstSP metaDataStreamed;
+
+    // we need to preserve existing meta_data (if it has contents)
+    // we cannot use update_meta_data since we don't want to amend Object
+    if (m_meta_data->FieldNames().size() > 0)
+    {
+        MapSP combined(new Map("Map"));
+        for (const auto& name : m_meta_data->FieldNames())
+        {
+            combined->SetValue(name, m_meta_data->GetValue(name));
+        }
+
+        if (metaData)
+        {
+            for (const auto& name : metaData->FieldNames())
+            {
+                combined->SetValue(name, m_meta_data->GetValue(name));
+            }
+        }
+        metaDataStreamed = combined;
+    }
+    else
+    {
+        metaDataStreamed = metaData;
+    }
+
+    streamer->to_stream(ostr, this, metaDataStreamed, addObjectId);
 
     return isBinary;
 }
