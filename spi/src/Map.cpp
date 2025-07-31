@@ -279,6 +279,38 @@ size_t Map::NumFields() const
     return m_fieldNames.size();
 }
 
+MapConstSP Map::Combine(const MapConstSP& one, const MapConstSP& two)
+{
+    if (!two)
+        return one;
+
+    if (!one)
+        return two;
+
+    if (one->m_className != two->m_className ||
+        one->m_ref != two->m_ref ||
+        one->m_permissive != two->m_permissive ||
+        one->m_type != Map::NAMED ||
+        two->m_type != Map::NAMED)
+    {
+        SPI_THROW_RUNTIME_ERROR("Cannot combine two maps which do not have the same basic properties");
+    }
+
+    MapSP combined(new Map(one->m_className.c_str(), one->m_ref, one->m_permissive));
+
+    for (const auto& name : one->m_fieldNames)
+    {
+        combined->SetValue(name, one->GetValue(name));
+    }
+
+    for (const auto& name : two->m_fieldNames)
+    {
+        combined->SetValue(name, two->GetValue(name));
+    }
+
+    return combined;
+}
+
 
 
 SPI_END_NAMESPACE
