@@ -753,7 +753,7 @@ public:
                         {
                             xm->SetValue(nm, context->ValueToDoubleVector(value, true));
                             continue;
-                        }                        
+                        }
                         else if (dataType == "DATETIME[]")
                         {
                             xm->SetValue(nm, context->ValueToDateTime(value, true));
