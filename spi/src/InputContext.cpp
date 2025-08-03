@@ -1253,6 +1253,9 @@ Value ObjectCopy(
         copy = svc->object_from_map(&om, ObjectRefCacheSP());
     }
 
+    // the copy must also copy the meta data which is lost at this stage
+    copy->update_meta_data(object->get_meta_data());
+
     if (!copy)
         SPI_THROW_RUNTIME_ERROR("Could not copy object");
 
