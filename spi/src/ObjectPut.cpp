@@ -889,7 +889,9 @@ ObjectConstSP ObjectPut(
         attributes = obj->get_attributes();
     }
 
-    if (!ot->can_put())
+    bool meta_data_only = names.size() == 1 && names[0] == "meta_data";
+
+    if (!ot->can_put() && !meta_data_only)
         throw RuntimeError("Object of type '%s' does not support ObjectPut",
             ot->get_class_name());
 
