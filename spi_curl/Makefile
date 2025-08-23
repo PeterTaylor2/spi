@@ -19,10 +19,10 @@ U_NO_BUILD=1
 else
 U_CFLAGS+=-DWIN32
 U_CFLAGS+=-DUSE_WINDOWS_SSPI -DCMAKE_USE_WINSSL
+U_CFLAGS+=-DHAVE_ZLIB_H -DHAVE_ZLIB -DHAVE_LIBZ -I$(U_SPI_HOME)/zlib
+U_DEP_LIBS+=$(U_SPI_HOME)/zlib/$(G_BUILD_DIR)/zlib.lib
+U_LIBS+=$(U_DEP_LIBS)
 endif
-
-# if we wanted to include ZLIB support we could do it as follows:
-# U_CFLAGS+=-DHAVE_ZLIB_H -DHAVE_ZLIB -DHAVE_LIBZ -I$(U_SPI_HOME)/zlib
 
 vpath %.c $(U_SRC_DIR)/vtls $(U_SRC_DIR)/vauth
 
