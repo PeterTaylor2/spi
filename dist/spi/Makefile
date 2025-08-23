@@ -6,6 +6,7 @@ include $(U_SPI_HOME)/makefiles/config/config.mk
 
 BUILD_DIRS=\
 spi_boost/lib\
+zlib\
 spi_curl\
 spi_util\
 dll\

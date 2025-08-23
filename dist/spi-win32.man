@@ -70,3 +70,4 @@ xltest/xltest.guid
 replay/dll/replay-dll.guid
 replay/python/replay-python.guid
 replay/python/replay-python-install.guid
+zlib/zlib.guid
