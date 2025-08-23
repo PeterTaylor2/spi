@@ -1,8 +1,21 @@
-# actually we will incorporate zlib into spi_util
-# hence if you actually do run make in here we will build spi_util instead
-
 target:
 
-%:
-	$(MAKE) -C ../spi_util $@
+U_SPI_HOME=..
+
+include $(U_SPI_HOME)/makefiles/config/config.mk
+
+U_SRC_DIR=src
+U_INC_DIR=.
+U_INCLUDES=-I$(U_SRC_DIR)
+U_TARGET=zlib
+U_CFLAGS=
+U_FORCE_REBUILD=Makefile 
+U_EXCLUDE_OBJS=\
+gzclose.$(G_OBJ)\
+gzlib.$(G_OBJ)\
+gzread.$(G_OBJ)\
+gzwrite.$(G_OBJ)
+
+include $(U_SPI_HOME)/makefiles/build/lib.mk
+
 
