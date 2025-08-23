@@ -202,7 +202,8 @@ void URLReadContentsData(
     int timeout,
     const std::string& post,
     const std::vector<std::string>& vHeaders,
-    bool authenticate)
+    bool authenticate,
+    bool compress)
 {
     SPI_UTIL_PRE_CONDITION(timeout != 0);
 
@@ -238,6 +239,10 @@ void URLReadContentsData(
         {
             headers.Append(vHeaders[i]);
         }
+        if (compress)
+        {
+            headers.Append("Accept-Encoding: gzip");
+        }
         errorHandler(curl_easy_setopt(handle, CURLOPT_HTTPHEADER, headers.slist()));
     }
 
@@ -264,6 +269,11 @@ void URLReadContentsData(
     errorHandler(curl_easy_setopt(handle, CURLOPT_HEADERFUNCTION, header_callback));
     errorHandler(curl_easy_setopt(handle, CURLOPT_HEADERDATA, &data));
 
+    if (compress)
+    {
+        curl_easy_setopt(handle, CURLOPT_ACCEPT_ENCODING, "gzip");
+    }
+
     if (timeout > 0)
         errorHandler(curl_easy_setopt(handle, CURLOPT_TIMEOUT, timeout));
     errorHandler(curl_easy_perform(handle));
@@ -279,14 +289,15 @@ std::string URLReadContents(
     int timeout,
     const std::string& post,
     const std::vector<std::string>& headers,
-    bool authenticate)
+    bool authenticate,
+    bool compress)
 {
     if (timeout == 0)
         return std::string();
 
     Data data;
 
-    URLReadContentsData(data, url, noProxy, timeout, post, headers, authenticate);
+    URLReadContentsData(data, url, noProxy, timeout, post, headers, authenticate, compress);
 
     return data.contents();
 }
@@ -297,7 +308,8 @@ URLInfoConstSP URLReadInfo(
     int timeout,
     const std::string& post,
     const std::vector<std::string>& headers,
-    bool authenticate)
+    bool authenticate,
+    bool compress)
 {
     if (timeout == 0)
     {
@@ -307,7 +319,7 @@ URLInfoConstSP URLReadInfo(
 
     Data data;
 
-    URLReadContentsData(data, url, noProxy, timeout, post, headers, authenticate);
+    URLReadContentsData(data, url, noProxy, timeout, post, headers, authenticate, compress);
 
     return URLInfoConstSP(new URLInfo(data.responseCode, data.contents(), data.headers));
 }
@@ -318,7 +330,8 @@ JSONMapConstSP URLReadContentsJSON(
     int timeout,
     const JSONMapConstSP& jsonPost,
     const std::vector<std::string>& headers,
-    bool authenticate)
+    bool authenticate,
+    bool compress)
 {
     if (timeout == 0)
         return JSONMapConstSP();
@@ -331,7 +344,7 @@ JSONMapConstSP URLReadContentsJSON(
         post = JSONValueToString(JSONValue(jsonPost));
     }
 
-    URLReadContentsData(data, url, noProxy, timeout, post, headers, authenticate); 
+    URLReadContentsData(data, url, noProxy, timeout, post, headers, authenticate, compress); 
 
     JSONValue jv = JSONParseValue(data.oss);
     return jv.GetMap();

@@ -94,7 +94,8 @@ std::string URLReadContents(
     int timeout,
     const std::string& post = std::string(),
     const std::vector<std::string>& headers = std::vector<std::string>(),
-    bool authenticate = false);
+    bool authenticate = false,
+    bool compress = false);
 
 /**
  * Reads the entire contents for the given URL.
@@ -118,7 +119,8 @@ URLInfoConstSP URLReadInfo(
     int timeout,
     const std::string& post = std::string(),
     const std::vector<std::string>& headers = std::vector<std::string>(),
-    bool authenticate = false);
+    bool authenticate = false,
+    bool compress = false);
 
 /**
  * Reads the entire contents for the given URL.
@@ -141,7 +143,8 @@ JSONMapConstSP URLReadContentsJSON(
     int timeout,
     const JSONMapConstSP& post = JSONMapConstSP(),
     const std::vector<std::string>& headers = std::vector<std::string>(),
-    bool authenticate = false);
+    bool authenticate = false,
+    bool compress = false);
 
 SPI_UTIL_IMPORT
 std::string URLEscape(const std::string& url);
