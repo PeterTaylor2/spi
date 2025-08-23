@@ -110,7 +110,14 @@ std::string read_url(const std::string& url,
         }
     }
 
-    std::string contents = spi_util::URLReadContents(url, true, timeout);
+    std::string post;
+    std::vector<std::string> headers;
+    bool authenticate = false;
+    bool compress = true;
+
+    std::string contents = spi_util::URLReadContents(url, true, timeout,
+        post, headers, authenticate, compress);
+
     if (contents.length() > 0 && theCache)
     {
         theCache->add(url, contents);
