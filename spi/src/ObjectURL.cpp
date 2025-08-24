@@ -165,28 +165,6 @@ size_t url_cache_size()
     return 0;
 }
 
-ObjectConstSP object_from_url(
-    const ServiceConstSP& service,
-    const std::string& url,
-    int timeout,
-    int cacheAge)
-{
-    std::string contents = read_url(url, timeout, cacheAge);
-    try
-    {
-        if (contents.empty())
-            throw RuntimeError("%s: No contents from reading URL %s with "
-                "timeout %d", __FUNCTION__, url.c_str(), timeout);
-
-        return service->object_from_string(contents);
-    }
-    catch (...)
-    {
-        url_cache_clear_entry(url);
-        throw;
-    }
-}
-
 Value ObjectFromURL(
     const ServiceSP& service,
     const Value& in_url,
@@ -267,7 +245,7 @@ Value ObjectFromURL(
         }
 
         url = oss.str();
-        ObjectConstSP obj = object_from_url(service, url, timeout, cacheAge);
+        ObjectConstSP obj = service->object_from_url(url, timeout, cacheAge);
 
         return Value(obj);
     }

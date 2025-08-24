@@ -93,6 +93,10 @@ public:
     ObjectConstSP object_from_string(const std::string& objectString) const;
     ObjectConstSP object_from_file(const std::string& filename) const;
 
+    ObjectConstSP object_from_url(const std::string& url,
+        int timeout = 0,
+        int cacheAge = 0) const;
+
     ObjectConstSP object_coerce(const std::string& className,
         const Value& value,
         const InputContext* context=0);

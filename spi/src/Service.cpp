@@ -384,7 +384,7 @@ ObjectConstSP Service::object_from_file(const std::string& filename) const
         spi_util::StringStartsWith(filename, "file://"))
     {
         const int timeout = 10; // measured in seconds
-        return object_from_url(share_this(this), filename, timeout);
+        return object_from_url(filename, timeout);
     }
 #endif
 
@@ -436,6 +436,31 @@ ObjectConstSP Service::object_from_file(const std::string& filename) const
     spi::session::add_file_name(filename);
     SPI_UTIL_CLOCK_EVENTS_WRITE(logfilename.c_str());
     return obj;
+}
+
+ObjectConstSP Service::object_from_url(
+    const std::string& url,
+    int timeout,
+    int cacheAge) const
+{
+#ifndef SPI_STATIC
+    try
+    {
+        std::string contents = read_url(url, timeout, cacheAge);
+        if (contents.empty())
+            throw RuntimeError("No contents from reading URL %s with "
+                "timeout %d", url.c_str(), timeout);
+
+        return object_from_string(contents);
+    }
+    catch (...)
+    {
+        url_cache_clear_entry(url);
+        throw;
+    }
+#else
+    SPI_THROW_RUNTIME_ERROR("object_from_url not supported in static build mode");
+#endif
 }
 
 ObjectConstSP Service::object_coerce(

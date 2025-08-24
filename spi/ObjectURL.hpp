@@ -48,12 +48,6 @@ void url_cache_load(const char* filename);
 void url_cache_save(const char* filename);
 size_t url_cache_size();
 
-ObjectConstSP object_from_url(
-    const ServiceConstSP& service,
-    const std::string& url,
-    int timeout = 0,
-    int cacheAge = 0);
-
 SPI_END_NAMESPACE
 
 #endif
