@@ -1152,7 +1152,7 @@ Value ObjectPut(
     return Value(modifiedObject);
 }
 
-Value ObjectUpdateMetaData(
+Value ObjectPutMetaData(
     const Value& objectHandle,
     const Value& namesValue,
     const Value& v1,
@@ -1182,7 +1182,7 @@ Value ObjectUpdateMetaData(
     const Value& v25,
     const InputContext* context)
 {
-    // Since ObjectUpdateMetaData (below) amends object (by modified the
+    // Since ObjectPutMetaData (below) amends object (by modified the
     // non-const meta_data field) we have to copy the object before we start.
     // Otherwise excel gets very confused.
     ObjectConstSP object = ObjectCopy(objectHandle, context).getObject();
@@ -1213,7 +1213,7 @@ Value ObjectUpdateMetaData(
         newValues.push_back(values[i]);
     }
 
-    ObjectUpdateMetaData(object, newNames, newValues, context);
+    ObjectPutMetaData(object, newNames, newValues, context);
     return Value(object);
 }
 

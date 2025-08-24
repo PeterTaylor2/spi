@@ -371,7 +371,7 @@ ObjectConstSP Service::object_from_string(
     if (!timestamp)
         timestamp = DateTime::Now(true); // universal time
 
-    ObjectUpdateMetaData(obj, "timestamp", timestamp);
+    ObjectPutMetaData(obj, "timestamp", timestamp);
 
     return obj;
 

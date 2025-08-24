@@ -191,7 +191,7 @@ void ExcelService::RegisterStandardFunctions(const std::string& xll,
     const std::string& objectFromString, 
     const std::string& objectGet, 
     const std::string& objectPut,
-    const std::string& objectUpdateMetaData,
+    const std::string& objectPutMetaData,
     const std::string& objectToFile, 
     const std::string& objectFromFile, 
     const std::string& objectCount, 
@@ -365,9 +365,9 @@ void ExcelService::RegisterStandardFunctions(const std::string& xll,
             help);
     }
 
-    if (!objectUpdateMetaData.empty())
+    if (!objectPutMetaData.empty())
     {
-        std::string regFunc = m_upperCase ? StringUpper(objectUpdateMetaData) : objectUpdateMetaData;
+        std::string regFunc = m_upperCase ? StringUpper(objectPutMetaData) : objectPutMetaData;
         args.clear();
         help.clear();
         args.push_back("handle?");
@@ -404,7 +404,7 @@ void ExcelService::RegisterStandardFunctions(const std::string& xll,
         args.push_back("v25?");
         RegisterFunction(
             xll,
-            StringFormat("xl_%s_object_update_meta_data", ns.c_str()),
+            StringFormat("xl_%s_object_put_meta_data", ns.c_str()),
             StringFormat("%s%s%s", nsReg.c_str(), m_sep, regFunc.c_str()),
             nsReg,
             args,
@@ -1571,7 +1571,7 @@ XLOPER* ExcelService::ObjectPut(XLOPER* baseName, XLOPER* handle, XLOPER* names,
 
 }
 
-XLOPER* ExcelService::ObjectUpdateMetaData(XLOPER* baseName, XLOPER* handle, XLOPER* names,
+XLOPER* ExcelService::ObjectPutMetaData(XLOPER* baseName, XLOPER* handle, XLOPER* names,
     XLOPER* v1, XLOPER* v2, XLOPER* v3, XLOPER* v4, XLOPER* v5,
     XLOPER* v6, XLOPER* v7, XLOPER* v8, XLOPER* v9, XLOPER* v10,
     XLOPER* v11, XLOPER* v12, XLOPER* v13, XLOPER* v14, XLOPER* v15,
@@ -1582,7 +1582,7 @@ XLOPER* ExcelService::ObjectUpdateMetaData(XLOPER* baseName, XLOPER* handle, XLO
 
     try
     {
-        Value output = spi::ObjectUpdateMetaData(
+        Value output = spi::ObjectPutMetaData(
             xloperToValue(handle),
             xloperToValue(names),
             xloperToValue(v1), xloperToValue(v2), xloperToValue(v3),

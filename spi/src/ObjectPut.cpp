@@ -910,7 +910,7 @@ ObjectConstSP ObjectPut(
     return modifiedObject;
 }
 
-void ObjectUpdateMetaData(
+void ObjectPutMetaData(
     const ObjectConstSP& obj,
     const char* name,
     const Value& value,
@@ -919,10 +919,10 @@ void ObjectUpdateMetaData(
     std::vector<std::string> names(1, name);
     std::vector<Value> values(1, value);
 
-    ObjectUpdateMetaData(obj, names, values, context);
+    ObjectPutMetaData(obj, names, values, context);
 }
 
-void ObjectUpdateMetaData(
+void ObjectPutMetaData(
     const ObjectConstSP& obj,
     const std::vector<std::string>& names,
     const std::vector<Value>& values,

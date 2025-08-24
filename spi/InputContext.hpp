@@ -393,7 +393,7 @@ Value ObjectPut(
     const InputContext* context);
 
 SPI_IMPORT
-Value ObjectUpdateMetaData(
+Value ObjectPutMetaData(
     const Value& objectHandle,
     const Value& names,
     const Value& v1,

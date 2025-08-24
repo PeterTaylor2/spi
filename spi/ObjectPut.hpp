@@ -68,14 +68,14 @@ ObjectConstSP ObjectPut(
     const InputContext* context = NULL);
 
 SPI_IMPORT
-void ObjectUpdateMetaData(
+void ObjectPutMetaData(
     const ObjectConstSP& obj,
     const char* name,
     const Value& value,
     const InputContext* context = NULL);
 
 SPI_IMPORT
-void ObjectUpdateMetaData(
+void ObjectPutMetaData(
     const ObjectConstSP& obj,
     const std::vector<std::string>& names,
     const std::vector<Value>& values,

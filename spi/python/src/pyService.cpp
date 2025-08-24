@@ -912,18 +912,18 @@ PyObject* PythonService::ObjectPut(PyObject* args)
     }
 }
 
-PyObject* PythonService::ObjectUpdateMetaData(PyObject* self, PyObject* args)
+PyObject* PythonService::ObjectPutMetaData(PyObject* self, PyObject* args)
 {
     try
     {
         ObjectConstSP obj = pyoToObject(self, NULL);
         if (!obj)
-            throw std::runtime_error("ObjectUpdateMetaData: self is None");
+            throw std::runtime_error("ObjectPutMetaData: self is None");
 
         std::vector<Value> in = pyTupleToValueVector(
-            "ObjectUpdateMetaData", 26, args);
+            "ObjectPutMetaData", 26, args);
 
-        Value output = spi::ObjectUpdateMetaData(obj, in[0], in[1], in[2],
+        Value output = spi::ObjectPutMetaData(obj, in[0], in[1], in[2],
             in[3],  in[4],  in[5], in[6], in[7], in[8], in[9], in[10], in[11],
             in[12], in[13], in[14], in[15], in[16], in[17], in[18], in[19],
             in[20], in[21], in[22], in[23], in[24], in[25],
