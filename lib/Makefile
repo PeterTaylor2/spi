@@ -13,6 +13,7 @@ U_INCLUDES=-I$(U_SPI_HOME)
 U_TARGET=spi
 U_FORCE_REBUILD=Makefile $(U_SPI_HOME)/makefiles/version.mk
 U_CFLAGS+=-DSPI_STATIC -DSPI_UTIL_STATIC
+U_EXCLUDE_OBJS=ObjectURL.$(G_OBJ)
 
 include $(U_SPI_HOME)/makefiles/build/lib.mk
 
