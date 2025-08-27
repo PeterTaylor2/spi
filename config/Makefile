@@ -11,6 +11,7 @@ U_SPI_HOME=..
 include $(U_SPI_HOME)/makefiles/config/config.mk
 
 BUILD_DIRS=\
+../zlib\
 ../spi_util/lib\
 ../lib\
 spgtools\
