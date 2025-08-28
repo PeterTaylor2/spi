@@ -362,19 +362,9 @@ ObjectConstSP Service::object_from_data(
 ObjectConstSP Service::object_from_string(
     const std::string& objectString) const
 {
-    std::istringstream iss(objectString);
-
     // strings are always in text format so we won't try binary formats
     ObjectConstSP obj = object_from_data(objectString, std::string(), false);
-
-    DateTime timestamp = obj->get_timestamp(); // from object_id if it exists
-    if (!timestamp)
-        timestamp = DateTime::Now(true); // universal time
-
-    ObjectPutMetaData(obj, "timestamp", timestamp);
-
     return obj;
-
 }
 
 ObjectConstSP Service::object_from_file(const std::string& filename) const
