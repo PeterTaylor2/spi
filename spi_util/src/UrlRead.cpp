@@ -271,7 +271,7 @@ void URLReadContentsData(
 
     if (compress)
     {
-        curl_easy_setopt(handle, CURLOPT_ACCEPT_ENCODING, "gzip");
+        errorHandler(curl_easy_setopt(handle, CURLOPT_ACCEPT_ENCODING, "gzip"));
     }
 
     if (timeout > 0)
