@@ -48,6 +48,7 @@ Public Sub $(name)LoadXLL
     End If
     
     $(name)Utils.RemoveDLLPath
+    $(name)Utils.FixMicrosoftSolverBug
     Application.StatusBar = False
 
 End Sub

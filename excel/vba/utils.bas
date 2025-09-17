@@ -151,6 +151,14 @@ Public Function RemoveDLLPath() As Boolean
 
 End Function
 
+Public Function FixMicrosoftSolverBug()
+
+    If Application.Version = "14.0" Then
+        AddDLLPath ("C:\Program Files (x86)\Microsoft Office\Office14\Library\SOLVER")
+    End If
+
+End Function
+
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 ' Selects an output file for writing via a dialog window using a filter
 ' (e.g. *.log)
