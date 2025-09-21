@@ -27,6 +27,10 @@ Private Const FUNCTION_PREFIX As String = "$(ns)"
 Private Const XLL As String = "$(xll)"
 Private Const START_LOGGING As String = "$(startLoggingFunction)"
 Private Const STOP_LOGGING As String = "$(stopLoggingFunction)"
+Private Const SET_ERROR_POPUPS As String = "$(setErrorPopups)"
+Private Const START_TIMING As String = "$(startTimingFunction)"
+Private Const STOP_TIMING As String = "$(stopTimingFunction)"
+Private Const CLEAR_TIMINGS As String = "$(clearTimingsFunction)"
 
 Public Sub $(name)LoadXLL
     Dim myPath As String
@@ -122,9 +126,14 @@ endofLoop:
     button.BeginGroup = False ' don't add a separator before this control
 
     Set button = myItems.Controls.Add(msoControlButton)
+    button.Caption = "&Object Viewer"
+    button.OnAction = "$(name)LoadObjectViewer"
+    button.BeginGroup = True
+    
+    Set button = myItems.Controls.Add(msoControlButton)
     button.Caption = "&Start Logging..."
     button.OnAction = "$(name)StartLogging"
-    button.BeginGroup = True
+    button.BeginGroup = False
 
     Set button = myItems.Controls.Add(msoControlButton)
     button.Caption = "S&top Logging"
@@ -132,14 +141,34 @@ endofLoop:
     button.BeginGroup = False
     
     Set button = myItems.Controls.Add(msoControlButton)
-    button.Caption = "&Object Viewer"
-    button.OnAction = "$(name)LoadObjectViewer"
+    button.Caption = "&Pop-up Errors On"
+    button.OnAction = "$(name)PopupErrorsOn"
+    button.BeginGroup = False
+
+    Set button = myItems.Controls.Add(msoControlButton)
+    button.Caption = "Pop-up Errors Off"
+    button.OnAction = "$(name)PopupErrorsOff"
     button.BeginGroup = False
     
     Set button = myItems.Controls.Add(msoControlButton)
+    button.Caption = "Start &Timing"
+    button.OnAction = "$(name)StartTiming"
+    button.BeginGroup = False
+
+    Set button = myItems.Controls.Add(msoControlButton)
+    button.Caption = "Stop Timing"
+    button.OnAction = "$(name)StopTiming"
+    button.BeginGroup = False
+
+    Set button = myItems.Controls.Add(msoControlButton)
+    button.Caption = "Clear Timings"
+    button.OnAction = "$(name)ClearTimings"
+    button.BeginGroup = False
+
+    Set button = myItems.Controls.Add(msoControlButton)
     button.Caption = "&User Guide"
     button.OnAction = "$(name)LoadUserGuide"
-    button.BeginGroup = False
+    button.BeginGroup = True
     
     
 End Sub
@@ -177,6 +206,31 @@ End Sub
 Private Sub $(name)StopLogging()
     Dim result As Boolean
     result = Application.Run(STOP_LOGGING)
+End Sub
+
+Private Sub $(name)PopupErrorsOn()
+    Dim result as Boolean
+    result = Application.Run(SET_ERROR_POPUPS, True)
+End Sub
+
+Private Sub $(name)PopupErrorsOff()
+    Dim result as Boolean
+    result = Application.Run(SET_ERROR_POPUPS, False)
+End Sub
+
+Private Sub $(name)StartTiming()
+    Dim result as Boolean
+    result = Application.Run(START_TIMING)
+End Sub
+
+Private Sub $(name)StopTiming()
+    Dim result as Boolean
+    result = Application.Run(STOP_TIMING)
+End Sub
+
+Private Sub $(name)ClearTimings()
+    Dim result as Boolean
+    result = Application.Run(CLEAR_TIMINGS)
 End Sub
 
 Private Sub $(name)LoadObjectViewer()

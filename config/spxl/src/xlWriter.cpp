@@ -628,6 +628,10 @@ std::vector<std::string> ExcelService::translateVbaFiles(
 
         values["startLoggingFunction"] = xlfunc(ns(), upperCase, sep, m_options.startLogging);
         values["stopLoggingFunction"] = xlfunc(ns(), upperCase, sep, m_options.stopLogging);
+        values["setErrorPopups"] = xlfunc(ns(), upperCase, sep, m_options.setErrorPopups);
+        values["startTimingFunction"] = xlfunc(ns(), upperCase, sep, m_options.startTiming);
+        values["stopTimingFunction"] = xlfunc(ns(), upperCase, sep, m_options.stopTiming);
+        values["clearTimingsFunction"] = xlfunc(ns(), upperCase, sep, m_options.clearTimings);
 
         if (m_options.noObjectFuncs)
         {
