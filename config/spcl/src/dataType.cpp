@@ -737,17 +737,14 @@ std::string DataType::fromMapCode(
         }
         else if (m_publicType == spdoc::PublicType::ENUM)
         {
-            bool asInt = m_publicType == spdoc::PublicType::ENUM_BITMASK;
-            if (asInt)
-            {
-                // we can construct the type from int
-                oss << "->GetInt";
-            }
-            else
-            {
-                // we can construct the type from std::string
-                oss << "->GetString";
-            }
+            // we can construct the type from std::string for regular enum
+            oss << "->GetString";
+        }
+        else
+        {
+            SPI_POST_CONDITION(m_publicType == spdoc::PublicType::ENUM_BITMASK);
+            // we can construct the type from int for enum bitmask
+            oss << "->GetInt";
         }
         break;
     case spdoc::PublicType::CLASS:
