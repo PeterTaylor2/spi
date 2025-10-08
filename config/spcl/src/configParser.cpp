@@ -3019,12 +3019,11 @@ InnerClassConstSP parseInnerClass(
     token = lexer.getToken();
     if (token.toString() == "typename")
     {
-        token = getTokenOfType(
-            lexer, SPI_CONFIG_TOKEN_TYPE_NAME, "InnerClass");
-        innerClass = service->getInnerClass(token.value.aName);
+        const std::string& cppTypeName = getCppTypeName(lexer, true);
+        innerClass = service->getInnerClass(cppTypeName);
         if (!innerClass)
         {
-            SPI_THROW_RUNTIME_ERROR("undefined typename " << token.value.aName);
+            SPI_THROW_RUNTIME_ERROR("undefined typename " << cppTypeName);
         }
         getTokenOfType(lexer, '>');
         existing = true;
