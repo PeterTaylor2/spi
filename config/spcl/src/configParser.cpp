@@ -1671,7 +1671,11 @@ void enumKeywordHandler(
                 for (size_t i = 0; i < N; ++i)
                 {
                     const EnumerandConstSP& e = enumerands[i];
-                    const std::string& name = spi_util::StringLower(e->name());
+                    std::string name = e->name();
+                    if (name == spi_util::StringUpper(name))
+                    {
+                        name = spi_util::StringLower(name);
+                    }
                     args.push_back(FunctionAttribute::Make(
                         Attribute::Make(e->description(), boolType, name),
                         false));
@@ -1684,7 +1688,7 @@ void enumKeywordHandler(
                 for (size_t i = 0; i < N; ++i)
                 {
                     const EnumerandConstSP& e = enumerands[i];
-                    const std::string& name = spi_util::StringLower(e->name());
+                    const std::string& name = args[i]->attribute()->name();
                     code.push_back(spi_util::StringFormat(
                         "    if (%s)\n", name.c_str()));
                     code.push_back(spi_util::StringFormat(
