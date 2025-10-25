@@ -21,6 +21,7 @@ xlcall32\
 xltest
 
 CONFIG_BUILD_DIRS=\
+zlib\
 spi_util/lib\
 lib\
 makeXLAddin\
@@ -55,29 +56,43 @@ runtime::
 		$(MAKE) -C $$lib all; \
 	done
 
-build::
-	@for lib in $(BUILD_DIRS); do \
+config::
+	@for lib in $(CONFIG_BUILD_DIRS); do \
 		echo Building $$lib; \
-		$(MAKE) -C $$lib; \
+		$(MAKE) -C $$lib all DEBUG=0; \
 	done
 
-all::
-	@for lib in $(BUILD_DIRS); do \
-		echo Building $$lib; \
-		$(MAKE) -C $$lib all; \
-	done
-	echo Building spi-user-guide
-	$(MAKE) -C config/spcl doc
-
-clean::
-	@for lib in $(BUILD_DIRS); do \
+clean-runtime::
+	@for lib in $(RUNTIME_BUILD_DIRS); do \
 		$(MAKE) -C $$lib clean; \
 	done
 
-clean-all::
-	@for lib in $(BUILD_DIRS); do \
+clean-all-runtime::
+	@for lib in $(RUNTIME_BUILD_DIRS); do \
 		$(MAKE) -C $$lib clean-all; \
 	done
+
+clean-config::
+	@for lib in $(CONFIG_BUILD_DIRS); do \
+		$(MAKE) -C $$lib clean DEBUG=0; \
+	done
+
+build::
+	@$(MAKE) config
+	@$(MAKE) runtime
+
+all::
+	@$(MAKE) build
+	echo Building spi-user-guide
+	@$(MAKE) -C config/spcl doc
+
+clean::
+	@$(MAKE) clean-config
+	@$(MAKE) clean-runtime
+
+clean-all::
+	@$(MAKE) clean-config
+	@$(MAKE) clean-all-runtime
 
 U_VCPROJ=refresh-projects
 U_VCPROJ_OPTIONS=-j1 -tvc-all
