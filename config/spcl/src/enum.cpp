@@ -357,6 +357,7 @@ void EnumBitmask::declare(
 
     ostr << "    " << enumName << "() : value((Enum)0) {}\n"
         << "    " << enumName << "(" << enumName << "::Enum value);\n"
+        << "    " << enumName << "(const char* cstr);\n"
         << "    " << enumName << "(const std::string& str);\n"
         << "    " << enumName << "(const spi::Value& value);\n"
         << "    " << enumName << "(int value);\n";
@@ -455,6 +456,16 @@ void EnumBitmask::implement(
         << "    {\n"
         << "        SPI_THROW_RUNTIME_ERROR(\"Input value out of range\");\n"
         << "    }\n"
+        << "}\n";
+
+    ostr << "\n"
+        << enumName << "::" << enumName << "(const char* cstr)\n"
+        << "{\n"
+        << "    if (!cstr)\n"
+        << "        SPI_THROW_RUNTIME_ERROR(\"Null input\");\n"
+        << "    std::string str(cstr);\n"
+        << "    " << enumName << " tmp(str);\n"
+        << "    value = tmp.value;\n"
         << "}\n";
 
     ostr << "\n"
