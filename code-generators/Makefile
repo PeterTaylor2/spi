@@ -61,11 +61,11 @@ config-build::
 	@$(MAKE) build DEBUG=0 COMPILER=$(G_CONFIG_COMPILER) BITS=$(G_CONFIG_COMPILER_BITS)
 	@mkdir -p bin-$(G_PLATFORM)
 	$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/copyFiles.py bin-$(G_PLATFORM) bin/$(G_CONFIG_COMPILER_ABI)/*$(G_EXE)
-	rm -fr $(U_SPI_HOME)/config/bin
+	rm -fr $(U_SPI_HOME)/code-generators/bin
 
 config-clean::
 	@$(MAKE) clean DEBUG=0 COMPILER=$(G_CONFIG_COMPILER) BITS=$(G_CONFIG_COMPILER_BITS)
-	rm -fr $(U_SPI_HOME)/config/bin/$(G_CONFIG_COMPILER_ABI)
+	rm -fr $(U_SPI_HOME)/code-generators/bin/$(G_CONFIG_COMPILER_ABI)
 
 rebuild: clean build
 

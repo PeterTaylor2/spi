@@ -69,60 +69,60 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spi-c-dll", "c\spi-c-dll.v1
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "runtime", "runtime", "{6DB8A382-131E-4902-8484-4935B37B0B01}"
 	ProjectSection(SolutionItems) = preProject
-		..\LGPL.h = ..\LGPL.h
+		LGPL.h = LGPL.h
 		LICENSE = LICENSE
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "code generators", "code generators", "{FAEBF765-64AD-483E-A581-47267FCB586B}"
 	ProjectSection(SolutionItems) = preProject
-		config\GPL.h = config\GPL.h
-		config\LICENSE = config\LICENSE
+		code-generators\GPL.h = code-generators\GPL.h
+		code-generators\LICENSE = code-generators\LICENSE
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spcl-exe", "config\spcl\spcl-exe.v16.vcxproj", "{0EAC096E-915B-11E9-AD4E-34E12D458C69}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spcl-exe", "code-generators\spcl\spcl-exe.v16.vcxproj", "{0EAC096E-915B-11E9-AD4E-34E12D458C69}"
 	ProjectSection(ProjectDependencies) = postProject
 		{49A23208-9913-11EA-8560-DCFE07D3132C} = {49A23208-9913-11EA-8560-DCFE07D3132C}
 		{0DC26036-915B-11E9-92F6-34E12D458C69} = {0DC26036-915B-11E9-92F6-34E12D458C69}
 		{0E8D0CA2-915B-11E9-B91C-34E12D458C69} = {0E8D0CA2-915B-11E9-B91C-34E12D458C69}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spc-exe", "config\spc\spc-exe.v16.vcxproj", "{CBBCCD6E-FFAD-11EC-9F51-AC2B6E11458A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spc-exe", "code-generators\spc\spc-exe.v16.vcxproj", "{CBBCCD6E-FFAD-11EC-9F51-AC2B6E11458A}"
 	ProjectSection(ProjectDependencies) = postProject
 		{49A23208-9913-11EA-8560-DCFE07D3132C} = {49A23208-9913-11EA-8560-DCFE07D3132C}
 		{0DC26036-915B-11E9-92F6-34E12D458C69} = {0DC26036-915B-11E9-92F6-34E12D458C69}
 		{0E8D0CA2-915B-11E9-B91C-34E12D458C69} = {0E8D0CA2-915B-11E9-B91C-34E12D458C69}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spcs-exe", "config\spcs\spcs-exe.v16.vcxproj", "{DDC58770-2684-11EA-B617-AC2B6E11458A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spcs-exe", "code-generators\spcs\spcs-exe.v16.vcxproj", "{DDC58770-2684-11EA-B617-AC2B6E11458A}"
 	ProjectSection(ProjectDependencies) = postProject
 		{49A23208-9913-11EA-8560-DCFE07D3132C} = {49A23208-9913-11EA-8560-DCFE07D3132C}
 		{0DC26036-915B-11E9-92F6-34E12D458C69} = {0DC26036-915B-11E9-92F6-34E12D458C69}
 		{0E8D0CA2-915B-11E9-B91C-34E12D458C69} = {0E8D0CA2-915B-11E9-B91C-34E12D458C69}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spdoc-config", "config\spdoc\spdoc-config.v16.vcxproj", "{7C327B2E-BEE9-11E7-9023-AC2B6E11458A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spdoc-config", "code-generators\spdoc\spdoc-config.v16.vcxproj", "{7C327B2E-BEE9-11E7-9023-AC2B6E11458A}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0EE2DC28-915B-11E9-B1D9-34E12D458C69} = {0EE2DC28-915B-11E9-B1D9-34E12D458C69}
 		{0EAC096E-915B-11E9-AD4E-34E12D458C69} = {0EAC096E-915B-11E9-AD4E-34E12D458C69}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spgtools", "config\spgtools\spgtools.v16.vcxproj", "{0E8D0CA2-915B-11E9-B91C-34E12D458C69}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spgtools", "code-generators\spgtools\spgtools.v16.vcxproj", "{0E8D0CA2-915B-11E9-B91C-34E12D458C69}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sppy-exe", "config\sppy\sppy-exe.v16.vcxproj", "{0EE2DC28-915B-11E9-B1D9-34E12D458C69}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sppy-exe", "code-generators\sppy\sppy-exe.v16.vcxproj", "{0EE2DC28-915B-11E9-B1D9-34E12D458C69}"
 	ProjectSection(ProjectDependencies) = postProject
 		{49A23208-9913-11EA-8560-DCFE07D3132C} = {49A23208-9913-11EA-8560-DCFE07D3132C}
 		{0DC26036-915B-11E9-92F6-34E12D458C69} = {0DC26036-915B-11E9-92F6-34E12D458C69}
 		{0E8D0CA2-915B-11E9-B91C-34E12D458C69} = {0E8D0CA2-915B-11E9-B91C-34E12D458C69}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sptex-exe", "config\sptex\sptex-exe.v16.vcxproj", "{0F01D8AC-915B-11E9-9AB1-34E12D458C69}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sptex-exe", "code-generators\sptex\sptex-exe.v16.vcxproj", "{0F01D8AC-915B-11E9-9AB1-34E12D458C69}"
 	ProjectSection(ProjectDependencies) = postProject
 		{49A23208-9913-11EA-8560-DCFE07D3132C} = {49A23208-9913-11EA-8560-DCFE07D3132C}
 		{0DC26036-915B-11E9-92F6-34E12D458C69} = {0DC26036-915B-11E9-92F6-34E12D458C69}
 		{0E8D0CA2-915B-11E9-B91C-34E12D458C69} = {0E8D0CA2-915B-11E9-B91C-34E12D458C69}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spxl-exe", "config\spxl\spxl-exe.v16.vcxproj", "{0F27FBF6-915B-11E9-89D8-34E12D458C69}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spxl-exe", "code-generators\spxl\spxl-exe.v16.vcxproj", "{0F27FBF6-915B-11E9-89D8-34E12D458C69}"
 	ProjectSection(ProjectDependencies) = postProject
 		{49A23208-9913-11EA-8560-DCFE07D3132C} = {49A23208-9913-11EA-8560-DCFE07D3132C}
 		{0DC26036-915B-11E9-92F6-34E12D458C69} = {0DC26036-915B-11E9-92F6-34E12D458C69}
@@ -135,9 +135,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spi-util-lib", "spi_util\li
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "refresh-projects", "refresh-projects.v16.vcxproj", "{D68CCBEF-9FD3-42DD-8AE0-0BD56331EC23}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "types-config", "config\spcl\types\types-config.v16.vcxproj", "{C2754897-AFD8-4429-99F0-0B2E4B86DAE5}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "types-config", "code-generators\spcl\types\types-config.v16.vcxproj", "{C2754897-AFD8-4429-99F0-0B2E4B86DAE5}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "config-build", "config\config-build.v16.vcxproj", "{32D9F6A5-8CF8-43AD-8B0D-5151AC4DB686}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "config-build", "code-generators\config-build.v16.vcxproj", "{32D9F6A5-8CF8-43AD-8B0D-5151AC4DB686}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gendep", "makefiles\gendep\gendep.v16.vcxproj", "{2F6D8B9C-0FE3-4915-828F-248E2CFB807D}"
 EndProject

@@ -12,7 +12,7 @@ dll\
 c\
 excel\
 python\
-config/spdoc\
+code-generators/spdoc\
 svo/spdoc\
 replay/config\
 replay/dll\
@@ -25,20 +25,20 @@ zlib\
 spi_util/lib\
 lib\
 makeXLAddin\
-config/spgtools\
-config/spcl\
-config/spc\
-config/spcs\
-config/sppy\
-config/sptex\
-config/spxl
+code-generators/spgtools\
+code-generators/spcl\
+code-generators/spc\
+code-generators/spcs\
+code-generators/sppy\
+code-generators/sptex\
+code-generators/spxl
 
 EXTRA_VCPROJ_DIRS=\
 makefiles/gendep\
 makefiles/cversion\
-config\
-config/spdoc\
-config/spcl/types
+code-generators\
+code-generators/spdoc\
+code-generators/spcl/types
 
 BUILD_DIRS=$(CONFIG_BUILD_DIRS) $(RUNTIME_BUILD_DIRS)
 

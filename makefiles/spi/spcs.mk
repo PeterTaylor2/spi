@@ -41,9 +41,9 @@ I_CS_SOURCE:=$(U_CONFIG_DIR)/$(U_SERVICE).svo
 # If you have the copy of spcs corresponding to your current $(G_ABI)
 # then use it - otherwise use the one in bin directory
 ###########################################################################
-I_SPCS=$(wildcard $(U_SPI_HOME)/config/bin/$(G_ABI)/spcs$(G_EXE))
+I_SPCS=$(wildcard $(U_SPI_HOME)/code-generators/bin/$(G_ABI)/spcs$(G_EXE))
 ifeq "$(I_SPCS)" ""
-I_SPCS:=$(U_SPI_HOME)/config/bin-$(G_PLATFORM)/spcs$(G_EXE)
+I_SPCS:=$(U_SPI_HOME)/code-generators/bin-$(G_PLATFORM)/spcs$(G_EXE)
 endif
 
 code-cs: $(I_CS_TARGET)

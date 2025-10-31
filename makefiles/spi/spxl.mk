@@ -39,9 +39,9 @@ I_EXCEL_SOURCE:=$(U_CONFIG_DIR)/$(U_SERVICE).svo
 # If you have the copy of spxl corresponding to your current $(G_ABI)
 # then use it - otherwise use the one in bin-$(G_PLATFORM) directory
 ###########################################################################
-I_SPXL:=$(wildcard $(U_SPI_HOME)/config/bin/$(G_ABI)/spxl$(G_EXE))
+I_SPXL:=$(wildcard $(U_SPI_HOME)/code-generators/bin/$(G_ABI)/spxl$(G_EXE))
 ifeq "$(I_SPXL)" ""
-I_SPXL:=$(U_SPI_HOME)/config/bin-$(G_PLATFORM)/spxl$(G_EXE)
+I_SPXL:=$(U_SPI_HOME)/code-generators/bin-$(G_PLATFORM)/spxl$(G_EXE)
 endif
 
 code-excel: $(I_EXCEL_TARGET)

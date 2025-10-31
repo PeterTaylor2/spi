@@ -19,9 +19,9 @@ code: $(U_SERVICE).svo
 ###########################################################################
 U_SPCL?=spcl
 
-I_SPCL=$(wildcard $(U_SPI_HOME)/config/bin/$(G_ABI)/$(U_SPCL)$(G_EXE))
+I_SPCL=$(wildcard $(U_SPI_HOME)/code-generators/bin/$(G_ABI)/$(U_SPCL)$(G_EXE))
 ifeq "$(I_SPCL)" ""
-I_SPCL:=$(U_SPI_HOME)/config/bin-$(G_PLATFORM)/$(U_SPCL)$(G_EXE)
+I_SPCL:=$(U_SPI_HOME)/code-generators/bin-$(G_PLATFORM)/$(U_SPCL)$(G_EXE)
 endif
 
 U_SPI_BUILD_DIR?=$(G_BUILD_DIR)
