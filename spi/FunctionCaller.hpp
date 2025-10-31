@@ -51,6 +51,7 @@ struct FuncArg
     bool              isArray;
     bool              isOptional;
     bool              isPermutable;
+    const char*       alias = nullptr;
 };
 
 struct FunctionCaller

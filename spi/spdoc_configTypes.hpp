@@ -128,7 +128,8 @@ public:
         const DataTypeConstSP& dataType,
         int arrayDim = 0,
         bool isOptional = false,
-        const ConstantConstSP& defaultValue = {});
+        const ConstantConstSP& defaultValue = {},
+        const std::string& alias = {});
 
     /**
     ************************************************************************
@@ -154,7 +155,8 @@ protected:
         const DataTypeConstSP& dataType,
         int arrayDim,
         bool isOptional,
-        const ConstantConstSP& defaultValue);
+        const ConstantConstSP& defaultValue,
+        const std::string& alias);
 
 public:
 
@@ -164,6 +166,7 @@ public:
     const int arrayDim;
     const bool isOptional;
     const ConstantConstSP defaultValue;
+    const std::string alias;
     bool isArray() const;
 };
 

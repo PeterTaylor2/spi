@@ -173,12 +173,13 @@ AttributeConstSP Attribute::Make(
     const DataTypeConstSP& dataType,
     int arrayDim,
     bool isOptional,
-    const ConstantConstSP& defaultValue)
+    const ConstantConstSP& defaultValue,
+    const std::string& alias)
 {
     spdoc_check_permission();
     return AttributeConstSP(
         new Attribute(name, description, dataType, arrayDim, isOptional,
-            defaultValue));
+            defaultValue, alias));
 }
 
 Attribute::Attribute(
@@ -187,7 +188,8 @@ Attribute::Attribute(
     const DataTypeConstSP& dataType,
     int arrayDim,
     bool isOptional,
-    const ConstantConstSP& defaultValue)
+    const ConstantConstSP& defaultValue,
+    const std::string& alias)
     :
     spi::Object(true),
     name(name),
@@ -195,7 +197,8 @@ Attribute::Attribute(
     dataType(dataType),
     arrayDim(arrayDim),
     isOptional(isOptional),
-    defaultValue(defaultValue)
+    defaultValue(defaultValue),
+    alias(alias)
 {
 try
   {

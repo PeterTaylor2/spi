@@ -285,6 +285,7 @@ void Attribute::to_map(
     obj_map->SetInt("arrayDim", arrayDim, !public_only && (arrayDim == 0));
     obj_map->SetBool("isOptional", isOptional, !public_only && (isOptional == false));
     obj_map->SetObject("defaultValue", defaultValue, !public_only && (!defaultValue));
+    obj_map->SetString("alias", alias, !public_only && (alias.empty()));
     if (public_only)
     {
         obj_map->SetBool("isArray", isArray());
@@ -307,9 +308,11 @@ spi::ObjectConstSP Attribute::object_from_map(
         = obj_map->GetBool("isOptional", true, false);
     const ConstantConstSP& defaultValue
         = obj_map->GetInstance<Constant const>("defaultValue", value_to_object, true);
+    const std::string& alias
+        = obj_map->GetString("alias", true);
 
     return new Attribute(name, description, dataType, arrayDim, isOptional,
-        defaultValue);
+        defaultValue, alias);
 }
 
 SPI_IMPLEMENT_OBJECT_TYPE(Attribute, "Attribute", spdoc_service, false, 0);
@@ -330,22 +333,25 @@ spi::Value Attribute_caller(
         in_context->ValueToBool(in_values[4], true, false);
     const ConstantConstSP& defaultValue =
         in_context->ValueToInstance<Constant const>(in_values[5], true);
+    const std::string& alias =
+        in_context->ValueToString(in_values[6], true);
 
     const AttributeConstSP& o_result = spdoc::Attribute::Make(name,
-        description, dataType, arrayDim, isOptional, defaultValue);
+        description, dataType, arrayDim, isOptional, defaultValue, alias);
     return spi::ObjectConstSP(o_result);
 }
 
 spi::FunctionCaller Attribute_FunctionCaller = {
     "Attribute",
-    6,
+    7,
     {
         {"name", spi::ArgType::STRING, "string", false, false, false},
         {"description", spi::ArgType::STRING, "string", true, false, false},
         {"dataType", spi::ArgType::OBJECT, "DataType", false, false, false},
         {"arrayDim", spi::ArgType::INT, "int", false, true, false},
         {"isOptional", spi::ArgType::BOOL, "bool", false, true, false},
-        {"defaultValue", spi::ArgType::OBJECT, "Constant", false, true, false}
+        {"defaultValue", spi::ArgType::OBJECT, "Constant", false, true, false},
+        {"alias", spi::ArgType::STRING, "string", false, true, false}
     },
     Attribute_caller
 };

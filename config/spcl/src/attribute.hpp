@@ -63,7 +63,8 @@ public:
         const std::string& name,
         int arrayDim=0,
         bool isOptional=false,
-        const ConstantConstSP& defaultValue=Constant::UNDEFINED);
+        const ConstantConstSP& defaultValue=Constant::UNDEFINED,
+        const std::string& alias = {});
 
     static AttributeConstSP InstanceType(
         const DataTypeConstSP& dataType);
@@ -78,9 +79,9 @@ public:
     const DataTypeConstSP& dataType() const;
     const std::string& name() const;
     int arrayDim() const;
-    //bool isArray() const;
     bool isOptional() const;
     const ConstantConstSP defaultValue() const;
+    const std::string& alias() const;
 
     AttributeConstSP rename(const std::string& newName) const;
     spdoc::AttributeConstSP getDoc() const;
@@ -98,7 +99,8 @@ protected:
         const std::string& name,
         int arrayDim,
         bool isOptional,
-        const ConstantConstSP& defaultValue);
+        const ConstantConstSP& defaultValue,
+        const std::string& alias);
 
 private:
     std::vector<std::string> m_description;
@@ -107,6 +109,7 @@ private:
     int                      m_arrayDim;
     bool                     m_isOptional;
     const ConstantConstSP    m_defaultValue;
+    std::string              m_alias;
 };
 
 /**

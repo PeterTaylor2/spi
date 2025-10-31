@@ -268,21 +268,46 @@ namespace
                 bool matched = false;
                 for (size_t i = 0; i < func->nbArgs; ++i)
                 {
-                    if (strcmp(func->args[i].name, cname) == 0)
+                    // use of alias allows us to rename a function argument and continue
+                    // to use the old name as a keyword argument
+                    const char* alias = func->args[i].alias;
+                    const char* argName = func->args[i].name;
+
+                    if (strcmp(argName, cname) == 0)
                     {
                         // its a match
                         if (dict.count(name))
                         {
-                            // this should never happen since it is a Python syntax error
-                            // and reports SyntaxError: keyword argument repeated 
+                            // since python cannot repeat keywords (SyntaxError reported)
+                            // this can only happen if there is an alias and the alias has
+                            // already been found
+                            if (alias)
+                            {
+                                throw RuntimeError("Cannot define kwarg %s and its alias %s",
+                                    argName, alias);
+                            }
                             throw RuntimeError("Duplicate kwarg %s", cname);
                         }
                         dict.insert({ name, value });
                         matched = true;
                         break;
                     }
-                }
 
+                    if (alias && strcmp(alias, cname) == 0)
+                    {
+                        // alias is a match
+                        if (dict.count(argName))
+                        {
+                            // we already found argname
+                            throw RuntimeError("Cannot define kwarg %s and its alias %s",
+                                argName, alias);
+                        }
+                        // we use the real argument name for the dictionary of values
+                        dict.insert({ argName, value });
+                        matched = true;
+                        break;
+                    }
+                }
                 if (!matched)
                     throw RuntimeError("Undefined argument %s for function %s",
                         cname, func->name);

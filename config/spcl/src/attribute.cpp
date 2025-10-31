@@ -49,12 +49,13 @@ AttributeConstSP Attribute::Make(
     const std::string& name,
     int arrayDim,
     bool isOptional,
-    const ConstantConstSP& defaultValue)
+    const ConstantConstSP& defaultValue,
+    const std::string& alias)
 {
     return AttributeConstSP
         (new Attribute(
             description, dataType, name, arrayDim, isOptional,
-            defaultValue));
+            defaultValue, alias));
 }
 
 AttributeConstSP Attribute::InstanceType(const DataTypeConstSP& dataType)
@@ -95,14 +96,16 @@ Attribute::Attribute(
     const std::string& name,
     int arrayDim,
     bool isOptional,
-    const ConstantConstSP& defaultValue)
+    const ConstantConstSP& defaultValue,
+    const std::string& alias)
     :
     m_description(description),
     m_dataType(dataType),
     m_name(name),
     m_arrayDim(arrayDim),
     m_isOptional(isOptional),
-    m_defaultValue(defaultValue)
+    m_defaultValue(defaultValue),
+    m_alias(alias)
 {
     SPI_PRE_CONDITION(arrayDim >= 0 && arrayDim <= 2);
 }
@@ -122,11 +125,6 @@ const std::string& Attribute::name() const
     return m_name;
 }
 
-//bool Attribute::isArray() const
-//{
-//    return m_arrayDim == 1;
-//}
-
 int Attribute::arrayDim() const
 {
     return m_arrayDim;
@@ -142,17 +140,24 @@ const ConstantConstSP Attribute::defaultValue() const
     return m_defaultValue;
 }
 
+const std::string& Attribute::alias() const
+{
+    return m_alias;
+}
+
 AttributeConstSP Attribute::rename(const std::string& newName) const
 {
     return Attribute::Make(m_description, m_dataType, newName, m_arrayDim,
-        m_isOptional, m_defaultValue);
+        m_isOptional, m_defaultValue,
+        m_alias.empty() ? m_name : m_alias);
 }
 
 spdoc::AttributeConstSP Attribute::getDoc() const
 {
     return spdoc::Attribute::Make(m_name, m_description, m_dataType->getDoc(),
         m_arrayDim, m_isOptional,
-        m_isOptional ? m_defaultValue->getDoc() : spdoc::ConstantConstSP());
+        m_isOptional ? m_defaultValue->getDoc() : spdoc::ConstantConstSP(),
+        m_alias);
 }
 
 std::string Attribute::innerType() const

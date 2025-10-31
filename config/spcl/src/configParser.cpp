@@ -357,8 +357,16 @@ FunctionAttributeConstSP parseFunctionAttribute(
         break;
     }
 
+    static ParserOptions functionDefaultOptions;
+    if (functionDefaultOptions.size() == 0)
+    {
+        functionDefaultOptions["alias"] = StringConstant::Make();
+    }
+    ParserOptions functionOptions = parseOptions(lexer, "),", functionDefaultOptions, false);
+    const std::string& alias = getOption(functionOptions, "alias")->getString();
+
     AttributeConstSP attr = Attribute::Make(
-        desc.take(), dataType, name, arrayDim, isOptional, defaultValue);
+        desc.take(), dataType, name, arrayDim, isOptional, defaultValue, alias);
 
     return FunctionAttribute::Make(attr, isOutput);
 }

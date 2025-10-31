@@ -234,6 +234,8 @@ static PyGetSetDef Attribute_properties[] = {
         (void*) "isOptional"},
     {"defaultValue", (getter)(spi_py_object_getter), NULL, NULL,
         (void*) "defaultValue"},
+    {"alias", (getter)(spi_py_object_getter), NULL, NULL,
+        (void*) "alias"},
     {"isArray", (getter)(spi_py_object_getter), NULL, NULL,
         (void*) "isArray"},
     {NULL} // sentinel
@@ -299,7 +301,7 @@ static PyTypeObject Attribute_PyObjectType = {
     0, /*tp_setattro*/
     0, /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT, /*tp_flags*/
-    "Defines an attribute which is an input to a function call or output from a function call.\n\n__init__(self, name, description=[], dataType, arrayDim=None, isOptional=None, defaultValue=None)", /* tp_doc */
+    "Defines an attribute which is an input to a function call or output from a function call.\n\n__init__(self, name, description=[], dataType, arrayDim=None, isOptional=None, defaultValue=None, alias=None)", /* tp_doc */
     0, /* tp_traverse */
     0, /* tp_clear */
     0, /* tp_richcompare */

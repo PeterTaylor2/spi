@@ -1552,6 +1552,13 @@ void writeFunctionCaller(
         ostr << ", " << (arrayDim > 0 ? "true" : "false")
              << ", " << (isOptional ? "true" : "false")
              << ", " << (isPermutable ? "true" : "false");
+
+        const std::string& alias = arg->alias();
+        if (!alias.empty())
+        {
+            ostr << ", \"" << alias << "\"";
+        }
+
         ostr << "}";
     }
 
