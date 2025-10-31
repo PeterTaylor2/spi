@@ -1,5 +1,5 @@
 # macos64 specific files
 
-config/bin-macos64/spcl config/bin-macos64
-config/bin-macos64/sppy config/bin-macos64
+code-generators/bin-macos64/spcl code-generators/bin-macos64
+code-generators/bin-macos64/sppy code-generators/bin-macos64
 

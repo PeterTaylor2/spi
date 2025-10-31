@@ -1,9 +1,9 @@
 # linux64 code generators specific files
 
-config/bin-linux64/spcl config/bin-linux64
-config/bin-linux64/spxl config/bin-linux64
-config/bin-linux64/sppy config/bin-linux64
-config/bin-linux64/sptex config/bin-linux64
-config/bin-linux64/spc config/bin-linux64
-config/bin-linux64/spcs config/bin-linux64
+code-generators/bin-linux64/spcl code-generators/bin-linux64
+code-generators/bin-linux64/spxl code-generators/bin-linux64
+code-generators/bin-linux64/sppy code-generators/bin-linux64
+code-generators/bin-linux64/sptex code-generators/bin-linux64
+code-generators/bin-linux64/spc code-generators/bin-linux64
+code-generators/bin-linux64/spcs code-generators/bin-linux64
 

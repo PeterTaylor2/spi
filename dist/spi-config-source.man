@@ -2,71 +2,71 @@
 
 lib/Makefile
 spi_util/lib/Makefile
-config/Makefile
+code-generators/Makefile
 
 # source code and makefiles
 
-config/GPL.h
-config/LICENSE
+code-generators/GPL.h
+code-generators/LICENSE
 
-config/spc/Makefile
-config/spc/src/*.[ch]pp
+code-generators/spc/Makefile
+code-generators/spc/src/*.[ch]pp
 
-config/spcl/Makefile
-config/spcl/src/*.h
-config/spcl/src/*.[ch]pp
+code-generators/spcl/Makefile
+code-generators/spcl/src/*.h
+code-generators/spcl/src/*.[ch]pp
 
-config/spcl/types/Makefile
-config/spcl/types/properties.mk
-config/spcl/types/*.cfg
-config/spcl/types/types.svc
+code-generators/spcl/types/Makefile
+code-generators/spcl/types/properties.mk
+code-generators/spcl/types/*.cfg
+code-generators/spcl/types/types.svc
 
-config/spcl/src/lex/*.lex
-config/spcl/src/lex/Makefile
+code-generators/spcl/src/lex/*.lex
+code-generators/spcl/src/lex/Makefile
 
-config/spcs/Makefile
-config/spcs/src/*.[ch]pp
+code-generators/spcs/Makefile
+code-generators/spcs/src/*.[ch]pp
 
-config/spdoc/Makefile
-config/spdoc/*.cfg
-config/spdoc/README.txt
-config/spdoc/spdoc.svc
+code-generators/spdoc/Makefile
+code-generators/spdoc/*.cfg
+code-generators/spdoc/README.txt
+code-generators/spdoc/spdoc.svc
 
-config/spgtools/*.hpp
-config/spgtools/src/*.h
-config/spgtools/src/*.[ch]pp
-config/spgtools/Makefile
+code-generators/spgtools/*.hpp
+code-generators/spgtools/src/*.h
+code-generators/spgtools/src/*.[ch]pp
+code-generators/spgtools/Makefile
 
-config/sppy/Makefile
-config/sppy/src/*.[ch]pp
+code-generators/sppy/Makefile
+code-generators/sppy/src/*.[ch]pp
 
-config/sptex/src/*.[ch]pp
-config/sptex/Makefile
+code-generators/sptex/src/*.[ch]pp
+code-generators/sptex/Makefile
 
-config/spxl/Makefile
-config/spxl/src/*.[ch]pp
+code-generators/spxl/Makefile
+code-generators/spxl/src/*.[ch]pp
 
 # probably not needed
-config/spgtools/src/lex/*.lex
-config/spgtools/src/lex/Makefile
+code-generators/spgtools/src/lex/*.lex
+code-generators/spgtools/src/lex/Makefile
 
 # visual studio related - not needed for non-windows builds
 
 spi_util/lib/spi-util-lib.guid
 lib/spi-lib.guid
-config/spi-config-vs1[67].sln
-config/all.guid
-config/config-build.guid
-config/refresh-projects.guid
-config/refresh-projects.v1[67].vcxproj
-config/refresh-projects.v1[67].vcxproj.filters
-config/spc/spc-exe.guid
-config/spcl/spcl-exe.guid
-config/spcl/types/types-config.guid
-config/spcs/spcs-exe.guid
-config/spdoc/spdoc-config.guid
-config/spgtools/spgtools.guid
-config/sppy/sppy-exe.guid
-config/sptex/sptex-exe.guid
-config/spxl/spxl-exe.guid
+code-generators/spi-config-vs1[67].sln
+code-generators/all.guid
+code-generators/config-build.guid
+code-generators/refresh-projects.guid
+code-generators/refresh-projects.v1[67].vcxproj
+code-generators/refresh-projects.v1[67].vcxproj.filters
+code-generators/spc/spc-exe.guid
+code-generators/spcl/spcl-exe.guid
+code-generators/spcl/types/types-config.guid
+code-generators/spcs/spcs-exe.guid
+code-generators/spdoc/spdoc-config.guid
+code-generators/spgtools/spgtools.guid
+code-generators/sppy/sppy-exe.guid
+code-generators/sptex/sptex-exe.guid
+code-generators/spxl/spxl-exe.guid
 
