@@ -127,7 +127,7 @@ void writeFunctionArg(
         }
         else
         {
-            ostr << " = " << arg->defaultValue()->toCode();
+            ostr << " = " << arg->defaultValue()->toCode(dataType->publicType());
         }
     }
 }
@@ -1745,7 +1745,7 @@ void writeFromValueInContext(
             ostr << ", true";
             if (defaultValue && !defaultValue->isUndefined())
             {
-                ostr << ", " << defaultValue->toCode();
+                ostr << ", " << defaultValue->toCode(publicType);
             }
         }
 
@@ -1811,7 +1811,7 @@ void writeFromValueInContext(
             ostr << ", true";
             if (defaultValue && !defaultValue->isUndefined())
             {
-                ostr << ", " << defaultValue->toCode();
+                ostr << ", " << defaultValue->toCode(publicType);
             }
         }
         ostr << ");\n";

@@ -66,4 +66,13 @@
 #include <spi_util/Utils.hpp>
 #include <spi_util/LRUCache.hpp>
 
+#include <limits>
+
+SPI_BEGIN_NAMESPACE
+
+constexpr double not_a_number = std::numeric_limits<double>::quiet_NaN();
+constexpr double infinity = std::numeric_limits<double>::infinity();
+
+SPI_END_NAMESPACE
+
 #endif

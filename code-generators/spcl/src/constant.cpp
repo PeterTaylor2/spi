@@ -310,7 +310,23 @@ StringConstantConstSP StringConstant::Make(const std::string& value)
 
 std::string StringConstant::toCode(spdoc::PublicType publicType) const
 {
-    return spi::StringFormat("\"%s\"", m_value.c_str());
+    switch (publicType)
+    {
+    case spdoc::PublicType::DOUBLE:
+    {
+        std::string ucValue = spi_util::StringUpper(m_value);
+        if (ucValue == "NAN")
+            return "spi::not_a_number";
+        if (ucValue == "INF")
+            return "spi::infinity";
+        if (ucValue == "-INF")
+            return "-spi::infinity";
+        SPI_THROW_RUNTIME_ERROR("Cannot use string '" << m_value << "' as default value for a double");
+        break;
+    }
+    default:
+        return spi::StringFormat("\"%s\"", m_value.c_str());
+    }
 }
 
 const char* StringConstant::typeName() const

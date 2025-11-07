@@ -129,7 +129,7 @@ public:
         int arrayDim = 0,
         bool isOptional = false,
         const ConstantConstSP& defaultValue = {},
-        const std::string& alias = {});
+        const std::string& alias = std::string());
 
     /**
     ************************************************************************
