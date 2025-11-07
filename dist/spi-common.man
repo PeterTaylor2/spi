@@ -146,6 +146,7 @@ replay/dll/*.h
 replay/dll/*.hpp
 replay/dll/src/*.hpp
 replay/dll/src/*.cpp
+replay/dll/replay.svo
 replay/python/Makefile
 replay/python/makeTestInputs.py
 replay/python/src/*.py
