@@ -98,7 +98,11 @@ ifdef VS_BUILD
 # note that G_CYGWIN_BIN might be set by site.mk
 # if it hasn't been set then we have an alternative location
 
+ifdef U_SPI_HOME
 G_CYGWIN_BIN?=$(U_SPI_HOME)/makefiles/cygwin32/bin
+else
+G_CYGWIN_BIN?=$(U_MAKEFILES)/cygwin32/bin
+endif
 PATH:=$(abspath $(G_CYGWIN_BIN)):$(PATH)
 export PATH
 
