@@ -29,6 +29,7 @@
 #include "DeclSpec.h"
 #include "Namespace.hpp"
 #include <string>
+#include <stdint.h>
 
 #ifdef _MSC_VER
 #if _MSC_VER < 1600
