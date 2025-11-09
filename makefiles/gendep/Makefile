@@ -15,7 +15,7 @@ endif
 include $(U_MAKEFILES)/build/exe.mk
 
 U_VCPROJ=gendep
-U_VCPROJ_OPTIONS=-tconfig-install --cleanTarget=config-clean
+U_VCPROJ_OPTIONS=-tconfig-install --cleanTarget=config-clean -j1
 
 config-info::
 	@echo G_PLATFORM=$(G_PLATFORM)
@@ -25,10 +25,12 @@ config-info::
 
 ifeq ($(G_PLATFORM),win32)
 
-install:
+install: bin/gendep.exe
+
+bin/gendep.exe: $(G_BUILD_DIR)/gendep.exe
 	@mkdir -p bin
 	@echo Copying $(G_BUILD_DIR)/gendep.exe to bin
-	cp -f $(G_BUILD_DIR)/gendep.exe bin
+	@cp -f $(G_BUILD_DIR)/gendep.exe bin
 
 config-build::
 	@$(MAKE) -s config-info
@@ -38,7 +40,6 @@ config-clean::
 	@$(MAKE) -s clean DEBUG=0 COMPILER=$(G_CONFIG_COMPILER) BITS=$(G_CONFIG_COMPILER_BITS)
 
 config-install: 
-	@$(MAKE) -s config-info
 	@$(MAKE) -s target  DEBUG=0 COMPILER=$(G_CONFIG_COMPILER) BITS=$(G_CONFIG_COMPILER_BITS)
 	@$(MAKE) -s install DEBUG=0 COMPILER=$(G_CONFIG_COMPILER) BITS=$(G_CONFIG_COMPILER_BITS)
 

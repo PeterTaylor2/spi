@@ -78,6 +78,9 @@ clean-config::
 	done
 
 build::
+ifeq ($(G_PLATFORM),win32)
+	@$(MAKE) -C makefiles/gendep config-install
+endif
 	@$(MAKE) config
 	@$(MAKE) runtime
 
