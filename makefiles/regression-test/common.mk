@@ -29,7 +29,11 @@ endif
 DRIVER:=$(basename $(notdir $(NAME)))
 
 ABI_DIR:=$(U_PRODUCT_HOME)/$(G_ABI)/py$(G_PY_VERSION)
+ifeq ($(G_PLATFORM),win32)
 PYTHONPATH:=$(ABI_DIR);$(U_MAKEFILES)/regression-test
+else
+PYTHONPATH:=$(ABI_DIR):$(U_MAKEFILES)/regression-test
+endif
 
 PATH:=$(ABI_DIR):$(PATH)
 
@@ -48,14 +52,14 @@ endif
 	@echo ==================================================================
 	@rm -f $(G_ABI)/$(DRIVER).out
 	@mkdir -p $(G_ABI)
-	@$(WRAPPER) $(G_PYTHON) $(NAME) $(OPTS) $(PROFILE_OPTS) inputs/$(DRIVER).inp $(G_ABI)/$(DRIVER).out
+	$(WRAPPER) $(G_PYTHON) $(NAME) $(OPTS) $(PROFILE_OPTS) inputs/$(DRIVER).inp $(G_ABI)/$(DRIVER).out
 	@echo
 
 run-all:
 	@rm -f $(G_ABI)/*.out
 	@rm -f $(G_ABI)/*.json
 	@rm -f $(G_ABI)/*.diff
-	@$(WRAPPER) $(ALL) $(OPTS) drivers inputs $(G_ABI)
+	$(WRAPPER) $(ALL) $(OPTS) drivers inputs $(G_ABI)
 
 compare-one:
 ifndef NAME
