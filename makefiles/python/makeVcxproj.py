@@ -208,6 +208,7 @@ def get_build_files():
     buildFiles = []
     if os.path.isfile("Makefile"): buildFiles.append("Makefile")
     buildFiles.extend(glob.glob("*.mk"))
+    buildFiles.extend(glob.glob("*.md"))
     return buildFiles
 
 def _get_item_group_files(sourceFiles, headerFiles, buildFiles, extraFiles):

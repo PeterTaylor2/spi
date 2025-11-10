@@ -8,7 +8,7 @@ U_INC_DIR=.
 U_VCPROJ_OPTIONS=-F 'python/*.py'\
 -F 'build/*.mk'\
 -F 'config/*.mk' -F 'config/configs/*.mk' -F 'config/computers/*.mk'\
--F 'spi/*.mk'
+-F 'spi/*.mk' -F 'regression-test/*.mk' -F 'regression-test/*.py'
 
 I_TARGET=None
 

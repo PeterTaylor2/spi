@@ -34,6 +34,7 @@ code-generators/sptex\
 code-generators/spxl
 
 EXTRA_VCPROJ_DIRS=\
+makefiles\
 makefiles/gendep\
 makefiles/cversion\
 code-generators\

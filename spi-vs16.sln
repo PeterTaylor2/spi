@@ -5,28 +5,29 @@ VisualStudioVersion = 16.0.29001.49
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spi-util", "spi_util\spi-util.v16.vcxproj", "{798112FA-9159-11E9-8E39-34E12D458C69}"
 	ProjectSection(ProjectDependencies) = postProject
+		{81FA2FBE-839F-4652-8026-C230E1C498C3} = {81FA2FBE-839F-4652-8026-C230E1C498C3}
 		{A644B1B0-A8CD-11E5-82BB-0025647E0603} = {A644B1B0-A8CD-11E5-82BB-0025647E0603}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spi-dll", "dll\spi-dll.v16.vcxproj", "{27F180CF-9B25-11E2-8746-C485083D28D0}"
 	ProjectSection(ProjectDependencies) = postProject
-		{8B17072E-9957-11EA-B465-DCFE07D3132C} = {8B17072E-9957-11EA-B465-DCFE07D3132C}
 		{798112FA-9159-11E9-8E39-34E12D458C69} = {798112FA-9159-11E9-8E39-34E12D458C69}
+		{8B17072E-9957-11EA-B465-DCFE07D3132C} = {8B17072E-9957-11EA-B465-DCFE07D3132C}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sppy-dll", "python\sppy-dll.v16.vcxproj", "{5660688F-DEE6-11E3-8EB6-C4850839C16D}"
 	ProjectSection(ProjectDependencies) = postProject
-		{8B17072E-9957-11EA-B465-DCFE07D3132C} = {8B17072E-9957-11EA-B465-DCFE07D3132C}
 		{27F180CF-9B25-11E2-8746-C485083D28D0} = {27F180CF-9B25-11E2-8746-C485083D28D0}
 		{798112FA-9159-11E9-8E39-34E12D458C69} = {798112FA-9159-11E9-8E39-34E12D458C69}
+		{8B17072E-9957-11EA-B465-DCFE07D3132C} = {8B17072E-9957-11EA-B465-DCFE07D3132C}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spi_curl", "spi_curl\spi_curl.v16.vcxproj", "{A644B1B0-A8CD-11E5-82BB-0025647E0603}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spdoc", "svo\spdoc\spdoc.v16.vcxproj", "{A83EFFF0-BBE7-11E7-9B16-AC2B6E11458A}"
 	ProjectSection(ProjectDependencies) = postProject
-		{5660688F-DEE6-11E3-8EB6-C4850839C16D} = {5660688F-DEE6-11E3-8EB6-C4850839C16D}
 		{27F180CF-9B25-11E2-8746-C485083D28D0} = {27F180CF-9B25-11E2-8746-C485083D28D0}
+		{5660688F-DEE6-11E3-8EB6-C4850839C16D} = {5660688F-DEE6-11E3-8EB6-C4850839C16D}
 		{798112FA-9159-11E9-8E39-34E12D458C69} = {798112FA-9159-11E9-8E39-34E12D458C69}
 	EndProjectSection
 EndProject
@@ -53,24 +54,25 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "replay-python-install", "re
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spxl-dll", "excel\spxl-dll.v16.vcxproj", "{824B76E1-0B90-11E8-9FD9-AC2B6E11458A}"
 	ProjectSection(ProjectDependencies) = postProject
-		{8B17072E-9957-11EA-B465-DCFE07D3132C} = {8B17072E-9957-11EA-B465-DCFE07D3132C}
 		{27F180CF-9B25-11E2-8746-C485083D28D0} = {27F180CF-9B25-11E2-8746-C485083D28D0}
 		{798112FA-9159-11E9-8E39-34E12D458C69} = {798112FA-9159-11E9-8E39-34E12D458C69}
+		{8B17072E-9957-11EA-B465-DCFE07D3132C} = {8B17072E-9957-11EA-B465-DCFE07D3132C}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spi-boost-lib", "spi_boost\lib\spi-boost-lib.v16.vcxproj", "{8B17072E-9957-11EA-B465-DCFE07D3132C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spi-c-dll", "c\spi-c-dll.v16.vcxproj", "{3B0B364F-29C8-11EA-B858-AC2B6E11458A}"
 	ProjectSection(ProjectDependencies) = postProject
-		{8B17072E-9957-11EA-B465-DCFE07D3132C} = {8B17072E-9957-11EA-B465-DCFE07D3132C}
 		{27F180CF-9B25-11E2-8746-C485083D28D0} = {27F180CF-9B25-11E2-8746-C485083D28D0}
 		{798112FA-9159-11E9-8E39-34E12D458C69} = {798112FA-9159-11E9-8E39-34E12D458C69}
+		{8B17072E-9957-11EA-B465-DCFE07D3132C} = {8B17072E-9957-11EA-B465-DCFE07D3132C}
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "runtime", "runtime", "{6DB8A382-131E-4902-8484-4935B37B0B01}"
 	ProjectSection(SolutionItems) = preProject
 		LGPL.h = LGPL.h
 		LICENSE = LICENSE
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "code generators", "code generators", "{FAEBF765-64AD-483E-A581-47267FCB586B}"
@@ -81,59 +83,57 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "code generators", "code gen
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spcl-exe", "code-generators\spcl\spcl-exe.v16.vcxproj", "{0EAC096E-915B-11E9-AD4E-34E12D458C69}"
 	ProjectSection(ProjectDependencies) = postProject
-		{49A23208-9913-11EA-8560-DCFE07D3132C} = {49A23208-9913-11EA-8560-DCFE07D3132C}
 		{0DC26036-915B-11E9-92F6-34E12D458C69} = {0DC26036-915B-11E9-92F6-34E12D458C69}
 		{0E8D0CA2-915B-11E9-B91C-34E12D458C69} = {0E8D0CA2-915B-11E9-B91C-34E12D458C69}
+		{49A23208-9913-11EA-8560-DCFE07D3132C} = {49A23208-9913-11EA-8560-DCFE07D3132C}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spc-exe", "code-generators\spc\spc-exe.v16.vcxproj", "{CBBCCD6E-FFAD-11EC-9F51-AC2B6E11458A}"
 	ProjectSection(ProjectDependencies) = postProject
-		{49A23208-9913-11EA-8560-DCFE07D3132C} = {49A23208-9913-11EA-8560-DCFE07D3132C}
 		{0DC26036-915B-11E9-92F6-34E12D458C69} = {0DC26036-915B-11E9-92F6-34E12D458C69}
 		{0E8D0CA2-915B-11E9-B91C-34E12D458C69} = {0E8D0CA2-915B-11E9-B91C-34E12D458C69}
+		{49A23208-9913-11EA-8560-DCFE07D3132C} = {49A23208-9913-11EA-8560-DCFE07D3132C}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spcs-exe", "code-generators\spcs\spcs-exe.v16.vcxproj", "{DDC58770-2684-11EA-B617-AC2B6E11458A}"
 	ProjectSection(ProjectDependencies) = postProject
-		{49A23208-9913-11EA-8560-DCFE07D3132C} = {49A23208-9913-11EA-8560-DCFE07D3132C}
 		{0DC26036-915B-11E9-92F6-34E12D458C69} = {0DC26036-915B-11E9-92F6-34E12D458C69}
 		{0E8D0CA2-915B-11E9-B91C-34E12D458C69} = {0E8D0CA2-915B-11E9-B91C-34E12D458C69}
+		{49A23208-9913-11EA-8560-DCFE07D3132C} = {49A23208-9913-11EA-8560-DCFE07D3132C}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spdoc-config", "code-generators\spdoc\spdoc-config.v16.vcxproj", "{7C327B2E-BEE9-11E7-9023-AC2B6E11458A}"
 	ProjectSection(ProjectDependencies) = postProject
-		{0EE2DC28-915B-11E9-B1D9-34E12D458C69} = {0EE2DC28-915B-11E9-B1D9-34E12D458C69}
 		{0EAC096E-915B-11E9-AD4E-34E12D458C69} = {0EAC096E-915B-11E9-AD4E-34E12D458C69}
+		{0EE2DC28-915B-11E9-B1D9-34E12D458C69} = {0EE2DC28-915B-11E9-B1D9-34E12D458C69}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spgtools", "code-generators\spgtools\spgtools.v16.vcxproj", "{0E8D0CA2-915B-11E9-B91C-34E12D458C69}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sppy-exe", "code-generators\sppy\sppy-exe.v16.vcxproj", "{0EE2DC28-915B-11E9-B1D9-34E12D458C69}"
 	ProjectSection(ProjectDependencies) = postProject
-		{49A23208-9913-11EA-8560-DCFE07D3132C} = {49A23208-9913-11EA-8560-DCFE07D3132C}
 		{0DC26036-915B-11E9-92F6-34E12D458C69} = {0DC26036-915B-11E9-92F6-34E12D458C69}
 		{0E8D0CA2-915B-11E9-B91C-34E12D458C69} = {0E8D0CA2-915B-11E9-B91C-34E12D458C69}
+		{49A23208-9913-11EA-8560-DCFE07D3132C} = {49A23208-9913-11EA-8560-DCFE07D3132C}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sptex-exe", "code-generators\sptex\sptex-exe.v16.vcxproj", "{0F01D8AC-915B-11E9-9AB1-34E12D458C69}"
 	ProjectSection(ProjectDependencies) = postProject
-		{49A23208-9913-11EA-8560-DCFE07D3132C} = {49A23208-9913-11EA-8560-DCFE07D3132C}
 		{0DC26036-915B-11E9-92F6-34E12D458C69} = {0DC26036-915B-11E9-92F6-34E12D458C69}
 		{0E8D0CA2-915B-11E9-B91C-34E12D458C69} = {0E8D0CA2-915B-11E9-B91C-34E12D458C69}
+		{49A23208-9913-11EA-8560-DCFE07D3132C} = {49A23208-9913-11EA-8560-DCFE07D3132C}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spxl-exe", "code-generators\spxl\spxl-exe.v16.vcxproj", "{0F27FBF6-915B-11E9-89D8-34E12D458C69}"
 	ProjectSection(ProjectDependencies) = postProject
-		{49A23208-9913-11EA-8560-DCFE07D3132C} = {49A23208-9913-11EA-8560-DCFE07D3132C}
 		{0DC26036-915B-11E9-92F6-34E12D458C69} = {0DC26036-915B-11E9-92F6-34E12D458C69}
 		{0E8D0CA2-915B-11E9-B91C-34E12D458C69} = {0E8D0CA2-915B-11E9-B91C-34E12D458C69}
+		{49A23208-9913-11EA-8560-DCFE07D3132C} = {49A23208-9913-11EA-8560-DCFE07D3132C}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spi-lib", "lib\spi-lib.v16.vcxproj", "{0DC26036-915B-11E9-92F6-34E12D458C69}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spi-util-lib", "spi_util\lib\spi-util-lib.v16.vcxproj", "{49A23208-9913-11EA-8560-DCFE07D3132C}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "refresh-projects", "refresh-projects.v16.vcxproj", "{D68CCBEF-9FD3-42DD-8AE0-0BD56331EC23}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "types-config", "code-generators\spcl\types\types-config.v16.vcxproj", "{C2754897-AFD8-4429-99F0-0B2E4B86DAE5}"
 EndProject
@@ -141,118 +141,19 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "config-build", "code-genera
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gendep", "makefiles\gendep\gendep.v16.vcxproj", "{2F6D8B9C-0FE3-4915-828F-248E2CFB807D}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "all", "all.v16.vcxproj", "{A05747AF-7210-4EC2-BC24-BD7D66CC73E6}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "all", "all.v16.vcxproj", "{251BD000-4DE2-48FF-939C-BF51D09AD9A2}"
 	ProjectSection(ProjectDependencies) = postProject
 		{2F6D8B9C-0FE3-4915-828F-248E2CFB807D} = {2F6D8B9C-0FE3-4915-828F-248E2CFB807D}
 		{32D9F6A5-8CF8-43AD-8B0D-5151AC4DB686} = {32D9F6A5-8CF8-43AD-8B0D-5151AC4DB686}
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "makefiles", "makefiles", "{CFEF2266-DDD1-4AA7-A824-9A0CC1F04526}"
-	ProjectSection(SolutionItems) = preProject
-		makefiles\version.mk = makefiles\version.mk
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{DFD0FB19-E89B-4C75-B159-FD6DBE2B659D}"
-	ProjectSection(SolutionItems) = preProject
-		makefiles\build\dll.mk = makefiles\build\dll.mk
-		makefiles\build\exe.mk = makefiles\build\exe.mk
-		makefiles\build\importlib.mk = makefiles\build\importlib.mk
-		makefiles\build\lib.mk = makefiles\build\lib.mk
-		makefiles\build\objects.mk = makefiles\build\objects.mk
-		makefiles\build\vcproj.mk = makefiles\build\vcproj.mk
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{A714AB43-15CE-4D1B-BE6D-0D000D960EC6}"
-	ProjectSection(SolutionItems) = preProject
-		makefiles\config\config.mk = makefiles\config\config.mk
-		makefiles\config\cygwin32.mk = makefiles\config\cygwin32.mk
-		makefiles\config\cygwin32_gcc.mk = makefiles\config\cygwin32_gcc.mk
-		makefiles\config\cygwin32_gcc_debug.mk = makefiles\config\cygwin32_gcc_debug.mk
-		makefiles\config\cygwin32_gcc_release.mk = makefiles\config\cygwin32_gcc_release.mk
-		makefiles\config\cygwin64.mk = makefiles\config\cygwin64.mk
-		makefiles\config\cygwin64_gcc.mk = makefiles\config\cygwin64_gcc.mk
-		makefiles\config\cygwin64_gcc_debug.mk = makefiles\config\cygwin64_gcc_debug.mk
-		makefiles\config\cygwin64_gcc_release.mk = makefiles\config\cygwin64_gcc_release.mk
-		makefiles\config\linux64.mk = makefiles\config\linux64.mk
-		makefiles\config\linux64_gcc.mk = makefiles\config\linux64_gcc.mk
-		makefiles\config\linux64_gcc_debug.mk = makefiles\config\linux64_gcc_debug.mk
-		makefiles\config\linux64_gcc_release.mk = makefiles\config\linux64_gcc_release.mk
-		makefiles\config\macos64.mk = makefiles\config\macos64.mk
-		makefiles\config\macos64_gcc.mk = makefiles\config\macos64_gcc.mk
-		makefiles\config\macos64_gcc_debug.mk = makefiles\config\macos64_gcc_debug.mk
-		makefiles\config\macos64_gcc_release.mk = makefiles\config\macos64_gcc_release.mk
-		makefiles\config\msvc_version.mk = makefiles\config\msvc_version.mk
-		makefiles\config\python.mk = makefiles\config\python.mk
-		makefiles\config\win32.mk = makefiles\config\win32.mk
-		makefiles\config\win32_msvc15.mk = makefiles\config\win32_msvc15.mk
-		makefiles\config\win32_msvc15_debug.mk = makefiles\config\win32_msvc15_debug.mk
-		makefiles\config\win32_msvc15_release.mk = makefiles\config\win32_msvc15_release.mk
-		makefiles\config\win32_msvc16.mk = makefiles\config\win32_msvc16.mk
-		makefiles\config\win32_msvc16_debug.mk = makefiles\config\win32_msvc16_debug.mk
-		makefiles\config\win32_msvc16_release.mk = makefiles\config\win32_msvc16_release.mk
-		makefiles\config\win32_msvc17.mk = makefiles\config\win32_msvc17.mk
-		makefiles\config\win32_msvc17_debug.mk = makefiles\config\win32_msvc17_debug.mk
-		makefiles\config\win32_msvc17_release.mk = makefiles\config\win32_msvc17_release.mk
-		makefiles\config\win32_msvc9.mk = makefiles\config\win32_msvc9.mk
-		makefiles\config\win32_msvc9_debug.mk = makefiles\config\win32_msvc9_debug.mk
-		makefiles\config\win32_msvc9_release.mk = makefiles\config\win32_msvc9_release.mk
-		makefiles\config\win64.mk = makefiles\config\win64.mk
-		makefiles\config\win64_msvc15.mk = makefiles\config\win64_msvc15.mk
-		makefiles\config\win64_msvc15_debug.mk = makefiles\config\win64_msvc15_debug.mk
-		makefiles\config\win64_msvc15_release.mk = makefiles\config\win64_msvc15_release.mk
-		makefiles\config\win64_msvc16.mk = makefiles\config\win64_msvc16.mk
-		makefiles\config\win64_msvc16_debug.mk = makefiles\config\win64_msvc16_debug.mk
-		makefiles\config\win64_msvc16_release.mk = makefiles\config\win64_msvc16_release.mk
-		makefiles\config\win64_msvc17.mk = makefiles\config\win64_msvc17.mk
-		makefiles\config\win64_msvc17_debug.mk = makefiles\config\win64_msvc17_debug.mk
-		makefiles\config\win64_msvc17_release.mk = makefiles\config\win64_msvc17_release.mk
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "spi", "spi", "{65693DA8-738F-4183-A9C2-3015EA30BF8C}"
-	ProjectSection(SolutionItems) = preProject
-		makefiles\spi\base_service.mk = makefiles\spi\base_service.mk
-		makefiles\spi\c.mk = makefiles\spi\c.mk
-		makefiles\spi\cli.mk = makefiles\spi\cli.mk
-		makefiles\spi\cs.mk = makefiles\spi\cs.mk
-		makefiles\spi\dll.mk = makefiles\spi\dll.mk
-		makefiles\spi\doc.mk = makefiles\spi\doc.mk
-		makefiles\spi\pyd.mk = makefiles\spi\pyd.mk
-		makefiles\spi\replay.mk = makefiles\spi\replay.mk
-		makefiles\spi\runtime.mk = makefiles\spi\runtime.mk
-		makefiles\spi\spc.mk = makefiles\spi\spc.mk
-		makefiles\spi\spcl.mk = makefiles\spi\spcl.mk
-		makefiles\spi\spcli.mk = makefiles\spi\spcli.mk
-		makefiles\spi\spcs.mk = makefiles\spi\spcs.mk
-		makefiles\spi\sppy.mk = makefiles\spi\sppy.mk
-		makefiles\spi\spxl.mk = makefiles\spi\spxl.mk
-		makefiles\spi\xll.mk = makefiles\spi\xll.mk
-		makefiles\spi\xllTest.mk = makefiles\spi\xllTest.mk
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "configs", "configs", "{1A7CA00D-309E-4AE4-AEAA-7C289E91636F}"
-	ProjectSection(SolutionItems) = preProject
-		makefiles\config\configs\cygwin32_config.mk = makefiles\config\configs\cygwin32_config.mk
-		makefiles\config\configs\cygwin64_config.mk = makefiles\config\configs\cygwin64_config.mk
-		makefiles\config\configs\linux64_config.mk = makefiles\config\configs\linux64_config.mk
-		makefiles\config\configs\macos64_config.mk = makefiles\config\configs\macos64_config.mk
-		makefiles\config\configs\win32_config.mk = makefiles\config\configs\win32_config.mk
-		makefiles\config\configs\win64_32_config.mk = makefiles\config\configs\win64_32_config.mk
-		makefiles\config\configs\win64_config.mk = makefiles\config\configs\win64_config.mk
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config-build", "config-build", "{D9016CB7-C928-4B50-93B1-F25F5C44CEDD}"
-	ProjectSection(SolutionItems) = preProject
-		makefiles\config\config-build\cygwin32.mk = makefiles\config\config-build\cygwin32.mk
-		makefiles\config\config-build\cygwin64.mk = makefiles\config\config-build\cygwin64.mk
-		makefiles\config\config-build\linux64.mk = makefiles\config\config-build\linux64.mk
-		makefiles\config\config-build\macos64.mk = makefiles\config\config-build\macos64.mk
-		makefiles\config\config-build\README.txt = makefiles\config\config-build\README.txt
-		makefiles\config\config-build\win32.mk = makefiles\config\config-build\win32.mk
-		makefiles\config\config-build\win64.mk = makefiles\config\config-build\win64.mk
-		makefiles\config\config-build\win64_32.mk = makefiles\config\config-build\win64_32.mk
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cversion", "makefiles\cversion\cversion.v16.vcxproj", "{87AEDBD4-A1E3-4BA8-AA7B-61E7370CFDCF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "makefiles", "makefiles\makefiles.v16.vcxproj", "{9F555C11-EFBE-4A8C-93AF-151D7C363677}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "zlib\zlib.v16.vcxproj", "{81FA2FBE-839F-4652-8026-C230E1C498C3}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "refresh-projects", "refresh-projects.v16.vcxproj", "{D9BF6CD6-6CB2-4191-A9B7-5B47565472C2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -446,14 +347,6 @@ Global
 		{49A23208-9913-11EA-8560-DCFE07D3132C}.Release|x64.Build.0 = Release|x64
 		{49A23208-9913-11EA-8560-DCFE07D3132C}.Release|x86.ActiveCfg = Release|Win32
 		{49A23208-9913-11EA-8560-DCFE07D3132C}.Release|x86.Build.0 = Release|Win32
-		{D68CCBEF-9FD3-42DD-8AE0-0BD56331EC23}.Debug|x64.ActiveCfg = Debug|x64
-		{D68CCBEF-9FD3-42DD-8AE0-0BD56331EC23}.Debug|x64.Build.0 = Debug|x64
-		{D68CCBEF-9FD3-42DD-8AE0-0BD56331EC23}.Debug|x86.ActiveCfg = Debug|Win32
-		{D68CCBEF-9FD3-42DD-8AE0-0BD56331EC23}.Debug|x86.Build.0 = Debug|Win32
-		{D68CCBEF-9FD3-42DD-8AE0-0BD56331EC23}.Release|x64.ActiveCfg = Release|x64
-		{D68CCBEF-9FD3-42DD-8AE0-0BD56331EC23}.Release|x64.Build.0 = Release|x64
-		{D68CCBEF-9FD3-42DD-8AE0-0BD56331EC23}.Release|x86.ActiveCfg = Release|Win32
-		{D68CCBEF-9FD3-42DD-8AE0-0BD56331EC23}.Release|x86.Build.0 = Release|Win32
 		{C2754897-AFD8-4429-99F0-0B2E4B86DAE5}.Debug|x64.ActiveCfg = Debug|x64
 		{C2754897-AFD8-4429-99F0-0B2E4B86DAE5}.Debug|x64.Build.0 = Debug|x64
 		{C2754897-AFD8-4429-99F0-0B2E4B86DAE5}.Debug|x86.ActiveCfg = Debug|Win32
@@ -478,14 +371,14 @@ Global
 		{2F6D8B9C-0FE3-4915-828F-248E2CFB807D}.Release|x64.Build.0 = Release|x64
 		{2F6D8B9C-0FE3-4915-828F-248E2CFB807D}.Release|x86.ActiveCfg = Release|Win32
 		{2F6D8B9C-0FE3-4915-828F-248E2CFB807D}.Release|x86.Build.0 = Release|Win32
-		{A05747AF-7210-4EC2-BC24-BD7D66CC73E6}.Debug|x64.ActiveCfg = Debug|x64
-		{A05747AF-7210-4EC2-BC24-BD7D66CC73E6}.Debug|x64.Build.0 = Debug|x64
-		{A05747AF-7210-4EC2-BC24-BD7D66CC73E6}.Debug|x86.ActiveCfg = Debug|Win32
-		{A05747AF-7210-4EC2-BC24-BD7D66CC73E6}.Debug|x86.Build.0 = Debug|Win32
-		{A05747AF-7210-4EC2-BC24-BD7D66CC73E6}.Release|x64.ActiveCfg = Release|x64
-		{A05747AF-7210-4EC2-BC24-BD7D66CC73E6}.Release|x64.Build.0 = Release|x64
-		{A05747AF-7210-4EC2-BC24-BD7D66CC73E6}.Release|x86.ActiveCfg = Release|Win32
-		{A05747AF-7210-4EC2-BC24-BD7D66CC73E6}.Release|x86.Build.0 = Release|Win32
+		{251BD000-4DE2-48FF-939C-BF51D09AD9A2}.Debug|x64.ActiveCfg = Debug|x64
+		{251BD000-4DE2-48FF-939C-BF51D09AD9A2}.Debug|x64.Build.0 = Debug|x64
+		{251BD000-4DE2-48FF-939C-BF51D09AD9A2}.Debug|x86.ActiveCfg = Debug|Win32
+		{251BD000-4DE2-48FF-939C-BF51D09AD9A2}.Debug|x86.Build.0 = Debug|Win32
+		{251BD000-4DE2-48FF-939C-BF51D09AD9A2}.Release|x64.ActiveCfg = Release|x64
+		{251BD000-4DE2-48FF-939C-BF51D09AD9A2}.Release|x64.Build.0 = Release|x64
+		{251BD000-4DE2-48FF-939C-BF51D09AD9A2}.Release|x86.ActiveCfg = Release|Win32
+		{251BD000-4DE2-48FF-939C-BF51D09AD9A2}.Release|x86.Build.0 = Release|Win32
 		{87AEDBD4-A1E3-4BA8-AA7B-61E7370CFDCF}.Debug|x64.ActiveCfg = Debug|x64
 		{87AEDBD4-A1E3-4BA8-AA7B-61E7370CFDCF}.Debug|x64.Build.0 = Debug|x64
 		{87AEDBD4-A1E3-4BA8-AA7B-61E7370CFDCF}.Debug|x86.ActiveCfg = Debug|Win32
@@ -494,6 +387,30 @@ Global
 		{87AEDBD4-A1E3-4BA8-AA7B-61E7370CFDCF}.Release|x64.Build.0 = Release|x64
 		{87AEDBD4-A1E3-4BA8-AA7B-61E7370CFDCF}.Release|x86.ActiveCfg = Release|Win32
 		{87AEDBD4-A1E3-4BA8-AA7B-61E7370CFDCF}.Release|x86.Build.0 = Release|Win32
+		{9F555C11-EFBE-4A8C-93AF-151D7C363677}.Debug|x64.ActiveCfg = Debug|x64
+		{9F555C11-EFBE-4A8C-93AF-151D7C363677}.Debug|x64.Build.0 = Debug|x64
+		{9F555C11-EFBE-4A8C-93AF-151D7C363677}.Debug|x86.ActiveCfg = Debug|Win32
+		{9F555C11-EFBE-4A8C-93AF-151D7C363677}.Debug|x86.Build.0 = Debug|Win32
+		{9F555C11-EFBE-4A8C-93AF-151D7C363677}.Release|x64.ActiveCfg = Release|x64
+		{9F555C11-EFBE-4A8C-93AF-151D7C363677}.Release|x64.Build.0 = Release|x64
+		{9F555C11-EFBE-4A8C-93AF-151D7C363677}.Release|x86.ActiveCfg = Release|Win32
+		{9F555C11-EFBE-4A8C-93AF-151D7C363677}.Release|x86.Build.0 = Release|Win32
+		{81FA2FBE-839F-4652-8026-C230E1C498C3}.Debug|x64.ActiveCfg = Debug|x64
+		{81FA2FBE-839F-4652-8026-C230E1C498C3}.Debug|x64.Build.0 = Debug|x64
+		{81FA2FBE-839F-4652-8026-C230E1C498C3}.Debug|x86.ActiveCfg = Debug|Win32
+		{81FA2FBE-839F-4652-8026-C230E1C498C3}.Debug|x86.Build.0 = Debug|Win32
+		{81FA2FBE-839F-4652-8026-C230E1C498C3}.Release|x64.ActiveCfg = Release|x64
+		{81FA2FBE-839F-4652-8026-C230E1C498C3}.Release|x64.Build.0 = Release|x64
+		{81FA2FBE-839F-4652-8026-C230E1C498C3}.Release|x86.ActiveCfg = Release|Win32
+		{81FA2FBE-839F-4652-8026-C230E1C498C3}.Release|x86.Build.0 = Release|Win32
+		{D9BF6CD6-6CB2-4191-A9B7-5B47565472C2}.Debug|x64.ActiveCfg = Debug|x64
+		{D9BF6CD6-6CB2-4191-A9B7-5B47565472C2}.Debug|x64.Build.0 = Debug|x64
+		{D9BF6CD6-6CB2-4191-A9B7-5B47565472C2}.Debug|x86.ActiveCfg = Debug|Win32
+		{D9BF6CD6-6CB2-4191-A9B7-5B47565472C2}.Debug|x86.Build.0 = Debug|Win32
+		{D9BF6CD6-6CB2-4191-A9B7-5B47565472C2}.Release|x64.ActiveCfg = Release|x64
+		{D9BF6CD6-6CB2-4191-A9B7-5B47565472C2}.Release|x64.Build.0 = Release|x64
+		{D9BF6CD6-6CB2-4191-A9B7-5B47565472C2}.Release|x86.ActiveCfg = Release|Win32
+		{D9BF6CD6-6CB2-4191-A9B7-5B47565472C2}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -524,11 +441,7 @@ Global
 		{49A23208-9913-11EA-8560-DCFE07D3132C} = {FAEBF765-64AD-483E-A581-47267FCB586B}
 		{C2754897-AFD8-4429-99F0-0B2E4B86DAE5} = {FAEBF765-64AD-483E-A581-47267FCB586B}
 		{32D9F6A5-8CF8-43AD-8B0D-5151AC4DB686} = {FAEBF765-64AD-483E-A581-47267FCB586B}
-		{DFD0FB19-E89B-4C75-B159-FD6DBE2B659D} = {CFEF2266-DDD1-4AA7-A824-9A0CC1F04526}
-		{A714AB43-15CE-4D1B-BE6D-0D000D960EC6} = {CFEF2266-DDD1-4AA7-A824-9A0CC1F04526}
-		{65693DA8-738F-4183-A9C2-3015EA30BF8C} = {CFEF2266-DDD1-4AA7-A824-9A0CC1F04526}
-		{1A7CA00D-309E-4AE4-AEAA-7C289E91636F} = {A714AB43-15CE-4D1B-BE6D-0D000D960EC6}
-		{D9016CB7-C928-4B50-93B1-F25F5C44CEDD} = {A714AB43-15CE-4D1B-BE6D-0D000D960EC6}
+		{81FA2FBE-839F-4652-8026-C230E1C498C3} = {6DB8A382-131E-4902-8484-4935B37B0B01}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B689A53E-5D3F-44C8-BF7A-1FE88BBD18AA}
