@@ -41,7 +41,12 @@ I_C_SOURCE:=$(U_CONFIG_DIR)/$(U_SERVICE).svo
 # If you have the copy of spc corresponding to your current $(G_ABI)
 # then use it - otherwise use the one in bin directory
 ###########################################################################
+ifdef LOCAL_BUILD
 I_SPC=$(wildcard $(U_SPI_HOME)/code-generators/bin/$(G_ABI)/spc$(G_EXE))
+else
+I_SPC=
+endif
+
 ifeq "$(I_SPC)" ""
 I_SPC:=$(U_SPI_HOME)/code-generators/bin-$(G_PLATFORM)/spc$(G_EXE)
 endif

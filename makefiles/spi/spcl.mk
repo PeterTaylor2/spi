@@ -19,7 +19,12 @@ code: $(U_SERVICE).svo
 ###########################################################################
 U_SPCL?=spcl
 
+ifdef LOCAL_BUILD
 I_SPCL=$(wildcard $(U_SPI_HOME)/code-generators/bin/$(G_ABI)/$(U_SPCL)$(G_EXE))
+else
+I_SPCL=
+endif
+
 ifeq "$(I_SPCL)" ""
 I_SPCL:=$(U_SPI_HOME)/code-generators/bin-$(G_PLATFORM)/$(U_SPCL)$(G_EXE)
 endif
