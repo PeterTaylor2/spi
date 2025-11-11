@@ -17,9 +17,7 @@ U_VCXPROJ_OPTIONS=-tcopy
 include $(U_SPI_HOME)/makefiles/spi/spcl.mk
 
 copy: code
-	cp -pf types*.h ../src
-	cp -pf types*.hpp ../src
-	cp -pf src/types*.[ch]pp ../src
+	@$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/copyFiles.py ../src types*.h types*.hpp src/types*.[ch]pp
 
 clean::
 	rm -f *.h

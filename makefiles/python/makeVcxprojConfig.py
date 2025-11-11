@@ -77,7 +77,7 @@ def _get_property_groups(platforms, target, makefileTarget, vcTarget, cleanTarge
         bits = platform[1]
         systemIncludes = vstools.systemIncludes(compiler, bits)
         for debug in ["Debug", "Release"]:
-            debugFlag = " DEBUG=1" if debug == "Debug" else ""
+            debugFlag = "" # no point in allowing debug option from VS
             condition = "'$(Configuration)|$(Platform)'=='%s|%s'" % (debug,name)
             lines.append("    <NMakeBuildCommandLine Condition=\"%s\">make %s VS_BUILD=1 COMPILER=%s BITS=%s%s</NMakeBuildCommandLine>" % (
                 condition, makefileTarget, compiler, bits, debugFlag))
