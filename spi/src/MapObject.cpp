@@ -50,6 +50,11 @@ void IMapObject::SetValue(const std::string& name, const Value& value)
     m_map->SetValue(name, value);
 }
 
+bool IMapObject::Exists(const std::string& name) const
+{
+    return m_map->Exists(name);
+}
+
 const std::vector<std::string>& IMapObject::GetNames() const
 {
     return m_map->FieldNames();

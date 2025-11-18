@@ -100,6 +100,7 @@ public:
     Value GetValue(const std::string& name) const;
     void SetValue(const std::string& name, const Value& value);
     const std::vector<std::string>& GetNames() const;
+    bool Exists(const std::string& name) const;
 
     // convenience methods for getting values of particular types
     // implemented inline in terms of GetValue and Value access methods
