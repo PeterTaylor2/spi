@@ -56,6 +56,11 @@ def systemIncludes(compiler, bits=32):
         if bits in [32,64]:
             return r"C:\Program Files\Microsoft Visual Studio\2022\%(G_VS17_PACKAGE_TYPE)s\VC\Tools\MSVC\%(G_VS17_TOOLS_VERSION)s\include;C:\Program Files (x86)\Windows Kits\10\include\%(G_VS17_KITS_VERSION)s\ucrt;C:\Program Files (x86)\Windows Kits\10\include\%(G_VS17_KITS_VERSION)s\um;C:\Program Files (x86)\Windows Kits\10\include\%(G_VS17_KITS_VERSION)s\shared" % settings
 
+    if compiler == "msvc18":
+        settings = siteSettings()
+        if bits in [32,64]:
+            return r"C:\Program Files\Microsoft Visual Studio\18\%(G_VS18_PACKAGE_TYPE)s\VC\Tools\MSVC\%(G_VS18_TOOLS_VERSION)s\include;C:\Program Files (x86)\Windows Kits\10\include\%(G_VS18_KITS_VERSION)s\ucrt;C:\Program Files (x86)\Windows Kits\10\include\%(G_VS18_KITS_VERSION)s\um;C:\Program Files (x86)\Windows Kits\10\include\%(G_VS18_KITS_VERSION)s\shared" % settings
+
     raise Exception("Unsupported combination: COMPILER=%s BITS=%s" % (
             compiler, bits))
 
@@ -71,7 +76,7 @@ def platforms(compiler):
     platforms = []
     if compiler in ["msvc9"]:
         platforms.append(("Win32", 32))
-    elif compiler in ["msvc15", "msvc16", "msvc17"]:
+    elif compiler in ["msvc15", "msvc16", "msvc17", "msvc18"]:
         platforms.append(("Win32", 32))
         platforms.append(("x64", 64))
     return platforms
@@ -84,3 +89,5 @@ if __name__ == "__main__":
     print (systemIncludes("msvc16", bits=64))
     print (systemIncludes("msvc17", bits=32))
     print (systemIncludes("msvc17", bits=64))
+    print (systemIncludes("msvc18", bits=32))
+    print (systemIncludes("msvc18", bits=64))

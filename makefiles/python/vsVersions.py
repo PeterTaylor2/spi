@@ -15,6 +15,9 @@ We are assuming that the multi-part separations are in alphabetical order.
 def getLatestVersion(dn):
     versions = os.listdir(dn)
     for version in sorted(versions, reverse=True):
+        v0 = version[0]
+        if v0 < '1' or v0 > '9':
+            continue
         dn = os.path.join(dn, version)
         if os.path.isdir(dn):
             return version
@@ -25,7 +28,13 @@ def getToolsVersion(compiler, packageType):
     msvcDir = os.path.join(rootDir, "VC", "Tools", "MSVC")
     checkDirectory(msvcDir)
     return getLatestVersion(msvcDir)
-        
+
+def getRedistVersion(compiler, packageType):
+    rootDir = compilerRoot(compiler, packageType=packageType)
+    msvcDir = os.path.join(rootDir, "VC", "Redist", "MSVC")
+    checkDirectory(msvcDir)
+    return getLatestVersion(msvcDir)
+
 def getKitsVersion():
     kitsRoot = os.path.normpath("C:/Program Files (x86)/Windows Kits")
 
@@ -63,6 +72,8 @@ def getCompilerDirectory(compiler):
         return "2019"
     if compiler == "VS17":
         return "2022"
+    if compiler == "VS18":
+        return "18"
 
     raise Exception("Unknown compiler %s" % compiler)
 
@@ -98,14 +109,16 @@ def main():
 
     contents = []
     kitsVersion = getKitsVersion() 
-    for compiler in ["VS15", "VS16", "VS17"]:
+    for compiler in ["VS15", "VS16", "VS17", "VS18"]:
         try:
             packageType = getPackageType(compiler)
             toolsVersion = getToolsVersion(compiler, packageType)
+            redistVersion = getRedistVersion(compiler, packageType)
             contents.append("")
             contents.append("G_%s_PACKAGE_TYPE=%s" % (compiler, packageType))
             contents.append("G_%s_KITS_VERSION=%s" % (compiler, kitsVersion))
             contents.append("G_%s_TOOLS_VERSION=%s" % (compiler, toolsVersion))
+            contents.append("G_%s_REDIST_VERSION=%s" % (compiler, redistVersion))
         except Exception:
             print("compiler %s not installed" % compiler)
 

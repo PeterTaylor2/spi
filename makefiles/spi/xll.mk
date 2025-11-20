@@ -218,13 +218,13 @@ install-info:
 	@echo TARGET=$(I_INSTALL_TARGET_DIR)
 	@echo FILES=$(I_INSTALL_FILES)
 
-v15.vcxproj::
-	@$(I_VCPROJ15_CMD) $(I_COMPILER_OPTIONS) -j1 -t install -b $(U_SPI_HOME)/makefiles/cygwin32/bin $(U_VCPROJ)-install.v15.vcxproj $(U_VCPROJ)-install . . $(G_WIN32_COMPILER) $(G_WIN32_BITS)
-
 v16.vcxproj::
 	@$(I_VCPROJ16_CMD) $(I_COMPILER_OPTIONS) -j1 -t install -b $(U_SPI_HOME)/makefiles/cygwin32/bin $(U_VCPROJ)-install.v16.vcxproj $(U_VCPROJ)-install . . $(G_WIN32_COMPILER) $(G_WIN32_BITS)
 
 v17.vcxproj::
 	@$(I_VCPROJ17_CMD) $(I_COMPILER_OPTIONS) -j1 -t install -b $(U_SPI_HOME)/makefiles/cygwin32/bin $(U_VCPROJ)-install.v17.vcxproj $(U_VCPROJ)-install . . $(G_WIN32_COMPILER) $(G_WIN32_BITS)
+
+v18.vcxproj::
+	@$(I_VCPROJ18_CMD) $(I_COMPILER_OPTIONS) -j1 -t install -b $(U_SPI_HOME)/makefiles/cygwin32/bin $(U_VCPROJ)-install.v18.vcxproj $(U_VCPROJ)-install . . $(G_WIN32_COMPILER) $(G_WIN32_BITS)
 
 endif

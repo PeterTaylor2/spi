@@ -44,6 +44,7 @@ v16.vcxproj:
 
 v17.vcxproj:
 
+v18.vcxproj:
 
 
 else

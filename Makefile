@@ -113,12 +113,15 @@ test:
 vc-all:
 	$(MAKE) -s v16.vcxproj U_VCPROJ=refresh-projects U_VCPROJ_OPTIONS="-j1 -tvc-all"
 	$(MAKE) -s v17.vcxproj U_VCPROJ=refresh-projects U_VCPROJ_OPTIONS="-j1 -tvc-all"
+	$(MAKE) -s v18.vcxproj U_VCPROJ=refresh-projects U_VCPROJ_OPTIONS="-j1 -tvc-all"
 	$(MAKE) -s v16.vcxproj U_VCPROJ=all U_VCPROJ_OPTIONS="-j4 -tbuild"
 	$(MAKE) -s v17.vcxproj U_VCPROJ=all U_VCPROJ_OPTIONS="-j4 -tbuild"
+	$(MAKE) -s v18.vcxproj U_VCPROJ=all U_VCPROJ_OPTIONS="-j4 -tbuild"
 	@for lib in $(BUILD_DIRS) $(EXTRA_VCPROJ_DIRS); do \
 		echo Creating vcproject for $$lib; \
 		$(MAKE) -s -C $$lib v16.vcxproj; \
 		$(MAKE) -s -C $$lib v17.vcxproj; \
+		$(MAKE) -s -C $$lib v18.vcxproj; \
 	done
 
 vc-all-runtime:
@@ -126,10 +129,11 @@ vc-all-runtime:
 		echo Creating vcproject for $$lib; \
 		$(MAKE) -s -C $$lib v16.vcxproj; \
 		$(MAKE) -s -C $$lib v17.vcxproj; \
+		$(MAKE) -s -C $$lib v18.vcxproj; \
 	done
 
 
-WIN32_COMPILERS=msvc16 msvc17
+WIN32_COMPILERS=msvc16 msvc17 msvc18
 
 win32:
 	@for compiler in $(WIN32_COMPILERS); do \
@@ -155,4 +159,7 @@ vs16.sln:
 
 vs17.sln:
 	$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/translateVS.py --old=16 --new=17 spi-vs16.sln spi-vs17.sln
+
+vs18.sln:
+	$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/translateVS.py --old=17 --new=18 spi-vs17.sln spi-vs18.sln
 

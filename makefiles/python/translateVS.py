@@ -7,7 +7,8 @@ import shutil
 import sys
 
 MAPPING = { "16" : "16.0.29001.49",
-            "17" : "17.3.32929.385" }
+            "17" : "17.3.32929.385",
+            "18" : "18.0.0.0" }
 
 def transform_line(line, old, new):
     global MAPPING
