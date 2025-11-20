@@ -17,7 +17,6 @@ code-generators/spcl/src/*.h
 code-generators/spcl/src/*.[ch]pp
 
 code-generators/spcl/types/Makefile
-code-generators/spcl/types/properties.mk
 code-generators/spcl/types/*.cfg
 code-generators/spcl/types/types.svc
 

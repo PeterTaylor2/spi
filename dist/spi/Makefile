@@ -21,6 +21,9 @@ xlcall32\
 xltest
 
 build::
+ifeq ($(G_PLATFORM),win32)
+	$(MAKE) -C makefiles/gendep config-install
+endif
 	@for lib in $(BUILD_DIRS); do \
 		echo Building $$lib; \
 		$(MAKE) -C $$lib; \
