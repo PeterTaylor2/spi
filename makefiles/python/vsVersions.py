@@ -66,8 +66,6 @@ def getPackageType(compiler):
     raise Exception("Could not find package type via directory %s" % rootDir)
 
 def getCompilerDirectory(compiler):
-    if compiler == "VS15":
-        return "2017"
     if compiler == "VS16":
         return "2019"
     if compiler == "VS17":
@@ -109,7 +107,7 @@ def main():
 
     contents = []
     kitsVersion = getKitsVersion() 
-    for compiler in ["VS15", "VS16", "VS17", "VS18"]:
+    for compiler in ["VS16", "VS17", "VS18"]:
         try:
             packageType = getPackageType(compiler)
             toolsVersion = getToolsVersion(compiler, packageType)

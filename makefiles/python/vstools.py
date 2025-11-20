@@ -41,11 +41,6 @@ def systemIncludes(compiler, bits=32):
         if bits == 32:
             return r"C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\include;C:\Program Files\Microsoft SDKs\Windows\v6.0A\Include"
 
-    if compiler == "msvc15":
-        settings = siteSettings()
-        if bits in [32,64]:
-            return r"C:\Program Files (x86)\Microsoft Visual Studio\2017\%(G_VS15_PACKAGE_TYPE)s\VC\Tools\MSVC\%(G_VS15_TOOLS_VERSION)s\include;C:\Program Files (x86)\Windows Kits\10\include\%(G_VS15_KITS_VERSION)s\ucrt;C:\Program Files (x86)\Windows Kits\10\include\%(G_VS15_KITS_VERSION)s\um;C:\Program Files (x86)\Windows Kits\10\include\%(G_VS15_KITS_VERSION)s\shared" % settings
-
     if compiler == "msvc16":
         settings = siteSettings()
         if bits in [32,64]:
@@ -76,15 +71,13 @@ def platforms(compiler):
     platforms = []
     if compiler in ["msvc9"]:
         platforms.append(("Win32", 32))
-    elif compiler in ["msvc15", "msvc16", "msvc17", "msvc18"]:
+    elif compiler in ["msvc16", "msvc17", "msvc18"]:
         platforms.append(("Win32", 32))
         platforms.append(("x64", 64))
     return platforms
 
 if __name__ == "__main__":
     print (systemIncludes("msvc9"))
-    print (systemIncludes("msvc15", bits=32))
-    print (systemIncludes("msvc15", bits=64))
     print (systemIncludes("msvc16", bits=32))
     print (systemIncludes("msvc16", bits=64))
     print (systemIncludes("msvc17", bits=32))
