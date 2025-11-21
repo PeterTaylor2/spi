@@ -53,12 +53,7 @@ code-generators/spgtools/src/lex/Makefile
 
 spi_util/lib/spi-util-lib.guid
 lib/spi-lib.guid
-code-generators/spi-config-vs1[67].sln
-code-generators/all.guid
 code-generators/config-build.guid
-code-generators/refresh-projects.guid
-code-generators/refresh-projects.v1[67].vcxproj
-code-generators/refresh-projects.v1[67].vcxproj.filters
 code-generators/spc/spc-exe.guid
 code-generators/spcl/spcl-exe.guid
 code-generators/spcl/types/types-config.guid
