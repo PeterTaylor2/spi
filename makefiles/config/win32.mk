@@ -59,7 +59,7 @@ ifeq ("$(G_PYTHON)","")
 G_PYTHON=$($(SITE_PYTHON))
 endif
 else
-G_PYTHON=C:/Python$(G_PY_VERSION)/python.exe
+G_PYTHON=py
 endif
 
 site::
