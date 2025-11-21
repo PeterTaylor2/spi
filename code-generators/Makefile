@@ -14,6 +14,7 @@ BUILD_DIRS=\
 ../zlib\
 ../spi_util/lib\
 ../lib\
+../makeXLAddin\
 spgtools\
 spcl\
 spc\
@@ -46,11 +47,11 @@ build::
 
 all:: build
 	echo Building spi-user-guide
-	@mkdir -p $(U_SPI_HOME)/config/bin-$(G_PLATFORM)
-	$(MAKE) -C config/spcl doc COMPILER=$(G_CONFIG_COMPILER) BITS=$(G_CONFIG_COMPILER_BITS)
+	@mkdir -p $(U_SPI_HOME)/code-generators/bin-$(G_PLATFORM)
+	$(MAKE) -C code-generators/spcl doc COMPILER=$(G_CONFIG_COMPILER) BITS=$(G_CONFIG_COMPILER_BITS)
 
 clean::
-	rm -fr $(U_SPI_HOME)/config/bin-$(G_PLATFORM)
+	rm -fr $(U_SPI_HOME)/code-generators/bin-$(G_PLATFORM)
 	@for lib in $(BUILD_DIRS); do \
 		$(MAKE) -C $$lib clean; \
 	done
@@ -73,20 +74,13 @@ code:
 	make -C spcl types-code
 	make -C spdoc
 
-vs-translate:
-	@echo "Translating spi-config-vs16.sln to spi-config-vs17.sln"
-	@$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/translateVS.py spi-config-vs16.sln spi-config-vs17.sln > spi-config-vs17.log
-	@echo "See spi-config-vs17.log for details"
-
 vc-all:
-	@$(MAKE) -s v16.vcxproj U_VCPROJ=refresh-projects U_VCPROJ_OPTIONS="-j1 -tvc-all"
-	@$(MAKE) -s v17.vcxproj U_VCPROJ=refresh-projects U_VCPROJ_OPTIONS="-j1 -tvc-all"
 	@$(MAKE) -s v16.vcxproj U_VCPROJ=config-build U_VCPROJ_OPTIONS="-j4 -tconfig-build --cleanTarget=config-clean --silent"
 	@$(MAKE) -s v17.vcxproj U_VCPROJ=config-build U_VCPROJ_OPTIONS="-j4 -tconfig-build --cleanTarget=config-clean --silent"
-	@$(MAKE) -s v16.vcxproj U_VCPROJ=all U_VCPROJ_OPTIONS="-j4 -tbuild"
-	@$(MAKE) -s v17.vcxproj U_VCPROJ=all U_VCPROJ_OPTIONS="-j4 -tbuild"
+	@$(MAKE) -s v18.vcxproj U_VCPROJ=config-build U_VCPROJ_OPTIONS="-j4 -tconfig-build --cleanTarget=config-clean --silent"
 	@for lib in $(BUILD_DIRS) $(EXTRA_VCPROJ_DIRS); do \
 		echo Creating vcproject for $$lib; \
 		$(MAKE) -s -C $$lib v16.vcxproj; \
 		$(MAKE) -s -C $$lib v17.vcxproj; \
+		$(MAKE) -s -C $$lib v18.vcxproj; \
 	done

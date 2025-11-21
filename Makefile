@@ -20,28 +20,12 @@ replay/python\
 xlcall32\
 xltest
 
-CONFIG_BUILD_DIRS=\
-zlib\
-spi_util/lib\
-lib\
-makeXLAddin\
-code-generators/spgtools\
-code-generators/spcl\
-code-generators/spc\
-code-generators/spcs\
-code-generators/sppy\
-code-generators/sptex\
-code-generators/spxl
-
 EXTRA_VCPROJ_DIRS=\
 makefiles\
 makefiles/gendep\
-makefiles/cversion\
-code-generators\
-code-generators/spdoc\
-code-generators/spcl/types
+makefiles/cversion
 
-BUILD_DIRS=$(CONFIG_BUILD_DIRS) $(RUNTIME_BUILD_DIRS)
+BUILD_DIRS=$(RUNTIME_BUILD_DIRS) code-generators
 
 .PHONY: package package.zip
 
@@ -57,11 +41,8 @@ runtime::
 		$(MAKE) -C $$lib all; \
 	done
 
-config::
-	@for lib in $(CONFIG_BUILD_DIRS); do \
-		echo Building $$lib; \
-		$(MAKE) -C $$lib all DEBUG=0; \
-	done
+code-generators::
+	$(MAKE) -C code-generators config-build
 
 clean-runtime::
 	@for lib in $(RUNTIME_BUILD_DIRS); do \
@@ -73,16 +54,14 @@ clean-all-runtime::
 		$(MAKE) -C $$lib clean-all; \
 	done
 
-clean-config::
-	@for lib in $(CONFIG_BUILD_DIRS); do \
-		$(MAKE) -C $$lib clean DEBUG=0; \
-	done
+clean-code-generators::
+	$(MAKE) -C code-generators config-clean
 
 build::
 ifeq ($(G_PLATFORM),win32)
 	@$(MAKE) -C makefiles/gendep config-install
 endif
-	@$(MAKE) config
+	@$(MAKE) code-generators
 	@$(MAKE) runtime
 
 all::
@@ -91,11 +70,11 @@ all::
 	@$(MAKE) -C config/spcl doc
 
 clean::
-	@$(MAKE) clean-config
+	@$(MAKE) clean-code-generators
 	@$(MAKE) clean-runtime
 
 clean-all::
-	@$(MAKE) clean-config
+	@$(MAKE) clean-code-generators
 	@$(MAKE) clean-all-runtime
 
 U_VCPROJ=refresh-projects
@@ -117,6 +96,7 @@ vc-all:
 	$(MAKE) -s v16.vcxproj U_VCPROJ=all U_VCPROJ_OPTIONS="-j4 -tbuild"
 	$(MAKE) -s v17.vcxproj U_VCPROJ=all U_VCPROJ_OPTIONS="-j4 -tbuild"
 	$(MAKE) -s v18.vcxproj U_VCPROJ=all U_VCPROJ_OPTIONS="-j4 -tbuild"
+	$(MAKE) -C code-generators vc-all
 	@for lib in $(BUILD_DIRS) $(EXTRA_VCPROJ_DIRS); do \
 		echo Creating vcproject for $$lib; \
 		$(MAKE) -s -C $$lib v16.vcxproj; \
