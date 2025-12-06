@@ -56,16 +56,18 @@ MatrixData<T> MapGetMatrix(const MapConstSP& cm, const char* name)
 
 END_ANONYMOUS_NAMESPACE
 
-ObjectMap::ObjectMap(const MapSP& m)
+ObjectMap::ObjectMap(const MapSP& m, bool noHiding)
     :
     m_map(m),
-    m_constMap(m)
+    m_constMap(m),
+    m_noHiding(noHiding)
 {}
 
 ObjectMap::ObjectMap(const MapConstSP& m)
     :
     m_map(),
-    m_constMap(m)
+    m_constMap(m),
+    m_noHiding(false)
 {}
 
 // implementation of IObjectMap
@@ -74,7 +76,7 @@ void ObjectMap::SetChar(
     char value,
     bool hidden)
 {
-    if (!hidden)
+    if (m_noHiding || !hidden)
     {
         m_map->SetValue(name, Value(value));
     }
@@ -85,7 +87,7 @@ void ObjectMap::SetString(
     const std::string& value,
     bool hidden)
 {
-    if (!hidden)
+    if (m_noHiding || !hidden)
     {
         m_map->SetValue(name, Value(value));
     }
@@ -96,7 +98,7 @@ void ObjectMap::SetInt(
     int value,
     bool hidden)
 {
-    if (!hidden)
+    if (m_noHiding || !hidden)
     {
         m_map->SetValue(name, Value(value));
     }
@@ -107,7 +109,7 @@ void ObjectMap::SetBool(
     bool value,
     bool hidden)
 {
-    if (!hidden)
+    if (m_noHiding || !hidden)
     {
         m_map->SetValue(name, Value(value));
     }
@@ -118,7 +120,7 @@ void ObjectMap::SetDouble(
     double value,
     bool hidden)
 {
-    if (!hidden)
+    if (m_noHiding || !hidden)
     {
         m_map->SetValue(name, Value(value));
     }
@@ -129,7 +131,7 @@ void ObjectMap::SetDate(
     Date value,
     bool hidden)
 {
-    if (!hidden)
+    if (m_noHiding || !hidden)
     {
         m_map->SetValue(name, Value(value));
     }
@@ -140,7 +142,7 @@ void ObjectMap::SetDateTime(
     DateTime value,
     bool hidden)
 {
-    if (!hidden)
+    if (m_noHiding || !hidden)
     {
         m_map->SetValue(name, Value(value));
     }
@@ -151,7 +153,7 @@ void ObjectMap::SetObject(
     const ObjectConstSP& value,
     bool hidden)
 {
-    if (!hidden)
+    if (m_noHiding || !hidden)
     {
         Value objectValue = value ? value->as_value() : Value();
         if (objectValue.isUndefined())
@@ -165,7 +167,7 @@ void ObjectMap::SetVariant(
     const Variant& value,
     bool hidden)
 {
-    if (!hidden)
+    if (m_noHiding || !hidden)
     {
         m_map->SetValue(name, value.ToMap());
     }
@@ -176,7 +178,7 @@ void ObjectMap::SetStringVector(
     const std::vector<std::string>& value,
     bool hidden)
 {
-    if (!hidden)
+    if (m_noHiding || !hidden)
     {
         m_map->SetValue(name, Value(value));
     }
@@ -187,7 +189,7 @@ void ObjectMap::SetDoubleVector(
     const std::vector<double>& value,
     bool hidden)
 {
-    if (!hidden)
+    if (m_noHiding || !hidden)
     {
         m_map->SetValue(name, Value(value));
     }
@@ -198,7 +200,7 @@ void ObjectMap::SetIntVector(
     const std::vector<int>& value,
     bool hidden)
 {
-    if (!hidden)
+    if (m_noHiding || !hidden)
     {
         m_map->SetValue(name, Value(value));
     }
@@ -209,7 +211,7 @@ void ObjectMap::SetBoolVector(
     const std::vector<bool>& value,
     bool hidden)
 {
-    if (!hidden)
+    if (m_noHiding || !hidden)
     {
         m_map->SetValue(name, Value(value));
     }
@@ -220,7 +222,7 @@ void ObjectMap::SetDateVector(
     const std::vector<Date>& value,
     bool hidden)
 {
-    if (!hidden)
+    if (m_noHiding || !hidden)
     {
         m_map->SetValue(name, Value(value));
     }
@@ -231,7 +233,7 @@ void ObjectMap::SetDateTimeVector(
     const std::vector<DateTime>& value,
     bool hidden)
 {
-    if (!hidden)
+    if (m_noHiding || !hidden)
     {
         m_map->SetValue(name, Value(value));
     }
@@ -242,7 +244,7 @@ void ObjectMap::SetVariantVector(
     const std::vector<Variant>& value,
     bool hidden)
 {
-    if (!hidden)
+    if (m_noHiding || !hidden)
     {
         std::vector<Value> values;
         for (size_t i = 0; i < value.size(); ++i)
@@ -256,7 +258,7 @@ void ObjectMap::SetObjectVector(
     const std::vector<ObjectConstSP>& value,
     bool hidden)
 {
-    if (!hidden)
+    if (m_noHiding || !hidden)
     {
         std::vector<Value> values;
         values.reserve(value.size());
@@ -285,7 +287,7 @@ void ObjectMap::SetBoolMatrix(
     const MatrixData<bool>& value,
     bool hidden)
 {
-    if (!hidden)
+    if (m_noHiding || !hidden)
     {
         m_map->SetValue(name, value.ToArray());
     }
@@ -296,7 +298,7 @@ void ObjectMap::SetIntMatrix(
     const MatrixData<int>& value,
     bool hidden)
 {
-    if (!hidden)
+    if (m_noHiding || !hidden)
     {
         m_map->SetValue(name, value.ToArray());
     }
@@ -307,7 +309,7 @@ void ObjectMap::SetDoubleMatrix(
     const MatrixData<double>& value,
     bool hidden)
 {
-    if (!hidden)
+    if (m_noHiding || !hidden)
     {
         m_map->SetValue(name, value.ToArray());
     }
@@ -318,7 +320,7 @@ void ObjectMap::SetStringMatrix(
     const MatrixData<std::string>& value,
     bool hidden)
 {
-    if (!hidden)
+    if (m_noHiding || !hidden)
     {
         m_map->SetValue(name, value.ToArray());
     }
@@ -329,7 +331,7 @@ void ObjectMap::SetDateMatrix(
     const MatrixData<Date>& value,
     bool hidden)
 {
-    if (!hidden)
+    if (m_noHiding || !hidden)
     {
         m_map->SetValue(name, value.ToArray());
     }
@@ -340,7 +342,7 @@ void ObjectMap::SetDateTimeMatrix(
     const MatrixData<DateTime>& value,
     bool hidden)
 {
-    if (!hidden)
+    if (m_noHiding || !hidden)
     {
         m_map->SetValue(name, value.ToArray());
     }
@@ -351,7 +353,7 @@ void ObjectMap::SetObjectMatrix(
     const MatrixData<ObjectConstSP>& value,
     bool hidden)
 {
-    if (!hidden)
+    if (m_noHiding || !hidden)
     {
         m_map->SetValue(name, value.ToArray());
     }
@@ -362,7 +364,7 @@ void ObjectMap::SetVariantMatrix(
     const spi::MatrixData<Variant>& value,
     bool hidden)
 {
-    if (!hidden)
+    if (m_noHiding || !hidden)
     {
         m_map->SetValue(name, value.ToArray());
     }

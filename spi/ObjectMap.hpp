@@ -66,7 +66,7 @@ public:
      * we can also use this constructor for going from map to object if
      * the Map provided is not const
      */
-    ObjectMap(const MapSP& m);
+    ObjectMap(const MapSP& m, bool noHiding=false);
 
     /**
      * this constructor should be used when we are going from map
@@ -321,6 +321,8 @@ private:
     // MapConstSP is used when we are doing Get... functions
     MapSP      m_map;
     MapConstSP m_constMap;
+
+    bool m_noHiding;
 };
 
 SPI_END_NAMESPACE
