@@ -31,6 +31,7 @@
 #define SPI_OBJECT_TEXT_STREAMER_HPP
 
 #include "IObjectStreamer.hpp"
+#include "MapRefCache.hpp"
 
 SPI_BEGIN_NAMESPACE
 
@@ -39,35 +40,6 @@ SPI_DECLARE_RC_CLASS(Map);
 SPI_DECLARE_RC_CLASS(ObjectTextStreamer);
 SPI_DECLARE_RC_CLASS(ObjectRefCache);
 SPI_DECLARE_RC_CLASS(ObjectCompressedTextStreamer);
-
-// the point of this class is to maintain a reference from id (part of
-// each object - count starts at 1 each time we start the process) and
-// mapRef (count starts at 1 each time we start a map or start to stream
-// objects to file)
-//
-// we also find that we need to keep track of objects created - this is
-// because sometimes when converting an object to map we find that we
-// create new wrapper class instances and that we need to keep a handle on
-// these in order to keep track of identical objects
-class SPI_IMPORT MapRefCache
-{
-public:
-    MapRefCache();
-    size_t count(int id) const;
-    size_t size() const;
-
-    void insert(int mapRef, const ObjectConstSP& obj);
-    int mapRef(int id) const;
-    void clear();
-
-private:
-    std::map<int,int> m_indexIdMapRef;
-    std::vector<ObjectConstSP> m_objects;
-
-    MapRefCache(const MapRefCache&);
-    MapRefCache& operator=(const MapRefCache&);
-};
-
 
 /**
  * ObjectTextStreamer interface.

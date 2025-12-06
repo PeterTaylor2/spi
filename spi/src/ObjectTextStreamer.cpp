@@ -335,44 +335,6 @@ void WriteValue(std::ostream& ostr,
 
 END_ANONYMOUS_NAMESPACE
 
-MapRefCache::MapRefCache()
-:
-m_indexIdMapRef(),
-m_objects()
-{}
-
-size_t MapRefCache::count(int id) const
-{
-    return m_indexIdMapRef.count(id);
-}
-
-size_t MapRefCache::size() const
-{
-    return m_indexIdMapRef.size();
-}
-
-void MapRefCache::insert(int mapRef, const ObjectConstSP& obj)
-{
-    int id = obj->get_id();
-
-    m_indexIdMapRef[id] = mapRef;
-    m_objects.push_back(obj);
-}
-
-int MapRefCache::mapRef(int id) const
-{
-    std::map<int,int>::const_iterator iter = m_indexIdMapRef.find(id);
-    if (iter == m_indexIdMapRef.end())
-        throw RuntimeError("Could not find %d in idMapRef cache", id);
-    return iter->second;
-}
-
-void MapRefCache::clear()
-{
-    m_indexIdMapRef.clear();
-    m_objects.clear();
-}
-
 ObjectConstSP ObjectTextStreamer::from_data(
     const std::string& streamName,
     const std::string& data,
