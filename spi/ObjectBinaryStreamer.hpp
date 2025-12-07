@@ -62,11 +62,8 @@ public:
 
     bool is_binary() const override;
 
-    // functions specific to ObjectTextStreamer
-
-    // converts text to object - called after extracting the text from a
-    // stream (which might have been a compressed stream)
-    ObjectConstSP from_data(
+    // functions specific to ObjectBinaryStreamer
+    ObjectConstSP from_data_offset(
         const std::string& streamName,
         size_t size,
         const char* contents,

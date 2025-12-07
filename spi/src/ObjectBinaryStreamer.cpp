@@ -189,8 +189,7 @@ void WriteString(std::ostream& ostr, const std::string& str)
 
     const char* cstr = str.c_str();
     size_t length = strlen(cstr);
-    if (length > 0)
-        ostr.write(cstr, length+1); // we must write the zero delimiter
+    ostr.write(cstr, length+1); // we must write the zero delimiter
 }
 
 void WriteStringVector(std::ostream& ostr, const std::vector<std::string>& vec)
@@ -539,7 +538,7 @@ ObjectConstSP ObjectBinaryStreamer::from_data(
 
     size_t sizeUsed;
 
-    return from_data(
+    return from_data_offset(
         streamName,
         data_size-offset,
         data.data() + offset ,
@@ -878,7 +877,7 @@ private:
 
 END_ANONYMOUS_NAMESPACE
 
-ObjectConstSP ObjectBinaryStreamer::from_data(
+ObjectConstSP ObjectBinaryStreamer::from_data_offset(
     const std::string& streamName,
     size_t size,
     const char* contents,
