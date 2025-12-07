@@ -312,7 +312,7 @@ ObjectConstSP Service::object_from_data(
     const std::string& data, // can be binary or text
     const std::string& streamName,
     bool allowBinary,
-    const MapConstSP& metaData) const
+    const MapSP& in_metaData) const
 {
     // we will try the stream with all the streamers of the matching type
     // (binary or text)
@@ -324,6 +324,12 @@ ObjectConstSP Service::object_from_data(
     // recognized the object we cannot parse the remainder of the stream
 
     SPI_UTIL_CLOCK_FUNCTION();
+
+    MapSP metaData = in_metaData ? in_metaData : MapSP(new Map(""));
+    metaData->SetValue("size", spi_util::IntegerCast<int>(data.size()));
+
+    spi_util::Clock clock;
+    clock.Start();
 
     const std::vector<std::string>& formats = IObjectStreamer::Formats(allowBinary);
 
@@ -351,7 +357,10 @@ ObjectConstSP Service::object_from_data(
             size_t offset = streamer->uses_recognizer() ? 0 : rlen;
 
             SPI_UTIL_CLOCK_EVENTS_LOG("streamer->from_data");
-            return streamer->from_data(streamName, data, offset, metaData);
+            ObjectConstSP obj = streamer->from_data(streamName, data, offset, metaData);
+            double parseTime = clock.Time();
+            obj->get_meta_data()->SetValue("parseTime", parseTime);
+            return obj;
         }
     }
     throw RuntimeError("%s: Could not recognize any of the file formats: %s",
@@ -407,14 +416,20 @@ ObjectConstSP Service::object_from_file(const std::string& filename) const
     }
 
     // use default method for fastest read of a file
+    spi_util::Clock clock;
+    clock.Start();
+
     const std::string& data = spi_util::FileReadContents(filename.c_str());
+    double readTime = clock.Time();
     size_t size = data.size();
 
     MapSP metaData(new Map(""));
     metaData->SetValue("filename", Value(filename));
     metaData->SetValue("filetime", Value(DateTime(timestamp)));
+    metaData->SetValue("readTime", readTime);
 
     ObjectConstSP obj = object_from_data(data, filename, true, metaData);
+
     // to save memory, we need to avoid keeping huge objects in the read_cache
     // we cannot measure the amount of memory used by obj
     // our best effort is to look at the size of the serialized object
@@ -436,12 +451,19 @@ ObjectConstSP Service::object_from_url(
 #ifndef SPI_STATIC
     try
     {
-        std::string contents = read_url(url, timeout, cacheAge);
+        spi_util::Clock clock;
+        clock.Start();
+        const std::string& contents = read_url(url, timeout, cacheAge);
+        double readTime = clock.Time();
         if (contents.empty())
             throw RuntimeError("No contents from reading URL %s with "
                 "timeout %d", url.c_str(), timeout);
 
-        return object_from_string(contents);
+        MapSP metaData(new Map(""));
+        metaData->SetValue("url", url);
+        metaData->SetValue("readTime", readTime);
+
+        return object_from_data(contents, url, true, metaData);
     }
     catch (...)
     {
