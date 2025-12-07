@@ -24,6 +24,7 @@
 #include "Service.hpp"
 #include "ObjectTextStreamer.hpp"
 #include "ObjectJSONStreamer.hpp"
+#include "ObjectBinaryStreamer.hpp"
 #include "Function.hpp"
 #include "EnumHelper.hpp"
 #include "ValueToObject.hpp"
@@ -77,6 +78,7 @@ CommonRuntime::CommonRuntime()
     ObjectTextStreamer::Register();
     ObjectJSONStreamer::Register();
     ObjectCompressedTextStreamer::Register();
+    ObjectBinaryStreamer::Register();
 }
 
 CommonRuntime::~CommonRuntime()
