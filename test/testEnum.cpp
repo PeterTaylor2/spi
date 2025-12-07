@@ -24,7 +24,8 @@ public:
         ACT_365F = 2,
         ACT_360 = 3,
         B30_360 = 4,
-        B30E_360 = 5
+        B30E_360 = 5,
+	UNINITIALIZED_VALUE=6
     };
     SPI_DECLARE_ENUM_STRING_CONV(DayCountConv);
 

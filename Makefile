@@ -20,12 +20,18 @@ replay/python\
 xlcall32\
 xltest
 
+TEST_BUILD_DIRS=\
+test/lib\
+test/config\
+test/dll\
+test
+
 EXTRA_VCPROJ_DIRS=\
 makefiles\
 makefiles/gendep\
 makefiles/cversion
 
-BUILD_DIRS=$(RUNTIME_BUILD_DIRS) code-generators
+BUILD_DIRS=$(RUNTIME_BUILD_DIRS) code-generators $(TEST_BUILD_DIRS)
 
 .PHONY: package package.zip
 
@@ -43,6 +49,12 @@ runtime::
 
 code-generators::
 	$(MAKE) -C code-generators config-build
+
+testing::
+	@for lib in $(TEST_BUILD_DIRS); do \
+		echo Building $$lib; \
+		$(MAKE) -C $$lib; \
+	done
 
 clean-runtime::
 	@for lib in $(RUNTIME_BUILD_DIRS); do \

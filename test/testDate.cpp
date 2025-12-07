@@ -1,7 +1,7 @@
 #include <spi/Date.hpp>
 #include <spi/RuntimeError.hpp>
 
-#include <isda/dateconv.h>
+#include <spi_util/DateUtil.hpp>
 
 #include <string>
 #include <sstream>
@@ -11,32 +11,8 @@
 
 #include <spi_util/TestRunner.hpp>
 
-/*
-***************************************************************************
-** Implementation of various date functions via ISDA code.
-***************************************************************************
-*/
-void DateToYMD(int date, int* pYear, int* pMonth, int* pDay)
-{
-    TMonthDayYear mdy;
-
-    if (JpmcdsDateToMDY((TDate)date, &mdy) != SUCCESS)
-        throw spi::RuntimeError("Could not convert %d to MDY", date);
-
-    *pYear  = mdy.year;
-    *pMonth = mdy.month;
-    *pDay   = mdy.day;
-}
-
-int YMDToDate(int year, int month, int day)
-{
-    int date = JpmcdsDate(year, month, day);
-    if (date == -1)
-        throw spi::RuntimeError("Could not convert %d,%d,%d to date",
-                                year, month, day);
-
-    return (int)date;
-}
+using spi_util::DateToYMD;
+using spi_util::YMDToDate;
 
 static void testDate(int date)
 {

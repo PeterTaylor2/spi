@@ -50,6 +50,7 @@ std::string StringFormat(const char* format, ...);
 
 /** Function for replacing values in the input string with values from
     the provided map of values. */
+SPI_UTIL_IMPORT
 std::string StringMapFormat(
     const char* format,
     const std::map<std::string, std::string>& values,

@@ -14,7 +14,7 @@ static void testStreamReadLines(void)
     std::vector<std::string> lines = spi_util::StreamReadLines(str);
 
     for (size_t i = 0; i < lines.size(); ++i)
-        printf("%d: %s\n", i+1, lines[i].c_str());
+        printf("%zd: %s\n", i+1, lines[i].c_str());
 
 }
 

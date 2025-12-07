@@ -1,8 +1,9 @@
 #include <spi/Map.hpp>
 #include <spi/Date.hpp>
 #include <spi/Service.hpp>
-#include <spi/Functor.hpp>
+#include <spi/Function.hpp>
 #include <spi/IObjectMap.hpp>
+#include <spi/spi.hpp>
 #include <spi/ObjectHelper.hpp>
 
 #include <string>
@@ -21,17 +22,25 @@ spi::Service* get_the_service()
 
 SPI_DECLARE_RC_CLASS(AddFunc);
 
-class AddFunc : public spi::Functor
+class AddFunc : public spi::Function
 {
 public:
     SPI_DECLARE_OBJECT_TYPE(AddFunc);
 
-    spi::Value call_func() const
+    spi::Value call() const
     {
         return x+y;
     }
 
-    AddFunc(double x, double y) : x(x), y(y) {}
+    AddFunc(
+        const spi::Service* service,
+        double x,
+        double y)
+        :
+        spi::Function(service, "Add", {x,y}),
+        x(x),
+        y(y)
+    {}
 
 private:
 
@@ -53,14 +62,14 @@ spi::ObjectSP AddFunc::object_from_map(spi::IObjectMap* m)
     return new AddFunc(x,y);
 }
 
-SPI_IMPLEMENT_OBJECT_TYPE(AddFunc, "Add", get_the_service);
+SPI_IMPLEMENT_OBJECT_TYPE(AddFunc, "Add", get_the_service,false,false);
 
 bool isLogging = false;
 
 static spi::ServiceSP MakeService()
 {
     spi::ServiceSP svc = spi::Service::Make(
-        "testFunctor", "testFunctor", &isLogging);
+        "testFunctor", "testFunctor", "1.0.0.0");
     svc->add_object_type(&AddFunc::object_type);
 
     return svc;

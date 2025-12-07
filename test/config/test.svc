@@ -1,0 +1,30 @@
+/* -*-c++-*- */
+
+/**
+ * This is an example SPI library containing wrapper functions for the
+ * ISDA/CDS C-library.
+ *
+ * In general we will not be using C++ except for error handling, hence the
+ * name CLIB (C-library)
+ */
+
+%service test
+    namespace=test
+    dllName="test-dll"
+    sharedPtr="spi_boost::shared_ptr"
+    sharedPtrInclude="<spi_boost/shared_ptr.hpp>"
+    helpFunc=Help;
+
+%export "dateType.cfg";
+%export "data.cfg";
+%export "wrapper.cfg";
+
+void startup(dirname)
+{
+}
+
+void shutdown()
+{
+}
+
+
