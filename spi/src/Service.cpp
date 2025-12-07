@@ -343,8 +343,6 @@ ObjectConstSP Service::object_from_data(
 
         // read the first N characters from the stream
         // if it matches the recognizer then we are good to go
-
-        SPI_UTIL_CLOCK_EVENTS_LOG("recognizing");
         size_t rlen = strlen(recognizer);
 
         std::string buf = data.substr(0, rlen);
@@ -356,7 +354,6 @@ ObjectConstSP Service::object_from_data(
 
             size_t offset = streamer->uses_recognizer() ? 0 : rlen;
 
-            SPI_UTIL_CLOCK_EVENTS_LOG("streamer->from_data");
             ObjectConstSP obj = streamer->from_data(streamName, data, offset, metaData);
             double parseTime = clock.Time();
             obj->get_meta_data()->SetValue("parseTime", parseTime);
@@ -392,6 +389,8 @@ ObjectConstSP Service::object_from_file(const std::string& filename) const
     SPI_UTIL_CLOCK_EVENTS_START();
 #endif
 
+    SPI_UTIL_CLOCK_FUNCTION();
+
     const std::vector<std::string> formats = IObjectStreamer::Formats(true);
     if (formats.size() == 0)
         throw RuntimeError("No registered formats for reading objects");
@@ -404,8 +403,6 @@ ObjectConstSP Service::object_from_file(const std::string& filename) const
     //
     // we will have written text files in text mode simply so that humans
     // can read the files using notepad on windows (for example)
-    SPI_UTIL_CLOCK_EVENTS_LOG("readfile");
-
     double timestamp = spi_util::FileLastUpdateTime(filename);
     if (m_commonRuntime->use_read_cache)
     {
@@ -439,6 +436,7 @@ ObjectConstSP Service::object_from_file(const std::string& filename) const
     }
     // note that is a NO-OP unless spi::session::start_session() has been called
     spi::session::add_file_name(filename);
+    SPI_UTIL_CLOCK_SHUTDOWN_FUNCTION(); // else not recorded
     SPI_UTIL_CLOCK_EVENTS_WRITE(logfilename.c_str());
     return obj;
 }

@@ -97,6 +97,9 @@ ObjectConstSP ObjectType::make_from_map(
                            className.c_str(), m_className.c_str());
 
     ObjectConstSP o = m_makeFromMap(objectMap, mapToObject);
+
+    SPI_UTIL_CLOCK_RENAME_FUNCTION(o->get_class_name());
+
     MapObjectConstSP omd = objectMap->GetInstance<MapObject>("meta_data", mapToObject, true);
     std::string object_id = objectMap->GetString("object_id", true);
 
@@ -136,8 +139,6 @@ ObjectConstSP ObjectType::make_from_map(
         }
         objMetaData->SetClassName("Map");
     }
-
-    SPI_UTIL_CLOCK_EVENTS_LOG(m_className);
 
     return o;
 }

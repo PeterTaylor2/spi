@@ -22,6 +22,8 @@
 #include "ClockUtil.hpp"
 #include "StringUtil.hpp"
 
+#include <iostream>
+
 #ifdef _MSC_VER
 
 #define WIN32_LEAN_AND_MEAN
@@ -128,7 +130,7 @@ namespace {
 
     static ClockEvents g_clockEvents;
 
-    static ClockFunction* g_parent = NULL;
+    static ClockFunction* g_parent = nullptr;
 
 } // end of anonymous namespace
 
@@ -144,16 +146,6 @@ namespace {
 void ClockEventsStart()
 {
     g_clockEvents.Start();
-}
-
-/*
- * Call this to log an event after you have called ClockStart.
- * If ClockStart has not been called then this function does nothing.
- * Note that msg must be static data as it is only consumed later.
- */
-double ClockEventsLog(const char* msg, double extraTime)
-{
-    return g_clockEvents.Log(msg, extraTime);
 }
 
 /*
@@ -190,7 +182,7 @@ void ClockEvents::Start()
     m_time = m_clock.Time();
 }
 
-double ClockEvents::Log(const char* msg, double extraTime)
+double ClockEvents::Log(const char* msg, double extraTime, bool recursive)
 {
     if (!m_started)
         return 0.0;
@@ -199,7 +191,7 @@ double ClockEvents::Log(const char* msg, double extraTime)
     double elapsedTime = time - m_time + m_unallocatedTime;
     double totalTime = elapsedTime + extraTime;
     m_unallocatedTime = 0.0;
-    AddClockEvent(msg, elapsedTime, totalTime);
+    AddClockEvent(msg, elapsedTime, totalTime, recursive);
 
     // re-calculate the time to avoid the overhead of adding to the index of clock events
     m_time = m_clock.Time();
@@ -247,6 +239,8 @@ void Profile::Clear()
     fractionalTimes.clear();
     numCalls.clear();
     totalTimes.clear();
+    fractionalTotalTimes.clear();
+    numRecursiveCalls.clear();
 
     totalTime = 0.0;
     count = 0;
@@ -260,11 +254,15 @@ void Profile::Write(const char* filename) const
     if (totalTime > 0.0)
     {
         ostr << std::endl;
+        sprintf(buf, "%-50s : %10s : %6s : %10s : %7s (%s)",
+            "name", "time", "time%", "totalTime", "total%", "numCalls:recursive");
+        ostr << buf << std::endl;
         for (size_t i = 0; i < count; ++i)
         {
-            sprintf(buf, "%-50s : %10.6f : %5.2f%% : %10.6f : %5.2f%% (%d)",
+            sprintf(buf, "%-50s : %10.6f : %5.2f%% : %10.6f : %6.2f%% (%d:%d)",
                 names[i].c_str(), times[i], 100 * fractionalTimes[i],
-                totalTimes[i], 100 * fractionalTotalTimes[i], numCalls[i]);
+                totalTimes[i], 100 * fractionalTotalTimes[i], numCalls[i],
+                numRecursiveCalls[i]);
             ostr << buf << std::endl;
         }
         sprintf(buf, "%50s   ==========", "");
@@ -283,6 +281,7 @@ void ClockEvents::GetProfile(Profile& profile) const
 
     std::map<std::string, double> indexTime;
     std::map<std::string, int> indexCount;
+    std::map<std::string, int> indexRecursiveCount;
     std::map<std::string, double> indexTotalTime;
     double grandTotalTime = 0.0;
         
@@ -293,6 +292,7 @@ void ClockEvents::GetProfile(Profile& profile) const
     {
         indexTime[iter->first] += iter->second.time;
         indexCount[iter->first] += iter->second.count;
+        indexRecursiveCount[iter->first] += iter->second.recurseCount;
         indexTotalTime[iter->first] += iter->second.totalTime;
         grandTotalTime += iter->second.time;
     }
@@ -315,6 +315,7 @@ void ClockEvents::GetProfile(Profile& profile) const
         profile.numCalls.push_back(indexCount[iter->first]);
         profile.totalTimes.push_back(totalTime);
         profile.fractionalTotalTimes.push_back(totalTimeFraction);
+        profile.numRecursiveCalls.push_back(indexRecursiveCount[iter->first]);
     }
     profile.totalTime = grandTotalTime;
     profile.count = profile.names.size();
@@ -324,6 +325,7 @@ void ClockEvents::GetProfile(Profile& profile) const
     SPI_UTIL_POST_CONDITION(profile.count == profile.numCalls.size());
     SPI_UTIL_POST_CONDITION(profile.count == profile.totalTimes.size());
     SPI_UTIL_POST_CONDITION(profile.count == profile.fractionalTotalTimes.size());
+    SPI_UTIL_POST_CONDITION(profile.count == profile.numRecursiveCalls.size());
 }
 
 void ClockEvents::Clear()
@@ -332,7 +334,11 @@ void ClockEvents::Clear()
     m_indexEvents.clear();
 }
 
-void ClockEvents::AddClockEvent(const char* msg, double time, double totalTime)
+void ClockEvents::AddClockEvent(
+    const char* msg,
+    double time,
+    double totalTime,
+    bool recursive)
 {
     // the time spent in this function is not counted by the event clock
     std::string name(msg);
@@ -344,6 +350,8 @@ void ClockEvents::AddClockEvent(const char* msg, double time, double totalTime)
         total.time = time;
         total.totalTime = totalTime;
 
+        total.recurseCount = recursive ? 1 : 0;
+
         m_indexEvents.insert(IndexClockEventCount::value_type(name, total));
     }
     else
@@ -351,6 +359,7 @@ void ClockEvents::AddClockEvent(const char* msg, double time, double totalTime)
         iter->second.count += 1;
         iter->second.time += time;
         iter->second.totalTime += totalTime;
+        iter->second.recurseCount += (recursive ? 1 : 0);
     }
 }
 
@@ -360,7 +369,9 @@ ClockFunction::ClockFunction(const char* func, ClockEvents* events)
     m_unallocatedTime(),
     m_events(events),
     m_parent(g_parent),
-    m_extraTime()
+    m_extraTime(),
+    m_recursive(false),
+    m_active(true)
 {
     if (!m_events)
         m_events = &g_clockEvents;
@@ -377,17 +388,56 @@ ClockFunction::ClockFunction(const char* func, ClockEvents* events)
 
         g_parent = this;
     }
+
+    set_recursive();
 }
 
 ClockFunction::~ClockFunction()
 {
-    if (m_events->m_started)
+    shutdown();
+}
+
+void ClockFunction::rename(const char* func)
+{
+    m_func = func;
+    set_recursive();
+}
+
+void ClockFunction::shutdown()
+{
+    if (m_active)
     {
-        double elapsedTime = m_events->Log(m_func, m_extraTime);
-        m_events->m_unallocatedTime = m_unallocatedTime;
-        g_parent = m_parent;
-        if (g_parent)
-            g_parent->m_extraTime += elapsedTime;
+        if (m_events->m_started)
+        {
+            double elapsedTime = m_events->Log(m_func, m_extraTime, m_recursive);
+            m_events->m_unallocatedTime = m_unallocatedTime;
+            g_parent = m_parent;
+            if (g_parent)
+                g_parent->m_extraTime += elapsedTime;
+        }
+        m_active = false;
+    }
+}
+
+void ClockFunction::set_recursive()
+{
+    ClockFunction* parent = m_parent;
+    m_recursive = false;
+    int count = 0;
+    while (parent)
+    {
+        ++count;
+        if (parent->m_func == m_func)
+        {
+            m_recursive = true;
+            break;
+        }
+        parent = parent->m_parent;
+        if (count > 20)
+        {
+            std::cout << __func__ << "excessive recursion" << std::endl;
+            break;
+        }
     }
 }
 
