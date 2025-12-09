@@ -50,7 +50,9 @@ include $(U_SPI_HOME)/makefiles/build/exe.mk
 post_build:
 	$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/copyFiles.py $(G_BUILD_DIR) $(G_ABI)/*$(G_DLL_EXT) 
 
-debug:
+run-debug:
+	$(MAKE) libs DEBUG=1
+	$(MAKE) target DEBUG=1
 	$(MAKE) run DEBUG=1 ARGS=-w
 
 run-all::
@@ -61,3 +63,10 @@ run-all::
 
 rstrip:
 	@$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/rstrip.py *.cpp
+
+libs:
+	$(MAKE) -C $(U_SPI_HOME) -j4 -s
+	$(MAKE) -C lib -j4 -s
+	$(MAKE) -C config DEBUG=0
+	$(MAKE) -C dll -j4 -s
+
