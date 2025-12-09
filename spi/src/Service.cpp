@@ -312,7 +312,7 @@ ObjectConstSP Service::object_from_data(
     const std::string& data, // can be binary or text
     const std::string& streamName,
     bool allowBinary,
-    const MapSP& in_metaData) const
+    const MapConstSP& metaData) const
 {
     // we will try the stream with all the streamers of the matching type
     // (binary or text)
@@ -325,8 +325,7 @@ ObjectConstSP Service::object_from_data(
 
     SPI_UTIL_CLOCK_FUNCTION();
 
-    MapSP metaData = in_metaData ? in_metaData : MapSP(new Map(""));
-    metaData->SetValue("size", spi_util::IntegerCast<int>(data.size()));
+    int size = spi_util::IntegerCast<int>(data.size());
 
     spi_util::Clock clock;
     clock.Start();
@@ -356,7 +355,22 @@ ObjectConstSP Service::object_from_data(
 
             ObjectConstSP obj = streamer->from_data(streamName, data, offset, metaData);
             double parseTime = clock.Time();
-            obj->get_meta_data()->SetValue("parseTime", parseTime);
+            ObjectPutMetaData(obj,
+                { "parseTime", "size" },
+                { 1e3 * parseTime, size });
+
+            try
+            {
+                DateTime timestamp = obj->get_timestamp(); // from object_id if it exists
+                if (!timestamp)
+                    timestamp = DateTime::Now(true); // universal time
+                ObjectPutMetaData(obj, "timestamp", timestamp);
+            }
+            catch (...)
+            {
+                // ignore failures here
+            }
+
             return obj;
         }
     }
@@ -423,7 +437,7 @@ ObjectConstSP Service::object_from_file(const std::string& filename) const
     MapSP metaData(new Map(""));
     metaData->SetValue("filename", Value(filename));
     metaData->SetValue("filetime", Value(DateTime(timestamp)));
-    metaData->SetValue("readTime", readTime);
+    metaData->SetValue("readTime", 1e3 * readTime);
 
     ObjectConstSP obj = object_from_data(data, filename, true, metaData);
 
@@ -459,7 +473,7 @@ ObjectConstSP Service::object_from_url(
 
         MapSP metaData(new Map(""));
         metaData->SetValue("url", url);
-        metaData->SetValue("readTime", readTime);
+        metaData->SetValue("readTime", 1e3 * readTime);
 
         return object_from_data(contents, url, true, metaData);
     }

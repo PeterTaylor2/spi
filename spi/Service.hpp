@@ -88,7 +88,7 @@ public:
     ObjectConstSP object_from_data(const std::string& data,
         const std::string& streamName,
         bool allowBinary,
-        const MapSP& metaData = MapSP()) const;
+        const MapConstSP& metaData = MapConstSP()) const;
     // convenience methods that call the fundamental object_from_data method
     ObjectConstSP object_from_string(const std::string& objectString) const;
     ObjectConstSP object_from_file(const std::string& filename) const;
