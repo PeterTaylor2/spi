@@ -10,6 +10,16 @@
 
 #include <spi_util/TestRunner.hpp>
 
+#ifdef _MSC_VER
+
+#define stricmp _stricmp
+
+#else
+
+#define stricmp strcasecmp
+
+#endif
+
 /*
 ***************************************************************************
 ** Implementation of DayCountConv enumerated type.
@@ -40,17 +50,17 @@ DayCountConv::Enum DayCountConv::from_string(const char* str)
     switch(toupper(*str))
     {
     case 'A':
-        if (_stricmp(str, "ACT/ACT") == 0)
+        if (stricmp(str, "ACT/ACT") == 0)
             return DayCountConv::ACT_ACT;
-        if (_stricmp(str, "ACT/365F") == 0)
+        if (stricmp(str, "ACT/365F") == 0)
             return DayCountConv::ACT_365F;
-        if (_stricmp(str, "ACT/360") == 0)
+        if (stricmp(str, "ACT/360") == 0)
             return DayCountConv::ACT_360;
         break;
     case 'B':
-        if (_stricmp(str, "B30/360") == 0)
+        if (stricmp(str, "B30/360") == 0)
             return DayCountConv::B30_360;
-        if (_stricmp(str, "B30E/360") == 0)
+        if (stricmp(str, "B30E/360") == 0)
             return DayCountConv::B30E_360;
         break;
     }
