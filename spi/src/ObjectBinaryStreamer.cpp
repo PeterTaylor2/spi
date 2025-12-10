@@ -23,6 +23,7 @@
 #include "RuntimeError.hpp"
 #include "LexerReader.hpp"
 #include "MapReader.hpp"
+#include "MapObject.hpp"
 #include "SHA.hpp"
 
 #include <spi_util/Lexer.hpp>
@@ -47,6 +48,24 @@
 SPI_BEGIN_NAMESPACE
 
 BEGIN_ANONYMOUS_NAMESPACE
+
+bool FieldNamesEqual(
+    const std::vector<std::string>& one,
+    const std::vector<std::string>& two)
+{
+    if (one.size() != two.size())
+        return false;
+
+    size_t N = one.size();
+
+    for (size_t i = 0; i < N; ++i)
+    {
+        if (one[i] != two[i])
+            return false;
+    }
+
+    return true;
+}
 
 // whenever we write a field we must first write its type
 // if we have an array of a specific element type that is a separate type
@@ -78,19 +97,51 @@ enum class Type
     OBJECT,
     NULL_MAP,
     NULL_OBJECT,
-    MAP_NAMES,
+    FIELD_NAMES,
     OBJECT_REF,
     OBJECT_ID,
     META_DATA,
-    CLASS_NAME,
+    MAP_REF,
     ERROR,
     ARRAY
 };
 
+/*
+ * case statements for completing a switch statement rather than using default
+    case Type::UNDEFINED:
+    case Type::INT:
+    case Type::INT_ARRAY:
+    case Type::DOUBLE:
+    case Type::DOUBLE_ARRAY:
+    case Type::STRING:
+    case Type::STRING_ARRAY:
+    case Type::DATE:
+    case Type::DATE_ARRAY:
+    case Type::DATETIME:
+    case Type::DATETIME_ARRAY:
+    case Type::SIZE:
+    case Type::SIZE_ARRAY:
+    case Type::BOOL:
+    case Type::BOOL_ARRAY:
+    case Type::CHAR:
+    case Type::MAP:
+    case Type::OBJECT:
+    case Type::NULL_MAP:
+    case Type::NULL_OBJECT:
+    case Type::FIELD_NAMES:
+    case Type::OBJECT_REF:
+    case Type::OBJECT_ID:
+    case Type::META_DATA:
+    case Type::CLASS_NAME:
+    case Type::ERROR:
+    case Type::ARRAY:
+*/
+
+
 void WriteValue(
-	std::ostream& ostr,
-	const Value& value,
-	MapRefCache& mapRefCache,
+    std::ostream& ostr,
+    const Value& value,
+    MapRefCache& mapRefCache,
     std::map<std::string, std::vector<std::string>>& indexClassNames);
 
 // currently we are assuming that all systems we support have the same
@@ -189,25 +240,12 @@ void WriteString(std::ostream& ostr, const std::string& str)
 
     const char* cstr = str.c_str();
     size_t length = strlen(cstr);
-    ostr.write(cstr, length+1); // we must write the zero delimiter
-}
-
-void WriteStringVector(std::ostream& ostr, const std::vector<std::string>& vec)
-{
-    WriteType(ostr, Type::STRING_ARRAY);
-    size_t size = vec.size();
-    WriteSizeVector(ostr, { size });
-
-    // we can't write strings en bloc since they are variable length
-    for (const auto& str : vec)
-    {
-        WriteString(ostr, str);
-    }
+    ostr.write(cstr, length + 1); // we must write the zero delimiter
 }
 
 void WriteFieldNames(std::ostream& ostr, const std::vector<std::string>& fieldNames)
 {
-    WriteType(ostr, Type::MAP_NAMES);
+    WriteType(ostr, Type::FIELD_NAMES);
     WriteSize(ostr, fieldNames.size());
     for (const auto& fieldName : fieldNames)
         WriteString(ostr, fieldName);
@@ -228,7 +266,7 @@ void WriteMap(
     {
         WriteType(ostr, Type::MAP);
         const std::string& className = mp->ClassName();
-        SPI_POST_CONDITION(className.empty()); // or Map perhaps
+        SPI_POST_CONDITION(className.empty());
 
         const std::vector<std::string>& fieldNames = mp->FieldNames();
 
@@ -243,12 +281,12 @@ void WriteMap(
 }
 
 void WriteObject(
-	std::ostream& ostr,
-	const ObjectConstSP& obj,
-	MapRefCache& mapRefCache,
-	std::map<std::string, std::vector<std::string>>& indexClassNames,
-	const MapConstSP& metaData = MapConstSP(),
-	bool addObjectId = false)
+    std::ostream& ostr,
+    const ObjectConstSP& obj,
+    MapRefCache& mapRefCache,
+    std::map<std::string, std::vector<std::string>>& indexClassNames,
+    const MapConstSP& metaData = MapConstSP(),
+    bool addObjectId = false)
 {
     if (!obj)
     {
@@ -264,8 +302,9 @@ void WriteObject(
             int mapRef = id == 0 ?
                 0 : spi_util::IntegerCast<int>(mapRefCache.size()) + 1;
 
-            const std::string& className = obj->get_class_name();
-            MapSP aMap(new Map(className.c_str(), mapRef));
+            // we haven't seen this object before
+            const char* className = obj->get_class_name();
+
             if (mapRef != 0)
                 mapRefCache.insert(mapRef, obj);
 
@@ -273,8 +312,13 @@ void WriteObject(
             // otherwise we are messing up the field names of the class
 
             WriteType(ostr, Type::OBJECT);
-            // we always print the reference number for a named map
-            WriteInt(ostr, mapRef);
+            WriteString(ostr, className);
+
+            if (mapRef > 0)
+            {
+                WriteType(ostr, Type::MAP_REF);
+                WriteInt(ostr, mapRef);
+            }
 
             if (metaData)
             {
@@ -295,29 +339,34 @@ void WriteObject(
             // since every time we use a class it must have the same
             // field names since we only record the class field names
             // the first time we see an instance of that class
+            MapSP m(new Map(className, mapRef));
             const bool noHiding = true;
-            ObjectMap om(aMap, noHiding);
+            ObjectMap om(m, noHiding);
             obj->to_map(&om, false);
 
-            WriteType(ostr, Type::CLASS_NAME);
-			WriteString(ostr, className);
-
-			const std::vector<std::string>& fieldNames = aMap->FieldNames();
-
-			// first time we see the class name we print the field names
-			// this means we must use noHiding when converting object to map
-			auto iter = indexClassNames.find(className);
-			if (iter == indexClassNames.end())
-			{
+            const std::vector<std::string>& fieldNames = m->FieldNames();
+            
+            auto iter = indexClassNames.find(className);
+            if (iter == indexClassNames.end())
+            {
                 WriteFieldNames(ostr, fieldNames);
-				indexClassNames.insert({ className, fieldNames });
-			}
+                indexClassNames.insert({ className, fieldNames });
+            }
+            else
+            {
+                if (!FieldNamesEqual(fieldNames, iter->second))
+                {
+                    // this case will usually just be dealing with Map
+                    WriteFieldNames(ostr, fieldNames);
+                    iter->second = fieldNames;
+                }
+            }
 
-			for (const auto& fieldName : fieldNames)
-			{
-				const Value& value = aMap->GetValue(fieldName);
-				WriteValue(ostr, value, mapRefCache, indexClassNames);
-			}
+            for (const auto& fieldName : fieldNames)
+            {
+                const Value& value = m->GetValue(fieldName);
+                WriteValue(ostr, value, mapRefCache, indexClassNames);
+            }
         }
         else
         {
@@ -330,7 +379,7 @@ void WriteObject(
 void WriteArray(
     std::ostream& ostr,
     const IArray* array,
-    MapRefCache&  mapRefCache,
+    MapRefCache& mapRefCache,
     std::map<std::string, std::vector<std::string>>& indexClassNames)
 {
     SPI_PRE_CONDITION(array);
@@ -400,6 +449,8 @@ void WriteArray(
         }
         break;
     }
+    default:
+        break;
     }
 
     // if we have a common element type but cannot use Array<T> then we still
@@ -408,32 +459,32 @@ void WriteArray(
 
     size_t size = array->size();
 
-	switch (elementType)
-	{
-	case Value::DATE:
-		WriteType(ostr, Type::DATE_ARRAY);
-		WriteSizeVector(ostr, dimensions);
-		for (size_t i = 0; i < size; ++i)
-			WriteDate(ostr, array->getItem(i));
-		return;
-	case Value::DATETIME:
-		WriteType(ostr, Type::DATETIME_ARRAY);
-		WriteSizeVector(ostr, dimensions);
-		for (size_t i = 0; i < size; ++i)
-			WriteDateTime(ostr, array->getItem(i));
-		return;
-	case Value::DOUBLE:
-		WriteType(ostr, Type::DOUBLE_ARRAY);
-		WriteSizeVector(ostr, dimensions);
-		for (size_t i = 0; i < size; ++i)
-			WriteDouble(ostr, array->getItem(i));
-		return;
-	case Value::INT:
-		WriteType(ostr, Type::INT_ARRAY);
-		WriteSizeVector(ostr, dimensions);
-		for (size_t i = 0; i < size; ++i)
-			WriteInt(ostr, array->getItem(i));
-		return;
+    switch (elementType)
+    {
+    case Value::DATE:
+        WriteType(ostr, Type::DATE_ARRAY);
+        WriteSizeVector(ostr, dimensions);
+        for (size_t i = 0; i < size; ++i)
+            WriteDate(ostr, array->getItem(i));
+        return;
+    case Value::DATETIME:
+        WriteType(ostr, Type::DATETIME_ARRAY);
+        WriteSizeVector(ostr, dimensions);
+        for (size_t i = 0; i < size; ++i)
+            WriteDateTime(ostr, array->getItem(i));
+        return;
+    case Value::DOUBLE:
+        WriteType(ostr, Type::DOUBLE_ARRAY);
+        WriteSizeVector(ostr, dimensions);
+        for (size_t i = 0; i < size; ++i)
+            WriteDouble(ostr, array->getItem(i));
+        return;
+    case Value::INT:
+        WriteType(ostr, Type::INT_ARRAY);
+        WriteSizeVector(ostr, dimensions);
+        for (size_t i = 0; i < size; ++i)
+            WriteInt(ostr, array->getItem(i));
+        return;
     case Value::STRING:
     case Value::SHORT_STRING: // is this a thing in this context?
         WriteType(ostr, Type::STRING_ARRAY);
@@ -447,6 +498,8 @@ void WriteArray(
         for (size_t i = 0; i < size; ++i)
             WriteBool(ostr, array->getItem(i));
         return;
+    default:
+        break;
     }
 
     // otherwise we write an ARRAY and have to write the type of each element
@@ -540,10 +593,14 @@ ObjectConstSP ObjectBinaryStreamer::from_data(
 
     return from_data_offset(
         streamName,
-        data_size-offset,
-        data.data() + offset ,
+        data_size - offset,
+        data.data() + offset,
         metaData,
         &sizeUsed);
+
+    // ideally the <= would be an equality
+    // in other words we used the entire stream
+    SPI_POST_CONDITION(sizeUsed <= data_size - offset);
 }
 
 BEGIN_ANONYMOUS_NAMESPACE
@@ -553,327 +610,390 @@ typedef std::map<std::string, std::vector<std::string>> IndexClassNames;
 class BinaryReader
 {
 public:
-    BinaryReader(const char* contents, size_t size)
-        :
-        m_work(contents),
-        m_size(size),
-        m_used(0)
-    {
-    }
+    BinaryReader(const char* contents, size_t size);
 
-    size_t used() const
-    {
-        return m_used;
-    }
+    size_t used() const;
 
-    template<typename T>
-    std::vector<T> ReadVector(uint32_t size)
-    {
-        size_t needed = size * sizeof(T);
-        check_needed(needed);
+    std::vector<size_t> ReadDimensions();
+    static uint32_t DimensionsSize(const std::vector<size_t>& dims);
+    static bool CharToBool(char c);
 
-        const T* data = (const T*)m_work;
-        m_work += needed;
-        m_size -= needed;
+    Value ReadValue(IndexClassNames& indexClassNames);
 
-        return std::vector<T>(data, data + size);
-    }
-
-    template<>
-    std::vector<bool> ReadVector<bool>(uint32_t size)
-    {
-        size_t needed = size;
-        check_needed(needed);
-
-        const char* data = m_work;
-        m_work += needed;
-        m_size -= needed;
-
-        std::vector<bool> vec;
-        vec.reserve(size);
-
-        for (size_t i = 0; i < size; ++i)
-            vec.push_back(data[i]);
-        
-        return vec;
-    }
-
-    template<>
-    std::vector<std::string> ReadVector<std::string>(uint32_t size)
-    {
-        std::vector<std::string> vec;
-        vec.reserve(size);
-
-        for (size_t i = 0; i < size; ++i)
-            vec.push_back(Read<std::string>());
-
-        return vec;
-    }
-
-    std::vector<size_t> ReadDimensions()
-    {
-        // we encode dimensions using uint32_t rather than size_t
-        // size_t is really too large for an array
-        // even uint32_t is too large
-        uint32_t size = Read<uint32_t>();
-        std::vector<uint32_t> dims = ReadVector<uint32_t>(size);
-
-        return std::vector<size_t>(dims.begin(), dims.end());
-    }
-
-    uint32_t DimensionsSize(const std::vector<size_t>& dims)
-    {
-        if (dims.size() == 0)
-            return 0;
-
-        size_t size = 1;
-        for (auto dim : dims)
-            size *= dim;
-
-        return spi_util::IntegerCast<uint32_t>(size);
-    }
-
-    template<typename T>
-    T Read()
-    {
-        constexpr size_t needed = sizeof(T);
-        check_needed(needed);
-        T value = *(const T*)m_work;
-
-        m_size -= needed;
-        m_work += needed;
-
-        return value;
-    }
-
-    template<>
-    std::string Read<std::string>()
-    {
-        size_t length = strlen(m_work);
-        check_needed(length + 1); 
-
-        std::string out(m_work);
-
-        m_size -= (length + 1);
-        m_work += (length + 1);
-
-        return out;
-    }
-
-    bool CharToBool(char c)
-    {
-        if (c == 'T')
-            return true;
-        if (c == 'F')
-            return false;
-
-        SPI_THROW_RUNTIME_ERROR("Expect 'T' or 'F' for bool");
-    }
-
-    template<>
-    bool Read<bool>()
-    {
-        return CharToBool(Read<char>());
-    }
-
-    template<>
-    Type Read<Type>()
-    {
-        char c = Read<char>();
-        return (Type)c;
-    }
-
-    template<>
-    Value Read<Value>() = delete;
-
-    Value ReadValue(IndexClassNames& indexClassNames)
-    {
-        Type type = Read<Type>();
-
-        switch (type)
-        {
-        case Type::UNDEFINED:
-            return Value();
-        case Type::INT:
-            return Read<int>();
-        case Type::DOUBLE:
-            return Read<double>();
-        case Type::STRING:
-            return Read<std::string>();
-        case Type::DATE:
-            return Read<Date>();
-        case Type::DATETIME:
-            return Read<DateTime>();
-        case Type::BOOL:
-            return Read<bool>();
-        case Type::CHAR:
-            return Read<char>();
-        case Type::MAP:
-            return ReadMap(indexClassNames);
-        case Type::OBJECT:
-            return ReadClassMap(indexClassNames);
-        case Type::OBJECT_REF:
-            return ObjectRef(Read<int>());
-        case Type::ERROR:
-        {
-            std::string error = Read<std::string>();
-            return Value(error.c_str(), true);
-        }
-        case Type::NULL_MAP:
-            return MapConstSP();
-        case Type::NULL_OBJECT:
-            return ObjectConstSP();
-        case Type::INT_ARRAY:
-        {
-            const std::vector<size_t>& dims = ReadDimensions();
-            const std::vector<int>& vec = ReadVector<int>(DimensionsSize(dims));
-            return IArrayConstSP(new Array<int>(vec, dims));
-        }
-        case Type::DATE_ARRAY:
-        {
-            const std::vector<size_t>& dims = ReadDimensions();
-            const std::vector<Date>& vec = ReadVector<Date>(DimensionsSize(dims));
-            return IArrayConstSP(new Array<Date>(vec, dims));
-        }
-        case Type::DATETIME_ARRAY:
-        {
-            const std::vector<size_t>& dims = ReadDimensions();
-            const std::vector<DateTime>& vec = ReadVector<DateTime>(DimensionsSize(dims));
-            return IArrayConstSP(new Array<DateTime>(vec, dims));
-        }
-        case Type::DOUBLE_ARRAY:
-        {
-            const std::vector<size_t>& dims = ReadDimensions();
-            const std::vector<double>& vec = ReadVector<double>(DimensionsSize(dims));
-            return IArrayConstSP(new Array<double>(vec, dims));
-        }
-        case Type::STRING_ARRAY:
-        {
-            const std::vector<size_t>& dims = ReadDimensions();
-            const std::vector<std::string>& vec = ReadVector<std::string>(DimensionsSize(dims));
-            return IArrayConstSP(new Array<std::string>(vec, dims));
-        }
-        case Type::BOOL_ARRAY:
-        {
-            const std::vector<size_t>& dims = ReadDimensions();
-            const std::vector<bool>& vec = ReadVector<bool>(DimensionsSize(dims));
-            return IArrayConstSP(new Array<bool>(vec, dims));
-        }
-        case Type::ARRAY:
-        {
-            const std::vector<size_t>& dims = ReadDimensions();
-            size_t size = DimensionsSize(dims);
-            std::vector<Value> vec;
-            vec.reserve(size);
-            for (size_t i = 0; i < size; ++i)
-                vec.push_back(ReadValue(indexClassNames));
-            return IArrayConstSP(new ValueArray(vec, dims));
-        }
-        default:
-            // none of the remaining types should be used for field values
-            SPI_THROW_RUNTIME_ERROR("Cannot read value of type " << (int)type);
-        }
-    }
-
-    std::vector<std::string> ReadFieldNames()
-    {
-        Type type = Read<Type>();
-        if (type != Type::MAP_NAMES)
-            SPI_THROW_RUNTIME_ERROR("Expecting MAP_NAMES to be defined");
-
-        uint32_t size = Read<uint32_t>();
-
-        std::vector<std::string> fieldNames;
-        fieldNames.reserve(size);
-
-        for (size_t i = 0; i < size; ++i)
-            fieldNames.push_back(Read<std::string>());
-
-        return fieldNames;
-    }
-
-    MapSP ReadMap(IndexClassNames& indexClassNames)
-    {
-        const std::vector<std::string>& fieldNames = ReadFieldNames();
-        MapSP m(new Map(""));
-
-        for (const auto& fieldName : fieldNames)
-        {
-            const Value& value = ReadValue(indexClassNames);
-            m->SetValue(fieldName, value);
-        }
-
-        return m;
-    }
+    std::vector<std::string> ReadFieldNames();
+    MapConstSP ReadMap(IndexClassNames& indexClassNames);
 
     // reads the map for the class - does not convert to Object yet
     // we pre-suppose that Type::OBJECT has been read already
-    MapSP ReadClassMap(IndexClassNames& indexClassNames)
-    {
-        int ref = Read<int>();
+    MapConstSP ReadClassMap(IndexClassNames& indexClassNames);
 
-        Type type = Read<Type>();
+    const char* work();
+    void check_needed(size_t needed) const;
+    void use_work(size_t used);
 
-        MapConstSP meta_data;
-        if (type == Type::META_DATA)
-        {
-            meta_data = ReadMap(indexClassNames);
-            type = Read<Type>();
-        }
-
-        std::string object_id;
-        if (type == Type::OBJECT_ID)
-        {
-            object_id = Read<std::string>();
-            type = Read<Type>();
-        }
-
-        if (type != Type::CLASS_NAME)
-        {
-            SPI_THROW_RUNTIME_ERROR("No className provided for OBJECT");
-        }
-
-        std::string className = Read<std::string>();
-
-        auto iter = indexClassNames.find(className);
-        if (iter == indexClassNames.end())
-        {
-            const std::vector<std::string>& fieldNames = ReadFieldNames();
-            indexClassNames.insert({ className, fieldNames });
-            iter = indexClassNames.find(className);
-        }
-        const std::vector<std::string>& fieldNames = iter->second;
-
-        MapSP m(new Map(className.c_str(), ref));
-
-        for (const auto& fieldName : fieldNames)
-        {
-            const Value& value = ReadValue(indexClassNames);
-            m->SetValue(fieldName, value);
-        }
-
-        if (meta_data)
-            m->SetValue("meta_data", meta_data, true);
-        if (!object_id.empty())
-            m->SetValue("object_id", object_id, true);
-
-        return m;
-    }
+    /// <summary>
+    /// Returns true if the next entry in work is the requested Type.
+    /// In that case the Type is extracted from work.
+    /// Otherwise work is left unchanged.
+    /// </summary>
+    /// <param name="expectedType"></param>
+    /// <returns></returns>
+    bool extract_expected_type(Type expectedType);
 
 private:
     const char* m_work;
     size_t m_size;
     size_t m_used;
-
-    void check_needed(size_t needed)
-    {
-        if (needed > m_size)
-        {
-            SPI_THROW_RUNTIME_ERROR("Available size " << m_size <<
-                " less than needed " << needed);
-        }
-    }
 };
+
+// as a workaround for gcc bugs we will put our templates in the global
+// namespace (or at least the anonymous namespace) and provide the
+// BinaryReader as a pointer
+//
+// we start with the Read() templates since these are used by ReadVector()
+// then the ReadVector() templates
+// finally the class implementation functions
+
+template<typename T>
+T Read(BinaryReader* reader)
+{
+    constexpr size_t needed = sizeof(T);
+    reader->check_needed(needed);
+    T value = *(const T*)reader->work();
+
+    reader->use_work(needed);
+
+    return value;
+}
+
+template<>
+std::string Read<std::string>(BinaryReader* reader)
+{
+    size_t length = strlen(reader->work());
+    reader->check_needed(length + 1);
+
+    std::string out(reader->work());
+    reader->use_work(length + 1);
+    return out;
+}
+
+template<>
+bool Read<bool>(BinaryReader* reader)
+{
+    return BinaryReader::CharToBool(Read<char>(reader));
+}
+
+template<>
+Type Read<Type>(BinaryReader* reader)
+{
+    char c = Read<char>(reader);
+    return (Type)c;
+}
+
+template<>
+Value Read<Value>(BinaryReader*) = delete;
+
+
+template<typename T>
+std::vector<T> ReadVector(BinaryReader* reader, uint32_t size)
+{
+    size_t needed = size * sizeof(T);
+    reader->check_needed(needed);
+
+    const T* data = (const T*)(reader->work());
+    reader->use_work(needed);
+
+    return std::vector<T>(data, data + size);
+}
+
+template<>
+std::vector<bool> ReadVector<bool>(BinaryReader* reader, uint32_t size)
+{
+    size_t needed = size;
+    reader->check_needed(needed);
+
+    const char* data = reader->work();
+    reader->use_work(needed);
+
+    std::vector<bool> vec;
+    vec.reserve(size);
+
+    for (size_t i = 0; i < size; ++i)
+        vec.push_back(BinaryReader::CharToBool(data[i]));
+
+    return vec;
+}
+
+template<>
+std::vector<std::string> ReadVector<std::string>(
+    BinaryReader* reader,
+    uint32_t size)
+{
+    std::vector<std::string> vec;
+    vec.reserve(size);
+
+    for (size_t i = 0; i < size; ++i)
+        vec.push_back(Read<std::string>(reader));
+
+    return vec;
+}
+
+BinaryReader::BinaryReader(const char* contents, size_t size)
+    :
+    m_work(contents),
+    m_size(size),
+    m_used(0)
+{
+}
+
+size_t BinaryReader::used() const
+{
+    return m_used;
+}
+
+std::vector<size_t> BinaryReader::ReadDimensions()
+{
+    // we encode dimensions using uint32_t rather than size_t
+    // size_t is really too large for an array
+    // even uint32_t is too large
+    uint32_t size = Read<uint32_t>(this);
+    std::vector<uint32_t> dims = ReadVector<uint32_t>(this, size);
+
+    return std::vector<size_t>(dims.begin(), dims.end());
+}
+
+uint32_t BinaryReader::DimensionsSize(const std::vector<size_t>& dims)
+{
+    if (dims.size() == 0)
+        return 0;
+
+    size_t size = 1;
+    for (auto dim : dims)
+        size *= dim;
+
+    return spi_util::IntegerCast<uint32_t>(size);
+}
+
+bool BinaryReader::CharToBool(char c)
+{
+    if (c == 'T')
+        return true;
+    if (c == 'F')
+        return false;
+
+    SPI_THROW_RUNTIME_ERROR("Expect 'T' or 'F' for bool");
+}
+
+
+Value BinaryReader::ReadValue(IndexClassNames& indexClassNames)
+{
+    Type type = Read<Type>(this);
+
+    switch (type)
+    {
+    case Type::UNDEFINED:
+        return Value();
+    case Type::INT:
+        return Read<int>(this);
+    case Type::DOUBLE:
+        return Read<double>(this);
+    case Type::STRING:
+        return Read<std::string>(this);
+    case Type::DATE:
+        return Read<Date>(this);
+    case Type::DATETIME:
+        return Read<DateTime>(this);
+    case Type::BOOL:
+        return Read<bool>(this);
+    case Type::CHAR:
+        return Read<char>(this);
+    case Type::MAP:
+        return Value(ReadMap(indexClassNames));
+    case Type::OBJECT:
+        return ReadClassMap(indexClassNames);
+    case Type::OBJECT_REF:
+        return ObjectRef(Read<int>(this));
+    case Type::ERROR:
+    {
+        std::string error = Read<std::string>(this);
+        return Value(error.c_str(), true);
+    }
+    case Type::NULL_MAP:
+        return MapConstSP();
+    case Type::NULL_OBJECT:
+        return ObjectConstSP();
+    case Type::INT_ARRAY:
+    {
+        const std::vector<size_t>& dims = ReadDimensions();
+        const std::vector<int>& vec = ReadVector<int>(this, DimensionsSize(dims));
+        return IArrayConstSP(new Array<int>(vec, dims));
+    }
+    case Type::DATE_ARRAY:
+    {
+        const std::vector<size_t>& dims = ReadDimensions();
+        const std::vector<Date>& vec = ReadVector<Date>(this, DimensionsSize(dims));
+        return IArrayConstSP(new Array<Date>(vec, dims));
+    }
+    case Type::DATETIME_ARRAY:
+    {
+        const std::vector<size_t>& dims = ReadDimensions();
+        const std::vector<DateTime>& vec = ReadVector<DateTime>(this, DimensionsSize(dims));
+        return IArrayConstSP(new Array<DateTime>(vec, dims));
+    }
+    case Type::DOUBLE_ARRAY:
+    {
+        const std::vector<size_t>& dims = ReadDimensions();
+        const std::vector<double>& vec = ReadVector<double>(this, DimensionsSize(dims));
+        return IArrayConstSP(new Array<double>(vec, dims));
+    }
+    case Type::STRING_ARRAY:
+    {
+        const std::vector<size_t>& dims = ReadDimensions();
+        const std::vector<std::string>& vec = ReadVector<std::string>(this, DimensionsSize(dims));
+        return IArrayConstSP(new Array<std::string>(vec, dims));
+    }
+    case Type::BOOL_ARRAY:
+    {
+        const std::vector<size_t>& dims = ReadDimensions();
+        const std::vector<bool>& vec = ReadVector<bool>(this, DimensionsSize(dims));
+        return IArrayConstSP(new Array<bool>(vec, dims));
+    }
+    case Type::ARRAY:
+    {
+        const std::vector<size_t>& dims = ReadDimensions();
+        size_t size = DimensionsSize(dims);
+        std::vector<Value> vec;
+        vec.reserve(size);
+        for (size_t i = 0; i < size; ++i)
+            vec.push_back(ReadValue(indexClassNames));
+        return IArrayConstSP(new ValueArray(vec, dims));
+    }
+    case Type::SIZE:
+        SPI_THROW_RUNTIME_ERROR("Cannot read value of type SIZE");
+    case Type::SIZE_ARRAY:
+        SPI_THROW_RUNTIME_ERROR("Cannot read value of type SIZE_ARRAY");
+    case Type::FIELD_NAMES:
+        SPI_THROW_RUNTIME_ERROR("Cannot read value of type FIELD_NAMES");
+    case Type::OBJECT_ID:
+        SPI_THROW_RUNTIME_ERROR("Cannot read value of type OBJECT_ID");
+    case Type::META_DATA:
+        SPI_THROW_RUNTIME_ERROR("Cannot read value of type META_DATA");
+    case Type::MAP_REF:
+        SPI_THROW_RUNTIME_ERROR("Cannot read value of type MAP_REF");
+    default:
+        // none of the remaining types should be used for field values
+        SPI_THROW_RUNTIME_ERROR("Cannot read value of type " << (int)type);
+    }
+}
+
+std::vector<std::string> BinaryReader::ReadFieldNames()
+{
+    // we expect FIELD_NAMES to be tested before calling this function
+    uint32_t size = Read<uint32_t>(this);
+
+    std::vector<std::string> fieldNames;
+    fieldNames.reserve(size);
+
+    for (size_t i = 0; i < size; ++i)
+        fieldNames.push_back(Read<std::string>(this));
+
+    return fieldNames;
+}
+
+MapConstSP BinaryReader::ReadMap(IndexClassNames& indexClassNames)
+{
+    const std::vector<std::string>& fieldNames = ReadFieldNames();
+    MapSP m(new Map(""));
+
+    for (const auto& fieldName : fieldNames)
+    {
+        const Value& value = ReadValue(indexClassNames);
+        m->SetValue(fieldName, value);
+    }
+
+    return m;
+}
+
+// reads the map for the class - does not convert to Object yet
+// we pre-suppose that Type::OBJECT has been read already
+MapConstSP BinaryReader::ReadClassMap(IndexClassNames& indexClassNames)
+{
+    std::string className = Read<std::string>(this);
+
+    int ref;
+    if (extract_expected_type(Type::MAP_REF))
+        ref = Read<int>(this);
+    else
+        ref = 0;
+
+    MapConstSP meta_data;
+    if (extract_expected_type(Type::META_DATA))
+        meta_data = ReadClassMap(indexClassNames);
+
+    std::string object_id;
+    if (extract_expected_type(Type::OBJECT_ID))
+        object_id = Read<std::string>(this);
+
+    std::vector<std::string> fieldNames;
+    if (extract_expected_type(Type::FIELD_NAMES))
+    {
+        fieldNames = ReadFieldNames();
+        indexClassNames[className] = fieldNames;
+    }
+    else
+    {
+        auto iter = indexClassNames.find(className);
+        if (iter == indexClassNames.end())
+            SPI_THROW_RUNTIME_ERROR("Undefined fieldNames for class " << className);
+        fieldNames = iter->second;
+    }
+
+    MapSP m(new Map(className.c_str(), ref));
+
+    if (meta_data)
+        m->SetValue("meta_data", meta_data);
+    if (!object_id.empty())
+        m->SetValue("object_id", object_id);
+
+    for (const auto& fieldName : fieldNames)
+    {
+        const Value& value = ReadValue(indexClassNames);
+        m->SetValue(fieldName, value);
+    }
+
+    return m;
+}
+
+void BinaryReader::check_needed(size_t needed) const
+{
+    if (needed > m_size)
+    {
+        SPI_THROW_RUNTIME_ERROR("Available size " << m_size <<
+            " less than needed " << needed);
+    }
+}
+
+const char* BinaryReader::work()
+{
+    return m_work;
+}
+
+void BinaryReader::use_work(size_t used)
+{
+    m_work += used;
+    m_size -= used;
+    m_used += used;
+}
+
+bool BinaryReader::extract_expected_type(Type expectedType)
+{
+    if ((char)expectedType == *m_work)
+    {
+        use_work(1);
+        return true;
+    }
+    return false;
+}
 
 END_ANONYMOUS_NAMESPACE
 
@@ -890,17 +1010,20 @@ ObjectConstSP ObjectBinaryStreamer::from_data_offset(
 
     BinaryReader reader(contents, size);
 
-    Type type = reader.Read<Type>();
-    if (type != Type::OBJECT)
+    ObjectConstSP obj;
+
+    if (!reader.extract_expected_type(Type::OBJECT))
         SPI_THROW_RUNTIME_ERROR("contents does not represent an OBJECT");
 
-    MapSP m = reader.ReadClassMap(m_indexClassNames);
-
-    if (sizeUsed)
-        *sizeUsed = totalUsed;
+    MapConstSP m = reader.ReadClassMap(m_indexClassNames);
 
     ObjectMap om(m);
-    return m_service->object_from_map(&om, m_objectCache, metaData);
+    obj = m_service->object_from_map(&om, m_objectCache, metaData);
+
+    if (sizeUsed)
+        *sizeUsed = reader.used();
+
+    return obj;
 }
 
 // top-level object
