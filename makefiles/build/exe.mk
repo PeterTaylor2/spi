@@ -59,8 +59,17 @@ show_vars:
 #
 # define run-time arguments via ARGS
 ###########################################################################
+ifeq ($(G_PLATFORM),win32)
+
 run: target
 	$(WRAPPER) $(I_TARGET) $(ARGS)
+
+else
+
+run: target
+	cd $(dir $(I_TARGET)) && $(WRAPPER) ./$(notdir $(I_TARGET)) $(ARGS)
+
+endif
 
 ############################################################################
 # Extra stuff could be to compile the dependent libraries or to generate
