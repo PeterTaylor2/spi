@@ -2422,9 +2422,9 @@ std::string CDataType::c_to_value(int arrayDim, const std::string & name) const
         case spdoc::PublicType::ENUM_BITMASK:
             return StringFormat("%s.to_value()", cpp.c_str());
         case spdoc::PublicType::CLASS:
-            return spi_util::StringFormat("spi::Object::to_value(%s)", cpp.c_str());
         case spdoc::PublicType::OBJECT:
         case spdoc::PublicType::MAP:
+            return spi_util::StringFormat("spi::Object::to_value(%s)", cpp.c_str());
         default:
             SPI_NOT_IMPLEMENTED;
         }
