@@ -714,6 +714,8 @@ void ExcelService::RegisterFunction(
 {
     try
     {
+        bool failed = false;
+        int xlFailureCode = 0;
 #if SPI_XL_VERSION == 4
         size_t numArgs;
         size_t maxArgs = 31;
@@ -821,15 +823,28 @@ void ExcelService::RegisterFunction(
                 &res, /* not interested in any return details */
                 numInputs,
                 &xInputs[0]);
+
+        if (res.xltype == xltypeErr)
+        {
+            failed = true;
+            xlFailureCode = res.val.err;
+        }
+
 #elif SPI_XL_VERSION >= 12
         size_t numArgs;
-        size_t maxArgs = 31; // potentially we could increase this limit
+        size_t maxArgs = 64; // the actual limit is 255
+        // however we are shortening the argument names to be 255
+        // which with the arguments shortened to just numbers with possible
+        // query (for optional) and dividing comma gives us 64 in practice
+        // tried allowing maxLenArgNames to be 256*256-1 but something went
+        // wrong with Excel anyway
+
         // in the Excel12 interface the registered string of argNames is
         // still limited to 255, but the second limit of argNames + function name
         // does not seem to be relevant
-        int  maxLenArgNames = 255;
+        constexpr int  maxLenArgNames = 255;
         // there is effectively no limit to the number of help messages given
-        // that we have maintained a limit on the number of arguments at 31
+        // that we have maintained a limit on the number of arguments at 64
 
         // there is a case for us concatenating something from the service
         // with the function name at this point - it would save us from
@@ -857,9 +872,9 @@ void ExcelService::RegisterFunction(
                 std::string shortArg;
 
                 if (spi::StringEndsWith(arg, "?"))
-                    shortArg = spi::StringFormat("arg%d?", (int)i);
+                    shortArg = spi::StringFormat("%d?", (int)i);
                 else
-                    shortArg = spi::StringFormat("arg%d", (int)i);
+                    shortArg = spi::StringFormat("%d", (int)i);
 
                 shortArgs[i-1] = shortArg;
                 oversize += (int)shortArg.length();
@@ -867,7 +882,11 @@ void ExcelService::RegisterFunction(
             }
 
             argNames = StringJoin(",", shortArgs);
-            SPI_POST_CONDITION((int)argNames.length() <= maxLenArgNames);
+            if ((int)argNames.length() > maxLenArgNames)
+            {
+                throw RuntimeError("%s: Shortened argNames are still too long (%d)",
+                    xlFuncName.c_str(), argNames.length());
+            }
         }
 
         FreeAllTempMemory();
@@ -925,11 +944,26 @@ void ExcelService::RegisterFunction(
                 &res, /* not interested in any return details */
                 numInputs,
                 &xInputs[0]);
+
+        if (res.xltype == xltypeErr)
+        {
+            failed = true;
+            xlFailureCode = res.val.err;
+        }
+
 #else
 #error "Excel version must be 4 or at least 12"
 #endif
-
-        m_registeredFunctions.push_back(xlFuncName);
+        if (failed)
+        {
+            std::string errmsg = StringFormat("Failed to register %s with code (%d)",
+                xlFuncName, xlFailureCode);
+            Excel(xlcAlert, 0, 2, TempStrConst(errmsg.c_str()), TempInt(2));
+        }
+        else
+        {
+            m_registeredFunctions.push_back(xlFuncName);
+        }
         FreeAllTempMemory();
     } catch (std::exception& e) {
         Excel (xlcAlert, 0, 2, TempStrConst(e.what()), TempInt(2));
