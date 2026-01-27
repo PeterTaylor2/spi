@@ -861,6 +861,8 @@ void ExcelService::RegisterFunction(
             argTypes = std::string(xlArgTypes);
 
         std::string argNames = StringJoin(",", args);
+        size_t firstUnnamed = args.size();
+
         if ((int)argNames.length() > maxLenArgNames)
         {
             int oversize = (int)argNames.length() - maxLenArgNames;
@@ -876,6 +878,7 @@ void ExcelService::RegisterFunction(
                 else
                     shortArg = spi::StringFormat("%d", (int)i);
 
+                firstUnnamed = i - 1;
                 shortArgs[i-1] = shortArg;
                 oversize += (int)shortArg.length();
                 oversize -= (int)arg.length();
@@ -920,19 +923,53 @@ void ExcelService::RegisterFunction(
         xInputs.push_back(TempString12(funcHelp));
         for (size_t i = 0; i < argsHelp.size(); ++i)
         {
-            std::string argHelp;
-            if (argsHelp[i].empty() && i < args.size())
+            std::string argHelp = argsHelp[i];
+            std::string argName = i < args.size() ? args[i] : "";
+
+            bool optional = StringEndsWith(argName, "?");
+            if (optional)
+                argName = argName.substr(0, argName.length() - 1);
+
+            // unnamed in this context is that the function wizard
+            // has not been told the name of this field
+            if (i >= firstUnnamed)
             {
-                argHelp = args[i];
-                if (StringEndsWith(argHelp, "?"))
-                    argHelp = argHelp.substr(0, argHelp.length()-1) + " (optional)";
+                // unnamed fields need to include the argName as well as the argHelp
+                if (argHelp.empty())
+                {
+                    if (optional)
+                        argHelp = argName + " (optional)";
+                    else
+                        argHelp = argName;
+                }
+                else if (!argName.empty())
+                {
+                    // this is an unnamed field with help
+                    // we want to see the name as well as the help
+                    if (optional)
+                    {
+                        argHelp = argName + " (optional): " + argHelp;
+                    }
+                    else
+                    {
+                        argHelp = argName + ": " + argHelp;
+                    }
+                }
+                else if (optional)
+                {
+                    argHelp = "(optional) " + argHelp;
+                }
             }
-            else
+            else if (optional)
             {
-                argHelp = argsHelp[i];
+                argHelp = "(optional) " + argHelp;
             }
-            if (i+1 == argsHelp.size())
+
+            if (i + 1 == argsHelp.size())
+            {
+                // this is handling a well-known Excel bug
                 argHelp = argHelp + ". ";
+            }
 
             xInputs.push_back(TempString12(argHelp));
         }
