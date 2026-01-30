@@ -29,48 +29,11 @@
 #include "Object.hpp"
 #include "Array.hpp"
 #include "MatrixData.hpp"
+#include "String.hpp"
 
 #include <string.h>
 
 SPI_BEGIN_NAMESPACE
-
-namespace
-{
-
-class ValueString : public IString
-{
-public:
-    ValueString(const char* str)
-    {
-        if (!str)
-            throw std::runtime_error("Null inputs");
-        m_str = strdup(str);
-        if (!m_str)
-            throw std::runtime_error("Allocation failure");
-    }
-
-    ~ValueString()
-    {
-        if (m_str)
-        {
-            free((void*)m_str);
-            m_str = 0;
-        }
-    }
-
-    const char* str() const
-    {
-        return m_str;
-    }
-
-private:
-    const char* m_str;
-
-    ValueString(const ValueString&);
-    ValueString& operator=(const ValueString&);
-};
-
-} // end of private namespace within SPI_NAMESPACE
 
 /*
 ***************************************************************************
@@ -236,17 +199,23 @@ Value::Value () : type(Value::UNDEFINED)
 
 Value::Value (char value) : type(Value::CHAR)
 {
-    aChar = value;
+    aShortString[0] = value;
+    aShortString[1] = '\0';
 }
 
 Value::Value (const char* value)
 {
-    setString(value);
+    setCString(value);
 }
 
 Value::Value (const std::string &value)
 {
-    setString (value.c_str());
+    setString(value);
+}
+
+Value::Value(const StringConstSP& value)
+{
+    setString(value);
 }
 
 Value::Value (int value) : type(Value::INT)
@@ -300,7 +269,7 @@ Value::Value (const IArrayConstSP& value) : type(Value::ARRAY)
 
 Value::Value (const std::exception &e)
 {
-    setString(e.what(), true);
+    setCString(e.what(), true);
 
     // we used the fact that we have a union to set the string value
     // now we must change the type
@@ -309,7 +278,7 @@ Value::Value (const std::exception &e)
 
 Value::Value (const char* value, bool isError)
 {
-    setString(value, true);
+    setCString(value, true);
 
     // we used the fact that we have a union to set the string value
     // now we must change the type
@@ -359,8 +328,6 @@ Value::Value (const Value &value)
     case Value::UNDEFINED:
         break;
     case Value::CHAR:
-        aChar = value.aChar;
-        break;
     case Value::SHORT_STRING:
         strcpy(aShortString, value.aShortString);
         break;
@@ -434,8 +401,11 @@ void Value::freeContents()
     memset(aShortString, 0, sizeof(double));
 }
 
-void Value::setString(const char* value, bool neverShort)
+void Value::setCString(const char* value, bool neverShort)
 {
+    if (!value)
+        value = "";
+
     if (!neverShort && strlen(value) < sizeof(double))
     {
         strcpy(aShortString, value);
@@ -443,10 +413,22 @@ void Value::setString(const char* value, bool neverShort)
     }
     else
     {
-        aString = new ValueString(value);
-        incRefCount(aString);
-        type = Value::STRING;
+        setString(std::string(value));
     }
+}
+
+void Value::setString(const std::string& value)
+{
+    aString = new String(value);
+    incRefCount(aString);
+    type = Value::STRING;
+}
+
+void Value::setString(const StringConstSP& value)
+{
+    type = Value::OBJECT;
+    aString = value.get();
+    incRefCount(aString);
 }
 
 void Value::setObject(const ObjectConstSP& value)
@@ -476,7 +458,6 @@ char Value::getChar(bool permissive) const
     switch(type)
     {
     case Value::CHAR:
-        return aChar;
     case Value::SHORT_STRING:
         return aShortString[0];
     case Value::STRING:
@@ -499,16 +480,10 @@ std::string Value::getString(bool permissive) const
     switch(type)
     {
     case Value::CHAR:
-    {
-        char buf[2];
-        buf[0] = aChar;
-        buf[1] = '\0';
-        return std::string(buf);
-    }
     case Value::SHORT_STRING:
         return std::string(aShortString);
     case Value::STRING:
-        return std::string(aString->str());
+        return aString->str();
     default:
         break;
     }
@@ -537,12 +512,33 @@ std::string Value::getString(bool permissive) const
     SPI_THROW_RUNTIME_ERROR(toString() << " is not a string");
 }
 
+StringConstSP Value::getStringSP(bool permissive) const
+{
+    switch (type)
+    {
+    case Value::STRING:
+        return StringConstSP(aString);
+    case Value::CHAR:
+    case Value::SHORT_STRING:
+        return StringConstSP(new String(std::string(aShortString)));
+    default:
+        break;
+    }
+
+    if (permissive)
+    {
+        return StringConstSP(new String(getString(true)));
+    }
+
+    SPI_THROW_RUNTIME_ERROR(toString() << " is not a string");
+}
+
 std::string Value::getError() const
 {
     switch(type)
     {
     case Value::ERROR:
-        return std::string(aString->str());
+        return aString->str();
     default:
         break;
     }
@@ -874,6 +870,11 @@ Value::getStringVector(bool permissive) const
     return ValueGetVector<std::string>(*this, permissive, Value::ToString);
 }
 
+std::vector<StringConstSP> Value::getStringSPVector(bool permissive) const
+{
+    return ValueGetVector<StringConstSP>(*this, permissive, Value::ToStringSP);
+}
+
 std::vector<double>
 Value::getDoubleVector(bool permissive) const
 {
@@ -974,7 +975,7 @@ std::string Value::toString (const char* indent) const
     case Value::SHORT_STRING:
         return StringFormat("\"%s\"", aShortString);
     case Value::STRING:
-        return StringFormat("\"%s\"", aString->str());
+        return StringFormat("\"%s\"", aString->str().c_str());
     case Value::ERROR:
         return StringFormat("ERROR");
     case Value::INT:
@@ -1033,6 +1034,11 @@ std::string Value::ToString(const Value &v, bool permissive)
     return v.getString(permissive);
 }
 
+StringConstSP Value::ToStringSP(const Value& v, bool permissive)
+{
+    return v.getStringSP(permissive);
+}
+
 int Value::ToInt(const Value &v, bool permissive)
 {
     return v.getInt(permissive);
@@ -1081,6 +1087,11 @@ Value::operator char() const
 Value::operator std::string() const
 {
     return getString();
+}
+
+Value::operator StringConstSP() const
+{
+    return getStringSP();
 }
 
 Value::operator int() const
@@ -1133,6 +1144,11 @@ void Value::Cast(std::string& t) const
     t = getString();
 }
 
+void Value::Cast(StringConstSP& t) const
+{
+    t = getStringSP();
+}
+
 void Value::Cast(int& t) const
 {
     t = getInt();
@@ -1183,6 +1199,11 @@ void Value::Translate(std::string& t, bool permissive) const
     t = getString(permissive);
 }
 
+void Value::Translate(StringConstSP& t, bool permissive) const
+{
+    t = getStringSP(permissive);
+}
+
 void Value::Translate(int& t, bool permissive) const
 {
     t = getInt(permissive);
@@ -1215,4 +1236,3 @@ std::ostream& operator<<(std::ostream& os, const spi::Value& value)
     os << value.toString();
     return os;
 }
-

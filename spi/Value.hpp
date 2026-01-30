@@ -70,16 +70,10 @@ SPI_BEGIN_NAMESPACE
 template<typename T> class MatrixData;
 class Value;
 
-SPI_DECLARE_RC_CLASS(IString);
 SPI_DECLARE_RC_CLASS(Map);
 SPI_DECLARE_RC_CLASS(Object);
 SPI_DECLARE_RC_CLASS(IArray);
-
-class SPI_IMPORT IString : public RefCounter
-{
-public:
-    virtual const char* str() const = 0;
-};
+SPI_DECLARE_RC_CLASS(String);
 
 class SPI_IMPORT Value
 {
@@ -115,9 +109,10 @@ private:
      */
     union
     {
-        char          aChar;
+        // we use aShortString for SHORT_STRING and CHAR
         char          aShortString[sizeof(double)];
-        IString*      aString;
+        // we use aString for STRING and ERROR
+        const String* aString;
         int           anInt;
         double        aDouble;
         bool          aBool;
@@ -127,7 +122,6 @@ private:
         const Object* anObject;
         int           anObjectRef;
         const IArray* anArray;
-        IString*      anError;
     };
     Type type;
 
@@ -143,6 +137,7 @@ public:
     Value (char value);
     Value (const char *value);
     Value (const std::string &value);
+    Value (const StringConstSP& value);
     Value (int value);
     Value (double value);
     Value (bool value);
@@ -177,6 +172,7 @@ public:
     /* These functions can be very forgiving if the type is not an exact match */
     char             getChar(bool permissive=false) const;
     std::string      getString(bool permissive=false) const;
+    StringConstSP    getStringSP(bool permissive=false) const;
     int              getInt(bool permissive=false) const;
     bool             getBool(bool permissive=false) const;
     double           getDouble(bool permissive=false) const;
@@ -190,6 +186,7 @@ public:
 
     // std::vector<char>             getCharVector() const;
     std::vector<std::string>      getStringVector(bool permissive=false) const;
+    std::vector<StringConstSP>    getStringSPVector(bool permissive=false) const;
     std::vector<double>           getDoubleVector(bool permissive=false) const;
     std::vector<int>              getIntVector(bool permissive=false) const;
     std::vector<bool>             getBoolVector(bool permissive=false) const;
@@ -216,13 +213,16 @@ public:
 
 private:
     void freeContents();
-    void setString(const char* value, bool neverShort=false);
+    void setCString(const char* value, bool neverShort=false);
+    void setString(const std::string& value);
+    void setString(const StringConstSP& value);
     void setObject(const ObjectConstSP& value);
 
 public:
     // unary methods for use within templates
     static char ToChar(const Value &v, bool permissive=false);
     static std::string ToString(const Value &v, bool permissive=false);
+    static StringConstSP ToStringSP(const Value& v, bool permissive=false);
     static int ToInt(const Value &v, bool permissive=false);
     static bool ToBool(const Value &v, bool permissive=false);
     static double ToDouble(const Value &v, bool permissive=false);
@@ -235,6 +235,7 @@ public:
     // cast operators
     operator char() const;
     operator std::string() const;
+    operator StringConstSP() const;
     operator int() const;
     operator bool() const;
     operator double() const;
@@ -248,6 +249,7 @@ public:
     void Cast(char& t) const;
     void Cast(bool& t) const;
     void Cast(std::string& t) const;
+    void Cast(StringConstSP& t) const;
     void Cast(int& t) const;
     void Cast(double& t) const;
     void Cast(Date& t) const;
@@ -258,6 +260,7 @@ public:
     void Translate(char& t, bool permissive) const;
     void Translate(bool& t, bool permissive) const;
     void Translate(std::string& t, bool permissive) const;
+    void Translate(StringConstSP& t, bool permissive) const;
     void Translate(int& t, bool permissive) const;
     void Translate(double& t, bool permissive) const;
     void Translate(Date& t, bool permissive) const;
