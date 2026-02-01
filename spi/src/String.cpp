@@ -33,6 +33,12 @@ String::String(const std::string& str)
 {
 }
 
+String::String(std::string& str)
+    :
+    m_str(std::move(str))
+{
+}
+
 const std::string& String::str() const
 {
     return m_str;

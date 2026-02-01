@@ -38,7 +38,17 @@ SPI_DECLARE_RC_CLASS(String);
 class SPI_IMPORT String : public RefCounter
 {
 public:
+    /// <summary>
+    /// We take a copy of the input string
+    /// </summary>
+    /// <param name="str"></param>
     String(const std::string& str);
+
+    /// <summary>
+    /// We take ownership of the input string
+    /// </summary>
+    /// <param name="str"></param>
+    String(std::string& str);
 
     const std::string& str() const;
 
