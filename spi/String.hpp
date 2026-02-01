@@ -59,6 +59,24 @@ private:
     String& operator=(const String&) = delete;
 };
 
+/// <summary>
+/// Converts a binary string to a text string starting with
+/// using the base64 method
+/// </summary>
+/// <param name="bytes"></param>
+/// <returns></returns>
+std::string StringFromBytes(const std::string& bytes);
+
+/// <summary>
+/// Converts a text string which has been encoded by the
+/// base64 encoding back to binary format
+/// </summary>
+/// <param name="encodedBytes"></param>
+/// <returns></returns>
+std::string StringToBytes(const std::string& encodedBytes);
+
+
+
 SPI_END_NAMESPACE
 
 #endif

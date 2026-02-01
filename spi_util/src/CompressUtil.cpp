@@ -471,4 +471,20 @@ void UncompressText(std::string& str)
     out.size = 0;
 }
 
+std::string Base64Encode(const std::string& bytes)
+{
+    DataBuffer db(bytes);
+
+    return B64Encode(db);
+}
+
+std::string Base64Decode(const std::string& encodedBytes)
+{
+    DataBuffer db;
+
+    B64Decode(db, encodedBytes.c_str());
+
+    return std::move(db.str);
+}
+
 SPI_UTIL_END_NAMESPACE
