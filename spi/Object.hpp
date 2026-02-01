@@ -174,7 +174,8 @@ public:
         const char* format = "",
         const char* options = "",
         const MapConstSP& metaData = MapConstSP(),
-        bool mergeMetaData = false) const;
+        bool mergeMetaData = false,
+        bool *isBinary = nullptr) const;
 
     // writes object to file for the given format
     // for binary formats, this is done in binary format without a trailing new line

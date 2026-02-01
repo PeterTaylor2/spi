@@ -717,8 +717,17 @@ Value ObjectToString(
     ObjectConstSP oMeta = context->ValueToObject(metaDataHandle, &MapObject::object_type, true);
     MapConstSP metaData = oMeta ? MapObject::Coerce(oMeta)->get_inner() : MapConstSP();
     bool mergeMetaData  = context->ValueToBool(in_mergeMetaData, true, false);
+    bool isBinary = false;
 
-    std::string str = object->to_string(format.c_str(), options.c_str(), metaData, mergeMetaData);
+    std::string str = object->to_string(
+        format.c_str(),
+        options.c_str(), 
+        metaData,
+        mergeMetaData,
+        &isBinary);
+
+    if (isBinary)
+        return Value(str, true);
 
     if (!splitString)
         return Value(str);

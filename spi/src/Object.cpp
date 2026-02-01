@@ -459,13 +459,17 @@ std::string Object::to_string(
     const char* format,
     const char* options,
     const MapConstSP& metaData,
-    bool mergeMetaData) const
+    bool mergeMetaData,
+    bool *isBinary) const
 {
     std::ostringstream oss;
-    bool isBinary = to_stream(oss, format, options, metaData, g_add_object_id_string, mergeMetaData);
+    bool formatIsBinary = to_stream(oss, format, options, metaData, g_add_object_id_string, mergeMetaData);
+
+    if (formatIsBinary && !isBinary)
+        throw RuntimeError("Object::to_string: Format requested is binary and isBinary undefined");
 
     if (isBinary)
-        throw RuntimeError("Object::to_string: Format requested is binary");
+        *isBinary = formatIsBinary;
 
     return oss.str();
 }
