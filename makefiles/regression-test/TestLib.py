@@ -4,6 +4,7 @@ import os
 import getopt
 import datetime
 import sys
+import re
 
 if sys.version_info[0] > 2:
     raw_input = input
@@ -411,6 +412,37 @@ class TestDriver:
                 return value
             return repr(value)
         return str(value)
+
+
+def stripErrors(errors):
+    # in an attempt to match errors from different systems
+    # we look through each line of the errors which are assumed to be
+    # separated by new lines
+    #
+    # if we find a blank line we remove it
+    # if we find a line which starts with functionName: then we remove function
+    # if the remaining line just says Failed then we remove it
+    #
+    lines = errors.split("\n")
+    output = []
+    pattern = re.compile(r"e[-+]0\d\d")
+
+    def toShortExponent(match):
+        text = match.group()
+        assert(len(text) == 5)
+        assert(text[2] == "0")
+        return text[:2] + text[3:]
+
+    for line in lines:
+        line = line.strip()
+        if not line: continue
+        parts = line.split(": ", 1)
+        if len(parts) == 2: line = parts[1].strip()
+        if line.startswith("Failed"): continue
+        line = pattern.sub(toShortExponent, line)
+        output.append(line)
+
+    return "\n".join(output)
 
 if __name__ == "__main__":
 
