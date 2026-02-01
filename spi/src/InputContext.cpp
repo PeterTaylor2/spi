@@ -737,23 +737,21 @@ Value ObjectToString(
 
 Value ObjectFromString(
     const ServiceSP&    service,
-    const Value&        in_objectString,
+    const Value&        objectString,
     const InputContext* context,
     bool                joinStrings)
 {
-    std::string objectString;
+    ObjectConstSP object;
     if (joinStrings)
     {
-        std::vector<std::string> strings =
-            context->ValueToStringVector(in_objectString);
-        objectString = spi::StringJoin("\n", strings);
+        const std::vector<std::string>& strings =
+            context->ValueToStringVector(objectString);
+        object = service->object_from_string(spi::StringJoin("\n", strings));
     }
     else
     {
-        objectString = context->ValueToString(in_objectString);
+        object = service->object_from_string(objectString.getConstString());
     }
-
-    ObjectConstSP object = service->object_from_string(objectString);
 
     return Value(object);
 }
