@@ -118,6 +118,7 @@ bool ExcelInputContext::ValueToBool(
     case Value::UNDEFINED:
     case Value::CHAR:
     case Value::SHORT_STRING:
+    case Value::BYTES:
     case Value::INT:
     case Value::DATE:
     case Value::DATETIME:
@@ -153,6 +154,7 @@ char ExcelInputContext::ValueToChar(
     case Value::UNDEFINED:
     case Value::CHAR:
     case Value::SHORT_STRING:
+    case Value::BYTES:
     case Value::INT:
     case Value::DOUBLE:
     case Value::BOOL:
@@ -196,6 +198,7 @@ int ExcelInputContext::ValueToInt(const Value& value,
     case Value::UNDEFINED:
     case Value::CHAR:
     case Value::SHORT_STRING:
+    case Value::BYTES:
     case Value::INT:
     case Value::DATE:
     case Value::DATETIME:
@@ -229,6 +232,7 @@ double ExcelInputContext::ValueToDouble(const Value& value,
     case Value::UNDEFINED:
     case Value::CHAR:
     case Value::SHORT_STRING:
+    case Value::BYTES:
     case Value::INT:
     case Value::DATE:
     case Value::DATETIME:
@@ -262,6 +266,7 @@ std::string ExcelInputContext::ValueToString(
         return StringFormat("%.15g", value.getDouble());
     case Value::UNDEFINED:
     case Value::CHAR:
+    case Value::BYTES:
     case Value::INT:
     case Value::DATE:
     case Value::DATETIME:
@@ -299,6 +304,7 @@ Date ExcelInputContext::ValueToDate(
     case Value::UNDEFINED:
     case Value::CHAR:
     case Value::SHORT_STRING:
+    case Value::BYTES:
     case Value::INT:
     case Value::BOOL:
     case Value::DATE:
@@ -337,6 +343,7 @@ DateTime ExcelInputContext::ValueToDateTime(
     case Value::UNDEFINED:
     case Value::CHAR:
     case Value::SHORT_STRING:
+    case Value::BYTES:
     case Value::INT:
     case Value::BOOL:
     case Value::DATE:
@@ -399,6 +406,7 @@ ObjectConstSP ExcelInputContext::ValueToObject(
     case Value::STRING:
     case Value::CHAR:
     case Value::SHORT_STRING:
+    case Value::BYTES:
     case Value::INT:
     case Value::DOUBLE:
     case Value::BOOL:

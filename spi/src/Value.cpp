@@ -115,6 +115,7 @@ Value::Type Value::StringToType(const char* str)
         break;
     case 'B':
         if (strcmp (buf, "BOOL") == 0) return Value::BOOL;
+        if (strcmp (buf, "BYTES") == 0) return Value::BYTES;
         break;
     case 'A':
         if (strcmp (buf, "ARRAY") == 0) return Value::ARRAY;
@@ -150,6 +151,8 @@ const char* Value::TypeToString(Value::Type type)
     case Value::SHORT_STRING:
     case Value::STRING:
         return "String";
+    case Value::BYTES:
+        return "Bytes";
     case Value::INT:
         return "Int";
     case Value::DOUBLE:
@@ -203,19 +206,42 @@ Value::Value (char value) : type(Value::CHAR)
     aShortString[1] = '\0';
 }
 
-Value::Value (const char* value)
+Value::Value (const char* value, bool isError)
 {
-    setCString(value);
+    bool neverShort = isError;
+    setCString(value, neverShort);
+
+    // we used the fact that we have a union to set the string value
+    // now we must change the type
+    if (isError)
+    {
+        SPI_POST_CONDITION(type == Value::STRING); // ensured by use of neverShort above
+        type = Value::ERROR;
+    }
 }
 
-Value::Value (const std::string &value)
+Value::Value(const std::string& value, bool bytes)
 {
     setString(value);
+
+    if (bytes)
+        type = Value::BYTES;
 }
 
-Value::Value(const StringConstSP& value)
+Value::Value(std::string & value, bool bytes)
 {
     setString(value);
+
+    if (bytes)
+        type = Value::BYTES;
+}
+
+Value::Value(const StringConstSP& value, bool bytes)
+{
+    setString(value);
+
+    if (bytes)
+        type = Value::BYTES;
 }
 
 Value::Value (int value) : type(Value::INT)
@@ -276,18 +302,6 @@ Value::Value (const std::exception &e)
     type = Value::ERROR;
 }
 
-Value::Value (const char* value, bool isError)
-{
-    setCString(value, true);
-
-    // we used the fact that we have a union to set the string value
-    // now we must change the type
-    if (isError)
-        type = Value::ERROR;
-    else
-        type = Value::STRING;
-}
-
 Value::Value(const std::vector<Value>& values)
 {
     type = Value::ARRAY;
@@ -333,6 +347,7 @@ Value::Value (const Value &value)
         break;
     case Value::STRING:
     case Value::ERROR:
+    case Value::BYTES:
         aString = value.aString;
         incRefCount(aString);
         break;
@@ -385,6 +400,7 @@ void Value::freeContents()
     case Value::OBJECT_REF:
         break;
     case Value::STRING:
+    case Value::BYTES:
     case Value::ERROR:
         decRefCount(aString);
         break;
@@ -418,6 +434,13 @@ void Value::setCString(const char* value, bool neverShort)
 }
 
 void Value::setString(const std::string& value)
+{
+    aString = new String(value);
+    incRefCount(aString);
+    type = Value::STRING;
+}
+
+void Value::setString(std::string& value)
 {
     aString = new String(value);
     incRefCount(aString);
@@ -510,6 +533,20 @@ std::string Value::getString(bool permissive) const
     }
 
     SPI_THROW_RUNTIME_ERROR(toString() << " is not a string");
+}
+
+const std::string& Value::getConstString() const
+{
+    switch (type)
+    {
+    case Value::STRING:
+    case Value::BYTES:
+        return aString->str();
+    default:
+        break;
+    }
+
+    SPI_THROW_RUNTIME_ERROR(toString() << " cannot extract a const string");
 }
 
 StringConstSP Value::getStringSP(bool permissive) const
@@ -976,6 +1013,8 @@ std::string Value::toString (const char* indent) const
         return StringFormat("\"%s\"", aShortString);
     case Value::STRING:
         return StringFormat("\"%s\"", aString->str().c_str());
+    case Value::BYTES:
+        return StringFormat("BYTES");
     case Value::ERROR:
         return StringFormat("ERROR");
     case Value::INT:
@@ -1032,6 +1071,11 @@ char Value::ToChar(const Value &v, bool permissive)
 std::string Value::ToString(const Value &v, bool permissive)
 {
     return v.getString(permissive);
+}
+
+const std::string& Value::ToConstString(const Value& v)
+{
+    return v.getConstString();
 }
 
 StringConstSP Value::ToStringSP(const Value& v, bool permissive)

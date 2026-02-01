@@ -135,6 +135,7 @@ Value ValueToObject::ResolveObject(const Value& value)
     case Value::CHAR:
     case Value::SHORT_STRING:
     case Value::STRING:
+    case Value::BYTES:
     case Value::INT:
     case Value::DOUBLE:
     case Value::BOOL:

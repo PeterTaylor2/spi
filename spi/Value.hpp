@@ -84,6 +84,7 @@ public:
         CHAR,
         SHORT_STRING,
         STRING,
+        BYTES,
         INT,
         DOUBLE,
         BOOL,
@@ -111,7 +112,7 @@ private:
     {
         // we use aShortString for SHORT_STRING and CHAR
         char          aShortString[sizeof(double)];
-        // we use aString for STRING and ERROR
+        // we use aString for STRING, BYTES and ERROR
         const String* aString;
         int           anInt;
         double        aDouble;
@@ -135,9 +136,10 @@ public:
 
     Value ();
     Value (char value);
-    Value (const char *value);
-    Value (const std::string &value);
-    Value (const StringConstSP& value);
+    Value (const char *value, bool isError = false);
+    Value (const std::string& value, bool bytes = false);
+    Value (std::string& value, bool bytes = false); // takes ownership of string value
+    Value (const StringConstSP& value, bool bytes = false);
     Value (int value);
     Value (double value);
     Value (bool value);
@@ -148,7 +150,6 @@ public:
     Value (const ObjectRef &value);
     Value (const IArrayConstSP &value);
     Value (const std::exception &e);
-    Value (const char* value, bool isError);
     // Value (Type type);
 
     template<class T> 
@@ -170,19 +171,20 @@ public:
     bool isUndefined() const;
     /* Get specific value types out of a value */
     /* These functions can be very forgiving if the type is not an exact match */
-    char             getChar(bool permissive=false) const;
-    std::string      getString(bool permissive=false) const;
-    StringConstSP    getStringSP(bool permissive=false) const;
-    int              getInt(bool permissive=false) const;
-    bool             getBool(bool permissive=false) const;
-    double           getDouble(bool permissive=false) const;
-    Date             getDate(bool permissive=false) const;
-    DateTime         getDateTime(bool permissive=false) const;
-    MapConstSP       getMap() const;
-    ObjectConstSP    getObject() const;
-    ObjectRef        getObjectRef() const;
-    IArrayConstSP    getArray(bool permissive=false) const;
-    std::string      getError() const;
+    char               getChar(bool permissive=false) const;
+    std::string        getString(bool permissive=false) const;
+    const std::string& getConstString() const;
+    StringConstSP      getStringSP(bool permissive=false) const;
+    int                getInt(bool permissive=false) const;
+    bool               getBool(bool permissive=false) const;
+    double             getDouble(bool permissive=false) const;
+    Date               getDate(bool permissive=false) const;
+    DateTime           getDateTime(bool permissive=false) const;
+    MapConstSP         getMap() const;
+    ObjectConstSP      getObject() const;
+    ObjectRef          getObjectRef() const;
+    IArrayConstSP      getArray(bool permissive=false) const;
+    std::string        getError() const;
 
     // std::vector<char>             getCharVector() const;
     std::vector<std::string>      getStringVector(bool permissive=false) const;
@@ -215,6 +217,7 @@ private:
     void freeContents();
     void setCString(const char* value, bool neverShort=false);
     void setString(const std::string& value);
+    void setString(std::string& value);
     void setString(const StringConstSP& value);
     void setObject(const ObjectConstSP& value);
 
@@ -222,6 +225,7 @@ public:
     // unary methods for use within templates
     static char ToChar(const Value &v, bool permissive=false);
     static std::string ToString(const Value &v, bool permissive=false);
+    static const std::string& ToConstString(const Value& v);
     static StringConstSP ToStringSP(const Value& v, bool permissive=false);
     static int ToInt(const Value &v, bool permissive=false);
     static bool ToBool(const Value &v, bool permissive=false);
