@@ -42,39 +42,39 @@ public:
     static bool allOptional;
 
     PythonInputContext();
-    const char* Context() const;
+    const char* Context() const override;
     bool ValueToBool(
         const Value& value,
         bool isOptional,
-        bool defaultValue) const;
+        bool defaultValue) const override;
     char ValueToChar(
         const Value& value,
         bool isOptional,
-        char defaultValue) const;
+        char defaultValue) const override;
     int ValueToInt(const Value& value,
         bool isOptional,
-        int defaultValue) const;
+        int defaultValue) const override;
     double ValueToDouble(const Value& value,
         bool isOptional,
-        double defaultValue) const;
+        double defaultValue) const override;
     std::string ValueToString(
         const Value& value,
         bool isOptional,
-        const char* defaultValue) const;
+        const char* defaultValue) const override;
     Date ValueToDate(
         const Value& value,
         bool isOptional,
-        Date defaultValue) const;
+        Date defaultValue) const override;
     DateTime ValueToDateTime(
         const Value& value,
         bool optional,
-        DateTime defaultValue) const;
+        DateTime defaultValue) const override;
     ObjectConstSP ValueToObject(
         const Value& value,
         ObjectType* objectType,
-        bool optional) const;
-	bool AcceptScalarForArray() const;
-    bool StripArray() const;
+        bool optional) const override;
+    bool AcceptScalarForArray() const override;
+    bool StripArray() const override;
 };
 
 SPI_END_NAMESPACE

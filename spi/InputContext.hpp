@@ -113,6 +113,8 @@ public:
         const Value& value,
         bool optional=false,
         const char* defaultValue="") const = 0;
+    //virtual const std::string& ValueToConstString(
+    //    const Value& value) const = 0;
     virtual Date ValueToDate(
         const Value& value,
         bool optional=false,
@@ -227,40 +229,40 @@ class SPI_IMPORT NoInputContext : public InputContext
 public:
     NoInputContext();
 
-    const char* Context() const;
+    const char* Context() const override;
 
     bool ValueToBool(
         const Value& value,
         bool optional,
-        bool defaultValue) const;
+        bool defaultValue) const override;
     char ValueToChar(
         const Value& value,
         bool optional,
-        char defaultValue) const;
+        char defaultValue) const override;
     int ValueToInt(const Value& value,
         bool optional,
-        int defaultValue) const;
+        int defaultValue) const override;
     double ValueToDouble(const Value& value,
         bool optional,
-        double defaultValue) const;
+        double defaultValue) const override;
     std::string ValueToString(
         const Value& value,
         bool optional,
-        const char* defaultValue) const;
+        const char* defaultValue) const override;
     Date ValueToDate(
         const Value& value,
         bool optional,
-        Date defaultValue) const;
+        Date defaultValue) const override;
     DateTime ValueToDateTime(
         const Value& value,
         bool optional,
-        DateTime defaultValue) const;
+        DateTime defaultValue) const override;
     ObjectConstSP ValueToObject(
         const Value& value,
         ObjectType* objectType,
-        bool optional) const;
-    bool AcceptScalarForArray() const;
-    bool StripArray() const;
+        bool optional) const override;
+    bool AcceptScalarForArray() const override;
+    bool StripArray() const override;
 };
 
 /*
