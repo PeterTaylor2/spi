@@ -415,6 +415,7 @@ void Value::freeContents()
         break;
     }
     memset(aShortString, 0, sizeof(double));
+    type = Value::UNDEFINED;
 }
 
 void Value::setCString(const char* value, bool neverShort)
