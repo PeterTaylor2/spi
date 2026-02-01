@@ -112,6 +112,16 @@ std::string pyoToString(PyObject* pyo);
 std::vector<std::string> pyoToStringVector(PyObject* pyo);
 
 /**
+ * Converts from PyObject to std::string.
+ *
+ * The input must be a Python bytes object.
+ */
+bool pyoIsBytes(PyObject* pyo);
+std::string pyoToBytes(PyObject* pyo);
+std::vector<std::string> pyoToBytesVector(PyObject* pyo);
+
+
+/**
  * Converts from PyObject to char.
  *
  * The input must be a Python string of length 1.

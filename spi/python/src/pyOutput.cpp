@@ -146,6 +146,16 @@ PyObject* pyoFromStringArray(const std::vector<std::string>& values)
     return pyoMakeArray(values, pyoFromString);
 }
 
+PyObject* pyoFromBytes(const std::string& str)
+{
+    return PyBytes_FromStringAndSize(str.data(), str.length());
+}
+
+PyObject* pyoFromBytesArray(const std::vector<std::string>& values)
+{
+    return pyoMakeArray(values, pyoFromBytes);
+}
+
 /**
  * Converts from char to PyObject.
  *

@@ -97,6 +97,15 @@ PyObject* pyoFromString(const std::string& str);
 PyObject* pyoFromStringArray(const std::vector<std::string>& values);
 
 /**
+ * Converts froms std::string to PyObject assuming that the input is binary.
+ *
+ * Returns an (immutable) Python bytes object with the reference count
+ * incremented.
+ */
+PyObject* pyoFromBytes(const std::string& str);
+PyObject* pyoFromBytesArray(const std::vector<std::string>& values);
+
+/**
  * Converts from char to PyObject.
  *
  * Returns an (immutable) Python string object of length one with the reference

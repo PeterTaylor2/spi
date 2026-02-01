@@ -77,6 +77,8 @@ PyObject* pyoFromValue(const Value& value)
     case Value::SHORT_STRING:
     case Value::STRING:
         return pyoFromString(value.getString());
+    case Value::BYTES:
+        return pyoFromBytes(value.getConstString());
     case Value::INT:
         return pyoFromInt(value.getInt());
     case Value::DOUBLE:
@@ -113,8 +115,6 @@ PyObject* pyoFromValue(const Value& value)
     case Value::ERROR:
         PyErr_SetString(PyExc_Exception, value.getError().c_str());
         throw PyException();
-    default:
-        break;
     }
     PyErr_Format(PyExc_TypeError,
         "Cannot convert %s to PyObject", value.toString().c_str());
@@ -123,8 +123,6 @@ PyObject* pyoFromValue(const Value& value)
 
 Value pyoToValue(PyObject* pyo)
 {
-    static char routine[] = "PyObjectToValue";
-
     if (pyo == Py_None)
     {
         return Value();
@@ -161,6 +159,14 @@ Value pyoToValue(PyObject* pyo)
         return value;
     }
 #endif
+    else if (pyoIsBytes(pyo))
+    {
+        char* bytes;
+        Py_ssize_t size;
+        if (PyBytes_AsStringAndSize(pyo, &bytes, &size) != 0)
+            throw PyException();
+        return spi::Value(std::string(bytes, bytes + size), true);
+    }
     // we must check for DateTime first since Python appears
     // to define that datetime.datetime is a sub-class of datetime.date
     else if (pyIsDateTime(pyo))
