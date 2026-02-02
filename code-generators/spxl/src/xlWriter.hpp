@@ -69,8 +69,11 @@ struct Options
         objectFreeAll("object_free_all"),
         objectList("object_list"),
         objectClassName("object_class_name"),
-        objectSHA("object_sha")
-    {}
+        objectSHA("object_sha"),
+        xlTargetVersion(4)
+    {
+        verify();
+    }
 
     std::string funcNameSep;
     bool noGeneratedCodeNotice;
@@ -103,8 +106,10 @@ struct Options
     std::string objectList;
     std::string objectClassName;
     std::string objectSHA;
+    int xlTargetVersion;
 
     void update(const std::string& fn);
+    void verify() const;
 };
 
 
@@ -144,6 +149,8 @@ public:
     const char* funcNameSep() const;
     const std::string& license() const;
     bool writeBackup() const;
+
+    const Options& options() const;
 
 protected:
     ExcelService(

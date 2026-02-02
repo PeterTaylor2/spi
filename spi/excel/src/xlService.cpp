@@ -714,6 +714,8 @@ void ExcelService::RegisterFunction(
 {
     try
     {
+        bool failed = false;
+        int xlFailureCode = 0;
 #if SPI_XL_VERSION == 4
         size_t numArgs;
         size_t maxArgs = 31;
@@ -821,15 +823,28 @@ void ExcelService::RegisterFunction(
                 &res, /* not interested in any return details */
                 numInputs,
                 &xInputs[0]);
+
+        if (res.xltype == xltypeErr)
+        {
+            failed = true;
+            xlFailureCode = res.val.err;
+        }
+
 #elif SPI_XL_VERSION >= 12
         size_t numArgs;
-        size_t maxArgs = 31; // potentially we could increase this limit
+        size_t maxArgs = 64; // the actual limit is 255
+        // however we are shortening the argument names to be 255
+        // which with the arguments shortened to just numbers with possible
+        // query (for optional) and dividing comma gives us 64 in practice
+        // tried allowing maxLenArgNames to be 256*256-1 but something went
+        // wrong with Excel anyway
+
         // in the Excel12 interface the registered string of argNames is
         // still limited to 255, but the second limit of argNames + function name
         // does not seem to be relevant
-        int  maxLenArgNames = 255;
+        constexpr int  maxLenArgNames = 255;
         // there is effectively no limit to the number of help messages given
-        // that we have maintained a limit on the number of arguments at 31
+        // that we have maintained a limit on the number of arguments at 64
 
         // there is a case for us concatenating something from the service
         // with the function name at this point - it would save us from
@@ -846,6 +861,8 @@ void ExcelService::RegisterFunction(
             argTypes = std::string(xlArgTypes);
 
         std::string argNames = StringJoin(",", args);
+        size_t firstUnnamed = args.size();
+
         if ((int)argNames.length() > maxLenArgNames)
         {
             int oversize = (int)argNames.length() - maxLenArgNames;
@@ -857,17 +874,22 @@ void ExcelService::RegisterFunction(
                 std::string shortArg;
 
                 if (spi::StringEndsWith(arg, "?"))
-                    shortArg = spi::StringFormat("arg%d?", (int)i);
+                    shortArg = spi::StringFormat("%d?", (int)i);
                 else
-                    shortArg = spi::StringFormat("arg%d", (int)i);
+                    shortArg = spi::StringFormat("%d", (int)i);
 
+                firstUnnamed = i - 1;
                 shortArgs[i-1] = shortArg;
                 oversize += (int)shortArg.length();
                 oversize -= (int)arg.length();
             }
 
             argNames = StringJoin(",", shortArgs);
-            SPI_POST_CONDITION((int)argNames.length() <= maxLenArgNames);
+            if ((int)argNames.length() > maxLenArgNames)
+            {
+                throw RuntimeError("%s: Shortened argNames are still too long (%d)",
+                    xlFuncName.c_str(), argNames.length());
+            }
         }
 
         FreeAllTempMemory();
@@ -901,19 +923,53 @@ void ExcelService::RegisterFunction(
         xInputs.push_back(TempString12(funcHelp));
         for (size_t i = 0; i < argsHelp.size(); ++i)
         {
-            std::string argHelp;
-            if (argsHelp[i].empty() && i < args.size())
+            std::string argHelp = argsHelp[i];
+            std::string argName = i < args.size() ? args[i] : "";
+
+            bool optional = StringEndsWith(argName, "?");
+            if (optional)
+                argName = argName.substr(0, argName.length() - 1);
+
+            // unnamed in this context is that the function wizard
+            // has not been told the name of this field
+            if (i >= firstUnnamed)
             {
-                argHelp = args[i];
-                if (StringEndsWith(argHelp, "?"))
-                    argHelp = argHelp.substr(0, argHelp.length()-1) + " (optional)";
+                // unnamed fields need to include the argName as well as the argHelp
+                if (argHelp.empty())
+                {
+                    if (optional)
+                        argHelp = argName + " (optional)";
+                    else
+                        argHelp = argName;
+                }
+                else if (!argName.empty())
+                {
+                    // this is an unnamed field with help
+                    // we want to see the name as well as the help
+                    if (optional)
+                    {
+                        argHelp = argName + " (optional): " + argHelp;
+                    }
+                    else
+                    {
+                        argHelp = argName + ": " + argHelp;
+                    }
+                }
+                else if (optional)
+                {
+                    argHelp = "(optional) " + argHelp;
+                }
             }
-            else
+            else if (optional)
             {
-                argHelp = argsHelp[i];
+                argHelp = "(optional) " + argHelp;
             }
-            if (i+1 == argsHelp.size())
+
+            if (i + 1 == argsHelp.size())
+            {
+                // this is handling a well-known Excel bug
                 argHelp = argHelp + ". ";
+            }
 
             xInputs.push_back(TempString12(argHelp));
         }
@@ -925,11 +981,26 @@ void ExcelService::RegisterFunction(
                 &res, /* not interested in any return details */
                 numInputs,
                 &xInputs[0]);
+
+        if (res.xltype == xltypeErr)
+        {
+            failed = true;
+            xlFailureCode = res.val.err;
+        }
+
 #else
 #error "Excel version must be 4 or at least 12"
 #endif
-
-        m_registeredFunctions.push_back(xlFuncName);
+        if (failed)
+        {
+            std::string errmsg = StringFormat("Failed to register %s with code (%d)",
+                xlFuncName, xlFailureCode);
+            Excel(xlcAlert, 0, 2, TempStrConst(errmsg.c_str()), TempInt(2));
+        }
+        else
+        {
+            m_registeredFunctions.push_back(xlFuncName);
+        }
         FreeAllTempMemory();
     } catch (std::exception& e) {
         Excel (xlcAlert, 0, 2, TempStrConst(e.what()), TempInt(2));

@@ -158,7 +158,7 @@ int main(int argc, char* argv[])
     Options options;
 
     const char* longOptions = "nameAtEnd noGeneratedCodeNotice upperCase funcNameSep= noObjectFuncs parent="
-        " optionsFile= license licenseFile= errIsNA backup";
+        " optionsFile= license licenseFile= errIsNA backup xlTargetVersion=";
 
     try
     {
@@ -220,6 +220,10 @@ int main(int argc, char* argv[])
             else if (opt == "--backup")
             {
                 options.writeBackup = true;
+            }
+            else if (opt == "--xlTargetVersion")
+            {
+                options.xlTargetVersion = spi_util::StringToInt(val);
             }
             else
             {

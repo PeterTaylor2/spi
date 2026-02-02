@@ -780,6 +780,11 @@ bool ExcelService::writeBackup() const
     return m_options.writeBackup;
 }
 
+const Options& ExcelService::options() const
+{
+    return m_options;
+}
+
 /*
 ***************************************************************************
 ** Implementation of ExcelModule
@@ -1224,6 +1229,22 @@ void ExcelModule::registerFunction(
     GeneratedOutput& ostr,
     const spdoc::Function* func) const
 {
+    int xlTargetVersion = service->options().xlTargetVersion;
+
+    size_t maxArgs;
+    switch (xlTargetVersion)
+    {
+    case 4:
+        maxArgs = 30;
+        break;
+    case 12:
+    case 15:
+        maxArgs = 63;
+        break;
+    default:
+        SPI_THROW_RUNTIME_ERROR("Program bug!");
+    }
+
     bool nameAtEnd = service->nameAtEnd();
     bool hasBaseName = funcHasBaseName(func);
     const char* funcNameSep = service->funcNameSep();
@@ -1236,6 +1257,7 @@ void ExcelModule::registerFunction(
 
     bool isVolatile = false;
     bool isHidden = false;
+    size_t numArgs = 0;
 
     for (size_t i = 0; i < func->excelOptions.size(); ++i)
     {
@@ -1248,6 +1270,7 @@ void ExcelModule::registerFunction(
 
     if (func->returnsObject() && !hasBaseName && !nameAtEnd)
     {
+        ++numArgs;
         ostr << "    args.push_back(\"baseName\");\n"
              << "    help.push_back(\"Base name for object handle\");\n";
     }
@@ -1266,6 +1289,7 @@ void ExcelModule::registerFunction(
                 name += "?";
             break;
         }
+        ++numArgs;
         ostr << "    args.push_back(\"" << name << "\");\n"
              << "    help.push_back(\"" << spi::StringEscape(argHelp.c_str())
              << "\");\n";
@@ -1273,6 +1297,7 @@ void ExcelModule::registerFunction(
 
     if (func->returnsObject() && !hasBaseName && nameAtEnd)
     {
+        ++numArgs;
         ostr << "    args.push_back(\"baseName\");\n"
              << "    help.push_back(\"Base name for object handle\");\n";
     }
@@ -1296,6 +1321,16 @@ void ExcelModule::registerFunction(
     else
     {
         ostr << ");\n";
+    }
+
+    if (numArgs > maxArgs)
+    {
+        ostr << "#error Too many arguments for excel function " << func->name << "\n";
+        ostr << "}\n\n";
+            
+        SPI_THROW_RUNTIME_ERROR("Too many arguments (" << numArgs
+            << ") for excel function " << func->name
+            << " for excel target version " << xlTargetVersion);
     }
 }
 
@@ -1756,6 +1791,17 @@ namespace
         value = jv.GetBool();
     }
 
+    void JSONMapUpdateInt(
+        int& value,
+        const spi_util::JSONMapConstSP& jm,
+        const std::string& name)
+    {
+        spi_util::JSONValue jv = jm->Item(name, true);
+        if (jv.GetType() == spi_util::JSONValue::Null)
+            return;
+        value = spi_util::IntegerCast<int>(jv.GetNumber());
+    }
+
 }
 
 void Options::update(const std::string& fn)
@@ -1803,5 +1849,21 @@ void Options::update(const std::string& fn)
     JSONMapUpdateString(objectList, jm, "objectList");
     JSONMapUpdateString(objectClassName, jm, "objectClassName");
     JSONMapUpdateString(objectSHA, jm, "objectSHA");
+    JSONMapUpdateInt(xlTargetVersion, jm, "xlTargetVersion");
 
+    verify();
+}
+
+void Options::verify() const
+{
+    switch (xlTargetVersion)
+    {
+    case 4:
+    case 12:
+    case 15:
+        break; // ok
+    default:
+        SPI_THROW_RUNTIME_ERROR("Unsupported xlTargetVersion " << xlTargetVersion
+            << ". Must be 4,12 or 15");
+    }
 }
