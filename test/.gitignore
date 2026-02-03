@@ -1,0 +1,9 @@
+# Temporary files when running the tests
+*.bin
+*.json
+*.text
+
+# Generated code
+dll/*.h
+dll/*.hpp
+dll/src/*.[ch]pp
