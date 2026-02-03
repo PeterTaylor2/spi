@@ -102,13 +102,14 @@ Contributions would be invited for the following areas:
 
 1. New interface languages, e.g. Java is one language we have considered supporting.
 2. Completion of the user guide - it is partly done but needs some extra work.
-3. Binary serialisation of objects. Currently there is a native <spi> format and JSON. Binary serialisation should have performance improvements in network applications where all nodes are using the same version of the software.
 
 ## History
 
-This product has been developed for nearly 11 years. Previously it was developed under the auspices of the company
+This product has been developed for over 10 years. Previously it was developed under the auspices of the company
 Sartorial Programming Ltd. This company has now been closed down and as part of the closing down process it was agreed
 with one of its clients to publish the code as open source.
+
+Hence the initial version of the repository is the code as of the time that the company was closed down.
 
 Note that the name Sartorial Programming is a play on my surname - the company had no relationship to any other
 company with the name of Sartorial.
@@ -116,7 +117,7 @@ company with the name of Sartorial.
 The main developments happened in the years 2012-2014. Subsequently development has been slower but has been
 focussed on the development of the analytics library for the hedge fund that I mentioned.
 As of 2014 the project was sufficiently complete to allow for the development of some Bridge applications (in addition
-to being a software developer I am also a very keen Bridge player who has represented by country at the game).
+to being a software developer I am also a very keen Bridge player who has represented my country at the game).
 However the use of the project within a commercial application has shaped the project to get to a point where it
 seems to be extremely reliable and covers a number of use cases - many of which were originally not envisioned.
 
