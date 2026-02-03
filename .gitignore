@@ -1,0 +1,106 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+*.exp
+*.pyd
+*.xll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+*.exe.manifest
+
+# outputs from pdflatex
+*.aux
+*.pdf
+*.toc
+
+# special directories
+.vs
+.hg
+
+# files for mercurial
+.hgignore
+.hgeol
+
+# program databases
+*.pdb
+
+# visual studio project files
+# we use .guid files to generate them
+*.vcxproj*
+*.vcproj
+
+# log files
+*.log
+
+# directories to be deleted later
+config/spcl-cpp-only
+makefiles/config/computers
+
+# build directories
+Debug*
+Release*
+
+# python files
+*.pyc
+
+
+# backup files
+*.orig
+*.bak
+
+# various random file types
+*.cgi
+*.swp
+*.svt
+*.svo
+*.rej
+*#
+*~
+
+code-generators/spcl/types/src
+code-generators/spcl/types/*.h
+code-generators/spcl/types/*.hpp
+code-generators/spgtools/test
+code-generators/spgtools/src/lex/*.cpp
+
+
+# the dist directory builds a package with code generator executables and runtime library sources
+# we don't want to see these files in source control
+dist/3rdParty
+
+# some more build directories
+linux64
+bin-linux64
+bin-win32
+obj
+
+*.stackdump
+*.gz
+spi_util/lex/JSONLexer.cpp
