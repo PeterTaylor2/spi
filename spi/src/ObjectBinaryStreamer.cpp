@@ -221,11 +221,6 @@ void WriteSizeVector(std::ostream& ostr, const std::vector<size_t>& vec)
 
     for (size_t i = 0; i < size; ++i)
         WriteSize(ostr, vec.at(i));
-
-#if false
-    if (size > 0)
-        ostr.write((const char*)vec.data(), size * sizeof(size_t));
-#endif
 }
 
 void WriteType(std::ostream& ostr, Type type)
@@ -816,7 +811,7 @@ Value BinaryReader::ReadValue(IndexClassNames& indexClassNames)
     case Type::ERROR:
     {
         std::string error = Read<std::string>(this);
-        return Value(error.c_str(), true);
+        return Value::Error(error);
     }
     case Type::NULL_MAP:
         return MapConstSP();

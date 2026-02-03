@@ -746,7 +746,7 @@ namespace {
                     reader->read(nextToken, nextType);
                     if (nextType == MapReader::STRING)
                     {
-                        return Value(nextToken.c_str(), true /* isError */);
+                        return Value::Error(nextToken);
                     }
                     else
                     {

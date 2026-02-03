@@ -136,10 +136,8 @@ public:
 
     Value ();
     Value (char value);
-    Value (const char *value, bool isError = false);
-    Value (const std::string& value, bool bytes = false);
-    Value (std::string& value, bool bytes = false); // takes ownership of string value
-    Value (const StringConstSP& value, bool bytes = false);
+    Value (const char *value);
+    Value (const std::string& value);
     Value (int value);
     Value (double value);
     Value (bool value);
@@ -151,6 +149,11 @@ public:
     Value (const IArrayConstSP &value);
     Value (const std::exception &e);
     // Value (Type type);
+
+    // the following three functions all take ownership of str
+    static Value Text(std::string& str);
+    static Value Bytes(std::string& str);
+    static Value Error(std::string& str);
 
     template<class T> 
     Value(const ObjectSmartPtr<T>& obj) : type(Value::UNDEFINED)
@@ -217,9 +220,11 @@ private:
     void freeContents();
     void setCString(const char* value, bool neverShort=false);
     void setString(const std::string& value);
-    void setString(std::string& value);
+    void setString(bool takeOwnership, std::string& value);
     void setString(const StringConstSP& value);
     void setObject(const ObjectConstSP& value);
+
+    Value(std::string& str, Type valueType);
 
 public:
     // unary methods for use within templates

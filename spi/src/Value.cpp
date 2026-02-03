@@ -206,42 +206,14 @@ Value::Value (char value) : type(Value::CHAR)
     aShortString[1] = '\0';
 }
 
-Value::Value (const char* value, bool isError)
+Value::Value (const char* value)
 {
-    bool neverShort = isError;
-    setCString(value, neverShort);
-
-    // we used the fact that we have a union to set the string value
-    // now we must change the type
-    if (isError)
-    {
-        SPI_POST_CONDITION(type == Value::STRING); // ensured by use of neverShort above
-        type = Value::ERROR;
-    }
+    setCString(value);
 }
 
-Value::Value(const std::string& value, bool bytes)
+Value::Value(const std::string& value)
 {
     setString(value);
-
-    if (bytes)
-        type = Value::BYTES;
-}
-
-Value::Value(std::string & value, bool bytes)
-{
-    setString(value);
-
-    if (bytes)
-        type = Value::BYTES;
-}
-
-Value::Value(const StringConstSP& value, bool bytes)
-{
-    setString(value);
-
-    if (bytes)
-        type = Value::BYTES;
 }
 
 Value::Value (int value) : type(Value::INT)
@@ -300,6 +272,21 @@ Value::Value (const std::exception &e)
     // we used the fact that we have a union to set the string value
     // now we must change the type
     type = Value::ERROR;
+}
+
+Value Value::Text(std::string& value)
+{
+    return Value(value, Value::STRING);
+}
+
+Value Value::Bytes(std::string& value)
+{
+    return Value(value, Value::BYTES);
+}
+
+Value Value::Error(std::string& value)
+{
+    return Value(value, Value::ERROR);
 }
 
 Value::Value(const std::vector<Value>& values)
@@ -441,9 +428,9 @@ void Value::setString(const std::string& value)
     type = Value::STRING;
 }
 
-void Value::setString(std::string& value)
+void Value::setString(bool takeOwnership, std::string& value)
 {
-    aString = new String(value);
+    aString = new String(value, takeOwnership);
     incRefCount(aString);
     type = Value::STRING;
 }
@@ -460,6 +447,23 @@ void Value::setObject(const ObjectConstSP& value)
     type = Value::OBJECT;
     anObject = value.get();
     incRefCount(anObject);
+}
+
+Value::Value(std::string& str, Type valueType)
+{
+    switch (valueType)
+    {
+    case Value::STRING:
+    case Value::BYTES:
+    case Value::ERROR:
+        type = valueType;
+	break;
+    default:
+        SPI_THROW_RUNTIME_ERROR("Type must be STRING, BYTES or ERROR");
+    }
+
+    aString = new String(str, true);
+    incRefCount(aString);
 }
 
 Value& Value::swap(Value &value)

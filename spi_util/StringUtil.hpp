@@ -160,6 +160,22 @@ int StringToInt (const std::string& str);
 SPI_UTIL_IMPORT
 double StringToDouble (const std::string& str);
 
+/// <summary>
+/// Converts a binary string to a text string starting with
+/// using the base64 method
+/// </summary>
+/// <param name="bytes"></param>
+/// <returns></returns>
+std::string StringFromBytes(const std::string& bytes);
+
+/// <summary>
+/// Converts a text string which has been encoded by the
+/// base64 encoding back to binary format
+/// </summary>
+/// <param name="encodedBytes"></param>
+/// <returns></returns>
+std::string StringToBytes(const std::string& encodedBytes);
+
 // c-string equivalent of some of the above functions (where appropriate)
 // the inputs are c-strings, but the outputs will sometimes be std::string
 

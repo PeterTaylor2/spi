@@ -62,6 +62,8 @@ using spi_util::StringEscape;
 using spi_util::StringCapture;
 using spi_util::StringStartsWith;
 using spi_util::StringEndsWith;
+using spi_util::StringFromBytes;
+using spi_util::StringToBytes;
 
 using spi_util::CStringPreProcess;
 

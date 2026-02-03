@@ -165,7 +165,8 @@ Value pyoToValue(PyObject* pyo)
         Py_ssize_t size;
         if (PyBytes_AsStringAndSize(pyo, &bytes, &size) != 0)
             throw PyException();
-        return spi::Value(std::string(bytes, bytes + size), true);
+        std::string sbytes(bytes, bytes + size);
+        return spi::Value::Bytes(sbytes);
     }
     // we must check for DateTime first since Python appears
     // to define that datetime.datetime is a sub-class of datetime.date

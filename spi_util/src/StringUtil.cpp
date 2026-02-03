@@ -21,6 +21,7 @@
 */
 #include "StringUtil.hpp"
 #include "Utils.hpp"
+#include "CompressUtil.hpp"
 
 #include <spi_boost/shared_array.hpp>
 #include <ctype.h>
@@ -270,6 +271,16 @@ int StringToInt (const std::string& in)
 double StringToDouble (const std::string& in)
 {
     return CStringToDouble(in.c_str());
+}
+
+std::string StringFromBytes(const std::string& bytes)
+{
+    return Base64Encode(bytes);
+}
+
+std::string StringToBytes(const std::string& encodedBytes)
+{
+    return Base64Decode(encodedBytes);
 }
 
 /**

@@ -152,7 +152,8 @@ Value ReadValue(Lexer* lexer)
                 nextToken = lexer->getToken();
                 if (nextToken.type != SPI_TOKEN_TYPE_STRING)
                     throw RuntimeError("Expecting string after 'ERROR:'");
-                return Value(nextToken.value.aString, true);
+                std::string error(nextToken.value.aString);
+                return Value::Error(error);
             }
             else
             {

@@ -727,10 +727,10 @@ Value ObjectToString(
         &isBinary);
 
     if (isBinary)
-        return Value(str, true);
+        return Value::Bytes(str);
 
     if (!splitString)
-        return Value(str);
+        return Value::Text(str);
 
     return Value(StringSplit(str, '\n'));
 }

@@ -19,8 +19,6 @@
 #include "String.hpp"
 #include "RuntimeError.hpp"
 
-#include <spi_util/CompressUtil.hpp>
-
 SPI_BEGIN_NAMESPACE
 
 /*
@@ -34,25 +32,15 @@ String::String(const std::string& str)
 {
 }
 
-String::String(std::string& str)
+String::String(std::string& str, bool takeOwnership)
     :
-    m_str(std::move(str))
+    m_str(takeOwnership ? std::move(str) : str)
 {
 }
 
 const std::string& String::str() const
 {
     return m_str;
-}
-
-std::string StringFromBytes(const std::string& bytes)
-{
-    return spi_util::Base64Encode(bytes);
-}
-
-std::string StringToBytes(const std::string& encodedBytes)
-{
-    return spi_util::Base64Decode(encodedBytes);
 }
 
 SPI_END_NAMESPACE

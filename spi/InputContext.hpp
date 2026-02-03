@@ -113,8 +113,6 @@ public:
         const Value& value,
         bool optional=false,
         const char* defaultValue="") const = 0;
-    //virtual const std::string& ValueToConstString(
-    //    const Value& value) const = 0;
     virtual Date ValueToDate(
         const Value& value,
         bool optional=false,
