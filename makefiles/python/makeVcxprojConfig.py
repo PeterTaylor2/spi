@@ -15,7 +15,7 @@ def command_line(compiler, toolsVersion, platformToolset):
     opts,args = getopt.getopt(sys.argv[1:], "x:s:c:t:b:I:f:",
                               ["vcTarget=",
                                "compiler="])
-    configPatterns  = ["*.cfg"]
+    configPatterns  = ["*.cfg", "*.api"]
     servicePatterns = ["*.svc"]
     extraSourceDirs = []
     configFilters = []

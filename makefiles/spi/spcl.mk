@@ -30,7 +30,7 @@ I_SPCL:=$(U_SPI_HOME)/code-generators/bin-$(G_PLATFORM)/$(U_SPCL)$(G_EXE)
 endif
 
 U_SPI_BUILD_DIR?=$(G_BUILD_DIR)
-I_SOURCES=$(U_SOURCES) $(U_SERVICE).svc $(wildcard *.cfg)
+I_SOURCES=$(U_SOURCES) $(U_SERVICE).svc $(wildcard *.cfg) $(wildcard *.api)
 U_TARGET_DIR?=../dll
 U_VCPROJ?=$(U_SERVICE)-$(notdir $(CURDIR))
 
