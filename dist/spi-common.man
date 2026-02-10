@@ -24,20 +24,7 @@ makefiles/spi/doc.mk
 makefiles/spi/runtime.mk
 makefiles/config/*.mk
 makefiles/config/configs/*.mk
-makefiles/python/copyFiles.py
-makefiles/python/copyManifest.py
-makefiles/python/copyRedist.py
-makefiles/python/copyVcxproj.py
-makefiles/python/installPython.py
-makefiles/python/installExcel.py
-makefiles/python/exports2def.py
-makefiles/python/rstrip.py
-makefiles/python/makeVcproj1[67]*.py
-makefiles/python/makeVcxproj*.py
-makefiles/python/vstools.py
-makefiles/python/guidUtils.py
-makefiles/python/translateVS.py
-makefiles/python/updateCsproj.py
+makefiles/python/*.py
 makefiles/regression-test/common.mk
 makefiles/regression-test/TestLib.py
 makefiles/regression-test/compareResults.py
@@ -49,7 +36,7 @@ makefiles/regression-test/README.txt
 # this is needed for a package of development only
 # non-development builds should have a way of populating site.mk instead
 
-makefiles/config/computers/*.mk
+# makefiles/config/computers/*.mk
 
 # header files
 
