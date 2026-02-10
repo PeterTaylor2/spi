@@ -1,5 +1,5 @@
 ###########################################################################
-# makefile include for generated the c++ code from configuration files
+# makefile include for generating the c++ code from configuration files
 #
 # in addition this will create the compiled service object which can then
 # be used as a pre-requisite for builds for other platforms
@@ -32,7 +32,7 @@ endif
 U_SPI_BUILD_DIR?=$(G_BUILD_DIR)
 I_SOURCES=$(U_SOURCES) $(U_SERVICE).svc $(wildcard *.cfg)
 U_TARGET_DIR?=../dll
-U_VCPROJ?=$(U_SERVICE)-config
+U_VCPROJ?=$(U_SERVICE)-$(notdir $(CURDIR))
 
 I_SPCL_OPTIONS:=$(U_SPCL_OPTIONS) $(G_SPCL_OPTIONS)
 ifdef U_TDIRNAME

@@ -62,7 +62,7 @@ U_FORCE_REBUILD+=$(U_SPI_HOME)/makefiles/version.mk
 # the following values depend on properties.mk but can be overridden
 ###########################################################################
 U_TARGET?=$(U_SERVICE_NAMESPACE)
-U_VCPROJ?=$(U_SERVICE)-excel
+U_VCPROJ?=$(U_SERVICE)-$(notdir $(CURDIR))
 U_CFLAGS+=-DXL_$(U_DECLSPEC)_EXPORT
 U_VCPROJ_OPTIONS+=-s"*.bas" -s"*.frm"
 

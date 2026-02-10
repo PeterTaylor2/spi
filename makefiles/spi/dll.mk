@@ -22,7 +22,7 @@ U_FORCE_REBUILD+=$(U_SPI_HOME)/makefiles/version.mk
 # the following values depend on properties.mk but can be overridden
 ###########################################################################
 U_TARGET?=$(U_SERVICE_DLL)
-U_VCPROJ?=$(U_SERVICE)-dll
+U_VCPROJ?=$(U_SERVICE)-$(notdir $(CURDIR))
 U_CFLAGS+=-D$(U_DECLSPEC)_EXPORT
 U_DEBUG_CFLAGS+=-D$(U_SERVICE_DEBUG)
 

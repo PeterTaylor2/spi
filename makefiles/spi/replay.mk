@@ -18,7 +18,7 @@ U_FORCE_REBUILD+=$(U_SPI_HOME)/makefiles/version.mk
 # the following values depend on properties.mk but can be overridden
 ###########################################################################
 U_TARGET?=$(U_SERVICE_NAMESPACE)-replay
-U_VCPROJ?=$(U_SERVICE)-replay
+U_VCPROJ?=$(U_SERVICE)-$(notdir $(CURDIR))
 
 ifeq ($(G_PLATFORM),win32)
 

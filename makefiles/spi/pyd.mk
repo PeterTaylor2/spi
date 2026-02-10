@@ -87,7 +87,7 @@ U_FORCE_REBUILD+=$(U_SPI_HOME)/makefiles/version.mk
 # the following values depend on properties.mk but can be overridden
 ############################################################################
 U_TARGET?=py_$(U_SERVICE)
-U_VCPROJ?=$(U_SERVICE)-python
+U_VCPROJ?=$(U_SERVICE)-$(notdir $(CURDIR))
 U_CFLAGS+=-DPY_$(U_DECLSPEC)_EXPORT
 U_DEBUG_CFLAGS+=-DSPI_DEBUG
 
