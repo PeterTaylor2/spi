@@ -238,7 +238,9 @@ ExcelService::writeXllSourceFile(const std::string& dirname) const
 
     ostr << "xllName, \"" << funcNameSep() << "\", "
         << (m_options.upperCase ? "true" : "false")
-        << ", false, " << (m_options.errIsNA ? "true" : "false") << ");\n";
+        << ", false, " << (m_options.errIsNA ? "true" : "false")
+        << ", " << (m_options.nsUpperCase ? "true" : "false")
+        << ");\n";
 
     ostr << "\n"
         << "    /* function registration */\n";
@@ -568,13 +570,17 @@ namespace
     std::string xlfunc(
         const std::string& ns,
         bool upperCase,
+        bool nsUpperCase,
         const std::string& sep,
         const std::string& name)
     {
         std::ostringstream oss;
         if (!ns.empty())
         {
-            oss << ns << sep;
+            if (nsUpperCase)
+                oss << StringUpper(ns) << sep;
+            else
+                oss << ns << sep;
         }
         oss << name;
 
@@ -599,7 +605,7 @@ std::vector<std::string> ExcelService::translateVbaFiles(
 
         std::map<std::string, std::string> values;
 
-        values["ns"] = ns();
+        values["ns"] = m_options.nsUpperCase ? StringUpper(ns()) : ns();
         values["name"] = name();
 
         std::ifstream istr(ifn.c_str());
@@ -616,7 +622,7 @@ std::vector<std::string> ExcelService::translateVbaFiles(
         std::string ofn = spi_util::path::join(outdir.c_str(), fn.c_str(), (char*)0);
 
         std::map<std::string, std::string> values;
-        values["ns"] = ns();
+        values["ns"] = m_options.nsUpperCase ? StringUpper(ns()) : ns();
         values["name"] = name();
         values["serviceName"] = m_options.upperCase ? StringUpper(longName()) : longName();
         // I fear that the name of the XLL is not a guarantee
@@ -624,29 +630,30 @@ std::vector<std::string> ExcelService::translateVbaFiles(
             "xl_%s.xll", name().c_str());
 
         bool upperCase = m_options.upperCase;
+        bool nsUpperCase = m_options.nsUpperCase;
         const std::string& sep = m_options.funcNameSep;
 
-        values["startLoggingFunction"] = xlfunc(ns(), upperCase, sep, m_options.startLogging);
-        values["stopLoggingFunction"] = xlfunc(ns(), upperCase, sep, m_options.stopLogging);
-        values["setErrorPopups"] = xlfunc(ns(), upperCase, sep, m_options.setErrorPopups);
-        values["startTimingFunction"] = xlfunc(ns(), upperCase, sep, m_options.startTiming);
-        values["stopTimingFunction"] = xlfunc(ns(), upperCase, sep, m_options.stopTiming);
-        values["clearTimingsFunction"] = xlfunc(ns(), upperCase, sep, m_options.clearTimings);
+        values["startLoggingFunction"] = xlfunc(ns(), upperCase, nsUpperCase, sep, m_options.startLogging);
+        values["stopLoggingFunction"] = xlfunc(ns(), upperCase, nsUpperCase, sep, m_options.stopLogging);
+        values["setErrorPopups"] = xlfunc(ns(), upperCase, nsUpperCase, sep, m_options.setErrorPopups);
+        values["startTimingFunction"] = xlfunc(ns(), upperCase, nsUpperCase, sep, m_options.startTiming);
+        values["stopTimingFunction"] = xlfunc(ns(), upperCase, nsUpperCase, sep, m_options.stopTiming);
+        values["clearTimingsFunction"] = xlfunc(ns(), upperCase, nsUpperCase, sep, m_options.clearTimings);
 
         if (m_options.noObjectFuncs)
         {
             std::string nns;
-            values["object_get"] = xlfunc(nns, upperCase, sep, m_options.objectGet);
-            values["object_free"] = xlfunc(nns, upperCase, sep, m_options.objectFree);
-            values["object_count"] = xlfunc(nns, upperCase, sep, m_options.objectCount);
-            values["object_to_string"] = xlfunc(nns, upperCase, sep, m_options.objectToString);
+            values["object_get"] = xlfunc(nns, upperCase, nsUpperCase, sep, m_options.objectGet);
+            values["object_free"] = xlfunc(nns, upperCase, nsUpperCase, sep, m_options.objectFree);
+            values["object_count"] = xlfunc(nns, upperCase, nsUpperCase, sep, m_options.objectCount);
+            values["object_to_string"] = xlfunc(nns, upperCase, nsUpperCase, sep, m_options.objectToString);
         }
         else
         {
-            values["object_get"] = xlfunc(ns(), upperCase, sep, m_options.objectGet);
-            values["object_free"] = xlfunc(ns(), upperCase, sep, m_options.objectFree);
-            values["object_count"] = xlfunc(ns(), upperCase, sep, m_options.objectCount);
-            values["object_to_string"] = xlfunc(ns(), upperCase, sep, m_options.objectToString);
+            values["object_get"] = xlfunc(ns(), upperCase, nsUpperCase, sep, m_options.objectGet);
+            values["object_free"] = xlfunc(ns(), upperCase, nsUpperCase, sep, m_options.objectFree);
+            values["object_count"] = xlfunc(ns(), upperCase, nsUpperCase, sep, m_options.objectCount);
+            values["object_to_string"] = xlfunc(ns(), upperCase, nsUpperCase, sep, m_options.objectToString);
         }
 
         values["pdf"] = name();
@@ -666,7 +673,7 @@ std::vector<std::string> ExcelService::translateVbaFiles(
 
         std::map<std::string, std::string> values;
 
-        values["ns"] = ns();
+        values["ns"] = m_options.nsUpperCase ? StringUpper(ns()) : ns();
         values["name"] = name();
 
         std::ifstream istr(ifn.c_str());
@@ -783,6 +790,14 @@ bool ExcelService::writeBackup() const
 const Options& ExcelService::options() const
 {
     return m_options;
+}
+
+std::string ExcelService::regFunctionPrefix(const std::string& functionPrefix) const
+{
+    if (m_options.nsUpperCase)
+        return StringUpper(functionPrefix);
+
+    return functionPrefix;
 }
 
 /*
@@ -1305,8 +1320,8 @@ void ExcelModule::registerFunction(
     std::string funcHelp = GetFirstParagraph(func->description);
     ostr << "    svc->RegisterFunction(xllName, \"xl_" << service->ns() << "_"
          << makeNamespaceSep(module->ns, "_") << func->name << "\", \""
-         << service->ns() << funcNameSep
-         << makeNamespaceSep(module->ns, funcNameSep) << func->name
+         << regFunctionPrefix(service->ns()) << funcNameSep
+         << makeNamespaceSep(regFunctionPrefix(module->ns), funcNameSep) << func->name
          << "\", \"" << service->ns() << "\", args,\n"
          << "        \"" << spi::StringEscape(funcHelp.c_str()) << "\",\n"
          << "        help";
@@ -1666,8 +1681,8 @@ void ExcelModule::registerClass(
         std::string classHelp = GetFirstParagraph(cls->description);
         ostr << "    svc->RegisterFunction(xllName, \"xl_" << service->ns()
             << "_" << makeNamespaceSep(module->ns, "_") << cls->name
-            << "\", \"" << service->ns() << funcNameSep
-            << makeNamespaceSep(module->ns, funcNameSep)
+            << "\", \"" << regFunctionPrefix(service->ns()) << funcNameSep
+            << makeNamespaceSep(regFunctionPrefix(module->ns), funcNameSep)
             << xlFuncPrefix << "\", \"" << service->ns() << "\", args,\n"
             << "        \"" << classHelp << "\",\n"
             << "        help";
@@ -1767,6 +1782,11 @@ void ExcelModule::registerClass(
 
 }
 
+std::string ExcelModule::regFunctionPrefix(const std::string& functionPrefix) const
+{
+    return service->regFunctionPrefix(functionPrefix);
+}
+
 namespace
 {
     void JSONMapUpdateString(
@@ -1823,6 +1843,7 @@ void Options::update(const std::string& fn)
     JSONMapUpdateBool(noGeneratedCodeNotice, jm, "noGeneratedCodeNotice");
     JSONMapUpdateBool(nameAtEnd, jm, "nameAtEnd");
     JSONMapUpdateBool(upperCase, jm, "upperCase");
+    JSONMapUpdateBool(nsUpperCase, jm, "nsUpperCase");
     JSONMapUpdateBool(noObjectFuncs, jm, "noObjectFuncs");
     JSONMapUpdateBool(errIsNA, jm, "errIsNA");
 

@@ -70,7 +70,8 @@ ExcelService::ExcelService(
     const char* sep,
     bool upperCase,
     bool optionalBaseName,
-    bool errNA)
+    bool errNA,
+    bool nsUpperCase)
     :
     m_service(service),
     m_registeredFunctions(),
@@ -81,6 +82,7 @@ ExcelService::ExcelService(
     m_upperCase(upperCase),
     m_optionalBaseName(optionalBaseName),
     m_errNA(errNA),
+    m_nsUpperCase(nsUpperCase),
     m_timing(false),
     m_timings()
 {
@@ -205,7 +207,7 @@ void ExcelService::RegisterStandardFunctions(const std::string& xll,
     std::vector<std::string> help;
 
     std::string ns = m_service->get_namespace(); 
-    std::string nsReg = m_upperCase ? StringUpper(ns) : ns;
+    std::string nsReg = (m_upperCase || m_nsUpperCase) ? StringUpper(ns) : ns;
 
     if (!helpFunc.empty())
     {

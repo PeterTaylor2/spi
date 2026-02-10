@@ -70,7 +70,8 @@ public:
         const char* sep = ".",
         bool upperCase = false,
         bool optionalBaseName = false,
-        bool errNA = false);
+        bool errNA = false,
+        bool nsUpperCase = false);
 
     /**
      * Registers the standard functions that are provided for all libraries.
@@ -238,6 +239,7 @@ private:
     bool m_upperCase;
     bool m_optionalBaseName;
     bool m_errNA;
+    bool m_nsUpperCase;
     bool m_timing;
     std::map<std::string, ExcelTimings> m_timings;
 };

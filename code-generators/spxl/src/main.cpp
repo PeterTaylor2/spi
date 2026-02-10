@@ -158,7 +158,7 @@ int main(int argc, char* argv[])
     Options options;
 
     const char* longOptions = "nameAtEnd noGeneratedCodeNotice upperCase funcNameSep= noObjectFuncs parent="
-        " optionsFile= license licenseFile= errIsNA backup xlTargetVersion=";
+        " optionsFile= license licenseFile= errIsNA backup xlTargetVersion= nsUpperCase";
 
     try
     {
@@ -192,6 +192,10 @@ int main(int argc, char* argv[])
             else if (opt == "--upperCase")
             {
                 options.upperCase = true;
+            }
+            else if (opt == "--nsUpperCase")
+            {
+                options.nsUpperCase = true;
             }
             else if (opt == "--funcNameSep")
             {

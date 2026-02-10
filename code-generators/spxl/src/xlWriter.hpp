@@ -43,6 +43,7 @@ struct Options
         noGeneratedCodeNotice(false),
         nameAtEnd(false),
         upperCase(false),
+        nsUpperCase(false),
         noObjectFuncs(false),
         errIsNA(false),
         writeBackup(false),
@@ -79,6 +80,7 @@ struct Options
     bool noGeneratedCodeNotice;
     bool nameAtEnd;
     bool upperCase;
+    bool nsUpperCase;
     bool noObjectFuncs;
     bool errIsNA;
     bool writeBackup;
@@ -151,6 +153,7 @@ public:
     bool writeBackup() const;
 
     const Options& options() const;
+    std::string regFunctionPrefix(const std::string& functionPrefix) const;
 
 protected:
     ExcelService(
@@ -207,6 +210,8 @@ private:
 
     ExcelServiceConstSP  service;
     spdoc::ModuleConstSP module;
+
+    std::string regFunctionPrefix(const std::string& functionPrefix) const;
 };
 
 #endif
