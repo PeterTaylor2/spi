@@ -37,6 +37,7 @@ release-build:
 	@$(MAKE) -s all DEBUG=0
 
 $(U_SPI_HOME)/makefiles/win32/makeXLAddin.exe: Release/makeXLAddin.exe
+	@mkdir -p $(U_SPI_HOME)/makefiles/win32
 	cp $< $@
 
 

@@ -191,6 +191,14 @@ $(U_OUTPUT_DIR)/$(G_XL_ABI)/%: $(U_OUTPUT_DIR)/$(G_ABI)/%
 	ln -f $< $(U_OUTPUT_DIR)/$(G_XL_ABI)
 
 
+ifdef U_MAKE_XLADDIN
+
+$(U_XLADDIN_TARGET): $(U_VBA_FILES)
+	@unix2dos $(U_VBA_FILES)
+	@$(G_EXCEL_MAKE_XLADDIN) $@ $(U_VBA_FILES)
+
+endif
+
 ifdef U_USE_EXCEL_INSTALL
 
 I_INSTALL_TARGET_DIR=$(abspath $(APPDATA))/Microsoft/Addins/$(U_SERVICE_NAMESPACE)
