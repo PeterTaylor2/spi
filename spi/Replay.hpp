@@ -87,8 +87,8 @@ public:
     void execute(
         const ServiceSP& svc,
         const ObjectRefCacheSP& cache);
-    void generateCode(ReplayCodeGenerator* generator) const;
-    std::string description() const;
+    void generateCode(ReplayCodeGenerator* generator) const override;
+    std::string description() const override;
 
     const MapConstSP& Inputs() const;
     const MapConstSP& Output() const;
@@ -104,8 +104,8 @@ public:
     void execute(
         const ServiceSP& svc,
         const ObjectRefCacheSP& cache);
-    void generateCode(ReplayCodeGenerator* generator) const;
-    std::string description() const;
+    void generateCode(ReplayCodeGenerator* generator) const override;
+    std::string description() const override;
 
     const MapConstSP& Inputs() const;
 private:

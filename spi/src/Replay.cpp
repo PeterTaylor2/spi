@@ -35,6 +35,7 @@
 #include "Service.hpp"
 #include "RuntimeError.hpp"
 #include "ObjectMap.hpp"
+#include "CommonRuntime.hpp"
 
 #include <spi_util/CommandLine.hpp>
 #include <spi_util/StringUtil.hpp>
@@ -441,7 +442,14 @@ void ReplayObjectAction::execute(
     const ObjectRefCacheSP& cache)
 {
     ObjectMap objMap(m_inputs);
+    bool isLogging = svc->is_logging();
+    if (isLogging)
+        spi::IncrementLogLevel();
+
     ObjectConstSP obj = svc->object_from_map(&objMap, cache);
+
+    if (isLogging)
+        spi::DecrementLogLevel();
 
     int ref = m_inputs->GetRef();
 
