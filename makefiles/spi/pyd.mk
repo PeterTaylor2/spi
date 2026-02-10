@@ -55,13 +55,13 @@ ifeq ($(G_PLATFORM),win32)
 U_VCPROJ_OPTIONS+=-s '*.py'
 
 v16.vcxproj::
-	@$(I_VCPROJ16_CMD) -j1 -t "install INSTALL_FROM_VS=1" -b $(U_MAKEFILES)/cygwin32/bin $(U_VCPROJ)-install.v16.vcxproj $(U_VCPROJ)-install . . $(G_WIN32_COMPILER) $(G_WIN32_BITS)
+	@$(I_VCPROJ16_CMD) -j1 -t "install INSTALL_FROM_VS=1" -b $(G_CYGWIN_BIN) $(U_VCPROJ)-install.v16.vcxproj $(U_VCPROJ)-install . . $(G_WIN32_COMPILER) $(G_WIN32_BITS)
 
 v17.vcxproj::
-	@$(I_VCPROJ17_CMD) -j1 -t "install INSTALL_FROM_VS=1" -b $(U_MAKEFILES)/cygwin32/bin $(U_VCPROJ)-install.v17.vcxproj $(U_VCPROJ)-install . . $(G_WIN32_COMPILER) $(G_WIN32_BITS)
+	@$(I_VCPROJ17_CMD) -j1 -t "install INSTALL_FROM_VS=1" -b $(G_CYGWIN_BIN) $(U_VCPROJ)-install.v17.vcxproj $(U_VCPROJ)-install . . $(G_WIN32_COMPILER) $(G_WIN32_BITS)
 
 v18.vcxproj::
-	@$(I_VCPROJ18_CMD) -j1 -t "install INSTALL_FROM_VS=1" -b $(U_MAKEFILES)/cygwin32/bin $(U_VCPROJ)-install.v18.vcxproj $(U_VCPROJ)-install . . $(G_WIN32_COMPILER) $(G_WIN32_BITS)
+	@$(I_VCPROJ18_CMD) -j1 -t "install INSTALL_FROM_VS=1" -b $(G_CYGWIN_BIN) $(U_VCPROJ)-install.v18.vcxproj $(U_VCPROJ)-install . . $(G_WIN32_COMPILER) $(G_WIN32_BITS)
 
 endif
 

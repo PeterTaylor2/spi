@@ -63,25 +63,25 @@
     <NMakeBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">make vc-all VS_BUILD=1 COMPILER=msvc18 BITS=32 DEBUG=1</NMakeBuildCommandLine>
     <NMakeReBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">make clean v18.vcxproj VS_BUILD=1 COMPILER=msvc18 BITS=32 DEBUG=1 &amp;&amp; make vc-all VS_BUILD=1 COMPILER=msvc18 BITS=32 DEBUG=1</NMakeReBuildCommandLine>
     <NMakeCleanCommandLine Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">make clean v18.vcxproj VS_BUILD=1 COMPILER=msvc18 BITS=32 DEBUG=1</NMakeCleanCommandLine>
-    <ExecutablePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">makefiles\cygwin32\bin;$(ExecutablePath)</ExecutablePath>
+    <ExecutablePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">makefiles\cygwin64\bin;$(ExecutablePath)</ExecutablePath>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">win32\Release\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">win32\Release\</IntDir>
     <NMakeBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">make vc-all VS_BUILD=1 COMPILER=msvc18 BITS=32</NMakeBuildCommandLine>
     <NMakeReBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">make clean v18.vcxproj VS_BUILD=1 COMPILER=msvc18 BITS=32 &amp;&amp; make vc-all VS_BUILD=1 COMPILER=msvc18 BITS=32</NMakeReBuildCommandLine>
     <NMakeCleanCommandLine Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">make clean v18.vcxproj VS_BUILD=1 COMPILER=msvc18 BITS=32</NMakeCleanCommandLine>
-    <ExecutablePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">makefiles\cygwin32\bin;$(ExecutablePath)</ExecutablePath>
+    <ExecutablePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">makefiles\cygwin64\bin;$(ExecutablePath)</ExecutablePath>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">win64\Debug\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">win64\Debug\</IntDir>
     <NMakeBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">make vc-all VS_BUILD=1 COMPILER=msvc18 BITS=64 DEBUG=1</NMakeBuildCommandLine>
     <NMakeReBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">make clean v18.vcxproj VS_BUILD=1 COMPILER=msvc18 BITS=64 DEBUG=1 &amp;&amp; make vc-all VS_BUILD=1 COMPILER=msvc18 BITS=64 DEBUG=1</NMakeReBuildCommandLine>
     <NMakeCleanCommandLine Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">make clean v18.vcxproj VS_BUILD=1 COMPILER=msvc18 BITS=64 DEBUG=1</NMakeCleanCommandLine>
-    <ExecutablePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">makefiles\cygwin32\bin;$(ExecutablePath)</ExecutablePath>
+    <ExecutablePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">makefiles\cygwin64\bin;$(ExecutablePath)</ExecutablePath>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">win64\Release\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">win64\Release\</IntDir>
     <NMakeBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Release|x64'">make vc-all VS_BUILD=1 COMPILER=msvc18 BITS=64</NMakeBuildCommandLine>
     <NMakeReBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Release|x64'">make clean v18.vcxproj VS_BUILD=1 COMPILER=msvc18 BITS=64 &amp;&amp; make vc-all VS_BUILD=1 COMPILER=msvc18 BITS=64</NMakeReBuildCommandLine>
     <NMakeCleanCommandLine Condition="'$(Configuration)|$(Platform)'=='Release|x64'">make clean v18.vcxproj VS_BUILD=1 COMPILER=msvc18 BITS=64</NMakeCleanCommandLine>
-    <ExecutablePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">makefiles\cygwin32\bin;$(ExecutablePath)</ExecutablePath>
+    <ExecutablePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">makefiles\cygwin64\bin;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>

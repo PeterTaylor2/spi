@@ -21,8 +21,6 @@ else
 I_VCPROJ=$(U_VCPROJ)
 endif
 
-G_CYGWIN_BIN?=$(U_MAKEFILES)/cygwin32/bin
-
 v16.vcxproj:: 
 	@$(I_VCPROJ16_CMD) $(I_INCLUDES) $(U_VCPROJ_OPTIONS) -b $(G_CYGWIN_BIN) --vcTarget=v16.vcxproj $(I_VCPROJ).v16.vcxproj $(I_VCPROJ) $(U_SRC_DIR) $(U_INC_DIR) $(G_WIN32_COMPILER) $(G_WIN32_BITS)
 

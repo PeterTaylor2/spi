@@ -93,16 +93,17 @@ else
 G_UUID_LIBS=
 endif
 
-ifdef VS_BUILD
-
 # note that G_CYGWIN_BIN might be set by site.mk
 # if it hasn't been set then we have an alternative location
 
 ifdef U_SPI_HOME
-G_CYGWIN_BIN?=$(U_SPI_HOME)/makefiles/cygwin32/bin
+G_CYGWIN_BIN?=$(U_SPI_HOME)/makefiles/cygwin64/bin
 else
-G_CYGWIN_BIN?=$(U_MAKEFILES)/cygwin32/bin
+G_CYGWIN_BIN?=$(U_MAKEFILES)/cygwin64/bin
 endif
+
+ifdef VS_BUILD
+
 PATH:=$(abspath $(G_CYGWIN_BIN)):$(PATH)
 export PATH
 

@@ -70,4 +70,5 @@ info::
 	@echo "G_PY_VERSION=$(G_PY_VERSION)"
 	@echo "G_CONFIG=$(G_CONFIG)"
 	@echo "G_PYTHON=$(G_PYTHON)"
+	@echo "G_CYGWIN_BIN=$(G_CYGWIN_BIN)"
 

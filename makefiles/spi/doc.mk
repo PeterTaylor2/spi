@@ -121,11 +121,11 @@ clean:
 # visual studio project files
 ###########################################################################
 v16.vcxproj:
-	@$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/makeVcproj16Config.py $(U_VCXPROJ_OPTIONS) -b $(U_MAKEFILES)/cygwin32/bin -t doc $(U_VCPROJ).v16.vcxproj $(U_VCPROJ) $(U_CONFIG_DIR) $(U_SERVICE_DOC).pdf
+	@$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/makeVcproj16Config.py $(U_VCXPROJ_OPTIONS) -b $(G_CYGWIN_BIN) -t doc $(U_VCPROJ).v16.vcxproj $(U_VCPROJ) $(U_CONFIG_DIR) $(U_SERVICE_DOC).pdf
 
 v17.vcxproj:
-	@$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/makeVcproj17Config.py $(U_VCXPROJ_OPTIONS) -b $(U_MAKEFILES)/cygwin32/bin -t doc $(U_VCPROJ).v17.vcxproj $(U_VCPROJ) $(U_CONFIG_DIR) $(U_SERVICE_DOC).pdf
+	@$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/makeVcproj17Config.py $(U_VCXPROJ_OPTIONS) -b $(G_CYGWIN_BIN) -t doc $(U_VCPROJ).v17.vcxproj $(U_VCPROJ) $(U_CONFIG_DIR) $(U_SERVICE_DOC).pdf
 
 v18.vcxproj:
-	@$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/makeVcproj18Config.py $(U_VCXPROJ_OPTIONS) -b $(U_MAKEFILES)/cygwin32/bin -t doc $(U_VCPROJ).v18.vcxproj $(U_VCPROJ) $(U_CONFIG_DIR) $(U_SERVICE_DOC).pdf
+	@$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/makeVcproj18Config.py $(U_VCXPROJ_OPTIONS) -b $(G_CYGWIN_BIN) -t doc $(U_VCPROJ).v18.vcxproj $(U_VCPROJ) $(U_CONFIG_DIR) $(U_SERVICE_DOC).pdf
 

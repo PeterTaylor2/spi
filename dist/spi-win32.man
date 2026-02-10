@@ -14,22 +14,24 @@ excel/vba/*.frx
 
 # files for the windows build system
 
-makefiles/cygwin32/bin/cmp.exe
-makefiles/cygwin32/bin/cp.exe
-makefiles/cygwin32/bin/echo.exe
-makefiles/cygwin32/bin/ln.exe
-makefiles/cygwin32/bin/make.exe
-makefiles/cygwin32/bin/mkdir.exe
-makefiles/cygwin32/bin/rm.exe
-makefiles/cygwin32/bin/sh.exe
-makefiles/cygwin32/bin/which.exe
-makefiles/cygwin32/bin/grep.exe
-makefiles/cygwin32/bin/cut.exe
-makefiles/cygwin32/bin/pwd.exe
-makefiles/cygwin32/bin/tar.exe
-makefiles/cygwin32/bin/cyg*.dll
-makefiles/cygwin32/bin/README.txt
-makefiles/cygwin32/tmp/README.txt
+makefiles/cygwin64/bin/cmp.exe
+makefiles/cygwin64/bin/cp.exe
+makefiles/cygwin64/bin/echo.exe
+makefiles/cygwin64/bin/ln.exe
+makefiles/cygwin64/bin/make.exe
+makefiles/cygwin64/bin/mkdir.exe
+makefiles/cygwin64/bin/rm.exe
+makefiles/cygwin64/bin/sh.exe
+makefiles/cygwin64/bin/which.exe
+makefiles/cygwin64/bin/grep.exe
+makefiles/cygwin64/bin/cut.exe
+makefiles/cygwin64/bin/pwd.exe
+makefiles/cygwin64/bin/tar.exe
+makefiles/cygwin64/bin/unix2dos.exe
+makefiles/cygwin64/bin/cyg*.dll
+
+makefiles/cygwin64/bin/README.txt
+makefiles/cygwin64/tmp/README.txt
 
 # source files for gendep.exe
 # no need for gendep.exe since we have the source code
