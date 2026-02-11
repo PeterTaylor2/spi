@@ -327,6 +327,7 @@ std::string StringConstant::toCode(spdoc::PublicType publicType) const
     default:
         return spi::StringFormat("\"%s\"", m_value.c_str());
     }
+    SPI_THROW_RUNTIME_ERROR("Compiler bug");
 }
 
 const char* StringConstant::typeName() const
