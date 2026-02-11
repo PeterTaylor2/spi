@@ -40,6 +40,7 @@
 SPI_UTIL_NAMESPACE
 
 class JSONValue;
+enum class JSONNumericAccuracy;
 
 SPI_UTIL_END_NAMESPACE
 
@@ -97,6 +98,7 @@ private:
     bool m_noNewLine;
     bool m_objectId;
     bool m_noObjectId;
+    spi_util::JSONNumericAccuracy m_accuracy;
 
 };
 

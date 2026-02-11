@@ -40,7 +40,8 @@ void JSONArrayToStream(
     std::ostream& ostr,
     const JSONArrayConstSP& anArray,
     bool noNewLine,
-    size_t indent)
+    size_t indent,
+    JSONNumericAccuracy accuracy)
 {
     const char* sep = noNewLine ? "" : "\n";
     size_t nextIndent = noNewLine ? indent : indent + 2;
@@ -52,7 +53,7 @@ void JSONArrayToStream(
     for (size_t i = 0; i < numItems; ++i)
     {
         ostr << sep << spaces;
-        JSONValueToStream(ostr, anArray->Item(i), noNewLine, nextIndent);
+        JSONValueToStream(ostr, anArray->Item(i), noNewLine, nextIndent, accuracy);
         sep = noNewLine ? "," : ",\n";
     }
     if (noNewLine)
@@ -65,7 +66,8 @@ void JSONMapToStream(
     std::ostream& ostr,
     const JSONMapConstSP& aMap,
     bool noNewLine,
-    size_t indent)
+    size_t indent,
+    JSONNumericAccuracy accuracy)
 {
     const char* sep = noNewLine ? "" : "\n";
     size_t nextIndent = noNewLine ? indent : indent + 2;
@@ -83,7 +85,7 @@ void JSONMapToStream(
         ostr << sep << spaces;
 
         ostr << '"' << StringEscape(name.c_str()) << '"' << " : ";
-        JSONValueToStream(ostr, item, noNewLine, nextIndent);
+        JSONValueToStream(ostr, item, noNewLine, nextIndent, accuracy);
 
         sep = noNewLine ? "," : ",\n";
     }
@@ -197,7 +199,8 @@ void JSONValueToStream(
     std::ostream& ostr,
     const JSONValue& value,
     bool noNewLine,
-    size_t indent)
+    size_t indent,
+    JSONNumericAccuracy accuracy)
 {
     switch(value.GetType())
     {
@@ -205,10 +208,10 @@ void JSONValueToStream(
         ostr << '"' << StringEscape(value.GetString().c_str()) << '"';
         break;
     case JSONValue::Array:
-        JSONArrayToStream(ostr, value.GetArray(), noNewLine, indent);
+        JSONArrayToStream(ostr, value.GetArray(), noNewLine, indent, accuracy);
         break;
     case JSONValue::Map:
-        JSONMapToStream(ostr, value.GetMap(), noNewLine, indent);
+        JSONMapToStream(ostr, value.GetMap(), noNewLine, indent, accuracy);
         break;
     case JSONValue::Number:
     {
@@ -225,7 +228,21 @@ void JSONValueToStream(
         }
         else
         {
-            ostr << StringFormat("%.15g", value.GetNumber());
+            const char* numericFormat;
+            switch (accuracy)
+            {
+            case JSONNumericAccuracy::LOW:
+                numericFormat = "%.8g";
+                break;
+            case JSONNumericAccuracy::HIGH:
+                numericFormat = "%.17g";
+                break;
+            case JSONNumericAccuracy::STANDARD:
+            default:
+                numericFormat = "%.15g";
+                break;
+            }
+            ostr << StringFormat(numericFormat, d);
         }
         break;
     }
@@ -270,10 +287,12 @@ JSONValue JSONValueFromString(
     return JSONParseValue(iss);
 }
 
-std::string JSONValueToString(const JSONValue& value)
+std::string JSONValueToString(
+    const JSONValue& value,
+    JSONNumericAccuracy accuracy)
 {
     std::ostringstream oss;
-    JSONValueToStream(oss, value, true, 1);
+    JSONValueToStream(oss, value, true, 1, accuracy);
     return oss.str();
 }
 

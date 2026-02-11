@@ -44,12 +44,20 @@ SPI_UTIL_NAMESPACE
 
 class JSONValue;
 
+enum class JSONNumericAccuracy
+{
+    STANDARD,
+    LOW,
+    HIGH
+};
+
 SPI_UTIL_IMPORT
 void JSONValueToStream(
     std::ostream& str,
     const JSONValue& value,
     bool noNewLine = false,
-    size_t indent = 0);
+    size_t indent = 0,
+    JSONNumericAccuracy accuracy = JSONNumericAccuracy::STANDARD);
 
 SPI_UTIL_IMPORT
 JSONValue JSONParseValue(
@@ -67,7 +75,9 @@ JSONValue JSONValueFromString(
     const std::string& str);
 
 SPI_UTIL_IMPORT
-std::string JSONValueToString(const JSONValue& value);
+std::string JSONValueToString(
+    const JSONValue& value,
+    JSONNumericAccuracy accuracy = JSONNumericAccuracy::STANDARD);
 
 SPI_UTIL_END_NAMESPACE
 

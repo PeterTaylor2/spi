@@ -268,7 +268,7 @@ void ObjectJSONStreamer::to_stream(
 
     spi_util::JSONValue jv = FromObject(object, metaData, addObjectId);
 
-    JSONValueToStream(ostr, jv, m_noNewLine);
+    JSONValueToStream(ostr, jv, m_noNewLine, 0, m_accuracy);
 }
 
 void ObjectJSONStreamer::to_stream(
@@ -278,7 +278,7 @@ void ObjectJSONStreamer::to_stream(
 {
     spi_util::JSONValue jv = FromValue(value);
 
-    JSONValueToStream(ostr, jv, m_noNewLine);
+    JSONValueToStream(ostr, jv, m_noNewLine, 0, m_accuracy);
 }
 
 ObjectJSONStreamerSP ObjectJSONStreamer::Make(
@@ -311,7 +311,8 @@ ObjectJSONStreamer::ObjectJSONStreamer(
     m_service(service),
     m_noNewLine(false),
     m_objectId(false),
-    m_noObjectId(false)
+    m_noObjectId(false),
+    m_accuracy(spi_util::JSONNumericAccuracy::STANDARD)
 {
     if (options)
     {
@@ -327,6 +328,20 @@ ObjectJSONStreamer::ObjectJSONStreamer(
 
             switch (*buf)
             {
+            case 'A':
+                if (strcmp(buf, "ACC") == 0)
+                {
+                    m_accuracy = spi_util::JSONNumericAccuracy::HIGH;
+                    continue;
+                }
+                break;
+            case 'L':
+                if (strcmp(buf, "LOACC") == 0)
+                {
+                    m_accuracy = spi_util::JSONNumericAccuracy::LOW;
+                    continue;
+                }
+                break;
             case 'N':
                 if (strcmp(buf, "NONEWLINE") == 0)
                 {
