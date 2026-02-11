@@ -48,7 +48,7 @@ runtime::
 	done
 
 code-generators::
-	$(MAKE) -C code-generators config-build
+	$(MAKE) -C code-generators all
 
 testing::
 	@for lib in $(TEST_BUILD_DIRS); do \

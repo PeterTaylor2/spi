@@ -36,7 +36,7 @@ makefiles/regression-test/README.txt
 # this is needed for a package of development only
 # non-development builds should have a way of populating site.mk instead
 
-# makefiles/config/computers/*.mk
+makefiles/config/computers/README.txt
 
 # header files
 

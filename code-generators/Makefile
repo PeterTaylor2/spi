@@ -25,8 +25,8 @@ spxl
 
 EXTRA_VCPROJ_DIRS=spcl/types spdoc
 
-U_VCPROJ=config-build
-U_VCPROJ_OPTIONS=-j4 -tconfig-build --cleanTarget=config-clean --silent
+U_VCPROJ=all-code-generators
+U_VCPROJ_OPTIONS=-j4 -tall --cleanTarget=clean-all --silent
 U_SRC_DIR=.
 U_INC_DIR=.
 
@@ -45,11 +45,6 @@ build::
 		$(MAKE) -C $$lib; \
 	done
 
-all:: build
-	echo Building spi-user-guide
-	@mkdir -p $(U_SPI_HOME)/code-generators/bin-$(G_PLATFORM)
-	$(MAKE) -C code-generators/spcl doc COMPILER=$(G_CONFIG_COMPILER) BITS=$(G_CONFIG_COMPILER_BITS)
-
 clean::
 	rm -fr $(U_SPI_HOME)/code-generators/bin-$(G_PLATFORM)
 	@for lib in $(BUILD_DIRS); do \
@@ -58,13 +53,13 @@ clean::
 
 # note that after copying to the bin-$(G_PLATFORM) directory we need to delete the bin directory
 # since the latter directory may take precedence in makefiles
-config-build::
+all::
 	@$(MAKE) build DEBUG=0 COMPILER=$(G_CONFIG_COMPILER) BITS=$(G_CONFIG_COMPILER_BITS)
 	@mkdir -p bin-$(G_PLATFORM)
 	$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/copyFiles.py bin-$(G_PLATFORM) bin/$(G_CONFIG_COMPILER_ABI)/*$(G_EXE)
 	rm -fr $(U_SPI_HOME)/code-generators/bin
 
-config-clean::
+clean-all::
 	@$(MAKE) clean DEBUG=0 COMPILER=$(G_CONFIG_COMPILER) BITS=$(G_CONFIG_COMPILER_BITS)
 	rm -fr $(U_SPI_HOME)/code-generators/bin/$(G_CONFIG_COMPILER_ABI)
 
@@ -75,9 +70,9 @@ code:
 	make -C spdoc
 
 vc-all:
-	@$(MAKE) -s v16.vcxproj U_VCPROJ=config-build U_VCPROJ_OPTIONS="-j4 -tconfig-build --cleanTarget=config-clean --silent"
-	@$(MAKE) -s v17.vcxproj U_VCPROJ=config-build U_VCPROJ_OPTIONS="-j4 -tconfig-build --cleanTarget=config-clean --silent"
-	@$(MAKE) -s v18.vcxproj U_VCPROJ=config-build U_VCPROJ_OPTIONS="-j4 -tconfig-build --cleanTarget=config-clean --silent"
+	@$(MAKE) -s v16.vcxproj U_VCPROJ=all-code-generators U_VCPROJ_OPTIONS="-j4 -tall --cleanTarget=clean-all --silent"
+	@$(MAKE) -s v17.vcxproj U_VCPROJ=all-code-generators U_VCPROJ_OPTIONS="-j4 -tall --cleanTarget=clean-all --silent"
+	@$(MAKE) -s v18.vcxproj U_VCPROJ=all-code-generators U_VCPROJ_OPTIONS="-j4 -tall --cleanTarget=clean-all --silent"
 	@for lib in $(BUILD_DIRS) $(EXTRA_VCPROJ_DIRS); do \
 		echo Creating vcproject for $$lib; \
 		$(MAKE) -s -C $$lib v16.vcxproj; \

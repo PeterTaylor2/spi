@@ -5,9 +5,9 @@ help:
 help:
 	@echo "make copy-runtime TARGET=<path_to_spi_directory>"
 	@echo "  --- copies runtime libraries"
-	@echo "make copy-config-source TARGET=<path_to_spi_directory>"
+	@echo "make copy-code-generators-source TARGET=<path_to_spi_directory>"
 	@echo "  --- copies source code for code generators"
-	@echo "make copy-config-bin TARGET=<path_to_spi_directory>"
+	@echo "make copy-code-generators-bin TARGET=<path_to_spi_directory>"
 	@echo "  --- copies binaries for code generators"
 
 all: copy
@@ -47,17 +47,17 @@ endif
 	@$(COPY_MANIFEST) spi-common.man $(U_SPI_HOME) $(TARGET)
 	@$(COPY_MANIFEST) spi-$(G_PLATFORM).man $(U_SPI_HOME) $(TARGET) SPI_DLL=$(SPI_DLL)
 
-copy-config-source:
+copy-code-generators-source:
 ifndef TARGET
 	@echo "TARGET undefined" && exit 1
 endif
-	@$(COPY_MANIFEST) spi-config-source.man $(U_SPI_HOME) $(TARGET)
+	@$(COPY_MANIFEST) spi-code-generators-source.man $(U_SPI_HOME) $(TARGET)
 
-copy-config-bin: build
+copy-code-generators-bin: build
 ifndef TARGET
 	@echo "TARGET undefined" && exit 1
 endif
-	@$(COPY_MANIFEST) spi-config-$(G_PLATFORM).man $(U_SPI_HOME) $(TARGET)
+	@$(COPY_MANIFEST) spi-code-generators-$(G_PLATFORM).man $(U_SPI_HOME) $(TARGET)
 
 doc:
 	@$(COPY_MANIFEST) spi-doc-source.man $(U_SPI_HOME)/doc $(TARGET)-doc

@@ -50,13 +50,13 @@ makeXLAddin/Makefile
 
 # project files for runtime library builds
 
-spi-vs1[67].sln
-spi-vs1[67]-python.sln
+spi-vs1[78].sln
+spi-vs1[78]-python.sln
 spi-cs.sln
 all.guid
 refresh-projects.guid
-refresh-projects.v1[67].vcxproj
-refresh-projects.v1[67].vcxproj.filters
+refresh-projects.v1[78].vcxproj
+refresh-projects.v1[78].vcxproj.filters
 dll/spi-dll.guid
 c/spi-c-dll.guid
 excel/spxl-dll.guid
