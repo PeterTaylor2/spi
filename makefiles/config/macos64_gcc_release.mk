@@ -14,9 +14,9 @@ include $(U_MAKEFILES)/config/macos64_gcc.mk
 # since we set the system includes by defining INCLUDE we can skip setting
 # G_SYS_INCLUDES
 ###########################################################################
-G_OPTIMIZE_CFLAGS=-O3 -pipe
+G_MACOS64_GCC_OPTIMIZE?=-O2
 I_DEFINES = $(U_DEFINES) $(U_MACOS64_RELEASE_CFLAGS)
-I_CFLAGS = -pthread -c -m64 -fPIC -Wformat -Wno-write-strings $(I_DEFINES)
+I_CFLAGS = -pthread -c -m64 -fPIC -Wformat -Wno-write-strings -pipe $(G_MACOS64_GCC_OPTIONS) $(I_DEFINES)
 
 G_CFLAGS = $(I_CFLAGS) 
 G_CPPFLAGS = $(I_CFLAGS) -std=c++11 -Wno-register

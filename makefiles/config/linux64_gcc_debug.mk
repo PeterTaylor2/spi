@@ -17,7 +17,7 @@ include $(U_MAKEFILES)/config/linux64_gcc.mk
 ###########################################################################
 
 I_DEFINES = $(U_DEFINES) $(U_DEBUG_CFLAGS) $(U_LINUX64_DEBUG_CFLAGS)
-I_CFLAGS = -pthread -m64 $(G_LINUX64_GCC_WARNINGS) -ggdb3 -c -fPIC $(G_LINUX_VISIBILITY) $(I_DEFINES)
+I_CFLAGS = -pthread -m64 $(G_LINUX64_GCC_WARNINGS) -ggdb3 -c -fPIC -pipe $(G_LINUX_VISIBILITY) $(I_DEFINES)
 
 G_CFLAGS = $(I_CFLAGS) $(U_LINUX64_CFLAGS)
 G_CPPFLAGS = $(I_CFLAGS) $(U_LINUX64_CPPFLAGS)

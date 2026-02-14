@@ -17,7 +17,7 @@ include $(U_MAKEFILES)/config/cygwin32_gcc.mk
 ###########################################################################
 
 I_DEFINES = $(U_DEFINES) $(U_DEBUG_CFLAGS) $(U_LINUX32_DEBUG_CFLAGS)
-I_CFLAGS = -pthread -m32 -Wall -Werror -Wno-unused-value -Wno-deprecated -Wno-unused-variable -Wno-unused-but-set-variable -Wno-write-strings -Wno-sequence-point -ggdb3 -c -fPIC $(I_DEFINES)
+I_CFLAGS = -pthread -m32 -Wall -Werror -Wno-unused-value -Wno-deprecated -Wno-unused-variable -Wno-unused-but-set-variable -Wno-write-strings -Wno-sequence-point -ggdb3 -c -fPIC -pipe $(I_DEFINES)
 
 G_CFLAGS = $(I_CFLAGS) 
 G_CPPFLAGS = $(I_CFLAGS) -std=gnu++11

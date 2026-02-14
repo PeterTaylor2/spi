@@ -14,9 +14,9 @@ include $(U_MAKEFILES)/config/cygwin32_gcc.mk
 # since we set the system includes by defining INCLUDE we can skip setting
 # G_SYS_INCLUDES
 ###########################################################################
-G_OPTIMIZE_CFLAGS=-O3 -pipe
+G_CYGWIN32_GCC_OPTIMIZE?=-O2
 I_DEFINES = $(U_DEFINES) $(U_LINUX32_RELEASE_CFLAGS)
-I_CFLAGS = -pthread -c -m32 -fPIC -Wformat -Wno-write-strings $(I_DEFINES)
+I_CFLAGS = -pthread -c -m32 -fPIC -Wformat -Wno-write-strings -pipe $(G_CYGWIN32_GCC_OPTIMIZE) $(I_DEFINES)
 
 G_CFLAGS = $(I_CFLAGS) 
 G_CPPFLAGS = $(I_CFLAGS) -std=gnu++11

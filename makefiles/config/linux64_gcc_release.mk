@@ -14,9 +14,9 @@ include $(U_MAKEFILES)/config/linux64_gcc.mk
 # since we set the system includes by defining INCLUDE we can skip setting
 # G_SYS_INCLUDES
 ###########################################################################
-G_OPTIMIZE_CFLAGS=-O3 -pipe
+G_LINUX64_GCC_OPTIMIZE?=-O2
 I_DEFINES = $(U_DEFINES) $(U_LINUX64_RELEASE_CFLAGS)
-I_CFLAGS = -pthread -c -m64 -fPIC $(G_LINUX64_GCC_WARNINGS) $(G_LINUX_VISIBILITY) $(I_DEFINES)
+I_CFLAGS = -pthread -c -m64 -fPIC -pipe $(G_LINUX64_GCC_WARNINGS) $(G_LINUX_VISIBILITY) $(G_LINUX64_GCC_OPTIMIZE) $(I_DEFINES)
 
 G_CFLAGS = $(I_CFLAGS) $(U_LINUX64_CFLAGS)
 G_CPPFLAGS = $(I_CFLAGS) $(U_LINUX64_CPPFLAGS)

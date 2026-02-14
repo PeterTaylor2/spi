@@ -19,8 +19,9 @@ include $(U_MAKEFILES)/config/win32_msvc16.mk
 # G_SYS_INCLUDES
 ###########################################################################
 
+G_WIN32_MSVC_OPTIMIZE?=-O2
 I_DEFINES = -D_CRT_SECURE_NO_WARNINGS $(U_DEFINES) $(U_WIN32_RELEASE_CFLAGS)
-I_CFLAGS = -c -MD -W3 -Gy -nologo -O2 $(I_DEFINES)
+I_CFLAGS = -c -MD -W3 -Gy -nologo $(G_WIN32_MSVC_OPTIMIZE) $(I_DEFINES)
 
 # if we want multi-character byte set then add -D_MCBS
 

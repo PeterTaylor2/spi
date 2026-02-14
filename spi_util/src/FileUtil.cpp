@@ -362,7 +362,7 @@ std::string FileReadContentsC(const char* filename)
     fseek(fp, 0, SEEK_END);
     contents.resize(ftell(fp));
     rewind(fp);
-    fread(&contents[0], 1, contents.size(), fp);
+    size_t size = fread(&contents[0], 1, contents.size(), fp);
     fclose(fp);
     return contents;
 }

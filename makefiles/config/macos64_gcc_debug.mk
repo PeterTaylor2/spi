@@ -17,7 +17,7 @@ include $(U_MAKEFILES)/config/macos64_gcc.mk
 ###########################################################################
 
 I_DEFINES = $(U_DEFINES) $(U_MACOS64_DEBUG_CFLAGS)
-I_CFLAGS = -pthread -m64 -Werror -Wall -Wno-unused-variable -Wno-write-strings -ggdb3 -c -fPIC $(I_DEFINES)
+I_CFLAGS = -pthread -m64 -Werror -Wall -Wno-unused-variable -Wno-write-strings -ggdb3 -c -fPIC -pipe $(I_DEFINES)
 
 G_CFLAGS = $(I_CFLAGS) 
 G_CPPFLAGS = $(I_CFLAGS) -std=c++11 -Wno-register

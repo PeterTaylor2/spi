@@ -980,7 +980,7 @@ bool ServiceDefinition::hasBaseService() const
 
 std::string ServiceDefinition::fullNamespace(const std::string& ns, const char* sep) const
 {
-    std::vector<std::string> nss(1, m_namespace);
+    std::vector<std::string> nss = {m_namespace};
     if (!ns.empty())
         nss.push_back(ns);
 
