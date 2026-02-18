@@ -24,6 +24,8 @@ makefiles/spi/doc.mk
 makefiles/spi/runtime.mk
 makefiles/config/*.mk
 makefiles/config/configs/*.mk
+makefiles/cversion/Makefile
+makefiles/cversion/src/*.cpp
 makefiles/python/*.py
 makefiles/regression-test/common.mk
 makefiles/regression-test/TestLib.py
@@ -32,6 +34,10 @@ makefiles/regression-test/findCalls.py
 makefiles/regression-test/makeSummary.py
 makefiles/regression-test/runAll.py
 makefiles/regression-test/README.txt
+makefiles/Makefile
+makefiles/README.md
+
+README.md
 
 # this is needed for a package of development only
 # non-development builds should have a way of populating site.mk instead
@@ -127,6 +133,9 @@ zlib/Makefile
 spi_curl/Makefile
 svo/*.py
 svo/lib/*.py
+replay/config/*.svc
+replay/config/*.cfg
+replay/config/Makefile
 replay/dll/Makefile
 replay/dll/properties.mk
 replay/dll/*.h
@@ -141,12 +150,28 @@ replay/python/src/*.cpp
 replay/python/src/*.hpp
 replay/python/src/*.h
 
-# we distribute a cut-down version of the spi/Makefile
+# we use the same Makefile in the distribution
+# this was not always the case (hence the comment)
 
-dist/spi/Makefile .
+Makefile
 
 # distribution package (as example of how this works)
 # can remove this later
 
 dist/Makefile
 dist/*.man
+
+# testing
+
+test/*.c
+test/*.cpp
+test/Makefile
+test/lib/Makefile
+test/lib/*.hpp
+test/lib/src/*.cpp
+test/lib/README.txt
+test/config/Makefile
+test/config/*.svc
+test/config/*.cfg
+test/dll/Makefile
+

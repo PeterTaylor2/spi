@@ -33,7 +33,7 @@ makefiles/cversion
 
 BUILD_DIRS=$(RUNTIME_BUILD_DIRS) code-generators $(TEST_BUILD_DIRS)
 
-.PHONY: package package.zip
+.PHONY: package package.zip code-generators
 
 rstrip::
 	@for lib in $(BUILD_DIRS); do \
@@ -67,7 +67,7 @@ clean-all-runtime::
 	done
 
 clean-code-generators::
-	$(MAKE) -C code-generators config-clean
+	$(MAKE) -C code-generators clean-all
 
 build::
 ifeq ($(G_PLATFORM),win32)
@@ -125,7 +125,7 @@ vc-all-runtime:
 	done
 
 
-WIN32_COMPILERS=msvc16 msvc17 msvc18
+WIN32_COMPILERS=msvc17 msvc18
 
 win32:
 	@for compiler in $(WIN32_COMPILERS); do \

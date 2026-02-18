@@ -69,7 +69,15 @@ spi_boost/lib/spi-boost-lib.guid
 spi_curl/spi_curl.guid
 xlcall32/xlcall32.guid
 xltest/xltest.guid
+replay/config/replay-config.guid
 replay/dll/replay-dll.guid
 replay/python/replay-python.guid
 replay/python/replay-python-install.guid
 zlib/zlib.guid
+makefiles/cversion/cversion.guid
+makefiles/makefiles.guid
+test/run-all-tests.guid
+test/lib/test-inner.guid
+test/config/test-config.guid
+test/dll/test-dll.guid
+
