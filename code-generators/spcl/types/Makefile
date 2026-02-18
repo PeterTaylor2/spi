@@ -6,6 +6,7 @@ include $(U_SPI_HOME)/makefiles/config/config.mk
 U_VCXPROJ_OPTIONS=-t copy
 U_SERVICE=types
 U_TARGET_DIR=.
+U_VCPROJ=types-config
 #U_SOURCES=$(wildcard config/*.cfg)
 
 U_SPCL_OPTIONS=--noVerbatimLine --noHeaderSplit --licenseFile=../../GPL.h

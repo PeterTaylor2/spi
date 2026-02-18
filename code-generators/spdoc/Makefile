@@ -11,6 +11,7 @@ U_PYTHON_DIR=../../svo/spdoc
 U_SPCL_OPTIONS=--noGeneratedCodeNotice --noHeaderSplit --licenseFile=../../LGPL.h --optionalArgs
 U_SPPY_OPTIONS=--noGeneratedCodeNotice --licenseFile=../../LGPL.h --keywords
 U_VCXPROJ_OPTIONS=-tall
+U_VCPROJ=spdoc-config
 
 ifeq ($(DEBUG),1)
 U_SPCL_OPTIONS+=-w

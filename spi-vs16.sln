@@ -148,7 +148,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "types-config", "code-genera
 		{32D9F6A5-8CF8-43AD-8B0D-5151AC4DB686} = {32D9F6A5-8CF8-43AD-8B0D-5151AC4DB686}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "config-build", "code-generators\config-build.v16.vcxproj", "{32D9F6A5-8CF8-43AD-8B0D-5151AC4DB686}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "all-code-generators", "code-generators\all-code-generators.v16.vcxproj", "{32D9F6A5-8CF8-43AD-8B0D-5151AC4DB686}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gendep", "makefiles\gendep\gendep.v16.vcxproj", "{2F6D8B9C-0FE3-4915-828F-248E2CFB807D}"
 EndProject
