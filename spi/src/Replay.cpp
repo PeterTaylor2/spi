@@ -48,7 +48,7 @@ SPI_BEGIN_NAMESPACE
 
 void mainReplay(int argc, char* argv[])
 {
-    const char* usage = "Usage: %s [-w] [-v] [-t] [-rN] infile [outfile]";
+    const char* usage = "Usage: %s [-w] [-v] [-t] [-rN] [--loggingOptions=<loggingOptions>] infile [outfile]";
 
     std::string infilename;
     std::string outfilename;
@@ -57,8 +57,9 @@ void mainReplay(int argc, char* argv[])
     bool timings = false;
     bool verbose = false;
     int  repeats = 1;
+    std::string loggingOptions;
 
-    spi_util::CommandLine commandLine(argc, argv, "vwr=t");
+    spi_util::CommandLine commandLine(argc, argv, "vwr=t", "loggingOptions=");
     std::string opt;
     std::string val;
     while (commandLine.getOption(opt,val))
@@ -81,6 +82,11 @@ void mainReplay(int argc, char* argv[])
         if (opt == "-v")
         {
             verbose = true;
+            continue;
+        }
+        if (opt == "--loggingOptions")
+        {
+            loggingOptions = val;
             continue;
         }
         throw RuntimeError(usage, argv[0]);
@@ -123,11 +129,9 @@ void mainReplay(int argc, char* argv[])
     // names do not - this allows classes to be created in one service and
     // consumed in another which also knows that class - the same logic does
     // not apply to functions
-    //bool isLogging = false;
-    //int logLevel = 0;
     ServiceSP svc = spi::Service::CommonService();
 
-    replayLog->execute(svc, outfilename, verbose, timings);
+    replayLog->execute(svc, outfilename, verbose, timings, loggingOptions.c_str());
 }
 
 
@@ -499,7 +503,10 @@ ReplayLog::~ReplayLog()
  * ReplayLog main methods.
  */
 
-void ReplayLog::execute(const ServiceSP& svc, const std::string& logfilename, bool verbose, bool timings)
+void ReplayLog::execute(const ServiceSP& svc, const std::string& logfilename,
+    bool verbose,
+    bool timings,
+    const char* loggingOptions)
 {
     findActions();
 
@@ -510,7 +517,7 @@ void ReplayLog::execute(const ServiceSP& svc, const std::string& logfilename, bo
     std::map<std::string, double> indexTime;
 
     if (!logfilename.empty())
-        svc->start_logging(logfilename.c_str(), "");
+        svc->start_logging(logfilename.c_str(), loggingOptions);
 
     ObjectRefCacheSP cache(new ObjectRefCache());
     size_t nbActions = m_actions.size();

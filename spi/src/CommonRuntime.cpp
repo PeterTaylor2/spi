@@ -157,14 +157,16 @@ bool CommonRuntime::is_logging() const
 
 void CommonRuntime::start_logging(const char* filename, const char* options)
 {
-    // we will always use maximum accuracy - hence we ignore options at present
-    // and no longer pass them onto the ObjectTextStreamer constructor
+    // we will always use maximum accuracy unless otherwise specified
     //
-    // perhaps we could 'append' to an existing logfile as an option?
+    // one use case for specifying something else is when you have a log file
+    // that you want to replay with two versions of the software and want to
+    // avoid the noise of object references which can mess up the comparison
     stop_logging();
     m_logStream.open(filename);
     m_logStream << "# Logging starts: " << spi_util::Timestamp() << std::endl;
-    m_logger = ObjectTextStreamer::Make(ServiceConstSP(), "ACC");
+    bool hasOptions = options && *options;
+    m_logger = ObjectTextStreamer::Make(ServiceConstSP(), hasOptions ? options : "ACC");
     for (std::list<Service*>::const_iterator iter = m_allServices.begin();
          iter != m_allServices.end(); ++iter)
     {

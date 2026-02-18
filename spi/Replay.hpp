@@ -121,20 +121,45 @@ public:
     ReplayLog(const std::vector<MapConstSP>& items);
     ~ReplayLog();
 
-    /** Executes the replay log. This will essentially repeat all the functions
-        that were logged in the ReplayLog.
+    /// <summary>
+    /// Executes the replay log. This will essentially repeat all the functions
+    /// that were logged in the ReplayLog.
+    ///
+    /// If you provide the logfilename, then logging will be started in
+    /// which case the output in the logfilename should match the output
+    /// in the original file if you want to use this for regression testing.
+    /// 
+    /// However, note that you can set the logging options to change the format
+    /// of the contents of the logfilename. This might be of benefit if you
+    /// want to compare the results of replaying using two different versions
+    /// of the underlying library.
+    /// </summary>
+    /// <param name="svc">
+    /// The service object which knows how to convert maps to objects.
+    /// </param>
+    /// <param name="logfilename">
+    /// The name of a logfile - if this is not empty then a log will be
+    /// written to this file.This should be the match the original file
+    /// (unless you actively set loggingOptions to anything other than "ACC".
+    /// </param>
+    /// <param name="verbose">
+    /// When set to true, displays progress to stdout.
+    /// </param>
+    /// <param name="timings">
+    /// When set to true, some timing information is displayed to stdout.
+    /// </param>
+    /// <param name="loggingOptions">
+    /// Can be used to enable comparison between replaying the same log
+    /// with two different versions of the software by eliminating any
+    /// noise due to different object reference numbers etc.
+    /// 
+    /// Typical value might be "NOREF;LOACC"
+    /// </param>
 
-        If you provide the logfilename, then logging will be started in
-        which case the output in the logfilename should match the output
-        in the original file if you want to use this for regression testing.
-
-        @param svc
-            The service object which knows how to convert maps to objects.
-        @param logfilename
-            The name of a logfile - if this is not empty then a log will be
-            written to this file. This should be the match the original file.
-    */
-    void execute(const ServiceSP& svc, const std::string& logfilename, bool verbose = false, bool timings = false);
+    void execute(const ServiceSP& svc, const std::string& logfilename,
+        bool verbose = false,
+        bool timings = false,
+        const char* loggingOptions = "");
 
     void generateCode(ReplayCodeGenerator* generator);
 
