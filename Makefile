@@ -69,10 +69,20 @@ clean-all-runtime::
 clean-code-generators::
 	$(MAKE) -C code-generators clean-all
 
-build::
 ifeq ($(G_PLATFORM),win32)
+
+gendep::
+	@echo Building makefiles/gendep
 	@$(MAKE) -C makefiles/gendep config-install
+
+else
+
+gendep::
+
 endif
+
+build::
+	@$(MAKE) gendep
 	@$(MAKE) code-generators
 	@$(MAKE) runtime
 
