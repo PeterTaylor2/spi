@@ -19,9 +19,7 @@ U_VCPROJ_OPTIONS=-tconfig-install --cleanTarget=config-clean -j1
 
 config-info::
 	@echo G_PLATFORM=$(G_PLATFORM)
-	@echo G_CONFIG_COMPILER=$(G_CONFIG_COMPILER)
-	@echo G_CONFIG_COMPILER_BITS=$(G_CONFIG_COMPILER_BITS)
-	@echo G_CONFIG_COMPILER_ABI=$(G_CONFIG_COMPILER_ABI)
+	@echo G_ABI=$(G_ABI)
 
 ifeq ($(G_PLATFORM),win32)
 
@@ -33,15 +31,15 @@ bin/gendep.exe: $(G_BUILD_DIR)/gendep.exe
 	@cp -f $(G_BUILD_DIR)/gendep.exe bin
 
 config-build::
-	@$(MAKE) -s config-info
-	@$(MAKE) -s target  DEBUG=0 COMPILER=$(G_CONFIG_COMPILER) BITS=$(G_CONFIG_COMPILER_BITS)
+	@$(MAKE) -s config-info DEBUG=0
+	@$(MAKE) -s target DEBUG=0
 
 config-clean::
-	@$(MAKE) -s clean DEBUG=0 COMPILER=$(G_CONFIG_COMPILER) BITS=$(G_CONFIG_COMPILER_BITS)
+	@$(MAKE) -s clean DEBUG=0
 
 config-install: 
-	@$(MAKE) -s target  DEBUG=0 COMPILER=$(G_CONFIG_COMPILER) BITS=$(G_CONFIG_COMPILER_BITS)
-	@$(MAKE) -s install DEBUG=0 COMPILER=$(G_CONFIG_COMPILER) BITS=$(G_CONFIG_COMPILER_BITS)
+	@$(MAKE) -s target DEBUG=0
+	@$(MAKE) -s install DEBUG=0
 
 endif
 

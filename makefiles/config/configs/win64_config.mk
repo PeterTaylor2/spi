@@ -19,12 +19,3 @@ G_WIN32_PROGRAM_FILES:=/cygdrive/c/Program Files (x86)
 G_WIN64_PROGRAM_FILES:=/cygdrive/c/Program Files
 G_BASE_CONFIG:=win$(BITS)_$(COMPILER)
 
-# this is the compiler that we use to build the binaries that are only
-# used during the build system rather than for release
-# we used to use MSVC9 to avoid runtime library problems
-# however now we compile these binaries from source as part of the build process
-
-G_CONFIG_COMPILER?=$(G_WIN32_COMPILER)
-G_CONFIG_COMPILER_BITS?=$(G_WIN32_BITS)
-G_CONFIG_COMPILER_ABI?=Release
-
