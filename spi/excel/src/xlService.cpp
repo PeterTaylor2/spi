@@ -61,8 +61,10 @@ std::string PrefixUpper(const std::string& name, const char* sep)
 }
 
 bool g_errorPopups = false;
+bool g_timing = false;
+std::map<std::string, ExcelTimings> g_timings;
 
-}
+} // end of anonymous namespace
 
 ExcelService::ExcelService(
     const ServiceSP& service,
@@ -83,12 +85,15 @@ ExcelService::ExcelService(
     m_optionalBaseName(optionalBaseName),
     m_errNA(errNA),
     m_nsUpperCase(nsUpperCase),
-    m_timing(false),
-    m_timings()
+    m_functionPrefix()
 {
     // m_service->set_startup_directory(m_dirname);
     m_service->implement_read_cache(true);
     m_service->add_client("EXCEL");
+
+    const std::string& ns = getNamespace();
+    m_functionPrefix = (m_upperCase || m_nsUpperCase) ?
+        StringUpper(ns) + m_sep : ns + m_sep;
 }
 
 /*
@@ -679,7 +684,9 @@ void ExcelService::RegisterStandardFunctions(const std::string& xll,
             StringFormat("%s%s%s", nsReg.c_str(), m_sep, regFunc.c_str()),
             nsReg,
             args,
-            "Gets the results of timing function calls - volatile function",
+            "Gets the results of timing function calls as four columns. "
+            "Function name, number of calls, number of failures, total time. "
+            "This is a volatile function",
             help,
             false, true); // volatile
     }
@@ -1257,8 +1264,8 @@ XLOPER* ExcelService::StartTiming()
 
     try
     {
-        xlo = xloperFromBool(m_timing);
-        m_timing = true;
+        xlo = xloperFromBool(g_timing);
+        g_timing = true;
     }
     catch (ExcelInputError&)
     {
@@ -1278,8 +1285,8 @@ XLOPER* ExcelService::StopTiming()
 
     try
     {
-        xlo = xloperFromBool(m_timing);
-        m_timing = false;
+        xlo = xloperFromBool(g_timing);
+        g_timing = false;
     }
     catch (ExcelInputError&)
     {
@@ -1300,7 +1307,7 @@ XLOPER* ExcelService::ClearTimings()
     try
     {
         xlo = xloperFromBool(true);
-        m_timings.clear();
+        g_timings.clear();
     }
     catch (ExcelInputError&)
     {
@@ -1321,16 +1328,16 @@ XLOPER* ExcelService::GetTimings()
     try
     {
         // returns array with four columns: name, numCalls, numFailures, totalTime
-        if (m_timings.size() == 0)
+        if (g_timings.size() == 0)
             throw spi::RuntimeError("No functions have been timed");
 
         try
         {
             xlo = xloperMakeEmpty();
-            XLOPER* x = xloperSetArray(xlo, (int)m_timings.size(), 4, false);
+            XLOPER* x = xloperSetArray(xlo, (int)g_timings.size(), 4, false);
 
             std::map<std::string,ExcelTimings>::const_iterator iter;
-            for (iter = m_timings.begin(); iter != m_timings.end(); ++iter)
+            for (iter = g_timings.begin(); iter != g_timings.end(); ++iter)
             {
                 xloperSetString(x, iter->first);
                 ++x;
@@ -2023,12 +2030,13 @@ bool ExcelService::isLogging() const
 
 bool ExcelService::isTiming() const
 {
-    return m_timing;
+    return g_timing;
 }
 
 void ExcelService::addTiming(const std::string& name, bool failed, double time)
 {
-    ExcelTimings& timings = m_timings[name];
+    std::string fullName = m_functionPrefix + name;
+    ExcelTimings& timings = g_timings[fullName];
     timings.numCalls += 1;
     if (failed)
         timings.numFailures += 1;

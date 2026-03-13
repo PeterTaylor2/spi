@@ -240,8 +240,7 @@ private:
     bool m_optionalBaseName;
     bool m_errNA;
     bool m_nsUpperCase;
-    bool m_timing;
-    std::map<std::string, ExcelTimings> m_timings;
+    std::string m_functionPrefix;
 };
 
 class SPI_XL_IMPORT ExcelTimer
