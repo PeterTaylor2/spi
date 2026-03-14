@@ -54,25 +54,22 @@ MapClassConstSP MapClass::Make(
     const std::vector<std::string>& description,
     const std::string&              name,
     const std::string&              ns,
-    bool                            canPut,
-    bool                            uuid)
+    bool                            canPut)
 {
     return new MapClass(
-        description, name, ns, canPut, uuid);
+        description, name, ns, canPut);
 }
 
 MapClass::MapClass(
     const std::vector<std::string>& description,
     const std::string&              name,
     const std::string&              ns,
-    bool                            canPut,
-    bool                            uuid)
+    bool                            canPut)
     :
     m_description(description),
     m_name(name),
     m_ns(ns),
     m_canPut(canPut),
-    m_uuid(uuid),
     m_dataType(),
     m_doc()
 {
@@ -293,11 +290,6 @@ void MapClass::VerifyAndComplete()
 ClassConstSP MapClass::getBaseClass() const
 {
     return ClassConstSP();
-}
-
-bool MapClass::hasObjectId() const
-{
-    return m_uuid;
 }
 
 bool MapClass::byValue() const

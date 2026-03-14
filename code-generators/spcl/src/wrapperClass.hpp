@@ -67,7 +67,6 @@ public:
         bool                            canPut,
         bool                            noId,
         bool                            asValue,
-        bool                            uuid,
         bool incomplete,
         const std::string& accessorFormat,
         const std::string& propertyFormat,
@@ -158,7 +157,6 @@ protected:
         bool                            canPut,
         bool                            noId,
         bool                            asValue,
-        bool                            uuid,
         bool incomplete,
         const std::string& accessorFormat,
         const std::string& propertyFormat,
@@ -177,7 +175,6 @@ private:
     bool                               m_canPut;
     bool                               m_noId;
     bool                               m_asValue;
-    bool                               m_uuid;
     bool                               m_incomplete;
     std::string                        m_accessorFormat;
     std::string                        m_propertyFormat;
@@ -220,7 +217,6 @@ public:
     bool canPut() const { return m_canPut; }
     bool noId() const { return m_noId; }
     bool asValue() const { return m_asValue; }
-    bool uuid() const { return m_uuid; }
     const DataTypeConstSP& dataType() const { return m_dataType; }
     const std::vector<ClassAttributeConstSP>& classProperties() const { return m_classProperties; }
 

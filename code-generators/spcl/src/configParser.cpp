@@ -2485,7 +2485,6 @@ void initClassStructOptions(
     defaultOptions["noId"] = BoolConstant::Make(false);
     defaultOptions["asValue"] = BoolConstant::Make(false);
     defaultOptions["ignore"] = BoolConstant::Make(false);
-    defaultOptions["uuid"] = BoolConstant::Make(false);
     defaultOptions["constructor"] = StringConstant::Make("");
 
     if (wrapperClass)
@@ -2645,13 +2644,12 @@ void structKeywordHandler(
     bool asValue = getOption(options, "asValue")->getBool();
     bool byValue = getOption(options, "byValue")->getBool();
     bool ignore = getOption(options, "ignore")->getBool();
-    bool uuid = getOption(options, "uuid")->getBool();
     std::string constructor = getOption(options, "constructor")->getString();
 
     StructSP type = Struct::Make(
         description, name, module->moduleNamespace(), baseClass, noMake,
         getOption(options, "objectName")->getString(),
-        canPut, noId, isVirtual, asValue, uuid, byValue, false, incomplete,
+        canPut, noId, isVirtual, asValue, byValue, false, incomplete,
         constructor);
 
     // we need to register the type before parsing the contents in order to
@@ -3247,14 +3245,13 @@ void classNoWrapHandler(
     bool asValue = getOption(options, "asValue")->getBool();
     bool byValue = getOption(options, "byValue")->getBool();
     bool ignore = getOption(options, "ignore")->getBool();
-    bool uuid = getOption(options, "uuid")->getBool();
     std::string constructor = getOption(options, "constructor")->getString();
 
     StructSP type = Struct::Make(
         description, className, module->moduleNamespace(),
         baseClass, noMake,
         getOption(options, "objectName")->getString(),
-        canPut, noId, isVirtual, asValue, uuid, byValue, true, incomplete,
+        canPut, noId, isVirtual, asValue, byValue, true, incomplete,
         constructor);
 
     // we need to register the type before parsing the contents in order to
@@ -3437,7 +3434,6 @@ void classKeywordHandler(
         {
             defaultMapOptions["canPut"] = BoolConstant::Make(false);
             defaultMapOptions["ignore"] = BoolConstant::Make(false);
-            defaultMapOptions["uuid"] = BoolConstant::Make(false);
         }
         ParserOptions options;
         options = parseOptions(lexer, ";", defaultMapOptions, verbose);
@@ -3448,8 +3444,7 @@ void classKeywordHandler(
             description,
             name,
             module->moduleNamespace(),
-            getOption(options, "canPut")->getBool(),
-            getOption(options, "uuid")->getBool());
+            getOption(options, "canPut")->getBool());
 
         type->getDataType(service, ignore);
         if (!ignore)
@@ -3537,7 +3532,6 @@ void classKeywordHandler(
     bool incomplete = getIncompleteStructOrClass(lexer);
 
     bool ignore = getOption(options, "ignore")->getBool();
-    bool uuid = getOption(options, "uuid")->getBool();
     std::string sharedPtr = getOption(options, "sharedPtr")->getString();
     if (!sharedPtr.empty())
     {
@@ -3554,7 +3548,7 @@ void classKeywordHandler(
         getOption(options, "canPut")->getBool(),
         getOption(options, "noId")->getBool(),
         getOption(options, "asValue")->getBool(),
-        uuid, incomplete,
+        incomplete,
         getOption(options, "accessorFormat")->getString(),
         getOption(options, "propertyFormat")->getString(),
         constructor);

@@ -62,7 +62,6 @@ WrapperClassSP WrapperClass::Make(
     bool                            canPut,
     bool                            noId,
     bool                            asValue,
-    bool                            uuid,
     bool incomplete,
     const std::string& accessorFormat,
     const std::string& propertyFormat,
@@ -70,7 +69,7 @@ WrapperClassSP WrapperClass::Make(
 {
     return new WrapperClass(
         description, name, ns, innerClass, baseClass, isVirtual, noMake,
-        objectName, isDelegate, canPut, noId, asValue, uuid, incomplete,
+        objectName, isDelegate, canPut, noId, asValue, incomplete,
         accessorFormat, propertyFormat, constructor);
 }
 
@@ -87,7 +86,6 @@ WrapperClass::WrapperClass(
     bool                            canPut,
     bool                            noId,
     bool                            asValue,
-    bool                            uuid,
     bool incomplete,
     const std::string& accessorFormat,
     const std::string& propertyFormat,
@@ -105,7 +103,6 @@ WrapperClass::WrapperClass(
     m_canPut(canPut),
     m_noId(noId),
     m_asValue(asValue),
-    m_uuid(uuid),
     m_incomplete(incomplete),
     m_accessorFormat(accessorFormat),
     m_propertyFormat(propertyFormat),

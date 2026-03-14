@@ -60,7 +60,6 @@ StructSP Struct::Make(
     bool                            noId,
     bool                            isVirtual,
     bool                            asValue,
-    bool                            uuid,
     bool                            byValue,
     bool useAccessors,
     bool incomplete,
@@ -68,7 +67,7 @@ StructSP Struct::Make(
 {
     return new Struct(
         description, name, ns, baseClass, noMake, objectName, canPut, noId,
-        isVirtual, asValue, uuid, byValue, useAccessors, incomplete, constructor);
+        isVirtual, asValue, byValue, useAccessors, incomplete, constructor);
 }
 
 Struct::Struct(
@@ -82,7 +81,6 @@ Struct::Struct(
     bool                            noId,
     bool                            isVirtual,
     bool                            asValue,
-    bool                            uuid,
     bool                            byValue,
     bool useAccessors,
     bool incomplete,
@@ -98,7 +96,6 @@ Struct::Struct(
     m_noId(noId),
     m_isVirtual(isVirtual),
     m_asValue(asValue),
-    m_uuid(uuid),
     m_byValue(byValue),
     m_useAccessors(useAccessors),
     m_incomplete(incomplete),

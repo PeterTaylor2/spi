@@ -70,7 +70,6 @@ public:
         bool                            noId,
         bool                            isVirtual,
         bool                            asValue,
-        bool                            uuid,
         bool                            byValue,
         bool                            useAccessors,
         bool                            incomplete,
@@ -145,7 +144,6 @@ protected:
         bool                            noId,
         bool                            isVirtual,
         bool                            asValue,
-        bool                            uuid,
         bool                            byValue,
         bool useAccessors,
         bool incomplete,
@@ -162,7 +160,6 @@ private:
     bool                            m_noId;
     bool                            m_isVirtual;
     bool                            m_asValue;
-    bool                            m_uuid;
     bool                            m_byValue;
     bool                            m_useAccessors;
     bool                            m_incomplete;
@@ -206,7 +203,6 @@ public:
     bool noId() const { return m_noId; }
     bool isVirtual() const { return m_isVirtual; }
     bool asValue() const { return m_asValue; }
-    bool uuid() const { return m_uuid; }
     bool byValue() const { return m_byValue; }
     bool useAccessors() const { return m_useAccessors; }
     bool incomplete() const { return m_incomplete; }

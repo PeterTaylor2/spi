@@ -1040,7 +1040,6 @@ BaseStructConstSP BaseStruct::Make(
     bool noId,
     bool isVirtual,
     bool asValue,
-    bool uuid,
     bool byValue,
     bool useAccessors)
 {
@@ -1049,8 +1048,7 @@ BaseStructConstSP BaseStruct::Make(
   try
   {
     inner_type self = make_inner(description, name, ns, baseClass, noMake,
-        objectName, canPut, noId, isVirtual, asValue, uuid, byValue,
-        useAccessors);
+        objectName, canPut, noId, isVirtual, asValue, byValue, useAccessors);
     return Wrap(self);
   }
   catch (std::exception& e)
@@ -1070,7 +1068,6 @@ BaseStruct::inner_type BaseStruct::make_inner(
     bool o_noId,
     bool o_isVirtual,
     bool o_asValue,
-    bool o_uuid,
     bool o_byValue,
     bool o_useAccessors)
 {
@@ -1087,7 +1084,6 @@ BaseStruct::inner_type BaseStruct::make_inner(
     const bool& noId = o_noId;
     const bool& isVirtual = o_isVirtual;
     const bool& asValue = o_asValue;
-    const bool& uuid = o_uuid;
     const bool& byValue = o_byValue;
     const bool& useAccessors = o_useAccessors;
 
@@ -1096,7 +1092,7 @@ BaseStruct::inner_type BaseStruct::make_inner(
 
     ::StructSP self = ::Struct::Make(
         description, name, ns, baseClass, noMake, objectName, canPut, noId, isVirtual, asValue,
-        uuid, byValue, useAccessors, incomplete, constructor);
+        byValue, useAccessors, incomplete, constructor);
 
     SPI_POST_CONDITION(self->isAbstract());
 
@@ -1218,13 +1214,6 @@ bool BaseStruct::asValue() const
     inner_type self = get_inner();
 
     return self->asValue();
-}
-
-bool BaseStruct::uuid() const
-{
-    inner_type self = get_inner();
-
-    return self->uuid();
 }
 
 bool BaseStruct::byValue() const
@@ -1475,8 +1464,7 @@ BaseWrapperClassConstSP BaseWrapperClass::Make(
     bool noId,
     const DataTypeConstSP& dataType,
     bool asValue,
-    const std::vector<ClassPropertyConstSP>& classProperties,
-    bool uuid)
+    const std::vector<ClassPropertyConstSP>& classProperties)
 {
   SPI_PROFILE("types.BaseWrapperClass.Make");
   types_check_permission();
@@ -1484,7 +1472,7 @@ BaseWrapperClassConstSP BaseWrapperClass::Make(
   {
     inner_type self = make_inner(description, name, ns, innerClass, baseClass,
         isVirtual, noMake, objectName, isDelegate, canPut, noId, dataType,
-        asValue, classProperties, uuid);
+        asValue, classProperties);
     return Wrap(self);
   }
   catch (std::exception& e)
@@ -1507,8 +1495,7 @@ BaseWrapperClass::inner_type BaseWrapperClass::make_inner(
     bool o_noId,
     const DataTypeConstSP& o_dataType,
     bool o_asValue,
-    const std::vector<ClassPropertyConstSP>& o_classProperties,
-    bool o_uuid)
+    const std::vector<ClassPropertyConstSP>& o_classProperties)
 {
     spi_boost::intrusive_ptr< ::InnerClass const > innerClass;
     spi_boost::intrusive_ptr< ::WrapperClass const > baseClass;
@@ -1536,7 +1523,6 @@ BaseWrapperClass::inner_type BaseWrapperClass::make_inner(
     const bool& canPut = o_canPut;
     const bool& noId = o_noId;
     const bool& asValue = o_asValue;
-    const bool& uuid = o_uuid;
 
     bool incomplete = false;
     std::string accessorFormat;
@@ -1545,7 +1531,7 @@ BaseWrapperClass::inner_type BaseWrapperClass::make_inner(
 
     ::WrapperClassSP self = ::WrapperClass::Make(
         description, name, ns, innerClass, baseClass, isVirtual,
-        noMake, objectName, isDelegate, canPut, noId, asValue, uuid,
+        noMake, objectName, isDelegate, canPut, noId, asValue,
         incomplete, accessorFormat, propertyFormat, constructor);
 
     SPI_POST_CONDITION(self->isAbstract());
@@ -1722,13 +1708,6 @@ std::vector< spi_boost::intrusive_ptr< ::ClassAttribute const > > BaseWrapperCla
 {
     BaseWrapperClass::inner_type self = o->get_inner();
     return self->classProperties();
-}
-
-bool BaseWrapperClass::uuid() const
-{
-    inner_type self = get_inner();
-
-    return self->uuid();
 }
 
 /*

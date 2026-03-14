@@ -1231,7 +1231,6 @@ void BaseStruct::to_map(
     bool noId = this->noId();
     bool isVirtual = this->isVirtual();
     bool asValue = this->asValue();
-    bool uuid = this->uuid();
     bool byValue = this->byValue();
     bool useAccessors = this->useAccessors();
 
@@ -1247,7 +1246,6 @@ void BaseStruct::to_map(
         obj_map->SetBool("noId", noId);
         obj_map->SetBool("isVirtual", isVirtual);
         obj_map->SetBool("asValue", asValue, !public_only && (asValue == false));
-        obj_map->SetBool("uuid", uuid, !public_only && (uuid == false));
         obj_map->SetBool("byValue", byValue, !public_only && (byValue == false));
         obj_map->SetBool("useAccessors", useAccessors, !public_only && (useAccessors == false));
     }
@@ -1277,16 +1275,13 @@ spi::ObjectConstSP BaseStruct::object_from_map(
         = obj_map->GetBool("isVirtual", true, false);
     bool asValue
         = obj_map->GetBool("asValue", true, false);
-    bool uuid
-        = obj_map->GetBool("uuid", true, false);
     bool byValue
         = obj_map->GetBool("byValue", true, false);
     bool useAccessors
         = obj_map->GetBool("useAccessors", true, false);
 
     return BaseStruct::Make(description, name, ns, baseClass, noMake,
-        objectName, canPut, noId, isVirtual, asValue, uuid, byValue,
-        useAccessors);
+        objectName, canPut, noId, isVirtual, asValue, byValue, useAccessors);
 }
 
 SPI_IMPLEMENT_OBJECT_TYPE(BaseStruct, "BaseStruct", types_service, false, 0);
@@ -1315,22 +1310,20 @@ spi::Value BaseStruct_caller(
         in_context->ValueToBool(in_values[8], true, false);
     bool asValue =
         in_context->ValueToBool(in_values[9], true, false);
-    bool uuid =
-        in_context->ValueToBool(in_values[10], true, false);
     bool byValue =
-        in_context->ValueToBool(in_values[11], true, false);
+        in_context->ValueToBool(in_values[10], true, false);
     bool useAccessors =
-        in_context->ValueToBool(in_values[12], true, false);
+        in_context->ValueToBool(in_values[11], true, false);
 
     const BaseStructConstSP& o_result = types::BaseStruct::Make(description,
         name, ns, baseClass, noMake, objectName, canPut, noId, isVirtual,
-        asValue, uuid, byValue, useAccessors);
+        asValue, byValue, useAccessors);
     return spi::ObjectConstSP(o_result);
 }
 
 spi::FunctionCaller BaseStruct_FunctionCaller = {
     "BaseStruct",
-    13,
+    12,
     {
         {"description", spi::ArgType::STRING, "string", true, false, false},
         {"name", spi::ArgType::STRING, "string", false, false, false},
@@ -1342,7 +1335,6 @@ spi::FunctionCaller BaseStruct_FunctionCaller = {
         {"noId", spi::ArgType::BOOL, "bool", false, true, false},
         {"isVirtual", spi::ArgType::BOOL, "bool", false, true, false},
         {"asValue", spi::ArgType::BOOL, "bool", false, true, false},
-        {"uuid", spi::ArgType::BOOL, "bool", false, true, false},
         {"byValue", spi::ArgType::BOOL, "bool", false, true, false},
         {"useAccessors", spi::ArgType::BOOL, "bool", false, true, false}
     },
@@ -1627,7 +1619,6 @@ void BaseWrapperClass::to_map(
     const DataTypeConstSP& dataType = this->dataType();
     bool asValue = this->asValue();
     const std::vector<ClassPropertyConstSP>& classProperties = this->classProperties();
-    bool uuid = this->uuid();
 
     if (!public_only)
     {
@@ -1645,7 +1636,6 @@ void BaseWrapperClass::to_map(
         obj_map->SetObject("dataType", dataType);
         obj_map->SetBool("asValue", asValue, !public_only && (asValue == false));
         obj_map->SetInstanceVector<ClassProperty const>("classProperties", classProperties, !public_only && (classProperties.size() == 0));
-        obj_map->SetBool("uuid", uuid, !public_only && (uuid == false));
     }
 }
 
@@ -1681,12 +1671,10 @@ spi::ObjectConstSP BaseWrapperClass::object_from_map(
         = obj_map->GetBool("asValue", true, false);
     const std::vector<ClassPropertyConstSP>& classProperties
         = obj_map->GetInstanceVector<ClassProperty const>("classProperties", value_to_object);
-    bool uuid
-        = obj_map->GetBool("uuid", true, false);
 
     return BaseWrapperClass::Make(description, name, ns, innerClass, baseClass,
         isVirtual, noMake, objectName, isDelegate, canPut, noId, dataType,
-        asValue, classProperties, uuid);
+        asValue, classProperties);
 }
 
 SPI_IMPLEMENT_OBJECT_TYPE(BaseWrapperClass, "BaseWrapperClass", types_service, false, 0);
@@ -1723,19 +1711,17 @@ spi::Value BaseWrapperClass_caller(
         in_context->ValueToBool(in_values[12], true, false);
     std::vector<ClassPropertyConstSP> classProperties =
         in_context->ValueToInstanceVector<ClassProperty const>(in_values[13]);
-    bool uuid =
-        in_context->ValueToBool(in_values[14], true, false);
 
     const BaseWrapperClassConstSP& o_result = types::BaseWrapperClass::Make(
         description, name, ns, innerClass, baseClass, isVirtual, noMake,
         objectName, isDelegate, canPut, noId, dataType, asValue,
-        classProperties, uuid);
+        classProperties);
     return spi::ObjectConstSP(o_result);
 }
 
 spi::FunctionCaller BaseWrapperClass_FunctionCaller = {
     "BaseWrapperClass",
-    15,
+    14,
     {
         {"description", spi::ArgType::STRING, "string", true, false, false},
         {"name", spi::ArgType::STRING, "string", false, false, false},
@@ -1750,8 +1736,7 @@ spi::FunctionCaller BaseWrapperClass_FunctionCaller = {
         {"noId", spi::ArgType::BOOL, "bool", false, true, false},
         {"dataType", spi::ArgType::OBJECT, "DataType", false, false, false},
         {"asValue", spi::ArgType::BOOL, "bool", false, true, false},
-        {"classProperties", spi::ArgType::OBJECT, "ClassProperty", true, false, false},
-        {"uuid", spi::ArgType::BOOL, "bool", false, true, false}
+        {"classProperties", spi::ArgType::OBJECT, "ClassProperty", true, false, false}
     },
     BaseWrapperClass_caller
 };

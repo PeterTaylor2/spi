@@ -51,8 +51,7 @@ public:
         const std::vector<std::string>& description,
         const std::string&              name,
         const std::string&              ns,
-        bool                            canPut,
-        bool                            uuid);
+        bool                            canPut);
 
     // re-implementation of Construct
     //void declareInner(
@@ -100,7 +99,6 @@ public:
     const DataTypeConstSP& getDataType(const ServiceDefinitionSP& svc, bool ignored) const;
     ClassConstSP getBaseClass() const;
     std::vector<CoerceFromConstSP> getCoerceFrom() const;
-    bool hasObjectId() const;
     bool byValue() const;
 
     std::vector<AttributeConstSP> AllAttributes() const;
@@ -110,15 +108,13 @@ protected:
         const std::vector<std::string>& description,
         const std::string&              name,
         const std::string&              ns,
-        bool                            canPut,
-        bool                            uuid);
+        bool                            canPut);
 
 private:
     std::vector<std::string> m_description;
     std::string              m_name;
     std::string              m_ns;
     bool                     m_canPut;
-    bool                     m_uuid;
 
     void VerifyAndComplete();
 

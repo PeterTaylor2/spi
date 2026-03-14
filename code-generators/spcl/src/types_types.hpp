@@ -568,7 +568,6 @@ public:
         bool noId,
         bool isVirtual,
         bool asValue,
-        bool uuid,
         bool byValue,
         bool useAccessors);
 
@@ -604,7 +603,6 @@ private:
         bool noId,
         bool isVirtual,
         bool asValue,
-        bool uuid,
         bool byValue,
         bool useAccessors);
 
@@ -619,7 +617,6 @@ private:
     bool noId() const;
     bool isVirtual() const;
     bool asValue() const;
-    bool uuid() const;
     bool byValue() const;
     bool useAccessors() const;
 
@@ -732,8 +729,7 @@ public:
         bool noId,
         const DataTypeConstSP& dataType,
         bool asValue,
-        const std::vector<ClassPropertyConstSP>& classProperties,
-        bool uuid);
+        const std::vector<ClassPropertyConstSP>& classProperties);
 
     typedef spi::ObjectSmartPtr<BaseWrapperClass> outer_type; 
 
@@ -770,8 +766,7 @@ private:
         bool noId,
         const DataTypeConstSP& dataType,
         bool asValue,
-        const std::vector<ClassPropertyConstSP>& classProperties,
-        bool uuid);
+        const std::vector<ClassPropertyConstSP>& classProperties);
 
     /* private accessor methods */
     std::vector<std::string> description() const;
@@ -788,7 +783,6 @@ private:
     DataTypeConstSP dataType() const;
     bool asValue() const;
     std::vector<ClassPropertyConstSP> classProperties() const;
-    bool uuid() const;
 
     /* shared pointer to implementation */
     spi_boost::intrusive_ptr< ::WrapperClass const > inner_value;
