@@ -2486,6 +2486,7 @@ void initClassStructOptions(
     defaultOptions["asValue"] = BoolConstant::Make(false);
     defaultOptions["ignore"] = BoolConstant::Make(false);
     defaultOptions["constructor"] = StringConstant::Make("");
+    defaultOptions["constructorCache"] = IntConstant::Make(0);
 
     if (wrapperClass)
     {
@@ -2503,6 +2504,7 @@ void initClassStructOptions(
 void addConstructorFunction(
     const ClassSP& cls,
     const std::string& constructor,
+    int constructorCache,
     ModuleDefinitionSP& module,
     ServiceDefinitionSP& svc,
     bool verbose)
@@ -2530,7 +2532,6 @@ void addConstructorFunction(
     bool noLog = false;
     bool noConvert = true;
     std::vector<std::string> excelOptions; // we don't know whether this is slow or not
-    int cacheSize = 0;
 
     std::ostringstream code;
     code << "    return " << cls->getName(true, "::") << "::Make(";
@@ -2560,7 +2561,7 @@ void addConstructorFunction(
         noLog,
         noConvert,
         excelOptions,
-        cacheSize,
+        constructorCache,
         optionalReturnType);
 
     module->addConstruct(func);
@@ -2645,6 +2646,7 @@ void structKeywordHandler(
     bool byValue = getOption(options, "byValue")->getBool();
     bool ignore = getOption(options, "ignore")->getBool();
     std::string constructor = getOption(options, "constructor")->getString();
+    int constructorCache = getOption(options, "constructorCache")->getInt();
 
     StructSP type = Struct::Make(
         description, name, module->moduleNamespace(), baseClass, noMake,
@@ -2785,7 +2787,8 @@ void structKeywordHandler(
         module->addConstruct(type);
         if (!constructor.empty())
         {
-            addConstructorFunction(type, constructor, module, service, verbose);
+            addConstructorFunction(type, constructor, constructorCache,
+                module, service, verbose);
         }
         const std::vector<FunctionConstSP>& classFunctions = type->classFunctions();
         for (size_t i = 0; i < classFunctions.size(); ++i)
@@ -3246,6 +3249,7 @@ void classNoWrapHandler(
     bool byValue = getOption(options, "byValue")->getBool();
     bool ignore = getOption(options, "ignore")->getBool();
     std::string constructor = getOption(options, "constructor")->getString();
+    int constructorCache = getOption(options, "constructorCache")->getInt();
 
     StructSP type = Struct::Make(
         description, className, module->moduleNamespace(),
@@ -3370,7 +3374,8 @@ void classNoWrapHandler(
         module->addConstruct(type);
         if (!constructor.empty())
         {
-            addConstructorFunction(type, constructor, module, service, verbose);
+            addConstructorFunction(type, constructor, constructorCache,
+                module, service, verbose);
         }
         const std::vector<FunctionConstSP>& classFunctions = type->classFunctions();
         for (size_t i = 0; i < classFunctions.size(); ++i)
@@ -3539,6 +3544,8 @@ void classKeywordHandler(
     }
 
     std::string constructor = getOption(options, "constructor")->getString();
+    int constructorCache = getOption(options, "constructorCache")->getInt();
+
     WrapperClassSP type = WrapperClass::Make(
         description, name, module->moduleNamespace(), innerClass,
         baseWrapperClass, isVirtual,
@@ -3782,7 +3789,8 @@ void classKeywordHandler(
         module->addConstruct(type);
         if (!constructor.empty())
         {
-            addConstructorFunction(type, constructor, module, service, verbose);
+            addConstructorFunction(type, constructor, constructorCache,
+                module, service, verbose);
         }
         const std::vector<FunctionConstSP>& classFunctions = type->classFunctions();
         for (size_t i = 0; i < classFunctions.size(); ++i)
