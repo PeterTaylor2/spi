@@ -89,7 +89,7 @@ build::
 all::
 	@$(MAKE) build
 	echo Building spi-user-guide
-	@$(MAKE) -C config/spcl doc
+	@$(MAKE) -C code-generators/spcl doc
 
 clean::
 	@$(MAKE) clean-code-generators
