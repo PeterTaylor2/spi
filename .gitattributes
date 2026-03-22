@@ -4,3 +4,9 @@ Makefile text eol=lf
 *.vcxproj text eol=crlf
 *.vcxproj.filters test eol=crlf
 *.sln text eol=crlf
+
+# git is a nightmare with line endings
+# the authors of git should be ashamed of themselves
+
+* -crlf
+

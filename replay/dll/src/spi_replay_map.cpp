@@ -151,6 +151,7 @@ ValueType ValueType_convert_out(SPI_NAMESPACE::Value::Type v_)
 std::string MapClassName(
     const spi::MapObjectSP& m)
 {
+  spi::AddRecord("spi_replay.MapClassName");
   SPI_PROFILE("spi_replay.MapClassName");
   bool isLogging = replay_begin_function(true);
   try
@@ -179,6 +180,7 @@ std::string MapClassName_Helper(
 std::vector<std::string> MapFieldNames(
     const spi::MapObjectSP& m)
 {
+  spi::AddRecord("spi_replay.MapFieldNames");
   SPI_PROFILE("spi_replay.MapFieldNames");
   bool isLogging = replay_begin_function(true);
   try
@@ -207,6 +209,7 @@ std::vector<std::string> MapFieldNames_Helper(
 int MapRef(
     const spi::MapObjectSP& m)
 {
+  spi::AddRecord("spi_replay.MapRef");
   SPI_PROFILE("spi_replay.MapRef");
   bool isLogging = replay_begin_function(true);
   try
@@ -246,6 +249,7 @@ void MapGetValue(
     spi::Variant& value,
     ValueType& valueType)
 {
+  spi::AddRecord("spi_replay.MapGetValue");
   SPI_PROFILE("spi_replay.MapGetValue");
   bool isLogging = replay_begin_function(true);
   try

@@ -337,6 +337,7 @@ void Function::implement(
 
     ostr << "\n"
         << "{\n"
+        << "  spi::AddRecord(\"" << svc->getNamespace() << "." << fullName() << "\");\n"
         << "  SPI_PROFILE(\"" << svc->getNamespace() << "." << fullName() << "\");\n";
 
     if (sessionLogging())

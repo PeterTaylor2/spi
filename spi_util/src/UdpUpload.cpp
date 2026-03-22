@@ -1,0 +1,338 @@
+/*
+
+    Sartorial Programming Interface (SPI) runtime libraries
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+    USA
+
+*/
+
+#include "../UdpUpload.hpp"
+#include "../CSV.hpp"
+#include "../RuntimeError.hpp"
+#include "../JSON.hpp"
+
+#undef SPI_UTIL_CLOCK_EVENTS
+#include "ClockUtil.hpp"
+
+#undef DEBUG_LOGGING
+#ifdef DEBUG_LOGGING
+#include <iostream>
+#endif
+
+#include <sstream>
+
+#ifdef _MSC_VER
+
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
+#include <winsock2.h>
+
+#else
+
+#include <unistd.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+
+#endif
+
+#include <string.h>
+
+#if false
+#include "CurlUtil.hpp"
+#endif
+
+#define BEGIN_ANONYMOUS_NAMESPACE namespace {
+#define END_ANONYMOUS_NAMESPACE }
+
+SPI_UTIL_NAMESPACE
+
+BEGIN_ANONYMOUS_NAMESPACE
+
+#if false
+
+// we will be re-implementing this using the socket API instead of libcurl
+
+struct UploadData
+{
+    const char* data;
+    size_t len;
+    size_t pos;
+};
+
+size_t read_callback(char* buffer, size_t size, size_t nitems, void* userdata)
+{
+    UploadData* up = (UploadData*)userdata;
+
+    size_t max = size * nitems;
+    size_t remaining = up->len - up->pos;
+    size_t to_copy = remaining < max ? remaining : max;
+    if (to_copy > 0)
+    {
+        memcpy(buffer, up->data + up->pos, to_copy);
+        up->pos += to_copy;
+        return to_copy;
+    }
+    return 0; // no more data
+}
+#endif
+
+#ifdef _MSC_VER
+
+void errorHandler(const char* errmsg)
+{
+    int errorCode = WSAGetLastError();
+    WSACleanup();
+    SPI_UTIL_THROW_RUNTIME_ERROR(errmsg << " with error " << errorCode);
+}
+
+#endif
+
+END_ANONYMOUS_NAMESPACE
+
+void UDPUpload(const std::string& serverName, int serverPort, const std::string& data)
+{
+#if true
+    SPI_UTIL_THROW_RUNTIME_ERROR("UDPUpload is disabled for now - needs to be re-implemented using the socket API instead of libcurl");
+#else
+    if (serverName.empty() || serverPort == 0 || data.empty())
+        return;
+
+    // libcurl read callback that feeds data from the string
+    struct UploadData upload({ data.c_str(), data.size(), 0 });
+
+    InitializeCURL();
+
+    // Initialize libcurl and perform an UDP upload to the configured server/port
+    CURL* curl = curl_easy_init();
+    if (curl)
+    {
+        std::string url = "udp://" + serverName + ":" + std::to_string(serverPort);
+        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+        curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
+        curl_easy_setopt(curl, CURLOPT_READFUNCTION, read_callback);
+        curl_easy_setopt(curl, CURLOPT_READDATA, &upload);
+        curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)upload.len);
+
+        // Perform the transfer. Ignore errors silently here.
+        CURLcode res = curl_easy_perform(curl);
+        (void)res;
+
+        curl_easy_cleanup(curl);
+    }
+#endif
+}
+
+void UDPUploadCSV(
+    const std::string& serverName,
+    int serverPort,
+    const csv::Data* data)
+{
+    if (serverName.empty() || serverPort == 0 || !data || data->numRows() == 0)
+        return;
+
+#ifdef _MSC_VER
+    {
+        WSADATA wsaData;
+        SOCKET sendingSocket;
+        SOCKADDR_IN recvAddress;
+
+        // Initialize Winsock version 2.2
+
+        if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
+        {
+            errorHandler("WSAStartup failed");
+        }
+
+        // Create a new socket to receive datagrams on.
+
+        sendingSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+
+        if (sendingSocket == INVALID_SOCKET)
+        {
+            errorHandler("Could not create socket");
+        }
+
+        recvAddress.sin_family = AF_INET;
+        recvAddress.sin_port = htons(serverPort);
+        recvAddress.sin_addr.s_addr = inet_addr(serverName.c_str());
+
+        // send one line at a time - each line has seven columns and none of these should be too long
+        size_t NR = data->numRows();
+
+        for (size_t i = 0; i < NR; ++i)
+        {
+            std::ostringstream os;
+            csv::WriteLine(os, data->row(i));
+            std::string line = os.str();
+
+            int sent = sendto(sendingSocket, line.c_str(), (int)line.size(), 0, (SOCKADDR*)&recvAddress, sizeof(recvAddress));
+        }
+
+        if (closesocket(sendingSocket) != 0)
+        {
+            errorHandler("closesocket failed");
+        }
+
+        if (WSACleanup() != 0)
+        {
+            errorHandler("WSACleanup failed");
+        }
+    }
+#else
+    {
+        struct sockaddr_in recvAddress;
+
+        // Create UDP socket
+        int sendingSocket = socket(AF_INET, SOCK_DGRAM, 0);
+        if (sendingSocket < 0)
+        {
+            SPI_UTIL_THROW_RUNTIME_ERROR("socket creation failed");
+        }
+
+        memset(&recvAddress, 0, sizeof(recvAddress));
+
+        // Fill server address info
+        recvAddress.sin_family = AF_INET;
+        recvAddress.sin_port = htons(serverPort);
+        recvAddress.sin_addr.s_addr = inet_addr(serverName.c_str());
+
+        // send one line at a time - each line has seven columns and none of these should be too long
+        size_t NR = data->numRows();
+
+        for (size_t i = 0; i < NR; ++i)
+        {
+            std::ostringstream os;
+            csv::WriteLine(os, data->row(i));
+            std::string line = os.str();
+
+            int sent = sendto(sendingSocket, line.c_str(), line.size(), 0,
+                (const struct sockaddr*)&recvAddress, sizeof(recvAddress));
+        }
+
+        // Close socket
+        close(sendingSocket);
+    }
+
+#endif
+
+}
+
+void UDPUploadJSON(
+    const std::string& serverName,
+    int serverPort,
+    const std::vector<JSONValue>& jsonValues)
+{
+    if (serverName.empty() || serverPort == 0 || jsonValues.size() == 0)
+        return;
+
+#ifdef _MSC_VER
+    {
+        WSADATA wsaData;
+        SOCKET sendingSocket;
+        SOCKADDR_IN recvAddress;
+
+        // Initialize Winsock version 2.2
+
+        if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
+        {
+            errorHandler("WSAStartup failed");
+        }
+
+        // Create a new socket to receive datagrams on.
+
+        sendingSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+
+        if (sendingSocket == INVALID_SOCKET)
+        {
+            errorHandler("Could not create socket");
+        }
+
+        recvAddress.sin_family = AF_INET;
+        recvAddress.sin_port = htons(serverPort);
+        recvAddress.sin_addr.s_addr = inet_addr(serverName.c_str());
+
+        // send one line at a time - assume that each line is fairly short as it is a single JSON value
+        size_t NR = jsonValues.size();
+
+        for (size_t i = 0; i < NR; ++i)
+        {
+            std::ostringstream os;
+            JSONValueToStream(os, jsonValues[i], true, 0);
+            std::string line = os.str();
+
+#ifdef DEBUG_LOGGING
+            std::cout << line << std::endl;
+#endif
+
+            int sent = sendto(sendingSocket, line.c_str(), (int)line.size(), 0, (SOCKADDR*)&recvAddress, sizeof(recvAddress));
+        }
+
+        if (closesocket(sendingSocket) != 0)
+        {
+            errorHandler("closesocket failed");
+        }
+
+        if (WSACleanup() != 0)
+        {
+            errorHandler("WSACleanup failed");
+        }
+    }
+#else
+    {
+        struct sockaddr_in recvAddress;
+
+        // Create UDP socket
+        int sendingSocket = socket(AF_INET, SOCK_DGRAM, 0);
+        if (sendingSocket < 0)
+        {
+            SPI_UTIL_THROW_RUNTIME_ERROR("socket creation failed");
+        }
+
+        memset(&recvAddress, 0, sizeof(recvAddress));
+
+        // Fill server address info
+        recvAddress.sin_family = AF_INET;
+        recvAddress.sin_port = htons(serverPort);
+        recvAddress.sin_addr.s_addr = inet_addr(serverName.c_str());
+
+        // send one line at a time - assume that each line is fairly short as it is a single JSON value
+        size_t NR = jsonValues.size();
+
+        for (size_t i = 0; i < NR; ++i)
+        {
+            std::ostringstream os;
+            JSONValueToStream(os, jsonValues[i], true, 0);
+            std::string line = os.str();
+
+#ifdef DEBUG_LOGGING
+            std::cout << "Sending " << line << std::endl;
+#endif
+
+            int sent = sendto(sendingSocket, line.c_str(), line.size(), 0,
+                (const struct sockaddr*)&recvAddress, sizeof(recvAddress));
+        }
+
+        // Close socket
+        close(sendingSocket);
+    }
+
+#endif
+
+}
+
+SPI_UTIL_END_NAMESPACE
+
+

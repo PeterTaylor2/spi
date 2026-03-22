@@ -21,7 +21,7 @@ else
 U_EXCLUDE_OBJS=uuid4.$(G_OBJ)
 endif
 
-U_EXCLUDE_OBJS+=UrlRead.$(G_OBJ)
+U_EXCLUDE_OBJS+=UrlRead.$(G_OBJ) UdpUpload.$(G_OBJ) CurlUtil.$(G_OBJ)
 
 include ../extra_objects.mk
 

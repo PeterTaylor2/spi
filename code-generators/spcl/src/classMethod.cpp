@@ -456,6 +456,8 @@ void ClassMethod::implement(
 
         ostr << "{";
         ostr << "    " << svc->getName() << "_check_permission();\n";
+        ostr << "  spi::AddRecord(\"" << svc->getNamespace() << "." << classType->name()
+            << "." << m_function->fullName() << "\");\n";
         ostr << "    SPI_PROFILE(\"" << svc->getNamespace() << "." << classType->name()
             << "." << m_function->fullName() << "\");\n";
 

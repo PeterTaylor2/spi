@@ -63,6 +63,7 @@
 #include "MapObject.hpp"
 #include "SHA.hpp"
 #include "Profile.hpp"
+#include "Recording.hpp"
 #include <spi_util/Utils.hpp>
 #include <spi_util/LRUCache.hpp>
 

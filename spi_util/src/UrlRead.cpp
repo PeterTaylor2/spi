@@ -41,6 +41,8 @@
 #include "JSONParser.hpp"
 #include "Utils.hpp"
 
+#include "CurlUtil.hpp"
+
 #undef SPI_UTIL_CLOCK_EVENTS
 #include "ClockUtil.hpp"
 
@@ -165,35 +167,6 @@ static size_t header_callback(char* ptr, size_t size, size_t n, void* user)
     return consume;
 }
 
-static void errorHandler(CURLcode status)
-{
-    if (status != CURLE_OK)
-    {
-        throw RuntimeError("CURL error: %d: %s",
-            (int)status,
-            curl_easy_strerror(status));
-    }
-}
-
-// designed to manage global initialisation and tidy-up of the CURL library
-struct GlobalInit
-{
-    GlobalInit()
-    {
-        errorHandler(curl_global_init(CURL_GLOBAL_ALL));
-    }
-
-    ~GlobalInit()
-    {
-        curl_global_cleanup();
-    }
-
-private:
-    GlobalInit(const GlobalInit&);
-    GlobalInit& operator=(const GlobalInit&);
-};
-
-spi_boost::shared_ptr<GlobalInit> GlobalInitialisation;
 
 void URLReadContentsData(
     Data& data,
@@ -209,8 +182,7 @@ void URLReadContentsData(
 
     LinkedList headers;
 
-    if (!GlobalInitialisation)
-        GlobalInitialisation.reset(new GlobalInit());
+    InitializeCURL();
 
     CURL* handle = curl_easy_init();
     spi_boost::shared_ptr<CURL> spHandle(handle, curl_easy_cleanup);
@@ -352,8 +324,7 @@ JSONMapConstSP URLReadContentsJSON(
 
 std::string URLEscape(const std::string& url)
 {
-    if (!GlobalInitialisation)
-        GlobalInitialisation.reset(new GlobalInit());
+    InitializeCURL();
 
     CURL* handle = curl_easy_init();
 
