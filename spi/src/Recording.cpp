@@ -58,6 +58,8 @@
 #endif
 #endif
 
+#include <ctype.h>
+
 #include <spi_util/Utils.hpp>
 #include <spi_util/StringUtil.hpp>
 #include <spi_util/UserInfo.hpp>
@@ -72,6 +74,7 @@ namespace
 {
     bool g_recording = false;
     int g_intervalMinutes = 0;
+    std::string g_serverIP;
     std::string g_serverName;
     int g_serverPort = 0;
     std::string g_dnLocal;
@@ -89,7 +92,7 @@ namespace
 
 #ifdef DEBUG_LOGGING
         std::cout << "Writing " << records.size() << " records to "
-            << g_serverName << ":" << g_serverPort << std::endl;
+            << g_serverName << "(" << g_serverIP << ")" << ":" << g_serverPort << std::endl;
 #endif
 
 
@@ -135,7 +138,7 @@ namespace
         }
 
         // copy globals to locals early to avoid races with a detached writer thread
-        std::string serverName = g_serverName;
+        std::string serverIP = g_serverIP;
         int serverPort = g_serverPort;
         std::string dnLocal = g_dnLocal;
 
@@ -143,9 +146,9 @@ namespace
         SPI_UTIL_LOCAL_LOCK;
 
 #ifndef SPI_STATIC
-        if (!serverName.empty())
+        if (!serverIP.empty())
         {
-            spi_util::UDPUploadJSON(g_serverName, g_serverPort, jsonValues);
+            spi_util::UDPUploadJSON(g_serverIP, g_serverPort, jsonValues);
         }
 #endif
 
@@ -179,6 +182,16 @@ void StartRecording(int intervalMinutes, const std::string& serverName, int serv
         g_nextRecordTime = g_nextRecordTime.Add(TimeDelta(0, 60 * intervalMinutes));
 
     g_records.clear();
+
+#ifndef SPI_STATIC
+    if (isdigit(g_serverName[0]))
+        g_serverIP = g_serverName;
+    else
+        g_serverIP = spi_util::UDPGetHostByName(g_serverName);
+#else
+    g_serverIP = g_serverName;
+#endif
+
 }
 
 void StopRecording()

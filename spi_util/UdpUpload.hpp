@@ -54,6 +54,9 @@ void UDPUploadJSON(
     int serverPort,
     const std::vector<JSONValue>& jsonValues);
 
+SPI_UTIL_IMPORT
+std::string UDPGetHostByName(const std::string& name);
+
 SPI_UTIL_END_NAMESPACE
 
 #endif

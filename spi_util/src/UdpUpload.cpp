@@ -45,6 +45,8 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <sys/types.h>
+#include <netdb.h>
 
 #endif
 
@@ -332,6 +334,53 @@ void UDPUploadJSON(
 #endif
 
 }
+
+std::string UDPGetHostByName(const std::string& name)
+{
+    if (name.empty())
+        return std::string();
+
+#ifdef _MSC_VER
+    WSADATA wsaData;
+    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
+        return std::string();
+
+    struct hostent* host = gethostbyname(name.c_str());
+    std::string result;
+    if (host && host->h_addr_list && host->h_addr_list[0])
+    {
+        in_addr addr;
+        memcpy(&addr, host->h_addr_list[0], sizeof(in_addr));
+        // inet_ntoa returns a pointer to a statically allocated buffer; copy it.
+        result = inet_ntoa(addr);
+    }
+
+    WSACleanup();
+    return result;
+#else
+    struct addrinfo hints;
+    struct addrinfo* res = nullptr;
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_INET; // prefer IPv4 for UDP uploads in this codebase
+
+    if (getaddrinfo(name.c_str(), nullptr, &hints, &res) != 0)
+        return std::string();
+
+    std::string result;
+    if (res && res->ai_addr)
+    {
+        char ipstr[INET_ADDRSTRLEN];
+        struct sockaddr_in* sa = (struct sockaddr_in*)res->ai_addr;
+        if (inet_ntop(AF_INET, &sa->sin_addr, ipstr, sizeof(ipstr)))
+            result = ipstr;
+    }
+
+    freeaddrinfo(res);
+    return result;
+#endif
+}
+
+
 
 SPI_UTIL_END_NAMESPACE
 
