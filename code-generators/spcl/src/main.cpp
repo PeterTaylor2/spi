@@ -128,7 +128,7 @@ int main(int argc, char* argv[])
     std::string exe("SPCL");
     const char* longOptions = "allHeader noVerbatimLine noHeaderSplit noTidyup"
         " noGeneratedCodeNotice sortSummary version= optionalArgs license outputDir="
-        " sessionLogging licenseFile= backup checkNonNull";
+        " sessionLogging licenseFile= backup checkNonNull recording";
 
     try
     {
@@ -226,6 +226,10 @@ int main(int argc, char* argv[])
             else if (opt == "--checkNonNull")
             {
                 options.checkNonNull = true;
+            }
+            else if (opt == "--recording")
+            {
+                options.recording = true;
             }
             else
             {

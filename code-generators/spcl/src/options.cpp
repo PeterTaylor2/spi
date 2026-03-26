@@ -30,7 +30,8 @@ Options::Options()
     sessionLogging(false),
     license(),
     writeBackup(false),
-    checkNonNull(false)
+    checkNonNull(false),
+    recording(false)
 {
 }
 

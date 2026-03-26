@@ -132,7 +132,8 @@ void MapClass::declareHelper(
 void MapClass::implement(
     GeneratedOutput& ostr,
     const ServiceDefinitionSP& svc,
-    bool types) const
+    bool types,
+    bool recording) const
 {
     // we put the constructor into the regular stream
     // we put the object functions into the helper stream

@@ -592,7 +592,8 @@ void WrapperClass::declareHelper(
 void WrapperClass::implement(
     GeneratedOutput& ostr,
     const ServiceDefinitionSP& svc,
-    bool types) const
+    bool types,
+    bool recording) const
 {
     writeStartCommentBlock(ostr);
     ostr << "* Implementation of " << m_name << "\n";
@@ -1027,7 +1028,7 @@ void WrapperClass::implement(
     // innerClass->fullTypeName includes const which we don't want here
     std::string innerClassName = m_innerClass->m_ns + "::" + m_innerClass->m_typeName;
     for (size_t i = 0; i < m_methods.size(); ++i)
-        m_methods[i]->implement(ostr, m_dataType, m_name, innerClassName, types, svc);
+        m_methods[i]->implement(ostr, m_dataType, m_name, innerClassName, types, svc, false, recording);
 
     for (size_t i = 0; i < m_classAttributes.size(); ++i)
     {

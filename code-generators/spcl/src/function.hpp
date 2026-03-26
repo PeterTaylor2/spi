@@ -84,7 +84,8 @@ public:
 
     void implement(GeneratedOutput& ostr,
                    const ServiceDefinitionSP& svc,
-                   bool types) const;
+                   bool types,
+                   bool recording) const override;
 
     void implementHelper(GeneratedOutput& ostr,
                          const ServiceDefinitionSP& svc,

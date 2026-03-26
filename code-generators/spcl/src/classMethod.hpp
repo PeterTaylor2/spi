@@ -103,7 +103,8 @@ public:
         const std::string& innerClassName,
         bool types,
         const ServiceDefinitionSP& svc,
-        bool noHelper = false) const;
+        bool noHelper,
+        bool recording) const;
 
     void implementHelper(GeneratedOutput& ostr,
         const DataTypeConstSP& classType,

@@ -472,7 +472,8 @@ void Struct::declareHelper(
 void Struct::implement(
     GeneratedOutput& ostr,
     const ServiceDefinitionSP& svc,
-    bool types) const
+    bool types,
+    bool recording) const
 {
     // we put the constructor into the regular stream
     // we put the object functions into the helper stream
@@ -569,7 +570,7 @@ void Struct::implement(
     for (size_t i = 0; i < m_methods.size(); ++i)
     {
         bool noHelper = !methodNeedsHelper(m_methods[i]);
-        m_methods[i]->implement(ostr, m_dataType, m_name, "", types, svc, noHelper);
+        m_methods[i]->implement(ostr, m_dataType, m_name, "", types, svc, noHelper, recording);
     }
 
     if (m_dynamicPropertiesCode)

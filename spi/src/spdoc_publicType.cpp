@@ -88,7 +88,6 @@ PublicType::Enum PublicType::from_int(int value)
 PublicType verifyPrimitiveTypeName(
     const std::string& typeName)
 {
-  spi::AddRecord("spdoc.verifyPrimitiveTypeName");
   SPI_PROFILE("spdoc.verifyPrimitiveTypeName");
   bool isLogging = spdoc_begin_function(true);
   try

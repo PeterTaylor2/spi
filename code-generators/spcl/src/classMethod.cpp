@@ -418,7 +418,8 @@ void ClassMethod::implement(
     const std::string& innerClassName,
     bool types,
     const ServiceDefinitionSP& svc,
-    bool noHelper) const
+    bool noHelper,
+    bool recording) const
 {
     // we put everything needed to run the function into the regular stream
     // we put everything else into the helper stream
@@ -456,8 +457,12 @@ void ClassMethod::implement(
 
         ostr << "{";
         ostr << "    " << svc->getName() << "_check_permission();\n";
-        ostr << "  spi::AddRecord(\"" << svc->getNamespace() << "." << classType->name()
-            << "." << m_function->fullName() << "\");\n";
+
+        if (recording)
+        {
+            ostr << "  spi::AddRecord(\"" << svc->getNamespace() << "." << classType->name()
+                << "." << m_function->fullName() << "\");\n";
+        }
         ostr << "    SPI_PROFILE(\"" << svc->getNamespace() << "." << classType->name()
             << "." << m_function->fullName() << "\");\n";
 
@@ -485,8 +490,15 @@ void ClassMethod::implement(
         implementDeclaration(ostr, className);
 
         ostr << "{\n";
-        ostr << "  bool isLogging = " << svc->getName() << "_begin_function();\n"
-            << "  SPI_PROFILE(\"" << svc->getNamespace() << "." << classType->name()
+        ostr << "  bool isLogging = " << svc->getName() << "_begin_function();\n";
+
+        if (recording)
+        {
+            ostr << "  spi::AddRecord(\"" << svc->getNamespace() << "." << classType->name()
+                << "." << m_function->fullName() << "\");\n";
+        }
+
+        ostr << "  SPI_PROFILE(\"" << svc->getNamespace() << "." << classType->name()
             << "." << m_function->fullName() << "\");\n";
 
         if (sessionLogging())

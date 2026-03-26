@@ -82,7 +82,8 @@ void VerbatimConstruct::declareHelper(
 void VerbatimConstruct::implement(
     GeneratedOutput& ostr,
     const ServiceDefinitionSP& svc,
-    bool types) const
+    bool types,
+    bool recording) const
 {
     writeVerbatim(ostr, m_verbatim, 0, true);
 }

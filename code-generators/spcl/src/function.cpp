@@ -282,7 +282,8 @@ void Function::declareHelper(
 void Function::implement(
     GeneratedOutput& ostr,
     const ServiceDefinitionSP& svc,
-    bool types) const
+    bool types,
+    bool recording) const
 {
     // we put everything needed to run the function into the regular stream
     // we put everything else into the helper stream
@@ -336,9 +337,12 @@ void Function::implement(
     writeFunctionArgs(ostr, false, m_inputs, m_outputs, false, 4);
 
     ostr << "\n"
-        << "{\n"
-        << "  spi::AddRecord(\"" << svc->getNamespace() << "." << fullName() << "\");\n"
-        << "  SPI_PROFILE(\"" << svc->getNamespace() << "." << fullName() << "\");\n";
+        << "{\n";
+    if (recording)
+    {
+        ostr << "  spi::AddRecord(\"" << svc->getNamespace() << "." << fullName() << "\");\n";
+    }
+    ostr << "  SPI_PROFILE(\"" << svc->getNamespace() << "." << fullName() << "\");\n";
 
     if (sessionLogging())
     {

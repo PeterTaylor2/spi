@@ -142,7 +142,8 @@ void SimpleType::declareHelper(
 void SimpleType::implement(
     GeneratedOutput& ostr,
     const ServiceDefinitionSP& svc,
-    bool types) const
+    bool types,
+    bool recording) const
 {
     ostr << "\n";
     ostr << m_innerTypeName << " " << m_name << "_convert_in("
