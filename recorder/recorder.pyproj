@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{7f5fce2d-28a1-44d6-b911-acc2e0606d04}</ProjectGuid>
+    <ProjectGuid>{84242a34-4242-40be-a1cf-e44ebd8fd838}</ProjectGuid>
     <ProjectHome />
     <StartupFile>udp_csv_client.py</StartupFile>
     <SearchPath />
@@ -19,10 +19,11 @@
     <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="summarize_csv.py" />
     <Compile Include="udp_csv_client.py" />
+    <Compile Include="udp_csv_server.py" />
     <Compile Include="udp_json_client.py" />
     <Compile Include="udp_json_server.py" />
-    <Compile Include="udp_log_server.py" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
 </Project>
