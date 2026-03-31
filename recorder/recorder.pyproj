@@ -20,8 +20,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="summarize_csv.py" />
-    <Compile Include="udp_csv_client.py" />
-    <Compile Include="udp_csv_server.py" />
     <Compile Include="udp_json_client.py" />
     <Compile Include="udp_json_server.py" />
   </ItemGroup>
