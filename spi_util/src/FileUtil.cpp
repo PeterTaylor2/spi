@@ -503,6 +503,8 @@ Directory* DirectoryWalker::Next()
                  iter != m_current.dns.rend();
                  ++iter)
             {
+                if (m_excludeDirNames.count(*iter) > 0)
+                    continue;
                 std::string fdn = path::join(
                     m_current.dn.c_str(), iter->c_str(), 0);
                 m_unvisited.push_front(fdn);
@@ -516,6 +518,8 @@ Directory* DirectoryWalker::Next()
                  iter != m_current.dns.end();
                  ++iter)
             {
+                if (m_excludeDirNames.count(*iter) > 0)
+                    continue;
                 std::string fdn = path::join(
                     m_current.dn.c_str(), iter->c_str(), 0);
                 m_unvisited.push_back(fdn);
