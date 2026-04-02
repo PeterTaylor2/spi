@@ -32,16 +32,21 @@ all: doc
 ###########################################################################
 U_SPCL?=spcl
 
-I_SPCL=$(wildcard $(U_SPI_HOME)/config/bin/$(G_ABI)/$(U_SPCL)$(G_EXE))
+ifdef LOCAL_BUILD
+I_SPCL=$(wildcard $(U_SPI_HOME)/code-generators/bin/$(G_ABI)/$(U_SPCL)$(G_EXE))
+else
+I_SPCL=
+endif
+
 ifeq "$(I_SPCL)" ""
-I_SPCL:=$(U_SPI_HOME)/config/bin-$(G_PLATFORM)/$(U_SPCL)$(G_EXE)
+I_SPCL:=$(U_SPI_HOME)/code-generators/bin-$(G_PLATFORM)/$(U_SPCL)$(G_EXE)
 endif
 
 tex: spi-user-guide/parser-autodoc.tex
 
 spi-user-guide/parser-autodoc.tex: $(I_SPCL)
 	$(I_SPCL) -d spi-user-guide/parser-autodoc.tex
-	
+
 ###########################################################################
 # commands for creating the PDF file
 ###########################################################################
