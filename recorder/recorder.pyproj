@@ -19,6 +19,7 @@
     <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="log_server.py" />
     <Compile Include="summarize_csv.py" />
     <Compile Include="udp_json_client.py" />
     <Compile Include="udp_json_server.py" />

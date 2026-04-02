@@ -31,8 +31,6 @@ class UDPLogServer:
         self.port = port
         self.log_dir = os.path.abspath(log_dir)
         os.makedirs(self.log_dir, exist_ok=True)
-        self.csv_dir = os.path.join(self.log_dir, "csv")
-        os.makedirs(self.csv_dir, exist_ok=True)
 
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.bind((self.host, self.port))
@@ -64,7 +62,7 @@ class UDPLogServer:
             parts.append(osName)
 
         ffn = "%s.csv" % ("-".join(parts))
-        return os.path.join(self.csv_dir, ffn)
+        return os.path.join(self.log_dir, ffn)
 
     def start(self):
         self.running = True

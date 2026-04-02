@@ -1,4 +1,6 @@
-#!/usr/bin/env python3
+# this code was written initially by ChatGPT-4 based on the request for a script that summarized the contents
+# of CSV files written by the UDP JSON server
+
 """
 Summarize CSV logs inside a directory.
 
@@ -38,6 +40,7 @@ def read_csv_rows(path):
 
 
 def summarize(dirpath, keyName, recursive=False):
+    dirpath = os.path.normpath(dirpath)
     files = list(find_csv_files(dirpath, recursive))
     total_rows = 0
     rows_per_file = {}
@@ -47,6 +50,9 @@ def summarize(dirpath, keyName, recursive=False):
 
     for path in files:
         path = os.path.normpath(path)
+        cpath = os.path.commonpath([dirpath,path])
+        if cpath != dirpath:
+            raise Exception("Mismatch between %s and %s" % (dirpath, path))
         file_rows = 0
         for row in read_csv_rows(path):
             file_rows += 1
@@ -64,34 +70,33 @@ def summarize(dirpath, keyName, recursive=False):
             key_count[key] += count
             count_sum += count
 
-        rows_per_file[path] = file_rows
+        rows_per_file[path[len(cpath)+1:]] = file_rows
 
     summary = {
         "files_found": len(files),
         "total_rows": total_rows,
         "rows_per_file": rows_per_file,
-        "key_count": key_count,
+        keyName + "_count": key_count,
         "count_sum": count_sum}
 
     return summary
 
 def format_text(summary, keyName):
+    key_count = summary[keyName + "_count"]
     lines = []
     lines.append("Files found: %d" % summary['files_found'])
-    lines.append("Total rows:  %d" % summary['total_rows'])
-    lines.append("Unique keys: %d" % len(summary['key_count']))
+    lines.append("Total rows: %d" % summary['total_rows'])
+    lines.append("Unique %ss: %d" % (keyName, len(key_count)))
     lines.append("")
     lines.append("Rows per file:")
     rows_per_file = summary['rows_per_file']
     for path in sorted(rows_per_file):
-        lines.append("    %-40s %d" % (path, rows_per_file[path]))
+        lines.append("    %-60s %d" % (path, rows_per_file[path]))
     lines.append("")
-
-    key_count = summary["key_count"]
 
     lines.append("Summary of %s count:" % keyName)
     for key in sorted(key_count):
-        lines.append("    %-40s %d" % (key, key_count[key]))
+        lines.append("    %-60s %d" % (key, key_count[key]))
 
     lines.append("")
     lines.append("Count sum: %d" % summary['count_sum'])
