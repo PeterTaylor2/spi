@@ -3219,6 +3219,7 @@ void classNoWrapHandler(
 
     if (token.type == ':')
     {
+        token = getTokenOfType(lexer, SPI_CONFIG_TOKEN_TYPE_NAME, "BaseClass");
         std::string baseClassName(token.value.aName);
         baseClass = service->getClass(baseClassName);
         if (!baseClass)
