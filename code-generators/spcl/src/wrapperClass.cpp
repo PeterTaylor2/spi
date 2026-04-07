@@ -607,8 +607,14 @@ void WrapperClass::implement(
         writeFunctionInputs(ostr, false, attributes, false, 4);
 
         ostr << "\n"
-            << "{\n"
-            << "  SPI_PROFILE(\"" << svc->getNamespace() << "." << getName(true, ".") << ".Make\");\n";
+            << "{\n";
+
+        if (recording && !m_noMake)
+        {
+            ostr << "  spi::AddRecord(\"" << svc->getNamespace() << "." << getName(true, ".") << ".Make\");\n";
+        }
+
+        ostr << "  SPI_PROFILE(\"" << svc->getNamespace() << "." << getName(true, ".") << ".Make\");\n";
 
         if (m_innerClass->m_isOpen)
         {
