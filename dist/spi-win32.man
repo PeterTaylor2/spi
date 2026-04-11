@@ -40,7 +40,8 @@ makefiles/gendep/src/*.[ch]pp
 makefiles/gendep/Makefile
 
 # needed in case we need to use an earlier version of Excel for makeXLAddin.exe
-# hence we don't package makeXLAddin.exe
+# hence we don't only package makeXLAddin.exe
+makefiles/win32/makeXLAddin.exe
 makeXLAddin/makeXLAddin/App.config
 makeXLAddin/makeXLAddin/main.cs
 makeXLAddin/makeXLAddin/makeXLAddin.csproj
