@@ -180,6 +180,10 @@ private:
     PyGILState_STATE gstate;
 };
 
+void SPI_PY_IMPORT pyGetCaller(
+    std::string* filename,
+    int* lineno);
+
 SPI_END_NAMESPACE
 
 #endif

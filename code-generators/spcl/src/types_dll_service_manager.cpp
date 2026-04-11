@@ -133,9 +133,9 @@ std::runtime_error types_catch_all(bool isLogging, const char* name)
     return spi::RuntimeError(e, name);
 }
 
-void types_start_logging(const char* filename, const char* options)
+void types_start_logging(const char* filename, const char* options, bool minimal)
 {
-    g_service->start_logging(filename, options);
+    g_service->start_logging(filename, options, minimal);
 }
 
 void types_stop_logging()

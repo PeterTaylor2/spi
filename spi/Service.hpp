@@ -112,11 +112,12 @@ public:
     std::vector<std::string> get_enums() const;
 
     // logging methods
+    bool is_minimal_logging() const;
     bool is_logging() const;
     const bool* is_logging_flag() const;
     //void increment_log_level();
     //void decrement_log_level();
-    void start_logging(const char* filename, const char* options);
+    void start_logging(const char* filename, const char* options, bool minimal = false);
     void clear_logging_cache();
     void stop_logging();
     void log_inputs(const FunctionConstSP& func);

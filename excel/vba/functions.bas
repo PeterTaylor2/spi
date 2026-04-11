@@ -136,6 +136,11 @@ endofLoop:
     button.BeginGroup = False
 
     Set button = myItems.Controls.Add(msoControlButton)
+    button.Caption = "Start &Minimal Logging..."
+    button.OnAction = "$(name)StartMinimalLogging"
+    button.BeginGroup = False
+
+    Set button = myItems.Controls.Add(msoControlButton)
     button.Caption = "S&top Logging"
     button.OnAction = "$(name)StopLogging"
     button.BeginGroup = False
@@ -169,8 +174,8 @@ endofLoop:
     button.Caption = "&User Guide"
     button.OnAction = "$(name)LoadUserGuide"
     button.BeginGroup = True
-    
-    
+
+
 End Sub
 
 Public Sub $(name)RemoveMenu
@@ -200,6 +205,18 @@ Private Sub $(name)StartLogging()
     filename = $(name)Utils.OutputFilename("Log Files (*.log), *.log")
     If filename <> "False" Then
         result = Application.Run(START_LOGGING, filename)
+    End If
+End Sub
+
+Private Sub $(name)StartMinimalLogging()
+    ' starts logging allowing the user to choose the log filename
+    Dim logfilename As String
+    Dim result As String
+    Dim filename As String
+
+    filename = $(name)Utils.OutputFilename("Log Files (*.log), *.log")
+    If filename <> "False" Then
+        result = Application.Run(START_LOGGING, filename, "", True)
     End If
 End Sub
 

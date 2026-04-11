@@ -89,6 +89,30 @@ PyObject* py_spi_replay_stop_logging(
     return theService->StopLogging();
 }
 
+PyObject* py_spi_replay_start_timing(
+    PyObject* self, PyObject* args)
+{
+    return theService->StartTiming();
+}
+
+PyObject* py_spi_replay_stop_timing(
+    PyObject*self, PyObject* args)
+{
+    return theService->StopTiming();
+}
+
+PyObject* py_spi_replay_clear_timings(
+    PyObject* self, PyObject* args)
+{
+    return theService->ClearTimings();
+}
+
+PyObject* py_spi_replay_get_timings(
+    PyObject*self, PyObject* args)
+{
+    return theService->GetTimings();
+}
+
 } /* end of extern "C" */
 
 /*
@@ -136,13 +160,33 @@ void initpy_replay(void)
 
     /* start_logging */
     svc->AddFunction("start_logging", py_spi_replay_start_logging,
-        "start_logging(filename,options?)\n\n"
+        "start_logging(filename,options?,minimal?)\n\n"
         "Start function logging - returns filename.");
 
     /* stop_logging */
     svc->AddFunction("stop_logging", py_spi_replay_stop_logging,
         "stop_logging()\n\nStops function logging"
         " - returns whether logging was on previously.");
+
+    /* start_timing */
+    svc->AddFunction("start_timing", py_spi_replay_start_timing,
+        "start_timing()\n\n"
+        "Starts function timing.");
+
+    /* stop_logging */
+    svc->AddFunction("stop_timing", py_spi_replay_stop_logging,
+        "stop_timing()\n\nStops function timing"
+        " - returns whether timing was on previously.");
+
+    /* clear_timings */
+    svc->AddFunction("clear_timings", py_spi_replay_clear_timings,
+        "clear_timings()\n\n"
+        "Clears previous timings.");
+
+    /* get_timings */
+    svc->AddFunction("get_timings", py_spi_replay_get_timings,
+        "get_timings()\n\nGets recorded timings"
+        " - returns 4-tuple of names, numCalls, numErrors, totalTimes.");
 
     py_spi_replay_map_update_functions(svc);
     py_spi_replay_replay_update_functions(svc);

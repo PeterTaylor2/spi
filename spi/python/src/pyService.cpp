@@ -41,6 +41,15 @@
 
 SPI_BEGIN_NAMESPACE
 
+namespace
+{
+    bool g_errorPopups = false;
+    bool g_timing = false;
+    std::map<std::string, PythonTimings> g_timings;
+
+} // end of anonymous namespace
+
+
 std::map<PyTypeObject*, ObjectTypeSP> PythonService::g_indexPythonObjectType;
 
 class Object_python_delegate : public Object
@@ -314,6 +323,86 @@ ObjectConstSP PythonService::ConstructDelegate(PyObject* pyo) const
 
     Object* obj = constructor(pyo);
     return ObjectConstSP(obj);
+}
+
+PyObject* PythonService::StartTiming()
+{
+    PyObject* pyo = pyoFromBool(g_timing);
+    g_timing = true;
+    return pyo;
+}
+
+PyObject* PythonService::StopTiming()
+{
+    PyObject* pyo = pyoFromBool(g_timing);
+    g_timing = false;
+    return pyo;
+}
+
+PyObject* PythonService::ClearTimings()
+{
+    PyObject* pyo = pyoFromBool(true);
+    g_timings.clear();
+    return pyo;
+}
+
+PyObject* PythonService::GetTimings()
+{
+    try
+    {
+        if (g_timings.size() == 0)
+            throw spi::RuntimeError("No functions have been timed");
+
+        std::vector<std::string> names;
+        std::vector<int> numCalls;
+        std::vector<int> numFailures;
+        std::vector<double> totalTimes;
+
+        std::map<std::string, PythonTimings>::const_iterator iter;
+        for (iter = g_timings.begin(); iter != g_timings.end(); ++iter)
+        {
+            names.push_back(iter->first);
+            numCalls.push_back(iter->second.numCalls);
+            numFailures.push_back(iter->second.numFailures);
+            totalTimes.push_back(iter->second.totalTime);
+        }
+
+        std::vector<Value> all;
+        all.push_back(Value(names));
+        all.push_back(Value(numCalls));
+        all.push_back(Value(numFailures));
+        all.push_back(Value(totalTimes));
+
+        // returns tuple with four lists: name, numCalls, numFailures, totalTime
+        PyObject* pyo = pyoFromMultiValue(Value(all), 4);
+
+        return pyo;
+    }
+    catch (spi::PyException&)
+    {
+        return NULL;
+    }
+    catch (std::exception& e)
+    {
+        return spi::pyExceptionHandler(e.what());
+    }
+
+    return NULL; // unknown exception
+}
+
+bool PythonService::isTiming() const
+{
+    return g_timing;
+}
+
+void PythonService::addTiming(const std::string& name, bool failed, double time)
+{
+    std::string fullName = m_service->get_namespace() + "." + name;
+    PythonTimings& timings = g_timings[fullName];
+    timings.numCalls += 1;
+    if (failed)
+        timings.numFailures += 1;
+    timings.totalTime += time;
 }
 
 PyObject* PythonService::ObjectCopy(PyObject* pyo, bool deepCopy)
@@ -605,9 +694,9 @@ PyObject* PythonService::StartLogging(PyObject* args)
     try
     {
         std::vector<Value> inputs = pyTupleToValueVector(
-            "StartLogging", 2, args);
+            "StartLogging", 3, args);
 
-        Value output = spi::StartLogging(m_service, inputs[0], inputs[1],
+        Value output = spi::StartLogging(m_service, inputs[0], inputs[1], inputs[2],
             GetInputContext());
 
         return pyoFromValue(output);
@@ -1009,6 +1098,52 @@ PythonService* PythonService::CommonService()
     }
 
     return &theService;
+}
+
+PythonTimer::PythonTimer(PythonService* svc, const char* name)
+    :
+    m_svc(svc),
+    m_name(name),
+    m_failed(false),
+    m_notCalled(false),
+    m_clock()
+{
+    ServiceSP service = m_svc->GetService();
+    if (service->is_minimal_logging())
+    {
+        std::string ns = service->get_namespace();
+        std::string caller;
+        int callerLine;
+        pyGetCaller(&caller, &callerLine);
+        service->log_message(
+            caller + ":" + std::to_string(callerLine) + ": " + ns + "." + name);
+    }
+
+    if (svc->isTiming())
+        m_clock.Start();
+}
+
+PythonTimer::~PythonTimer()
+{
+    if (!m_notCalled && m_svc->isTiming())
+    {
+        m_svc->addTiming(m_name, m_failed, m_clock.Time());
+    }
+}
+
+void PythonTimer::SetFailure()
+{
+    m_failed = true;
+}
+
+void PythonTimer::SetNotCalled()
+{
+    m_notCalled = true;
+}
+
+const char* PythonTimer::Name()
+{
+    return m_name;
 }
 
 SPI_END_NAMESPACE

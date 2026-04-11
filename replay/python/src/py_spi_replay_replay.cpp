@@ -116,10 +116,11 @@ static PyTypeObject ReplayAction_PyObjectType = {
 static int py_spi_replay_ReplayFunctionAction_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "ReplayFunctionAction");
     try
     {
         if (!func)
-            func = get_function_caller("ReplayFunctionAction");
+            func = get_function_caller(py_timer.Name());
 
         self->obj = spi::pyInitConstObject(args, kwargs, func, &spi_replay::ReplayFunctionAction::object_type);
         return 0;
@@ -203,10 +204,11 @@ static PyTypeObject ReplayFunctionAction_PyObjectType = {
 static int py_spi_replay_ReplayObjectAction_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "ReplayObjectAction");
     try
     {
         if (!func)
-            func = get_function_caller("ReplayObjectAction");
+            func = get_function_caller(py_timer.Name());
 
         self->obj = spi::pyInitConstObject(args, kwargs, func, &spi_replay::ReplayObjectAction::object_type);
         return 0;
@@ -402,10 +404,11 @@ PyObject* py_spi_replay_ReplayCodeGenerator_Coerce(PyObject* self, PyObject* arg
 PyObject* py_spi_replay_ReplayCodeGenerator_GenerateFunction(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "ReplayCodeGenerator.GenerateFunction");
     try
     {
         if (!func)
-            func = get_function_caller("ReplayCodeGenerator.GenerateFunction");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -428,10 +431,11 @@ PyObject* py_spi_replay_ReplayCodeGenerator_GenerateFunction(PyObject* self, PyO
 PyObject* py_spi_replay_ReplayCodeGenerator_GenerateObject(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "ReplayCodeGenerator.GenerateObject");
     try
     {
         if (!func)
-            func = get_function_caller("ReplayCodeGenerator.GenerateObject");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -538,10 +542,11 @@ PyObject* py_spi_replay_ReplayLog_Coerce(PyObject* self, PyObject* args)
 PyObject* py_spi_replay_ReplayLog_generateCode(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "ReplayLog.generateCode");
     try
     {
         if (!func)
-            func = get_function_caller("ReplayLog.generateCode");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -564,10 +569,11 @@ PyObject* py_spi_replay_ReplayLog_generateCode(PyObject* self, PyObject* args, P
 PyObject* py_spi_replay_ReplayLog_Read(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "ReplayLog.Read");
     try
     {
         if (!func)
-            func = get_function_caller("ReplayLog.Read");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());

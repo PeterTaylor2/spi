@@ -271,6 +271,30 @@ std::string PythonService::writePydSourceFile(const std::string& dirname) const
             << "    return theService->StopLogging();\n"
             << "}\n"
             << "\n"
+            << "PyObject* py_" << m_service->ns << "_start_timing(\n"
+            << "    PyObject* self, PyObject* args)\n"
+            << "{\n"
+            << "    return theService->StartTiming();\n"
+            << "}\n"
+            << "\n"
+            << "PyObject* py_" << m_service->ns << "_stop_timing(\n"
+            << "    PyObject*self, PyObject* args)\n"
+            << "{\n"
+            << "    return theService->StopTiming();\n"
+            << "}\n"
+            << "\n"
+            << "PyObject* py_" << m_service->ns << "_clear_timings(\n"
+            << "    PyObject* self, PyObject* args)\n"
+            << "{\n"
+            << "    return theService->ClearTimings();\n"
+            << "}\n"
+            << "\n"
+            << "PyObject* py_" << m_service->ns << "_get_timings(\n"
+            << "    PyObject*self, PyObject* args)\n"
+            << "{\n"
+            << "    return theService->GetTimings();\n"
+            << "}\n"
+            << "\n"
             << "} /* end of extern \"C\" */\n";
     }
 
@@ -363,7 +387,7 @@ std::string PythonService::writePydSourceFile(const std::string& dirname) const
         ostr << "    /* start_logging */\n"
             << "    svc->AddFunction(\"start_logging\", py_" << m_service->ns
             << "_start_logging,\n"
-            << "        \"start_logging(filename,options?)\\n\\n\"\n"
+            << "        \"start_logging(filename,options?,minimal?)\\n\\n\"\n"
             << "        \"Start function logging - returns filename.\");\n"
             << "\n"
             << "    /* stop_logging */\n"
@@ -371,6 +395,31 @@ std::string PythonService::writePydSourceFile(const std::string& dirname) const
             << "_stop_logging,\n"
             << "        \"stop_logging()\\n\\nStops function logging\"\n"
             << "        \" - returns whether logging was on previously.\");\n"
+            << "\n";
+
+        ostr << "    /* start_timing */\n"
+            << "    svc->AddFunction(\"start_timing\", py_" << m_service->ns
+            << "_start_timing,\n"
+            << "        \"start_timing()\\n\\n\"\n"
+            << "        \"Starts function timing.\");\n"
+            << "\n"
+            << "    /* stop_logging */\n"
+            << "    svc->AddFunction(\"stop_timing\", py_" << m_service->ns
+            << "_stop_logging,\n"
+            << "        \"stop_timing()\\n\\nStops function timing\"\n"
+            << "        \" - returns whether timing was on previously.\");\n"
+            << "\n"
+            << "    /* clear_timings */\n"
+            << "    svc->AddFunction(\"clear_timings\", py_" << m_service->ns
+            << "_clear_timings,\n"
+            << "        \"clear_timings()\\n\\n\"\n"
+            << "        \"Clears previous timings.\");\n"
+            << "\n"
+            << "    /* get_timings */\n"
+            << "    svc->AddFunction(\"get_timings\", py_" << m_service->ns
+            << "_get_timings,\n"
+            << "        \"get_timings()\\n\\nGets recorded timings\"\n"
+            << "        \" - returns 4-tuple of names, numCalls, numErrors, totalTimes.\");\n"
             << "\n";
     }
 
@@ -749,13 +798,14 @@ void PythonModule::implementFunction(
     ostr << ")\n";
 
     ostr << "{\n"
-        << "    static spi::FunctionCaller* func = 0;\n";
+        << "    static spi::FunctionCaller* func = 0;\n"
+        << "    spi::PythonTimer py_timer(get_python_service(), "
+        << "\"" << makeNamespaceSep(module->ns, ".") << func->name << "\");\n";
 
     ostr << "    try\n"
          << "    {\n"
          << "        if (!func)\n"
-         << "            func = get_function_caller(\""
-         << makeNamespaceSep(module->ns, ".") << func->name << "\");\n"
+         << "            func = get_function_caller(py_timer.Name());\n"
          << "\n";
 
     ostr << "        const spi::InputValues& iv = spi::pyGetInputValues(func";
@@ -1148,11 +1198,11 @@ void PythonModule::implementClass(
         ostr << ")\n";
         ostr << "{\n"
             << "    static spi::FunctionCaller* func = 0;\n"
+            << "    spi::PythonTimer py_timer(get_python_service(), \"" << classname << "\");\n"
             << "    try\n"
             << "    {\n"
             << "        if (!func)\n"
-            << "            func = get_function_caller(\"" << classname
-            << "\");\n"
+            << "            func = get_function_caller(py_timer.Name());\n"
             << "\n"
             << "        self->obj = spi::pyInitConstObject(args";
 
@@ -1290,12 +1340,13 @@ void PythonModule::implementClass(
         ostr << ")\n"
              << "{\n"
              << "    static spi::FunctionCaller* func = 0;\n"
+             << "    spi::PythonTimer py_timer(get_python_service(), "
+             << "\"" << makeNamespaceSep(module->ns, ".") << cls->name
+             << "." << method->function->name << "\");\n"
              << "    try\n"
              << "    {\n"
              << "        if (!func)\n"
-             << "            func = get_function_caller(\""
-             << makeNamespaceSep(module->ns, ".") << cls->name
-             << "." << method->function->name << "\");\n"
+             << "            func = get_function_caller(py_timer.Name());\n"
              << "\n";
         ostr << "        const spi::InputValues& iv = spi::pyGetInputValues(func";
 

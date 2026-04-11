@@ -25,6 +25,8 @@ U_FORCE_REBUILD = Makefile
 U_VCPROJ=spxl-exe
 G_OVERRIDE_NEW_DELETE=0
 
+U_VCPROJ_OPTIONS=-s '*.bas' -s '*.frm' -S ../../excel/vba
+
 include $(U_SPI_HOME)/makefiles/build/exe.mk
 
 libs:

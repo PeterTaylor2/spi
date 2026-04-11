@@ -161,7 +161,7 @@ public:
      * that can call these methods using get_service() to get the
      * service object.
      */
-    XLOPER* StartLogging(XLOPER* filename, XLOPER* options);
+    XLOPER* StartLogging(XLOPER* filename, XLOPER* options, XLOPER* minimal);
     XLOPER* StopLogging(void);
     XLOPER* IsLogging(void);
     XLOPER* SetErrorPopups(XLOPER* errorPopups);

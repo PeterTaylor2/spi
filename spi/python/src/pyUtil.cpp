@@ -140,6 +140,35 @@ std::vector<PyObject*> pyArrayToVector(PyObject* const* in, Py_ssize_t nargs)
     return std::vector<PyObject*>(in, in + nargs);
 }
 
+void pyGetCaller(std::string* filename, int* lineno)
+{
+    // this frame is a borrowed reference so we don't need to release it
+    PyFrameObject* frame = PyEval_GetFrame();
+
+    if (lineno)
+    {
+        if (frame)
+            *lineno = PyFrame_GetLineNumber(frame);
+        else
+            *lineno = 0;
+    }
+
+    if (filename)
+    {
+        if (frame)
+        {
+            // PyFrame_GetCode returns a new reference and cannot return NULL
+            PyCodeObject* code = PyFrame_GetCode(frame);
+            *filename = pyoToString(code->co_filename);
+            Py_DECREF(code);
+        }
+        else
+        {
+            filename->clear();
+        }
+    }
+}
+
 PyInterpreterLock::PyInterpreterLock()
 {
     gstate = PyGILState_Ensure();

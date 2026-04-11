@@ -603,6 +603,8 @@ void ExcelService::RegisterStandardFunctions(const std::string& xll,
         help.push_back("Name of file which will contain the function log");
         args.push_back("options");
         help.push_back("");
+        args.push_back("minimal?");
+        help.push_back("Indicates that we do minimal logging - just the function name is logged");
         RegisterFunction(
             xll,
             StringFormat("xl_%s_start_logging", ns.c_str()),
@@ -1119,7 +1121,10 @@ static XLOPER* TempHelp(const std::vector<std::string>& argsHelp, size_t i)
     return TempStrConst("");
 }
 
-XLOPER* ExcelService::StartLogging(XLOPER* xl_filename, XLOPER* xl_options)
+XLOPER* ExcelService::StartLogging(
+    XLOPER* xl_filename,
+    XLOPER* xl_options,
+    XLOPER* xl_minimal)
 {
     XLOPER* xlo;
     try
@@ -1128,6 +1133,7 @@ XLOPER* ExcelService::StartLogging(XLOPER* xl_filename, XLOPER* xl_options)
             m_service,
             xloperToValue(xl_filename),
             xloperToValue(xl_options),
+            xloperToValue(xl_minimal),
             getInputContext());
 
         xlo = xloperMakeFromValue(output);
@@ -2078,8 +2084,7 @@ ExcelTimer::ExcelTimer(ExcelService* svc, const char* name)
     m_notCalled(false),
     m_clock()
 {
-    if (svc->isLogging())
-        svc->logMessage(xlCellName() + " " + svc->getNamespace() + "." + name);
+    svc->logMessage(xlCellName() + " " + svc->getNamespace() + "." + name);
 
     if (svc->isTiming())
         m_clock.Start();

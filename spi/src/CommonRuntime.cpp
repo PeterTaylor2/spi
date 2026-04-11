@@ -150,12 +150,20 @@ void CommonRuntime::clear_read_cache()
     m_readCache.clear();
 }
 
-bool CommonRuntime::is_logging() const
+bool CommonRuntime::is_minimal_logging() const
 {
-    return !!m_logger;
+    return !!(m_logger.streamer);
 }
 
-void CommonRuntime::start_logging(const char* filename, const char* options)
+bool CommonRuntime::is_logging() const
+{
+    return m_logger.streamer && !m_logger.minimal;
+}
+
+void CommonRuntime::start_logging(
+    const char* filename,
+    const char* options,
+    bool minimal)
 {
     // we will always use maximum accuracy unless otherwise specified
     //
@@ -163,15 +171,17 @@ void CommonRuntime::start_logging(const char* filename, const char* options)
     // that you want to replay with two versions of the software and want to
     // avoid the noise of object references which can mess up the comparison
     stop_logging();
+
     m_logStream.open(filename);
     m_logStream << "# Logging starts: " << spi_util::Timestamp() << std::endl;
     bool hasOptions = options && *options;
-    m_logger = ObjectTextStreamer::Make(ServiceConstSP(), hasOptions ? options : "ACC");
+    m_logger.streamer = ObjectTextStreamer::Make(ServiceConstSP(), hasOptions ? options : "ACC");
+    m_logger.minimal = minimal;
     for (std::list<Service*>::const_iterator iter = m_allServices.begin();
-         iter != m_allServices.end(); ++iter)
+        iter != m_allServices.end(); ++iter)
     {
         Service* svc = *iter;
-        svc->set_logging(true);
+        svc->set_logging(!minimal);
         const std::string& serviceNamespace = svc->get_namespace();
         if (serviceNamespace.length() > 0)
         {
@@ -183,8 +193,8 @@ void CommonRuntime::start_logging(const char* filename, const char* options)
 
 void CommonRuntime::clear_logging_cache()
 {
-    if (m_logger)
-        m_logger->clear_cache();
+    if (m_logger.streamer)
+        m_logger.streamer->clear_cache();
 }
 
 void CommonRuntime::stop_logging()
@@ -194,7 +204,8 @@ void CommonRuntime::stop_logging()
         m_logStream << "# Logging ends: " << spi_util::Timestamp() << std::endl;
         m_logStream.close();
     }
-    m_logger.reset();
+    m_logger.minimal = false;
+    m_logger.streamer.reset();
     for (std::list<Service*>::const_iterator iter = m_allServices.begin();
          iter != m_allServices.end(); ++iter)
     {
@@ -206,36 +217,36 @@ void CommonRuntime::stop_logging()
 
 void CommonRuntime::log_inputs(const FunctionConstSP& func)
 {
-    if (m_logger)
+    if (is_logging())
     {
-        m_logger->to_stream(m_logStream, func);
+        m_logger.streamer->to_stream(m_logStream, func);
         m_logStream << std::endl;
     }
 }
 
 void CommonRuntime::log_output(const Value& output)
 {
-    if (m_logger)
+    if (is_logging())
     {
-        m_logger->to_stream(m_logStream, "output", output);
+        m_logger.streamer->to_stream(m_logStream, "output", output);
         m_logStream << std::endl;
     }
 }
 
 void CommonRuntime::log_outputs(const MapConstSP& outputs)
 {
-    if (m_logger)
+    if (is_logging())
     {
-        m_logger->to_stream(m_logStream, outputs);
+        m_logger.streamer->to_stream(m_logStream, outputs);
         m_logStream << std::endl;
     }
 }
 
 void CommonRuntime::log_error(const std::exception& e)
 {
-    if (m_logger)
+    if (is_logging())
     {
-        m_logger->to_stream(m_logStream, "error", Value(e));
+        m_logger.streamer->to_stream(m_logStream, "error", Value(e));
         m_logStream << std::endl;
     }
     set_last_error(e.what());
@@ -243,7 +254,7 @@ void CommonRuntime::log_error(const std::exception& e)
 
 void CommonRuntime::log_message(const std::string& msg)
 {
-    if (m_logger)
+    if (is_minimal_logging())
     {
         m_logStream << "# " << msg << std::endl;
     }

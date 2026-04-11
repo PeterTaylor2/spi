@@ -131,9 +131,9 @@ std::runtime_error replay_catch_all(bool isLogging, const char* name)
     return spi::RuntimeError(e, name);
 }
 
-void replay_start_logging(const char* filename, const char* options)
+void replay_start_logging(const char* filename, const char* options, bool minimal)
 {
-    g_service->start_logging(filename, options);
+    g_service->start_logging(filename, options, minimal);
 }
 
 void replay_stop_logging()

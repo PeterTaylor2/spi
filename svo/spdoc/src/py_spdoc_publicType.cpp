@@ -42,10 +42,11 @@
 PyObject* py_spdoc_verifyPrimitiveTypeName(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "verifyPrimitiveTypeName");
     try
     {
         if (!func)
-            func = get_function_caller("verifyPrimitiveTypeName");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());

@@ -43,7 +43,8 @@ REPLAY_IMPORT
 void replay_stop_service();
 
 REPLAY_IMPORT
-void replay_start_logging(const char* filename, const char* options="");
+void replay_start_logging(const char* filename, const char* options="",
+    bool minimal = false);
 
 REPLAY_IMPORT
 void replay_stop_logging();

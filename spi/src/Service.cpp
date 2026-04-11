@@ -501,6 +501,11 @@ ObjectConstSP Service::object_coerce(
     return objectType->coerce_from_object(obj);
 }
 
+bool Service::is_minimal_logging() const
+{
+    return m_commonRuntime->is_minimal_logging();
+}
+
 bool Service::is_logging() const
 {
     return m_commonRuntime->is_logging();
@@ -511,9 +516,9 @@ const bool* Service::is_logging_flag() const
     return &m_isLogging;
 }
 
-void Service::start_logging(const char* filename, const char* options)
+void Service::start_logging(const char* filename, const char* options, bool minimal)
 {
-    m_commonRuntime->start_logging(filename, options);
+    m_commonRuntime->start_logging(filename, options, minimal);
 }
 
 void Service::clear_logging_cache()

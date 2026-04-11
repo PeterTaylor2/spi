@@ -42,10 +42,11 @@
 static int py_spdoc_DataType_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "DataType");
     try
     {
         if (!func)
-            func = get_function_caller("DataType");
+            func = get_function_caller(py_timer.Name());
 
         self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::DataType::object_type);
         return 0;
@@ -95,10 +96,11 @@ PyObject* py_spdoc_DataType_Coerce(PyObject* self, PyObject* args)
 PyObject* py_spdoc_DataType_ValueType(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "DataType.ValueType");
     try
     {
         if (!func)
-            func = get_function_caller("DataType.ValueType");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -121,10 +123,11 @@ PyObject* py_spdoc_DataType_ValueType(PyObject* self, PyObject* args, PyObject* 
 PyObject* py_spdoc_DataType_RefType(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "DataType.RefType");
     try
     {
         if (!func)
-            func = get_function_caller("DataType.RefType");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -197,10 +200,11 @@ static PyTypeObject DataType_PyObjectType = {
 static int py_spdoc_Attribute_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Attribute");
     try
     {
         if (!func)
-            func = get_function_caller("Attribute");
+            func = get_function_caller(py_timer.Name());
 
         self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::Attribute::object_type);
         return 0;
@@ -250,10 +254,11 @@ PyObject* py_spdoc_Attribute_Coerce(PyObject* self, PyObject* args)
 PyObject* py_spdoc_Attribute_encoding(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Attribute.encoding");
     try
     {
         if (!func)
-            func = get_function_caller("Attribute.encoding");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -324,10 +329,11 @@ static PyTypeObject Attribute_PyObjectType = {
 static int py_spdoc_ClassAttribute_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "ClassAttribute");
     try
     {
         if (!func)
-            func = get_function_caller("ClassAttribute");
+            func = get_function_caller(py_timer.Name());
 
         self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::ClassAttribute::object_type);
         return 0;
@@ -379,10 +385,11 @@ PyObject* py_spdoc_ClassAttribute_Coerce(PyObject* self, PyObject* args)
 PyObject* py_spdoc_ClassAttribute_encoding(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "ClassAttribute.encoding");
     try
     {
         if (!func)
-            func = get_function_caller("ClassAttribute.encoding");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -481,10 +488,11 @@ PyObject* py_spdoc_Construct_Coerce(PyObject* self, PyObject* args)
 PyObject* py_spdoc_Construct_getType(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Construct.getType");
     try
     {
         if (!func)
-            func = get_function_caller("Construct.getType");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -507,10 +515,11 @@ PyObject* py_spdoc_Construct_getType(PyObject* self, PyObject* args, PyObject* k
 PyObject* py_spdoc_Construct_Summary(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Construct.Summary");
     try
     {
         if (!func)
-            func = get_function_caller("Construct.Summary");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -583,10 +592,11 @@ static PyTypeObject Construct_PyObjectType = {
 static int py_spdoc_SimpleType_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "SimpleType");
     try
     {
         if (!func)
-            func = get_function_caller("SimpleType");
+            func = get_function_caller(py_timer.Name());
 
         self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::SimpleType::object_type);
         return 0;
@@ -674,10 +684,11 @@ static PyTypeObject SimpleType_PyObjectType = {
 static int py_spdoc_Function_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Function");
     try
     {
         if (!func)
-            func = get_function_caller("Function");
+            func = get_function_caller(py_timer.Name());
 
         self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::Function::object_type);
         return 0;
@@ -729,10 +740,11 @@ PyObject* py_spdoc_Function_Coerce(PyObject* self, PyObject* args)
 PyObject* py_spdoc_Function_returnsObject(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Function.returnsObject");
     try
     {
         if (!func)
-            func = get_function_caller("Function.returnsObject");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -755,10 +767,11 @@ PyObject* py_spdoc_Function_returnsObject(PyObject* self, PyObject* args, PyObje
 PyObject* py_spdoc_Function_returns(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Function.returns");
     try
     {
         if (!func)
-            func = get_function_caller("Function.returns");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -781,10 +794,11 @@ PyObject* py_spdoc_Function_returns(PyObject* self, PyObject* args, PyObject* kw
 PyObject* py_spdoc_Function_objectCount(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Function.objectCount");
     try
     {
         if (!func)
-            func = get_function_caller("Function.objectCount");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -859,10 +873,11 @@ static PyTypeObject Function_PyObjectType = {
 static int py_spdoc_Enumerand_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Enumerand");
     try
     {
         if (!func)
-            func = get_function_caller("Enumerand");
+            func = get_function_caller(py_timer.Name());
 
         self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::Enumerand::object_type);
         return 0;
@@ -948,10 +963,11 @@ static PyTypeObject Enumerand_PyObjectType = {
 static int py_spdoc_EnumConstructor_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "EnumConstructor");
     try
     {
         if (!func)
-            func = get_function_caller("EnumConstructor");
+            func = get_function_caller(py_timer.Name());
 
         self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::EnumConstructor::object_type);
         return 0;
@@ -1035,10 +1051,11 @@ static PyTypeObject EnumConstructor_PyObjectType = {
 static int py_spdoc_Enum_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Enum");
     try
     {
         if (!func)
-            func = get_function_caller("Enum");
+            func = get_function_caller(py_timer.Name());
 
         self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::Enum::object_type);
         return 0;
@@ -1128,10 +1145,11 @@ static PyTypeObject Enum_PyObjectType = {
 static int py_spdoc_ClassMethod_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "ClassMethod");
     try
     {
         if (!func)
-            func = get_function_caller("ClassMethod");
+            func = get_function_caller(py_timer.Name());
 
         self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::ClassMethod::object_type);
         return 0;
@@ -1177,10 +1195,11 @@ PyObject* py_spdoc_ClassMethod_Coerce(PyObject* self, PyObject* args)
 PyObject* py_spdoc_ClassMethod_Summary(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "ClassMethod.Summary");
     try
     {
         if (!func)
-            func = get_function_caller("ClassMethod.Summary");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -1251,10 +1270,11 @@ static PyTypeObject ClassMethod_PyObjectType = {
 static int py_spdoc_CoerceFrom_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "CoerceFrom");
     try
     {
         if (!func)
-            func = get_function_caller("CoerceFrom");
+            func = get_function_caller(py_timer.Name());
 
         self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::CoerceFrom::object_type);
         return 0;
@@ -1292,10 +1312,11 @@ PyObject* py_spdoc_CoerceFrom_Coerce(PyObject* self, PyObject* args)
 PyObject* py_spdoc_CoerceFrom_Summary(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "CoerceFrom.Summary");
     try
     {
         if (!func)
-            func = get_function_caller("CoerceFrom.Summary");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -1366,10 +1387,11 @@ static PyTypeObject CoerceFrom_PyObjectType = {
 static int py_spdoc_CoerceTo_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "CoerceTo");
     try
     {
         if (!func)
-            func = get_function_caller("CoerceTo");
+            func = get_function_caller(py_timer.Name());
 
         self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::CoerceTo::object_type);
         return 0;
@@ -1409,10 +1431,11 @@ PyObject* py_spdoc_CoerceTo_Coerce(PyObject* self, PyObject* args)
 PyObject* py_spdoc_CoerceTo_Summary(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "CoerceTo.Summary");
     try
     {
         if (!func)
-            func = get_function_caller("CoerceTo.Summary");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -1483,10 +1506,11 @@ static PyTypeObject CoerceTo_PyObjectType = {
 static int py_spdoc_Class_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Class");
     try
     {
         if (!func)
-            func = get_function_caller("Class");
+            func = get_function_caller(py_timer.Name());
 
         self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::Class::object_type);
         return 0;
@@ -1556,10 +1580,11 @@ PyObject* py_spdoc_Class_Coerce(PyObject* self, PyObject* args)
 PyObject* py_spdoc_Class_ObjectName(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Class.ObjectName");
     try
     {
         if (!func)
-            func = get_function_caller("Class.ObjectName");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -1582,10 +1607,11 @@ PyObject* py_spdoc_Class_ObjectName(PyObject* self, PyObject* args, PyObject* kw
 PyObject* py_spdoc_Class_ServiceNamespace(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Class.ServiceNamespace");
     try
     {
         if (!func)
-            func = get_function_caller("Class.ServiceNamespace");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -1658,10 +1684,11 @@ static PyTypeObject Class_PyObjectType = {
 static int py_spdoc_Module_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Module");
     try
     {
         if (!func)
-            func = get_function_caller("Module");
+            func = get_function_caller(py_timer.Name());
 
         self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::Module::object_type);
         return 0;
@@ -1703,10 +1730,11 @@ PyObject* py_spdoc_Module_Coerce(PyObject* self, PyObject* args)
 PyObject* py_spdoc_Module_combineSummaries(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Module.combineSummaries");
     try
     {
         if (!func)
-            func = get_function_caller("Module.combineSummaries");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -1777,10 +1805,11 @@ static PyTypeObject Module_PyObjectType = {
 static int py_spdoc_Service_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Service");
     try
     {
         if (!func)
-            func = get_function_caller("Service");
+            func = get_function_caller(py_timer.Name());
 
         self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::Service::object_type);
         return 0;
@@ -1835,10 +1864,11 @@ PyObject* py_spdoc_Service_Coerce(PyObject* self, PyObject* args)
 PyObject* py_spdoc_Service_CombineSharedServices(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Service.CombineSharedServices");
     try
     {
         if (!func)
-            func = get_function_caller("Service.CombineSharedServices");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -1861,10 +1891,11 @@ PyObject* py_spdoc_Service_CombineSharedServices(PyObject* self, PyObject* args,
 PyObject* py_spdoc_Service_Summary(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Service.Summary");
     try
     {
         if (!func)
-            func = get_function_caller("Service.Summary");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -1887,10 +1918,11 @@ PyObject* py_spdoc_Service_Summary(PyObject* self, PyObject* args, PyObject* kwa
 PyObject* py_spdoc_Service_combineSummaries(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Service.combineSummaries");
     try
     {
         if (!func)
-            func = get_function_caller("Service.combineSummaries");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -1913,10 +1945,11 @@ PyObject* py_spdoc_Service_combineSummaries(PyObject* self, PyObject* args, PyOb
 PyObject* py_spdoc_Service_getEnums(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Service.getEnums");
     try
     {
         if (!func)
-            func = get_function_caller("Service.getEnums");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -1939,10 +1972,11 @@ PyObject* py_spdoc_Service_getEnums(PyObject* self, PyObject* args, PyObject* kw
 PyObject* py_spdoc_Service_getEnum(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Service.getEnum");
     try
     {
         if (!func)
-            func = get_function_caller("Service.getEnum");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -1965,10 +1999,11 @@ PyObject* py_spdoc_Service_getEnum(PyObject* self, PyObject* args, PyObject* kwa
 PyObject* py_spdoc_Service_getEnumerands(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Service.getEnumerands");
     try
     {
         if (!func)
-            func = get_function_caller("Service.getEnumerands");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -1991,10 +2026,11 @@ PyObject* py_spdoc_Service_getEnumerands(PyObject* self, PyObject* args, PyObjec
 PyObject* py_spdoc_Service_getClasses(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Service.getClasses");
     try
     {
         if (!func)
-            func = get_function_caller("Service.getClasses");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -2017,10 +2053,11 @@ PyObject* py_spdoc_Service_getClasses(PyObject* self, PyObject* args, PyObject* 
 PyObject* py_spdoc_Service_getClass(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Service.getClass");
     try
     {
         if (!func)
-            func = get_function_caller("Service.getClass");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -2043,10 +2080,11 @@ PyObject* py_spdoc_Service_getClass(PyObject* self, PyObject* args, PyObject* kw
 PyObject* py_spdoc_Service_isSubClass(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Service.isSubClass");
     try
     {
         if (!func)
-            func = get_function_caller("Service.isSubClass");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -2069,10 +2107,11 @@ PyObject* py_spdoc_Service_isSubClass(PyObject* self, PyObject* args, PyObject* 
 PyObject* py_spdoc_Service_getPropertyClass(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Service.getPropertyClass");
     try
     {
         if (!func)
-            func = get_function_caller("Service.getPropertyClass");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -2095,10 +2134,11 @@ PyObject* py_spdoc_Service_getPropertyClass(PyObject* self, PyObject* args, PyOb
 PyObject* py_spdoc_Service_getConstructs(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Service.getConstructs");
     try
     {
         if (!func)
-            func = get_function_caller("Service.getConstructs");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -2121,10 +2161,11 @@ PyObject* py_spdoc_Service_getConstructs(PyObject* self, PyObject* args, PyObjec
 PyObject* py_spdoc_Service_getConstruct(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Service.getConstruct");
     try
     {
         if (!func)
-            func = get_function_caller("Service.getConstruct");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());

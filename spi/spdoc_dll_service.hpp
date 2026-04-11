@@ -43,7 +43,8 @@ SPI_IMPORT
 void spdoc_stop_service();
 
 SPI_IMPORT
-void spdoc_start_logging(const char* filename, const char* options="");
+void spdoc_start_logging(const char* filename, const char* options="",
+    bool minimal = false);
 
 SPI_IMPORT
 void spdoc_stop_logging();

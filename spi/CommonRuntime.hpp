@@ -57,11 +57,20 @@ class SPI_IMPORT CommonRuntime : public RefCounter
 public:
     friend class Service;
 
+    struct Logger
+    {
+        // indicates that you are not doing function logging but there might still
+        // be a streamer so you can log messages
+        bool minimal = false;
+        ObjectTextStreamerSP streamer = ObjectTextStreamerSP();
+    };
+
     ~CommonRuntime();
 
     // logging methods
+    bool is_minimal_logging() const;
     bool is_logging() const;
-    void start_logging(const char* filename, const char* options);
+    void start_logging(const char* filename, const char* options, bool minimal = false);
     void clear_logging_cache();
     void stop_logging();
     void log_inputs(const FunctionConstSP& func);
@@ -104,7 +113,7 @@ private:
     ObjectType* get_object_type(const std::string& className) const;
 
     std::ofstream         m_logStream;
-    ObjectTextStreamerSP  m_logger;
+    Logger                m_logger;
     std::list<bool*>      m_isLoggingLocations;
     std::list<Service*>   m_allServices;
     std::string           m_lastError;

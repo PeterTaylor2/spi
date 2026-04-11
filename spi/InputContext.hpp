@@ -274,6 +274,7 @@ Value StartLogging(
     const ServiceSP&    service,
     const Value&        filename,
     const Value&        options,
+    const Value&        minimal,
     const InputContext* context);
 
 SPI_IMPORT

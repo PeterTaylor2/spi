@@ -630,11 +630,13 @@ Value StartLogging(
     const ServiceSP&    service,
     const Value&        filename,
     const Value&        options,
+    const Value&        minimal,
     const InputContext* context)
 {
     service->start_logging(
         context->ValueToString(filename).c_str(),
-        context->ValueToString(options, true).c_str());
+        context->ValueToString(options, true).c_str(),
+        context->ValueToBool(minimal, true, false));
 
     return filename;
 }

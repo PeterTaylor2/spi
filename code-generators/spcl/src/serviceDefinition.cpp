@@ -1214,7 +1214,8 @@ void ServiceDefinition::writeServiceHeaders(
         << "void " << m_name << "_stop_service();\n"
         << "\n"
         << m_import << "\n"
-        << "void " << m_name << "_start_logging(const char* filename, const char* options=\"\");\n"
+        << "void " << m_name << "_start_logging(const char* filename, const char* options=\"\",\n"
+        << "    bool minimal = false);\n"
         << "\n"
         << m_import << "\n"
         << "void " << m_name << "_stop_logging();\n"
@@ -1581,9 +1582,9 @@ void ServiceDefinition::writeServiceSource(
          << "}\n"
          << "\n";
 
-    ostr << "void " << m_name << "_start_logging(const char* filename, const char* options)\n"
+    ostr << "void " << m_name << "_start_logging(const char* filename, const char* options, bool minimal)\n"
         << "{\n"
-        << "    g_service->start_logging(filename, options);\n"
+        << "    g_service->start_logging(filename, options, minimal);\n"
         << "}\n"
         << "\n"
         << "void " << m_name << "_stop_logging()\n"

@@ -70,10 +70,11 @@ PyObject* py_spdoc_Constant_Coerce(PyObject* self, PyObject* args)
 PyObject* py_spdoc_Constant_typeName(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Constant.typeName");
     try
     {
         if (!func)
-            func = get_function_caller("Constant.typeName");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -96,10 +97,11 @@ PyObject* py_spdoc_Constant_typeName(PyObject* self, PyObject* args, PyObject* k
 PyObject* py_spdoc_Constant_docString(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Constant.docString");
     try
     {
         if (!func)
-            func = get_function_caller("Constant.docString");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -122,10 +124,11 @@ PyObject* py_spdoc_Constant_docString(PyObject* self, PyObject* args, PyObject* 
 PyObject* py_spdoc_Constant_getInt(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Constant.getInt");
     try
     {
         if (!func)
-            func = get_function_caller("Constant.getInt");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -148,10 +151,11 @@ PyObject* py_spdoc_Constant_getInt(PyObject* self, PyObject* args, PyObject* kwa
 PyObject* py_spdoc_Constant_getDate(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Constant.getDate");
     try
     {
         if (!func)
-            func = get_function_caller("Constant.getDate");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -174,10 +178,11 @@ PyObject* py_spdoc_Constant_getDate(PyObject* self, PyObject* args, PyObject* kw
 PyObject* py_spdoc_Constant_getDateTime(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Constant.getDateTime");
     try
     {
         if (!func)
-            func = get_function_caller("Constant.getDateTime");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -200,10 +205,11 @@ PyObject* py_spdoc_Constant_getDateTime(PyObject* self, PyObject* args, PyObject
 PyObject* py_spdoc_Constant_getDouble(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Constant.getDouble");
     try
     {
         if (!func)
-            func = get_function_caller("Constant.getDouble");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -226,10 +232,11 @@ PyObject* py_spdoc_Constant_getDouble(PyObject* self, PyObject* args, PyObject* 
 PyObject* py_spdoc_Constant_getChar(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Constant.getChar");
     try
     {
         if (!func)
-            func = get_function_caller("Constant.getChar");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -252,10 +259,11 @@ PyObject* py_spdoc_Constant_getChar(PyObject* self, PyObject* args, PyObject* kw
 PyObject* py_spdoc_Constant_getString(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Constant.getString");
     try
     {
         if (!func)
-            func = get_function_caller("Constant.getString");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -278,10 +286,11 @@ PyObject* py_spdoc_Constant_getString(PyObject* self, PyObject* args, PyObject* 
 PyObject* py_spdoc_Constant_getBool(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "Constant.getBool");
     try
     {
         if (!func)
-            func = get_function_caller("Constant.getBool");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs, self);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -368,10 +377,11 @@ static PyTypeObject Constant_PyObjectType = {
 static int py_spdoc_IntConstant_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "IntConstant");
     try
     {
         if (!func)
-            func = get_function_caller("IntConstant");
+            func = get_function_caller(py_timer.Name());
 
         self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::IntConstant::object_type);
         return 0;
@@ -454,10 +464,11 @@ static PyTypeObject IntConstant_PyObjectType = {
 static int py_spdoc_DateConstant_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "DateConstant");
     try
     {
         if (!func)
-            func = get_function_caller("DateConstant");
+            func = get_function_caller(py_timer.Name());
 
         self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::DateConstant::object_type);
         return 0;
@@ -540,10 +551,11 @@ static PyTypeObject DateConstant_PyObjectType = {
 static int py_spdoc_DateTimeConstant_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "DateTimeConstant");
     try
     {
         if (!func)
-            func = get_function_caller("DateTimeConstant");
+            func = get_function_caller(py_timer.Name());
 
         self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::DateTimeConstant::object_type);
         return 0;
@@ -626,10 +638,11 @@ static PyTypeObject DateTimeConstant_PyObjectType = {
 static int py_spdoc_DoubleConstant_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "DoubleConstant");
     try
     {
         if (!func)
-            func = get_function_caller("DoubleConstant");
+            func = get_function_caller(py_timer.Name());
 
         self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::DoubleConstant::object_type);
         return 0;
@@ -712,10 +725,11 @@ static PyTypeObject DoubleConstant_PyObjectType = {
 static int py_spdoc_CharConstant_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "CharConstant");
     try
     {
         if (!func)
-            func = get_function_caller("CharConstant");
+            func = get_function_caller(py_timer.Name());
 
         self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::CharConstant::object_type);
         return 0;
@@ -798,10 +812,11 @@ static PyTypeObject CharConstant_PyObjectType = {
 static int py_spdoc_StringConstant_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "StringConstant");
     try
     {
         if (!func)
-            func = get_function_caller("StringConstant");
+            func = get_function_caller(py_timer.Name());
 
         self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::StringConstant::object_type);
         return 0;
@@ -884,10 +899,11 @@ static PyTypeObject StringConstant_PyObjectType = {
 static int py_spdoc_BoolConstant_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "BoolConstant");
     try
     {
         if (!func)
-            func = get_function_caller("BoolConstant");
+            func = get_function_caller(py_timer.Name());
 
         self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::BoolConstant::object_type);
         return 0;
@@ -970,10 +986,11 @@ static PyTypeObject BoolConstant_PyObjectType = {
 static int py_spdoc_UndefinedConstant_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "UndefinedConstant");
     try
     {
         if (!func)
-            func = get_function_caller("UndefinedConstant");
+            func = get_function_caller(py_timer.Name());
 
         self->obj = spi::pyInitConstObject(args, kwargs, func, &spdoc::UndefinedConstant::object_type);
         return 0;

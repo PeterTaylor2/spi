@@ -42,10 +42,11 @@
 PyObject* py_spi_replay_MapClassName(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "MapClassName");
     try
     {
         if (!func)
-            func = get_function_caller("MapClassName");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -68,10 +69,11 @@ PyObject* py_spi_replay_MapClassName(PyObject* self, PyObject* args, PyObject* k
 PyObject* py_spi_replay_MapFieldNames(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "MapFieldNames");
     try
     {
         if (!func)
-            func = get_function_caller("MapFieldNames");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -94,10 +96,11 @@ PyObject* py_spi_replay_MapFieldNames(PyObject* self, PyObject* args, PyObject* 
 PyObject* py_spi_replay_MapRef(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "MapRef");
     try
     {
         if (!func)
-            func = get_function_caller("MapRef");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());
@@ -120,10 +123,11 @@ PyObject* py_spi_replay_MapRef(PyObject* self, PyObject* args, PyObject* kwargs)
 PyObject* py_spi_replay_MapGetValue(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static spi::FunctionCaller* func = 0;
+    spi::PythonTimer py_timer(get_python_service(), "MapGetValue");
     try
     {
         if (!func)
-            func = get_function_caller("MapGetValue");
+            func = get_function_caller(py_timer.Name());
 
         const spi::InputValues& iv = spi::pyGetInputValues(func, args, kwargs);
         spi::Value output = spi::CallInContext(func, iv, get_input_context());

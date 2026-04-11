@@ -69,6 +69,13 @@ struct PythonNamespace
 
 typedef spi::Object* (DelegateObjectConstructor)(PyObject* pyo);
 
+struct PythonTimings
+{
+    int numCalls = 0;
+    int numFailures = 0;
+    double totalTime = 0.0;
+};
+
 class SPI_PY_IMPORT PythonService
 {
 public:
@@ -91,6 +98,11 @@ public:
     PyObject* StartLogging(PyObject* args);
     PyObject* StopLogging(void);
     PyObject* IsLogging(void);
+    PyObject* StartTiming();
+    PyObject* StopTiming();
+    PyObject* ClearTimings();
+    PyObject* GetTimings();
+
     PyObject* HelpFunc(PyObject* args);
     PyObject* HelpEnum(PyObject* args);
     PyObject* ObjectFromString(PyObject* args);
@@ -144,6 +156,10 @@ public:
     static ObjectConstSP PythonMakeFromMap(IObjectMap* m, ValueToObject& m2o);
     static bool PythonTypeIsInstance(const ObjectConstSP& o);
 
+    void logCall(const std::string& name);
+    bool isTiming() const;
+    void addTiming(const std::string& name, bool failed, double time);
+
 private:
     const char*                         m_moduleName;
     ServiceSP                           m_service;
@@ -176,7 +192,23 @@ private:
 #endif
 };
 
+class SPI_PY_IMPORT PythonTimer
+{
+public:
+    PythonTimer(PythonService* svc, const char* name);
+    ~PythonTimer();
 
+    void SetNotCalled();
+    void SetFailure();
+    const char* Name();
+
+private:
+    PythonService* m_svc;
+    const char* m_name;
+    bool m_failed;
+    bool m_notCalled;
+    spi_util::Clock m_clock;
+};
 
 SPI_END_NAMESPACE
 
