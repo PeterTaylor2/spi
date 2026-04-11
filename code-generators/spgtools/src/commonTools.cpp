@@ -456,13 +456,14 @@ void generateFromTemplate(
     const std::map<std::string, std::string>& values,
     const std::string& ofn,
     const std::string& cwd,
-    bool writeBackup)
+    bool writeBackup,
+    bool textFormat)
 {
     TemplateLexer lexer(ifn, &istr);
 
     TemplateLexer::Token token = lexer.getToken();
 
-    GeneratedOutput ostr(ofn, cwd, writeBackup);
+    GeneratedOutput ostr(ofn, cwd, writeBackup, textFormat);
     std::map<std::string, std::string>::const_iterator iter;
 
     while (token.type)

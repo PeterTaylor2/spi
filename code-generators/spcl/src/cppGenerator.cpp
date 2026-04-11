@@ -69,7 +69,7 @@ void generateCpp(
     {
         std::string fn = spi_util::path::posix(spi::StringFormat("%s/%s_dll_all.hpp",
                 dn.c_str(), svc->getName().c_str()));
-        svc->writeAllHeader(fn, dn);
+        svc->writeAllHeader(fn, dn, options);
         fns.insert(fn);
     }
     const std::vector<ModuleDefinitionSP>& modules = svc->getModules();
@@ -190,7 +190,7 @@ void generateService(
     */
     std::string fn = spi_util::path::posix(
         spi::StringFormat("%s/properties.mk", dn.c_str()));
-    svc->writeMakefileProperties(fn, dn, options.outputDir);
+    svc->writeMakefileProperties(fn, dn, options.outputDir, options);
     fns.insert(fn);
 
     // remove the ns_version.mk file - the problem with having the namespace

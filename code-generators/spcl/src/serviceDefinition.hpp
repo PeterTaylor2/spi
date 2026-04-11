@@ -187,8 +187,11 @@ public:
 
     std::string fullNamespace(const std::string& ns, const char* sep = "::") const;
 
-    void writeMakefileProperties(const std::string& fn, const std::string& cwd,
-        const std::string& outputDir);
+    void writeMakefileProperties(
+        const std::string& fn,
+        const std::string& cwd,
+        const std::string& outputDir,
+        const Options& options);
     void writeDeclSpecHeader(
         const std::string& fn, 
         const std::string& cwd,
@@ -200,7 +203,10 @@ public:
         bool types);
     void writeStartNamespace(GeneratedOutput& ostr);
     void writeEndNamespace(GeneratedOutput& ostr);
-    void writeAllHeader(const std::string& fn, const std::string& cwd);
+    void writeAllHeader(
+        const std::string& fn,
+        const std::string& cwd,
+        const Options& options);
     void writeServiceHeaders(
         const std::string& fn1,
         const std::string& fn2,

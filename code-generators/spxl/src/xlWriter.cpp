@@ -611,7 +611,7 @@ std::vector<std::string> ExcelService::translateVbaFiles(
         std::ifstream istr(ifn.c_str());
         if (!istr)
             throw spi::RuntimeError("Could not open '%s'", ifn.c_str());
-        generateFromTemplate(istr, ifn, values, ofn, outdir, writeBackup());
+        generateFromTemplate(istr, ifn, values, ofn, outdir, writeBackup(), true);
         fns.push_back(ofn);
     }
 
@@ -661,7 +661,7 @@ std::vector<std::string> ExcelService::translateVbaFiles(
         std::ifstream istr(ifn.c_str());
         if (!istr)
             throw spi::RuntimeError("Could not open '%s'", ifn.c_str());
-        generateFromTemplate(istr, ifn, values, ofn, outdir, writeBackup());
+        generateFromTemplate(istr, ifn, values, ofn, outdir, writeBackup(), true);
         fns.push_back(ofn);
     }
 
@@ -679,7 +679,7 @@ std::vector<std::string> ExcelService::translateVbaFiles(
         std::ifstream istr(ifn.c_str());
         if (!istr)
             throw spi::RuntimeError("Could not open '%s'", ifn.c_str());
-        generateFromTemplate(istr, ifn, values, ofn, outdir, writeBackup());
+        generateFromTemplate(istr, ifn, values, ofn, outdir, writeBackup(), true);
         fns.push_back(ofn);
     }
 
@@ -706,7 +706,8 @@ std::string ExcelService::writeVbaFile(const std::string& dirname) const
     std::string filename = spi_util::path::join(
         dirname.c_str(), basename.c_str(), 0);
 
-    GeneratedOutput ostr(filename, spi_util::path::dirname(filename), writeBackup());
+    // we should always use windows style for the VBA files (at least when run on windows)
+    GeneratedOutput ostr(filename, spi_util::path::dirname(filename), writeBackup(), true);
 
     ostr << "Attribute VB_Name = \"" << m_service->name << "_load_addins\"\n"
         << "\n"

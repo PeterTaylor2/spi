@@ -9,7 +9,7 @@ U_TARGET_DIR=.
 U_VCPROJ=types-config
 #U_SOURCES=$(wildcard config/*.cfg)
 
-U_SPCL_OPTIONS=--noVerbatimLine --noHeaderSplit --licenseFile=../../GPL.h
+U_SPCL_OPTIONS=--noVerbatimLine --noHeaderSplit --licenseFile=../../GPL.h --textFormat
 ifeq ($(DEBUG),1)
 U_SPCL_OPTIONS+=-w
 endif

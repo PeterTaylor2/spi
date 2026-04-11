@@ -173,7 +173,7 @@ void ModuleDefinition::writeHeader(
     const Options& options,
     bool types)
 {
-    GeneratedOutput ostr(fn, cwd, options.writeBackup);
+    GeneratedOutput ostr(fn, cwd, options.writeBackup, options.textFormat);
     writeLicense(ostr, options.license);
     startHeaderFile(ostr, fn);
 
@@ -255,7 +255,7 @@ void ModuleDefinition::writeClassesHeader(
     const Options& options,
     bool types)
 {
-    GeneratedOutput ostr(fn, cwd, options.writeBackup);
+    GeneratedOutput ostr(fn, cwd, options.writeBackup, options.textFormat);
     writeLicense(ostr, options.license);
     startHeaderFile(ostr, fn);
 
@@ -320,7 +320,7 @@ void ModuleDefinition::writeHelperHeader(
     const Options& options,
     bool types)
 {
-    GeneratedOutput ostr(fn, cwd, options.writeBackup);
+    GeneratedOutput ostr(fn, cwd, options.writeBackup, options.textFormat);
     writeLicense(ostr, options.license);
     startHeaderFile(ostr, fn);
 
@@ -360,7 +360,7 @@ void ModuleDefinition::writeSource(
     const Options& options,
     bool types)
 {
-    GeneratedOutput ostr(fn, cwd, options.writeBackup);
+    GeneratedOutput ostr(fn, cwd, options.writeBackup, options.textFormat);
     writeLicense(ostr, options.license);
     startSourceFile(ostr, fn);
     if (!noGeneratedCodeNotice())
@@ -399,7 +399,7 @@ void ModuleDefinition::writeHelperSource(
     const Options& options,
     bool types)
 {
-    GeneratedOutput ostr(fn, cwd, options.writeBackup);
+    GeneratedOutput ostr(fn, cwd, options.writeBackup, options.textFormat);
     writeLicense(ostr, options.license);
     startSourceFile(ostr, fn);
     if (!noGeneratedCodeNotice())

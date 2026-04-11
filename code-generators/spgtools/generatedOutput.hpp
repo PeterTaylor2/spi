@@ -44,12 +44,13 @@ public:
     // note that cwd is from where we will be compiling the code
     GeneratedOutput(const std::string& filename,
                     const std::string& cwd,
-                    bool writeBackup);
+                    bool writeBackup,
+                    bool textFormat = false);
 
     // in the version without cwd then we will be compiling the code from
     // the same directory as filename and cwd is effectively set to
     // dirname(filename)
-    GeneratedOutput(const std::string& filename, bool writeBackup);
+    GeneratedOutput(const std::string& filename, bool writeBackup, bool textFormat=true);
 
     ~GeneratedOutput();
 
@@ -83,6 +84,7 @@ private:
     size_t m_lines;
     bool m_closed;
     bool m_writeBackup;
+    bool m_textFormat;
 
     void testClosure() const;
 
@@ -122,6 +124,7 @@ void endSourceFile(GeneratedOutput& ostr, const std::string& fn);
 bool writeFileIfChanged(
     const char*        filename,
     const std::string& newContents,
-    bool writeBackup);
+    bool writeBackup,
+    bool textFormat);
 
 #endif

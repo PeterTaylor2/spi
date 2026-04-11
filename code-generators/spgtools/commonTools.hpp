@@ -80,7 +80,8 @@ void generateFromTemplate(
     const std::map<std::string, std::string>& values,
     const std::string& ofn,
     const std::string& cwd,
-    bool writeBackup);
+    bool writeBackup,
+    bool textFormat);
 
 // copies a file if it is newer than the old file
 // or if the old file does not exist

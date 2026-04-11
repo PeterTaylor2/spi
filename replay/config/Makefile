@@ -13,8 +13,8 @@ U_COMPANY_NAME=Sartorial Programming Ltd.
 U_SPPY_OPTIONS+=--noImporter --keywords
 #U_SPCL_OPTIONS=--noHeaderSplit
 #U_SPCL_OPTIONS+=--noVerbatimLine
-U_SPPY_OPTIONS+=--noGeneratedCodeNotice --licenseFile=../../LGPL.h
-U_SPCL_OPTIONS+=--noGeneratedCodeNotice --licenseFile=../../LGPL.h
+U_SPPY_OPTIONS+=--noGeneratedCodeNotice --licenseFile=../../LGPL.h --textFormat
+U_SPCL_OPTIONS+=--noGeneratedCodeNotice --licenseFile=../../LGPL.h --textFormat
 
 U_VCXPROJ_OPTIONS=-tall
 

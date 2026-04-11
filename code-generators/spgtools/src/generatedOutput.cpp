@@ -47,26 +47,29 @@ void CheckDirectory(const std::string& cwd)
 
 GeneratedOutput::GeneratedOutput(const std::string& filename,
                                  const std::string& cwd,
-                                 bool writeBackup)
+                                 bool writeBackup,
+                                 bool textFormat)
     :
     m_filename(filename),
     m_cwd(cwd),
     m_oss(),
     m_lines(0),
     m_closed(false),
-    m_writeBackup(writeBackup)
+    m_writeBackup(writeBackup),
+    m_textFormat(textFormat)
 {
     CheckDirectory(m_cwd);
 }
 
-GeneratedOutput::GeneratedOutput(const std::string& filename, bool writeBackup)
+GeneratedOutput::GeneratedOutput(const std::string& filename, bool writeBackup, bool textFormat)
     :
     m_filename(filename),
     m_cwd(spi_util::path::dirname(filename)),
     m_oss(),
     m_lines(0),
     m_closed(false),
-    m_writeBackup(writeBackup)
+    m_writeBackup(writeBackup),
+    m_textFormat(textFormat)
 {
     CheckDirectory(m_cwd);
 }
@@ -126,7 +129,7 @@ bool GeneratedOutput::close()
 
     std::string newContents = m_oss.str();
 
-    bool writeMe = writeFileIfChanged(m_filename.c_str(), newContents, m_writeBackup);
+    bool writeMe = writeFileIfChanged(m_filename.c_str(), newContents, m_writeBackup, m_textFormat);
 
     m_closed = true;
 
@@ -266,7 +269,8 @@ void endSourceFile(
 bool writeFileIfChanged(
     const char* filename,
     const std::string& newContents,
-    bool writeBackup)
+    bool writeBackup,
+    bool textFormat)
 {
     bool writeFile = false;
 
@@ -312,7 +316,7 @@ bool writeFileIfChanged(
             if (writeFile && writeBackup)
             {
                 std::cout << backup << std::endl;
-                std::ofstream bstr(backup.c_str(), std::ios_base::binary);
+                std::ofstream bstr(backup.c_str(), textFormat ? 0 : std::ios_base::binary);
                 if (bstr.good())
                 {
                     bstr.write(oldContents.c_str(), oldContents.length());
@@ -334,7 +338,7 @@ bool writeFileIfChanged(
     {
         std::cout << filename << std::endl;
         // binary => we will be using linux line endings
-        std::ofstream ostr(filename, std::ios_base::binary);
+        std::ofstream ostr(filename, textFormat ? 0 : std::ios_base::binary);
         if (!ostr.good())
         {
             SPI_THROW_RUNTIME_ERROR("Could not open " << filename << " for writing");

@@ -128,7 +128,7 @@ int main(int argc, char* argv[])
     std::string exe("SPCL");
     const char* longOptions = "allHeader noVerbatimLine noHeaderSplit noTidyup"
         " noGeneratedCodeNotice sortSummary version= optionalArgs license outputDir="
-        " sessionLogging licenseFile= backup checkNonNull recording";
+        " sessionLogging licenseFile= backup checkNonNull recording textFormat";
 
     try
     {
@@ -230,6 +230,10 @@ int main(int argc, char* argv[])
             else if (opt == "--recording")
             {
                 options.recording = true;
+            }
+            else if (opt == "--textFormat")
+            {
+                options.textFormat = true;
             }
             else
             {

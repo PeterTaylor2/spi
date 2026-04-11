@@ -1027,9 +1027,10 @@ spdoc::ServiceConstSP ServiceDefinition::getDoc() const
 void ServiceDefinition::writeMakefileProperties(
     const std::string& fn,
     const std::string& cwd,
-    const std::string& outputDir)
+    const std::string& outputDir,
+    const Options& options)
 {
-    GeneratedOutput ostr(fn, cwd, false);
+    GeneratedOutput ostr(fn, cwd, options.writeBackup, options.textFormat);
 
     ostr << "U_SERVICE?=" << m_name << "\n"
         << "U_SERVICE_DLL?=" << m_dllName << "\n"
@@ -1051,7 +1052,7 @@ void ServiceDefinition::writeDeclSpecHeader(
     const std::string& cwd,
     const Options& options)
 {
-    GeneratedOutput ostr(fn, cwd, options.writeBackup);
+    GeneratedOutput ostr(fn, cwd, options.writeBackup, options.textFormat);
     writeLicense(ostr, options.license);
 
     std::string guardMacro = headerGuardMacroName(fn);
@@ -1096,7 +1097,7 @@ void ServiceDefinition::writeServiceNamespace(
     const Options& options,
     bool types)
 {
-    GeneratedOutput ostr(fn, cwd, options.writeBackup);
+    GeneratedOutput ostr(fn, cwd, options.writeBackup, options.textFormat);
     writeLicense(ostr, options.license);
     startHeaderFile(ostr, fn);
     if (!noGeneratedCodeNotice())
@@ -1161,9 +1162,12 @@ void ServiceDefinition::writeEndNamespace(GeneratedOutput& ostr)
     ostr << spi::StringUpper(m_namespace) << "_END_NAMESPACE\n";
 }
 
-void ServiceDefinition::writeAllHeader(const std::string& fn, const std::string& cwd)
+void ServiceDefinition::writeAllHeader(
+    const std::string& fn,
+    const std::string& cwd,
+    const Options& options)
 {
-    GeneratedOutput ostr(fn, cwd, false);
+    GeneratedOutput ostr(fn, cwd, options.writeBackup, options.textFormat);
     startHeaderFile(ostr, fn);
 
     ostr << "\n"
@@ -1188,7 +1192,7 @@ void ServiceDefinition::writeServiceHeaders(
 {
     // fn1 is in the public directory and contains all the exported functions
     // fn2 is in the source directory and contains all the internal functions
-    GeneratedOutput ostr(fn1, cwd, options.writeBackup);
+    GeneratedOutput ostr(fn1, cwd, options.writeBackup, options.textFormat);
     writeLicense(ostr, options.license);
     startHeaderFile(ostr, fn1);
     if (!noGeneratedCodeNotice())
@@ -1248,7 +1252,7 @@ void ServiceDefinition::writeServiceHeaders(
 
     endHeaderFile(ostr, fn1);
 
-    GeneratedOutput ostr2(fn2, cwd, options.writeBackup);
+    GeneratedOutput ostr2(fn2, cwd, options.writeBackup, options.textFormat);
     writeLicense(ostr2, options.license);
     startHeaderFile(ostr2, fn2);
     if (!noGeneratedCodeNotice())
@@ -1303,7 +1307,7 @@ void ServiceDefinition::writeTimeoutHeader(
     const std::string& cwd,
     const Options& options)
 {
-    GeneratedOutput ostr(fn, cwd, options.writeBackup);
+    GeneratedOutput ostr(fn, cwd, options.writeBackup, options.textFormat);
     writeLicense(ostr, options.license);
     startHeaderFile(ostr, fn);
     if (!noGeneratedCodeNotice())
@@ -1331,7 +1335,7 @@ void ServiceDefinition::writeServiceSource(
     const Options& options,
     bool types)
 {
-    GeneratedOutput ostr(fn, cwd, options.writeBackup);
+    GeneratedOutput ostr(fn, cwd, options.writeBackup, options.textFormat);
     writeLicense(ostr, options.license);
     startSourceFile(ostr, fn);
     if (!noGeneratedCodeNotice())
@@ -1789,7 +1793,7 @@ void ServiceDefinition::writeTypeConvertersHeader(
     const std::string& cwd,
     const Options& options)
 {
-    GeneratedOutput ostr(fn, cwd, options.writeBackup);
+    GeneratedOutput ostr(fn, cwd, options.writeBackup, options.textFormat);
     writeLicense(ostr, options.license);
     startHeaderFile(ostr, fn);
 

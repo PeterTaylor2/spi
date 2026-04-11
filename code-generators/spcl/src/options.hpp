@@ -38,6 +38,7 @@ struct Options
     bool writeBackup;
     bool checkNonNull;
     bool recording;
+    bool textFormat;
 };
 
 #endif

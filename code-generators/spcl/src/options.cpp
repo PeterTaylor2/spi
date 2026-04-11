@@ -31,7 +31,8 @@ Options::Options()
     license(),
     writeBackup(false),
     checkNonNull(false),
-    recording(false)
+    recording(false),
+    textFormat(false)
 {
 }
 

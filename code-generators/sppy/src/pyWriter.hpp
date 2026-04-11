@@ -49,7 +49,8 @@ struct Options
         keywords(false),
         fastCall(false),
         license(),
-        writeBackup(false)
+        writeBackup(false),
+        textFormat(false)
     {}
 
     bool noGeneratedCodeNotice;
@@ -63,6 +64,7 @@ struct Options
     bool fastCall;
     std::string license;
     bool writeBackup;
+    bool textFormat;
 };
 
 /**
