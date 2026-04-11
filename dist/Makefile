@@ -44,7 +44,7 @@ copy-runtime:
 ifndef TARGET
 	@echo "TARGET undefined" && exit 1
 endif
-	@$(COPY_MANIFEST) spi-common.man $(U_SPI_HOME) $(TARGET)
+	@$(COPY_MANIFEST) -x site.mk spi-common.man $(U_SPI_HOME) $(TARGET)
 	@$(COPY_MANIFEST) spi-$(G_PLATFORM).man $(U_SPI_HOME) $(TARGET) SPI_DLL=$(SPI_DLL)
 
 copy-code-generators-source:

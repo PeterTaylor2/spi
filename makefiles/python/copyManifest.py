@@ -108,7 +108,7 @@ def copyFile(fn, odn, overwrite, text_patterns):
     return 0
 
 def main(manifestFile, source, target, replacements,
-         overwrite=False, clean=False, text_patterns=None):
+         overwrite=False, clean=False, text_patterns=None, exclusions=None):
 
     source = source.replace("\\", "/")
     target = target.replace("\\", "/")
@@ -139,6 +139,11 @@ def main(manifestFile, source, target, replacements,
             raise Exception("Could not find %s in %s" % (pattern, source))
         for fn in fns:
             fn = fn.replace("\\", "/")
+            if exclusions is not None:
+                bn = posixpath.basename(fn)
+                if bn in exclusions:
+                    print("not copying %s since it is excluded" % bn)
+                    continue
             if dn is None:
                 odn = posixpath.dirname(fn).replace(source,target,1)
             else: odn = posixpath.join(target, dn)
@@ -152,7 +157,7 @@ if __name__ == "__main__":
 
     kwargs = {}
 
-    opts,args = getopt.getopt(sys.argv[1:], "oct:")
+    opts,args = getopt.getopt(sys.argv[1:], "oct:x:")
 
     if len(args) == 0:
         input("testing *.man files in current directory:")
@@ -170,15 +175,19 @@ if __name__ == "__main__":
     replacements = args[3:]
 
     text_patterns = []
+    exclusions = []
 
     for opt in opts:
         if opt[0] == "-o": kwargs["overwrite"] = True
         elif opt[0] == "-c": kwargs["clean"] = True
         elif opt[0] == "-t": text_patterns.append(opt[1])
+        elif opt[0] == "-x": exclusions.append(opt[1])
         else: raise Exception("Unknown option %s" % opt[0])
 
     if len(text_patterns):
         kwargs["text_patterns"] = text_patterns
+    if len(exclusions):
+        kwargs["exclusions"] = exclusions
 
     main(args[0], args[1], args[2], replacements, **kwargs)
 
