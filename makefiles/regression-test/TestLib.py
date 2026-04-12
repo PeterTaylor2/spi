@@ -10,6 +10,15 @@ if sys.version_info[0] > 2:
     raw_input = input
     time.clock = time.perf_counter
 
+def printTimings(timings):
+    print()
+    print("%-30s %6s %6s %11s %11s" % ("name", "calls", "errors", "time(ms)", "avgTime(ms)"))
+    print("%s %s %s %s %s" % ("="*30, "="*6, "="*6, "="*11, "="*11))
+    for name,calls,errors,totalTime in zip(*timings):
+        print("%-30s %6d %6d %11.4f %11.4f" % (
+                name, calls, errors, totalTime*1e3, totalTime*1e3/calls))
+    print()
+
 def runDriverClass(driverClass, ifn, ofn, profile=False):
     #
     # runs a driver class returning True on success and False on failure
@@ -53,9 +62,16 @@ def TestMain(driverClass, driverFile):
     import getopt
     import sys
 
-    opts,args = getopt.getopt(sys.argv[1:], "w", ["startup=", "profile"])
+    opts,args = getopt.getopt(
+        sys.argv[1:], "w",
+        ["service=", "logging", "timing", "startup=", "profile"])
+
     compare = False
     profile = False
+    service = None
+    logging = False
+    timing = False
+
     for opt in opts:
         if opt[0] == "-w": raw_input("Enter to continue:")
         if opt[0] == "--startup":
@@ -63,9 +79,17 @@ def TestMain(driverClass, driverFile):
             print ("executing %s" % startupCode)
             exec(startupCode)
         if opt[0] == "--profile": profile = True
+        if opt[0] == "--service": service = opt[1]
+        if opt[0] == "--logging": logging = True
+        if opt[0] == "--timing": timing = True
+
+    svc = None if service is None else __import__(service)
+    if svc is None:
+        logging = False
+        timing = False
 
     if len(args) == 0:
-        # when run without parameters we want to guess the inut file
+        # when run without parameters we want to guess the input file
         # and run the comparison at the end
         #
         # from the Makefile we give it the parameters and then do the
@@ -92,7 +116,24 @@ def TestMain(driverClass, driverFile):
 
     ifn = args[0]
     ofn = args[1]
+    lfn = None
+
+    if logging:
+        name = ifn.split(".")[0]
+        lfn = name + ".log"
+        svc.start_logging(lfn)
+
+    if timing:
+        svc.start_timing()
+
     success = runDriverClass(driverClass, ifn, ofn, profile=profile)
+
+    if logging:
+        print("closing logfile: %s" % lfn)
+        svc.stop_logging()
+
+    if timing:
+        printTimings(svc.get_timings())
 
     if compare and success:
         import compareResults

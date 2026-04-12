@@ -15,7 +15,8 @@ def runOne(name, inputs, output):
 
     return TestLib.runDriverClass(driverClass, ifn, ofn)
 
-def main(drivers, inputs, output, startup=None):
+def main(drivers, inputs, output, startup=None, service=None,
+         logging=False, timing=False):
 
     sys.path.insert(0, drivers)
 
@@ -29,10 +30,26 @@ def main(drivers, inputs, output, startup=None):
     count = 0
     good = 0
 
+    if service is not None:
+        svc = __import__(service)
+    else:
+        logging = False
+        timing = False
+
     if startup:
-        print ("executing: %s" % startup)
-        exec(startup)
+        try:
+            exec(startup)
+        except:
+            print("failed to execute startup:", startup)
+            raise
     
+    if logging:
+        lfn = "%s.log" % service
+        svc.start_logging(lfn)
+
+    if timing:
+        svc.start_timing()
+
     for fn in glob.glob(os.path.join(drivers, "*.py")):
         name = os.path.basename(fn)[:-3]
         print ("==============================================================")
@@ -51,6 +68,13 @@ def main(drivers, inputs, output, startup=None):
     print ("%s succeeded out of %s test drivers" % (good, count))
     print
 
+    if logging:
+        print("closing logfile: %s" % lfn)
+        svc.stop_logging()
+
+    if timing:
+        TestLib.printTimings(svc.get_timings())
+
 if __name__ == "__main__":
 
     import getopt
@@ -61,7 +85,8 @@ if __name__ == "__main__":
     # results to the output directory
 
     kwargs = {}
-    opts, args = getopt.getopt(sys.argv[1:], "w", ["startup="])
+    opts, args = getopt.getopt(sys.argv[1:], "w", 
+                               ["startup=", "service=", "logging", "timing"])
     if len(args) != 3:
         raise RuntimeError(
             "%s: Expect [drivers] [inputs] [output] on command line" %
@@ -70,7 +95,9 @@ if __name__ == "__main__":
     for opt in opts:
         if opt[0] == "-w": raw_input("Enter to continue")
         elif opt[0] == "--startup": kwargs["startup"] = opt[1]
-        pass #end-for
+        elif opt[0] == "--service": kwargs["service"] = opt[1]
+        elif opt[0] == "--logging": kwargs["logging"] = True
+        elif opt[0] == "--timing": kwargs["timing"] = True
 
     main(*args, **kwargs)
     
