@@ -62,7 +62,7 @@ public:
         // indicates that you are not doing function logging but there might still
         // be a streamer so you can log messages
         bool minimal = false;
-        ObjectTextStreamerSP streamer = ObjectTextStreamerSP();
+        ObjectTextStreamerSP streamer;
     };
 
     ~CommonRuntime();

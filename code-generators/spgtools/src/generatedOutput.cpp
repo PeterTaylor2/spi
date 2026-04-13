@@ -316,7 +316,8 @@ bool writeFileIfChanged(
             if (writeFile && writeBackup)
             {
                 std::cout << backup << std::endl;
-                std::ofstream bstr(backup.c_str(), textFormat ? 0 : std::ios_base::binary);
+                std::ofstream bstr(backup.c_str(),
+                    textFormat ? std::ios_base::out : std::ios_base::binary);
                 if (bstr.good())
                 {
                     bstr.write(oldContents.c_str(), oldContents.length());
@@ -338,7 +339,8 @@ bool writeFileIfChanged(
     {
         std::cout << filename << std::endl;
         // binary => we will be using linux line endings
-        std::ofstream ostr(filename, textFormat ? 0 : std::ios_base::binary);
+        std::ofstream ostr(filename,
+            textFormat ? std::ios_base::out : std::ios_base::binary);
         if (!ostr.good())
         {
             SPI_THROW_RUNTIME_ERROR("Could not open " << filename << " for writing");

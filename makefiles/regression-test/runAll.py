@@ -93,7 +93,7 @@ if __name__ == "__main__":
             (sys.argv[0]))
 
     for opt in opts:
-        if opt[0] == "-w": raw_input("Enter to continue")
+        if opt[0] == "-w": input("Enter to continue")
         elif opt[0] == "--startup": kwargs["startup"] = opt[1]
         elif opt[0] == "--service": kwargs["service"] = opt[1]
         elif opt[0] == "--logging": kwargs["logging"] = True

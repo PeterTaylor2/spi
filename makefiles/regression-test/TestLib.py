@@ -12,10 +12,10 @@ if sys.version_info[0] > 2:
 
 def printTimings(timings):
     print()
-    print("%-30s %6s %6s %11s %11s" % ("name", "calls", "errors", "time(ms)", "avgTime(ms)"))
-    print("%s %s %s %s %s" % ("="*30, "="*6, "="*6, "="*11, "="*11))
+    print("%-50s %6s %6s %11s %11s" % ("name", "calls", "errors", "time(ms)", "avgTime(ms)"))
+    print("%s %s %s %s %s" % ("="*50, "="*6, "="*6, "="*11, "="*11))
     for name,calls,errors,totalTime in zip(*timings):
-        print("%-30s %6d %6d %11.4f %11.4f" % (
+        print("%-50s %6d %6d %11.4f %11.4f" % (
                 name, calls, errors, totalTime*1e3, totalTime*1e3/calls))
     print()
 
