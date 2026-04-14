@@ -86,7 +86,6 @@ public:
      *      for numbers entered with a fixed number of decimal places.
      * NOREF: Don't show object reference numbers on output.
      * LOACC: indicates minimum accuracy (i.e. 8 decimal places).
-     * NODETAILS: Don't show field names on output.
      */
     static ObjectTextStreamerSP Make(
         const ServiceConstSP& service,

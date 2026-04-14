@@ -13,11 +13,6 @@ U_SPPY_OPTIONS=--noGeneratedCodeNotice --licenseFile=../../LGPL.h --keywords --t
 U_VCXPROJ_OPTIONS=-tall
 U_VCPROJ=spdoc-config
 
-ifeq ($(DEBUG),1)
-U_SPCL_OPTIONS+=-w
-U_SPPY_OPTIONS+=-w
-endif
-
 include $(U_SPI_HOME)/makefiles/spi/spcl.mk
 include $(U_SPI_HOME)/makefiles/spi/sppy.mk
 
