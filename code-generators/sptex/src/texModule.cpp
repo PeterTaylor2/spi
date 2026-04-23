@@ -187,7 +187,8 @@ static void writeArgsTable(
 static void writeAttributesTable(
     GeneratedOutput& ostr,
     const std::vector<spdoc::ClassAttributeConstSP>& attributes,
-    bool noCrossRef)
+    bool noCrossRef,
+    std::set<std::string>& typesUsed)
 {
     // annoyingly close to function arguments table
     // differences are that the list of attributes is of different type
@@ -241,29 +242,10 @@ static void writeAttributesTable(
         {
             ostr << "\nSee " << texEscape(dataType->name)
                  << " (page \\pageref{type_" << dataType->name << "}).\n";
+
+            typesUsed.insert(dataType->name);
         }
 
-#if 0
-        switch(publicType)
-        {
-        case spdoc::PublicType::ENUM:
-            ostr << "\nSee " << texEscape(dataType->name)
-                 << " (page \\pageref{type_" << dataType->name << "}).\n";
-            break;
-        case spdoc::PublicType::CLASS:
-            ostr << "\nSee " << texEscape(dataType->name)
-                 << " (page \\pageref{type_" << dataType->name << "}).\n";
-            break;
-        case spdoc::PublicType::BOOL:
-        case spdoc::PublicType::CHAR:
-        case spdoc::PublicType::INT:
-        case spdoc::PublicType::DOUBLE:
-        case spdoc::PublicType::STRING:
-        case spdoc::PublicType::DATE:
-        case spdoc::PublicType::UNINITIALIZED_VALUE:
-            break;
-        }
-#endif
         ostr << " & \\\\\n";
     }
 
@@ -541,7 +523,7 @@ std::string writeTexClass(
     }
     else
     {
-        writeAttributesTable(ostr, cls->attributes, forImport);
+        writeAttributesTable(ostr, cls->attributes, forImport, typesUsed);
     }
 
     if (cls->properties.size() > 0)
@@ -549,7 +531,7 @@ std::string writeTexClass(
         ostr << "\n"
              << "\\textbf{Properties:}\n"
              << "\\nopagebreak\n";
-        writeAttributesTable(ostr, cls->properties, forImport);
+        writeAttributesTable(ostr, cls->properties, forImport, typesUsed);
         ostr << "Note that properties can be accessed in the same way as "
              << "attributes, but are not part of the constructor or the "
              << "serialization of the class.\n"
