@@ -137,9 +137,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spxl-exe", "code-generators
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spi-lib", "lib\spi-lib.v17.vcxproj", "{0DC26036-915B-11E9-92F6-34E12D458C69}"
-	ProjectSection(ProjectDependencies) = postProject
-		{7C327B2E-BEE9-11E7-9023-AC2B6E11458A} = {7C327B2E-BEE9-11E7-9023-AC2B6E11458A}
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spi-util-lib", "spi_util\lib\spi-util-lib.v17.vcxproj", "{49A23208-9913-11EA-8560-DCFE07D3132C}"
 EndProject

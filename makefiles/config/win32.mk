@@ -100,6 +100,15 @@ endif
 
 ifdef VS_BUILD
 
+# despite the fact that we set the PATH inside the Visual Studio projects
+# we also need to set it here since sometimes the Visual Studio project
+# runs makefiles for different directories and these need an absolute PATH
+# to be defined here
+#
+# the path inside the project files is a relative path and might need to stay
+# that way since sometimes we need to check-in the project file and it can't
+# have an absolute path in it in that case
+
 PATH:=$(abspath $(G_CYGWIN_BIN)):$(PATH)
 export PATH
 
