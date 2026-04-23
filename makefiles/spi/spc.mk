@@ -62,7 +62,7 @@ spc-info:
 $(I_C_TARGET): $(I_C_SOURCE) $(I_SPC)
 	@mkdir -p $(I_C_SRC)
 	@mkdir -p $(I_C_SRC)/src
-	$(I_SPC) $(G_SPC_OPTIONS) $(U_SPC_OPTIONS) $(I_C_SOURCE) $(I_C_TARGET) $(I_C_SRC)
+	$(I_SPC) $(G_SPC_OPTIONS) $(U_SPC_OPTIONS) $(SPC_OPTIONS) $(I_C_SOURCE) $(I_C_TARGET) $(I_C_SRC)
 
 clean::
 	rm -f $(I_C_TARGET)

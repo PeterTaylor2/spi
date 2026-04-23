@@ -47,7 +47,7 @@ endif
 
 $(U_SERVICE).svo: $(I_SOURCES) $(I_SPCL) $(U_FORCE_REBUILD)
 	@mkdir -p $(U_TARGET_DIR)/src
-	$(SPCL_WRAPPER) $(I_SPCL) $(I_SPCL_OPTIONS) $(U_SERVICE).svc $(U_SERVICE).svo $(U_SERVICE).svt $(U_TARGET_DIR)
+	$(SPCL_WRAPPER) $(I_SPCL) $(I_SPCL_OPTIONS) $(SPCL_OPTIONS) $(U_SERVICE).svc $(U_SERVICE).svo $(U_SERVICE).svt $(U_TARGET_DIR)
 
 clean::
 	rm -f $(U_SERVICE).svo 
