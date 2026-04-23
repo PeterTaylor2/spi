@@ -22,9 +22,14 @@ include $(U_SPI_HOME)/makefiles/version.mk
 ###########################################################################
 U_SPTEX?=sptex
 
-I_SPTEX=$(wildcard $(U_SPI_HOME)/code-generators/bin-win32/$(G_ABI)/$(U_SPTEX)$(G_EXE))
+ifdef LOCAL_BUILD
+I_SPTEX=$(wildcard $(U_SPI_HOME)/code-generators/bin/$(G_ABI)/$(U_SPTEX)$(G_EXE))
+else
+I_SPTEX=
+endif
+
 ifeq "$(I_SPTEX)" ""
-I_SPTEX:=$(U_SPI_HOME)/code-generators/bin-win32/$(U_SPTEX)$(G_EXE)
+I_SPTEX:=$(U_SPI_HOME)/code-generators/bin-$(G_PLATFORM)/$(U_SPTEX)$(G_EXE)
 endif
 
 I_SVO2TEX_SCRIPTS=$(U_SPI_HOME)/svo/svo2tex.py $(wildcard $(U_SPI_HOME)/svo/lib/*.py)
