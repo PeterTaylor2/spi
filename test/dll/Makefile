@@ -1,8 +1,11 @@
 target:
 
 U_SPI_HOME=../..
+U_TARGET=test-dll
+
 include $(U_SPI_HOME)/makefiles/config/config.mk
 
+U_VCPROJ=test-dll
 U_INCLUDES=-I../lib
 
 U_DEP_LIBS=\
