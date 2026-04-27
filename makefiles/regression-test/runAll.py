@@ -80,6 +80,8 @@ if __name__ == "__main__":
     import getopt
     import sys
 
+    print("python.exe: %s" % sys.executable)
+
     # runs all the python scripts in the drivers directory
     # using inputs from the inputs directory and writing the
     # results to the output directory
