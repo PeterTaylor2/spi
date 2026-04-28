@@ -41,4 +41,5 @@ I_SYS_LIBS=-lc -lm -ldl -lpthread $(G_UUID_LIBS)
 G_LINUX64_GCC_WARNINGS?=-Wall -Wno-unused-value -Wno-deprecated -Wno-unused-variable -Wno-unused-but-set-variable -Wno-write-strings -Wno-sequence-point -Werror
 
 G_LINUX_VISIBILITY?=-fvisibility=hidden
+G_LINUX64_GCC_M64?=-m64
 
