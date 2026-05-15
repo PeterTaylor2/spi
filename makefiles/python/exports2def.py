@@ -13,7 +13,7 @@ def convert(fn, ofn):
         if len(parts) == 4 and parts == ["ordinal", "hint", "RVA", "name"]:
             started = True
             continue
-        if started and len(parts) > 4:
+        if started and len(parts) >= 4:
             ordinal = parts[0]
             hint = parts[1]
             rva = parts[2]
