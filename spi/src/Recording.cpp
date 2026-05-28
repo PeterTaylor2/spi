@@ -84,87 +84,133 @@ namespace
 
     void WriteRecords(const std::unordered_map<std::string, size_t>& records)
     {
-        if (g_serverName.empty() && g_dnLocal.empty())
-            return;
+        // note we need to be careful not to throw any exceptions since it is likely called from an atexit handler
+        // this is for individual data requests - we put an overarching try...catch around the whole function to avoid any exceptions escaping from this function
 
-        if (records.empty())
-            return;
+        try
+        {
+
+            if (g_serverName.empty() && g_dnLocal.empty())
+                return;
+
+            if (records.empty())
+                return;
 
 #ifdef DEBUG_LOGGING
-        std::cout << "Writing " << records.size() << " records to "
-            << g_serverName << "(" << g_serverIP << ")" << ":" << g_serverPort << std::endl;
+            std::cout << "Writing " << records.size() << " records to "
+                << g_serverName << "(" << g_serverIP << ")" << ":" << g_serverPort << std::endl;
 #endif
 
+#ifdef RECORD_PID
+            size_t processId = 0;
+#ifdef _MSC_VER
+            try
+            {
+                processId = spi_util::IntegerCast<size_t>(::GetCurrentProcessId());
+            }
+            catch (...) {}
+#else
+            try
+            {
+                processId = spi_util::IntegerCast<size_t>(::getpid());
+            }
+            catch (...) {}
+#endif
+#endif
 
 #ifdef _MSC_VER
-#ifdef RECORD_PID
-        size_t processId = spi_util::IntegerCast<size_t>(::GetCurrentProcessId());
-#endif
-        std::string osName = "windows";
+            std::string osName = "windows";
 #else
+            std::string osName = "linux";
+#endif
+
+            std::string context;
+            std::string userName;
+            std::string computerName;
+
+            try
+            {
+                context = spi_util::StringJoin("|", CommonRuntime::GetContextNames());
+            }
+            catch (...) {}
+
+            try
+            {
+                userName = spi_util::UserName();
+            }
+            catch (...) {}
+
+            try
+            {
+                computerName = spi_util::ComputerName();
+            }
+            catch (...) {}
+
+            // each row starts with userName, computerName, osName, context
+            // then we add the type, name and the count for that record
+
+            std::vector<spi_util::JSONValue> jsonValues;
+            jsonValues.reserve(records.size());
+
+            for (auto iter = records.begin(); iter != records.end(); ++iter)
+            {
+                const auto& key = iter->first;
+                size_t count = iter->second;
+
+                spi_util::JSONMapSP jm(new spi_util::JSONMap());
+
+                jm->Insert("user", userName);
+                jm->Insert("computer", computerName);
+                jm->Insert("os", osName);
 #ifdef RECORD_PID
-        size_t processId = spi_util::IntegerCast<size_t>(::getpid());
+                jm->Insert("pid", (double)processId);
 #endif
-        std::string osName = "linux";
-#endif
-        std::string context = spi_util::StringJoin("|", CommonRuntime::GetContextNames());
-        std::string userName = spi_util::UserName();
-        std::string computerName = spi_util::ComputerName();
+                jm->Insert("context", context);
+                jm->Insert("function", key);
+                jm->Insert("count", (double)count);
 
-        // each row starts with userName, computerName, osName, context
-        // then we add the type, name and the count for that record
+                jsonValues.push_back(spi_util::JSONValue(jm));
+            }
 
-        std::vector<spi_util::JSONValue> jsonValues;
-        jsonValues.reserve(records.size());
+            // copy globals to locals early to avoid races with a detached writer thread
+            std::string serverIP = g_serverIP;
+            int serverPort = g_serverPort;
+            std::string dnLocal = g_dnLocal;
 
-        for (auto iter = records.begin(); iter != records.end(); ++iter)
-        {
-            const auto& key = iter->first;
-            size_t count = iter->second;
-
-            spi_util::JSONMapSP jm(new spi_util::JSONMap());
-
-            jm->Insert("user", userName);
-            jm->Insert("computer", computerName);
-            jm->Insert("os", osName);
-#ifdef RECORD_PID
-            jm->Insert("pid", (double)processId);
-#endif
-            jm->Insert("context", context);
-            jm->Insert("function", key);
-            jm->Insert("count", (double)count);
-        
-            jsonValues.push_back(spi_util::JSONValue(jm));
-        }
-
-        // copy globals to locals early to avoid races with a detached writer thread
-        std::string serverIP = g_serverIP;
-        int serverPort = g_serverPort;
-        std::string dnLocal = g_dnLocal;
-
-        // there was a case in testing where there was a crash seemingly due to the multi-threading
-        SPI_UTIL_LOCAL_LOCK;
+            // there was a case in testing where there was a crash seemingly due to the multi-threading
+            SPI_UTIL_LOCAL_LOCK;
 
 #ifndef SPI_STATIC
-        if (!serverIP.empty())
-        {
-            spi_util::UDPUploadJSON(g_serverIP, g_serverPort, jsonValues);
-        }
+            if (!serverIP.empty())
+            {
+                spi_util::UDPUploadJSON(g_serverIP, g_serverPort, jsonValues);
+            }
 #endif
 
-        if (!dnLocal.empty())
-        {
-            std::string fn = "spi-recording-" + spi::Date::Today().ToString() + ".json";
-            std::string ffn = spi_util::path::join(dnLocal.c_str(), fn.c_str(), 0);
-
-            std::ofstream os(ffn, std::ios::app);
-
-            for (const auto& jsonValue : jsonValues)
+            if (!dnLocal.empty())
             {
-                spi_util::JSONValueToStream(os, jsonValue, true, 0);
-                os << std::endl;
+                std::string fn = "spi-recording-" + spi::Date::Today().ToString() + ".json";
+                std::string ffn = spi_util::path::join(dnLocal.c_str(), fn.c_str(), 0);
+
+                std::ofstream os(ffn, std::ios::app);
+
+                for (const auto& jsonValue : jsonValues)
+                {
+                    spi_util::JSONValueToStream(os, jsonValue, true, 0);
+                    os << std::endl;
+                }
+                os.close();
             }
-            os.close();
+        }
+        catch (std::exception& e)
+        {
+            std::cerr << "Exception in WriteRecords: " << e.what() << std::endl;
+            return;
+        }
+        catch (...)
+        {
+            std::cerr << "Unknown exception in WriteRecords" << std::endl;
+            return;
         }
     }
 
