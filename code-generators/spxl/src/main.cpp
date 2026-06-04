@@ -157,7 +157,7 @@ int main(int argc, char* argv[])
 
     Options options;
 
-    const char* longOptions = "nameAtEnd noGeneratedCodeNotice upperCase funcNameSep= noObjectFuncs parent="
+    const char* longOptions = "nameAtEnd noGeneratedCodeNotice upperCase funcNameSep= noObjectFuncs noPrefixObjectFuncs parent="
         " optionsFile= license licenseFile= errIsNA backup xlTargetVersion= nsUpperCase";
 
     try
@@ -220,6 +220,10 @@ int main(int argc, char* argv[])
             else if (opt == "--noObjectFuncs")
             {
                 options.noObjectFuncs = true;
+            }
+            else if (opt == "--noPrefixObjectFuncs")
+            {
+                options.noPrefixObjectFuncs = true;
             }
             else if (opt == "--backup")
             {

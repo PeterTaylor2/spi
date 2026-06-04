@@ -100,7 +100,8 @@ public:
         const std::string& objectFreeAll = std::string("object_free_all"),
         const std::string& objectList = std::string("object_list"),
         const std::string& objectClassName = std::string("object_class_name"),
-        const std::string& objectSHA= std::string("object_sha"));
+        const std::string& objectSHA= std::string("object_sha"),
+        bool noPrefixObjectFuncs = false);
 
     /**
      * Register a function with Excel and keep track of its name so that

@@ -45,6 +45,7 @@ struct Options
         upperCase(false),
         nsUpperCase(false),
         noObjectFuncs(false),
+        noPrefixObjectFuncs(false),
         errIsNA(false),
         writeBackup(false),
         license(),
@@ -82,6 +83,7 @@ struct Options
     bool upperCase;
     bool nsUpperCase;
     bool noObjectFuncs;
+    bool noPrefixObjectFuncs;
     bool errIsNA;
     bool writeBackup;
     std::string license;

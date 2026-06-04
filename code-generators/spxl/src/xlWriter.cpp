@@ -296,7 +296,11 @@ ExcelService::writeXllSourceFile(const std::string& dirname) const
                 << " \"" << m_options.objectClassName << "\","
                 << " \"" << m_options.objectSHA << "\"";
         }
-        ostr << "\n    );\n\n";
+        if (m_options.noPrefixObjectFuncs)
+        {
+            ostr << ", true";
+        }
+        ostr << ");\n\n";
     }
 
     for (size_t i = 0; i < m_service->modules.size(); ++i)
@@ -447,7 +451,7 @@ ExcelService::writeXllSourceFile(const std::string& dirname) const
                 << "    XLOPER* v25)\n"
                 << "{\n"
                 << "    return " << xlServiceName
-                << "->ObjectPut(handle, baseName, names,\n"
+                << "->ObjectPut(baseName, handle, names,\n"
                 << "        v1, v2, v3, v4, v5, v6, v7, v8, v9, v10,\n"
                 << "        v11, v12, v13, v14, v15, v16, v17, v18, v19, v20,\n"
                 << "        v21, v22, v23, v24, v25);\n"
@@ -624,7 +628,7 @@ std::vector<std::string> ExcelService::translateVbaFiles(
         std::map<std::string, std::string> values;
         values["ns"] = m_options.nsUpperCase ? StringUpper(ns()) : ns();
         values["name"] = name();
-        values["serviceName"] = m_options.upperCase ? StringUpper(longName()) : longName();
+        values["serviceName"] = longName();
         // I fear that the name of the XLL is not a guarantee
         values["xll"] = spi_util::StringFormat(
             "xl_%s.xll", name().c_str());
@@ -640,7 +644,7 @@ std::vector<std::string> ExcelService::translateVbaFiles(
         values["stopTimingFunction"] = xlfunc(ns(), upperCase, nsUpperCase, sep, m_options.stopTiming);
         values["clearTimingsFunction"] = xlfunc(ns(), upperCase, nsUpperCase, sep, m_options.clearTimings);
 
-        if (m_options.noObjectFuncs)
+        if (m_options.noObjectFuncs || m_options.noPrefixObjectFuncs)
         {
             std::string nns;
             values["object_get"] = xlfunc(nns, upperCase, nsUpperCase, sep, m_options.objectGet);
