@@ -54,12 +54,12 @@ public:
         const std::string& streamName,
         const std::string& data,
         size_t offset,
-        const MapConstSP& metaData);
+        const MapConstSP& metaData) override;
     void to_stream(
         std::ostream& ostr,
         const ObjectConstSP& object,
         const MapConstSP& metaData = MapConstSP(),
-        bool addObjectId = false);
+        bool addObjectId = false) override;
 
     // functions specific to ObjectTextStreamer
 
@@ -116,6 +116,28 @@ private:
     bool             m_noIndent;
     bool             m_objectId;
     bool             m_noObjectId;
+
+    bool             m_noNewLine;
+};
+
+class SPI_IMPORT ObjectShortTextStreamer : public IObjectStreamer
+{
+public:
+    /**
+     * If options is defined then it is a ';' delimited string with the
+     * following options supported (case independent):
+     *
+     * ACC: indicates maximum accuracy of doubles is provided in the floating
+     *      point string representation (i.e. 17 decimal places) as opposed
+     *      to 15 decimal places which ensures removal of trailing 0s and 9s
+     *      for numbers entered with a fixed number of decimal places.
+     * LOACC: indicates minimum accuracy (i.e. 8 decimal places).
+     */
+    static ObjectTextStreamerSP Make(
+        const ServiceConstSP& service,
+        const char* options = 0);
+
+    static void Register();
 };
 
 /**

@@ -60,7 +60,7 @@ IObjectStreamer::RegInfo IObjectStreamer::FindRegInfo(const std::string& key)
 const char* IObjectStreamer::Recognizer(const std::string& key)
 {
     const char* recognizer = FindRegInfo(key).recognizer;
-    if (!recognizer || !*recognizer)
+    if (!recognizer)
         throw RuntimeError("No recognizer for format '%s'", key.c_str());
 
     return recognizer;
@@ -125,7 +125,7 @@ IObjectStreamer::RegInfo::RegInfo(
     if (!maker)
         throw RuntimeError("%s: Maker undefined", __FUNCTION__);
 
-    if (!recognizer || !*recognizer)
+    if (!recognizer)
         throw RuntimeError("%s: Recognizer undefined", __FUNCTION__);
 }
 

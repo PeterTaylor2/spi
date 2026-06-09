@@ -332,13 +332,15 @@ ObjectConstSP Service::object_from_data(
 
     const std::vector<std::string>& formats = IObjectStreamer::Formats(allowBinary);
 
-    for (std::vector<std::string>::const_iterator iter = formats.begin();
-         iter != formats.end(); ++iter)
+    for (auto iter = formats.begin(); iter != formats.end(); ++iter)
     {
         const char* recognizer = IObjectStreamer::Recognizer(*iter);
 
         SPI_POST_CONDITION(recognizer);
-        SPI_POST_CONDITION(*recognizer);
+
+        // we are allowed an empty recognizer
+        // it should really be the last format registered
+        // short text is the relevant format
 
         // read the first N characters from the stream
         // if it matches the recognizer then we are good to go
@@ -353,7 +355,24 @@ ObjectConstSP Service::object_from_data(
 
             size_t offset = streamer->uses_recognizer() ? 0 : rlen;
 
-            ObjectConstSP obj = streamer->from_data(streamName, data, offset, metaData);
+            ObjectConstSP obj;
+
+            if (*recognizer)
+            {
+                obj = streamer->from_data(streamName, data, offset, metaData);
+            }
+            else
+            {
+                try
+                {
+                    obj = streamer->from_data(streamName, data, offset, metaData);
+                }
+                catch (...)
+                {
+                    continue; // only the from_data function can recognize the text
+                }
+            }
+
             double parseTime = clock.Time();
             ObjectPutMetaData(obj,
                 { "parseTime", "size" },
@@ -374,9 +393,10 @@ ObjectConstSP Service::object_from_data(
             return obj;
         }
     }
-    throw RuntimeError("%s: Could not recognize any of the file formats: %s",
-        streamName.c_str(),
-        spi_util::StringJoin(",", formats).c_str());
+
+    SPI_THROW_RUNTIME_ERROR(
+        streamName << ": Could not recognize any of the file formats: "
+        << spi_util::StringJoin(",", formats));
 }
 
 ObjectConstSP Service::object_from_string(

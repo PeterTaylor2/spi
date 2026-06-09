@@ -418,8 +418,9 @@ bool Object::to_stream(
 
     if (!streamer->uses_recognizer())
     {
-        ostr << IObjectStreamer::Recognizer(key);
-        if (!isBinary)
+        const char* recognizer = IObjectStreamer::Recognizer(key);
+        ostr << recognizer;
+        if (!isBinary && *recognizer)
             ostr << '\n';
     }
 

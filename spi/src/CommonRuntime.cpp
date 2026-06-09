@@ -79,6 +79,8 @@ CommonRuntime::CommonRuntime()
     ObjectJSONStreamer::Register();
     ObjectCompressedTextStreamer::Register();
     ObjectBinaryStreamer::Register();
+    // ShortText is registered last since it doesn't have a recognizer
+    ObjectShortTextStreamer::Register();
 }
 
 CommonRuntime::~CommonRuntime()

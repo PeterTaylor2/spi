@@ -61,22 +61,26 @@ const char* NumFormat(
     return "%.15g";
 }
 
-void WriteValue(std::ostream& ostr,
-                const Value&  value,
-                MapRefCache&  mapRefCache,
-                const std::string& indent,
-                const std::string& addIndent,
-                const char* numFormat,
-                bool noMapRef);
+void WriteValue(
+    std::ostream&      ostr,
+    const Value&       value,
+    MapRefCache&       mapRefCache,
+    const std::string& indent,
+    const std::string& addIndent,
+    const char*        numFormat,
+    bool               noMapRef,
+    bool               noNewLine);
 
-void WriteMap(std::ostream&      ostr,
-              const MapConstSP&  m,
-              int                ref,
-              MapRefCache&       mapRefCache,
-              const std::string& indent,
-              const std::string& addIndent,
-              const char*        numFormat,
-              bool               noMapRef)
+void WriteMap(
+    std::ostream&      ostr,
+    const MapConstSP&  m,
+    int                ref,
+    MapRefCache&       mapRefCache,
+    const std::string& indent,
+    const std::string& addIndent,
+    const char*        numFormat,
+    bool               noMapRef,
+    bool               noNewLine)
 {
     const Map* mp = m.get();
     if (!mp)
@@ -92,7 +96,11 @@ void WriteMap(std::ostream&      ostr,
             if (ref != 0)
                 ostr << ref << " ";
         }
-        ostr << "{" << std::endl;
+        ostr << "{";
+        if (noNewLine)
+            ostr << " ";
+        else
+            ostr << std::endl;
 
         std::string newIndent = indent + addIndent;
         const std::vector<std::string>& fieldNames = mp->FieldNames();
@@ -103,8 +111,11 @@ void WriteMap(std::ostream&      ostr,
             const Value&       value = mp->GetValue(name);
             ostr << newIndent << name << " = ";
             WriteValue(ostr, value, mapRefCache, newIndent, addIndent,
-                numFormat, noMapRef);
-            ostr << std::endl;
+                numFormat, noMapRef, noNewLine);
+            if (noNewLine)
+                ostr << " ";
+            else
+                ostr << std::endl;
         }
         ostr << indent << "}";
     }
@@ -118,6 +129,7 @@ void WriteObject(
     const std::string&   addIndent,
     const char*          numFormat,
     bool                 noMapRef,
+    bool                 noNewLine,
     const MapConstSP&    metaData = MapConstSP(),
     bool                 addObjectId = false)
 {
@@ -149,7 +161,7 @@ void WriteObject(
             obj->to_map(&om, false);
 
             WriteMap(ostr, aMap, mapRef, mapRefCache,
-                indent, addIndent, numFormat, noMapRef);
+                indent, addIndent, numFormat, noMapRef, noNewLine);
         }
         else
         {
@@ -160,16 +172,22 @@ void WriteObject(
     }
 }
 
-void WriteArray(std::ostream& ostr,
-                const IArray* array,
-                MapRefCache&  mapRefCache,
-                const std::string& indent,
-                const std::string& addIndent,
-                const char* numFormat,
-                bool noMapRef)
+void WriteArray(
+    std::ostream&      ostr,
+    const IArray*      array,
+    MapRefCache&       mapRefCache,
+    const std::string& indent,
+    const std::string& addIndent,
+    const char*        numFormat,
+    bool               noMapRef,
+    bool               noNewLine)
 {
     std::string newIndent = indent + addIndent;
-    std::string sep("\n" + newIndent);
+    std::string sep;
+    if (noNewLine)
+        sep = " " + newIndent;
+    else
+        sep = "\n" + newIndent;
 
     const std::vector<size_t> dimensions = array->dimensions();
     size_t numDims = dimensions.size();
@@ -192,26 +210,35 @@ void WriteArray(std::ostream& ostr,
     size_t blockSize = dimensions.back();
     for (size_t i = 0; i < size; i += blockSize)
     {
-        ostr << "\n" << indent << "{";
+        if (noNewLine)
+            ostr << " " << indent << "{";
+        else
+            ostr << "\n" << indent << "{";
+
         for (size_t j = 0; j < blockSize; ++j)
         {
             const Value& value = array->getItem(i+j);
             // FIXME: what if value is undefined?
             ostr << sep;
             WriteValue(ostr, value, mapRefCache,
-                newIndent, addIndent, numFormat, noMapRef);
+                newIndent, addIndent, numFormat, noMapRef, noNewLine);
         }
-        ostr << "\n" << indent << "}";
+        if (noNewLine)
+            ostr << " " << indent << "}";
+        else
+            ostr << "\n" << indent << "}";
     }
 }
 
-void WriteValue(std::ostream& ostr,
-                const Value&  value,
-                MapRefCache&  mapRefCache,
-                const std::string& indent,
-                const std::string& addIndent,
-                const char* numFormat,
-                bool noMapRef)
+void WriteValue(
+    std::ostream&      ostr,
+    const Value&       value,
+    MapRefCache&       mapRefCache,
+    const std::string& indent,
+    const std::string& addIndent,
+    const char*        numFormat,
+    bool               noMapRef,
+    bool               noNewLine)
 {
     switch (value.getType())
     {
@@ -295,14 +322,14 @@ void WriteValue(std::ostream& ostr,
     {
         MapConstSP m = value.getMap();
         WriteMap(ostr, m, 0, mapRefCache, indent, addIndent,
-            numFormat, noMapRef);
+            numFormat, noMapRef, noNewLine);
         break;
     }
     case Value::OBJECT:
     {
         const ObjectConstSP& obj = value.getObject();
         WriteObject(ostr, obj, mapRefCache, indent, addIndent,
-            numFormat, noMapRef);
+            numFormat, noMapRef, noNewLine);
         break;
     }
     case Value::OBJECT_REF:
@@ -319,7 +346,7 @@ void WriteValue(std::ostream& ostr,
     {
         IArrayConstSP a = value.getArray();
         WriteArray(ostr, a.get(), mapRefCache, indent, addIndent,
-            numFormat, noMapRef);
+            numFormat, noMapRef, noNewLine);
         break;
     }
     case Value::ERROR:
@@ -412,7 +439,8 @@ void ObjectTextStreamer::to_stream(
         addObjectId = true;
 
     WriteObject(ostr, object, m_mapRefCache, "", m_noIndent ? "" : " ",
-        NumFormat(m_maxAccuracy, m_minAccuracy), m_noMapRef, metaData, addObjectId);
+        NumFormat(m_maxAccuracy, m_minAccuracy), m_noMapRef, m_noNewLine,
+        metaData, addObjectId);
 }
 
 void ObjectTextStreamer::to_stream(
@@ -423,7 +451,7 @@ void ObjectTextStreamer::to_stream(
     MapSP aMap(new Map(""));
     aMap->SetValue(name, value);
     WriteMap(ostr, aMap, 0, m_mapRefCache, "", m_noIndent ? "" : " ",
-        NumFormat(m_maxAccuracy, m_minAccuracy), m_noMapRef);
+        NumFormat(m_maxAccuracy, m_minAccuracy), m_noMapRef, m_noNewLine);
 }
 
 void ObjectTextStreamer::to_stream(
@@ -431,9 +459,8 @@ void ObjectTextStreamer::to_stream(
     const MapConstSP& aMap)
 {
     WriteMap(ostr, aMap, 0, m_mapRefCache, "", m_noIndent ? "" : " ",
-        NumFormat(m_maxAccuracy, m_minAccuracy), m_noMapRef);
+        NumFormat(m_maxAccuracy, m_minAccuracy), m_noMapRef, m_noNewLine);
 }
-
 
 ObjectTextStreamerSP ObjectTextStreamer::Make(
     const ServiceConstSP& service,
@@ -472,13 +499,13 @@ ObjectTextStreamer::ObjectTextStreamer(
     m_noMapRef(false),
     m_noIndent(false),
     m_objectId(false),
-    m_noObjectId(false)
+    m_noObjectId(false),
+    m_noNewLine(false)
 {
     if (options)
     {
         std::vector<std::string> parts = spi_util::CStringSplit(options, ';');
-        for (std::vector<std::string>::const_iterator iter = parts.begin();
-             iter != parts.end(); ++iter)
+        for (auto iter = parts.begin(); iter != parts.end(); ++iter)
         {
             if (iter->empty())
                 continue;
@@ -506,6 +533,12 @@ ObjectTextStreamer::ObjectTextStreamer(
                     m_noIndent = true;
                     continue;
                 }
+                if (strcmp(buf, "NONEWLINE") == 0)
+                {
+                    m_noNewLine = true;
+                    m_noIndent = true;
+                    continue;
+                }
                 if (strcmp(buf, "NO_OBJECT_ID") == 0)
                 {
                     m_noObjectId = true;
@@ -527,10 +560,38 @@ ObjectTextStreamer::ObjectTextStreamer(
                 }
                 break;
             }
-            throw RuntimeError("%s: Unknown option string %s",
-                __FUNCTION__, iter->c_str());
+
+            SPI_THROW_RUNTIME_ERROR(
+                "Unknown option string '" << *iter << "' - available options: "
+                << "ACC, LOACC, NOREF, NOINDENT, NONEWLINE, NO_OBJECT_ID, OBJECT_ID");
         }
     }
+}
+
+ObjectTextStreamerSP ObjectShortTextStreamer::Make(
+    const ServiceConstSP& service,
+    const char* options)
+{
+    std::ostringstream oss;
+    if (options && *options)
+        oss << options << ";";
+
+    // accuracy is determined by the options provided
+    // NONEWLINE and NOREF are enforced by the streamer
+    oss << "NONEWLINE;NOREF";
+
+    std::string combinedOptions = oss.str();
+
+    return ObjectTextStreamer::Make(service, combinedOptions.c_str());
+}
+
+void ObjectShortTextStreamer::Register()
+{
+    // as long as this is registered first it will be used when format = ""
+    IObjectStreamer::Register("SHORT",
+        (IObjectStreamer::Maker*)ObjectShortTextStreamer::Make,
+        false,
+        "");
 }
 
 /*
