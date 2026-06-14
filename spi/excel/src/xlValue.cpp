@@ -1106,8 +1106,8 @@ XLInputValues xlGetInputValues(
         inputs.reserve(nbArgs);
         for (int i = 0; i < nbArgs; ++i)
         {
-            XLOPER* xloper = va_arg(args, XLOPER*);
-            inputs.push_back(xloperToValue(xloper));
+            XLOPER12* xloper = va_arg(args, XLOPER12*);
+            inputs.push_back(xloper12ToValue(xloper));
         }
 
         if (baseNameAtEnd)

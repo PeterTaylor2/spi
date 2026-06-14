@@ -364,7 +364,7 @@ ExcelService::writeXllSourceFile(const std::string& dirname) const
 
         ostr << m_import << "\n"
             << "XLOPER12* xl_" << m_service->ns << "_help_func(\n"
-            << "    XLOPER* name)\n"
+            << "    XLOPER12* name)\n"
             << "{\n"
             << "    return " << xlServiceName << "->HelpFunc(name);\n"
             << "}\n"
@@ -377,14 +377,14 @@ ExcelService::writeXllSourceFile(const std::string& dirname) const
             << "\n"
             << m_import << "\n"
             << "XLOPER12* xl_" << m_service->ns << "_object_coerce(\n"
-            << "    XLOPER* className, XLOPER* value, XLOPER* baseName)\n"
+            << "    XLOPER12* className, XLOPER12* value, XLOPER12* baseName)\n"
             << "{\n"
             << "    return " << xlServiceName << "->ObjectCoerce(baseName, className, value);\n"
             << "}\n"
             << "\n"
             << m_import << "\n"
             << "XLOPER12* xl_" << m_service->ns << "_help_enum(\n"
-            << "    XLOPER* name)\n"
+            << "    XLOPER12* name)\n"
             << "{\n"
             << "    return " << xlServiceName << "->HelpEnum(name);\n"
             << "}\n"
@@ -394,11 +394,11 @@ ExcelService::writeXllSourceFile(const std::string& dirname) const
         {
             ostr << m_import << "\n"
                 << "XLOPER12* xl_" << m_service->ns << "_object_to_string(\n"
-                << "    XLOPER* handle,\n"
-                << "    XLOPER* format,\n"
-                << "    XLOPER* options,\n"
-                << "    XLOPER* metaData,\n"
-                << "    XLOPER* mergeMetaData)\n"
+                << "    XLOPER12* handle,\n"
+                << "    XLOPER12* format,\n"
+                << "    XLOPER12* options,\n"
+                << "    XLOPER12* metaData,\n"
+                << "    XLOPER12* mergeMetaData)\n"
                 << "{\n"
                 << "    return " << xlServiceName
                 << "->ObjectToString(handle, format, options, metaData, mergeMetaData);\n"
@@ -407,49 +407,49 @@ ExcelService::writeXllSourceFile(const std::string& dirname) const
                 << m_import << "\n"
                 << "XLOPER12* xl_" << m_service->ns << "_object_from_string(\n"
                 << "    XLOPER12* strings,\n"
-                << "    XLOPER* baseName)\n"
+                << "    XLOPER12* baseName)\n"
                 << "{\n"
                 << "    return " << xlServiceName << "->ObjectFromString(baseName, strings);\n"
                 << "}\n"
                 << "\n"
                 << m_import << "\n"
                 << "XLOPER12* xl_" << m_service->ns << "_object_get(\n"
-                << "    XLOPER* handle,\n"
-                << "    XLOPER* name)\n"
+                << "    XLOPER12* handle,\n"
+                << "    XLOPER12* name)\n"
                 << "{\n"
                 << "    return " << xlServiceName << "->ObjectGet(handle, name);\n"
                 << "}\n"
                 << "\n"
                 << m_import << "\n"
                 << "XLOPER12* xl_" << m_service->ns << "_object_put(\n"
-                << "    XLOPER* handle,\n"
-                << "    XLOPER* baseName,\n"
-                << "    XLOPER* names,\n"
-                << "    XLOPER* v1,\n"
-                << "    XLOPER* v2,\n"
-                << "    XLOPER* v3,\n"
-                << "    XLOPER* v4,\n"
-                << "    XLOPER* v5,\n"
-                << "    XLOPER* v6,\n"
-                << "    XLOPER* v7,\n"
-                << "    XLOPER* v8,\n"
-                << "    XLOPER* v9,\n"
-                << "    XLOPER* v10,\n"
-                << "    XLOPER* v11,\n"
-                << "    XLOPER* v12,\n"
-                << "    XLOPER* v13,\n"
-                << "    XLOPER* v14,\n"
-                << "    XLOPER* v15,\n"
-                << "    XLOPER* v16,\n"
-                << "    XLOPER* v17,\n"
-                << "    XLOPER* v18,\n"
-                << "    XLOPER* v19,\n"
-                << "    XLOPER* v20,\n"
-                << "    XLOPER* v21,\n"
-                << "    XLOPER* v22,\n"
-                << "    XLOPER* v23,\n"
-                << "    XLOPER* v24,\n"
-                << "    XLOPER* v25)\n"
+                << "    XLOPER12* handle,\n"
+                << "    XLOPER12* baseName,\n"
+                << "    XLOPER12* names,\n"
+                << "    XLOPER12* v1,\n"
+                << "    XLOPER12* v2,\n"
+                << "    XLOPER12* v3,\n"
+                << "    XLOPER12* v4,\n"
+                << "    XLOPER12* v5,\n"
+                << "    XLOPER12* v6,\n"
+                << "    XLOPER12* v7,\n"
+                << "    XLOPER12* v8,\n"
+                << "    XLOPER12* v9,\n"
+                << "    XLOPER12* v10,\n"
+                << "    XLOPER12* v11,\n"
+                << "    XLOPER12* v12,\n"
+                << "    XLOPER12* v13,\n"
+                << "    XLOPER12* v14,\n"
+                << "    XLOPER12* v15,\n"
+                << "    XLOPER12* v16,\n"
+                << "    XLOPER12* v17,\n"
+                << "    XLOPER12* v18,\n"
+                << "    XLOPER12* v19,\n"
+                << "    XLOPER12* v20,\n"
+                << "    XLOPER12* v21,\n"
+                << "    XLOPER12* v22,\n"
+                << "    XLOPER12* v23,\n"
+                << "    XLOPER12* v24,\n"
+                << "    XLOPER12* v25)\n"
                 << "{\n"
                 << "    return " << xlServiceName
                 << "->ObjectPut(baseName, handle, names,\n"
@@ -460,8 +460,8 @@ ExcelService::writeXllSourceFile(const std::string& dirname) const
                 << "\n"
                 << m_import << "\n"
                 << "XLOPER12* xl_" << m_service->ns << "_object_to_file(\n"
-                << "    XLOPER* handle, XLOPER* fileName, XLOPER* format, "
-                << "XLOPER* options, XLOPER* metaData, XLOPER* mergeMetaData)\n"
+                << "    XLOPER12* handle, XLOPER12* fileName, XLOPER12* format, "
+                << "XLOPER12* options, XLOPER12* metaData, XLOPER12* mergeMetaData)\n"
                 << "{\n"
                 << "    return " << xlServiceName
                 << "->ObjectToFile(handle, fileName, format, options, metaData, mergeMetaData);\n"
@@ -469,21 +469,21 @@ ExcelService::writeXllSourceFile(const std::string& dirname) const
                 << "\n"
                 << m_import << "\n"
                 << "XLOPER12* xl_" << m_service->ns << "_object_from_file(\n"
-                << "    XLOPER* fileName, XLOPER* baseName)\n"
+                << "    XLOPER12* fileName, XLOPER12* baseName)\n"
                 << "{\n"
                 << "    return " << xlServiceName << "->ObjectFromFile(baseName, fileName);\n"
                 << "}\n"
                 << "\n"
                 << m_import << "\n"
                 << "XLOPER12* xl_" << m_service->ns << "_object_count(\n"
-                << "    XLOPER* className)\n"
+                << "    XLOPER12* className)\n"
                 << "{\n"
                 << "    return " << xlServiceName << "->ObjectCount(className);\n"
                 << "}\n"
                 << "\n"
                 << m_import << "\n"
                 << "XLOPER12* xl_" << m_service->ns << "_object_free(\n"
-                << "    XLOPER* handle)\n"
+                << "    XLOPER12* handle)\n"
                 << "{\n"
                 << "    return " << xlServiceName << "->ObjectFree(handle);\n"
                 << "}\n"
@@ -496,22 +496,22 @@ ExcelService::writeXllSourceFile(const std::string& dirname) const
                 << "\n"
                 << m_import << "\n"
                 << "XLOPER12* xl_" << m_service->ns << "_object_list(\n"
-                << "    XLOPER* prefix, XLOPER* className)\n"
+                << "    XLOPER12* prefix, XLOPER12* className)\n"
                 << "{\n"
                 << "    return " << xlServiceName << "->ObjectList(prefix, className);\n"
                 << "}\n"
                 << "\n"
                 << m_import << "\n"
                 << "XLOPER12* xl_" << m_service->ns << "_object_class_name(\n"
-                << "    XLOPER* handle)\n"
+                << "    XLOPER12* handle)\n"
                 << "{\n"
                 << "    return " << xlServiceName << "->ObjectClassName(handle);\n"
                 << "}\n"
                 << "\n"
                 << m_import << "\n"
                 << "XLOPER12* xl_" << m_service->ns << "_object_sha(\n"
-                << "    XLOPER* handle,\n"
-                << "    XLOPER* version)\n"
+                << "    XLOPER12* handle,\n"
+                << "    XLOPER12* version)\n"
                 << "{\n"
                 << "    return " << xlServiceName << "->ObjectSHA(handle, version);\n"
                 << "}\n";
@@ -520,7 +520,7 @@ ExcelService::writeXllSourceFile(const std::string& dirname) const
         ostr << "\n"
             << m_import << "\n"
             << "XLOPER12* xl_" << m_service->ns << "_start_logging(\n"
-            << "    XLOPER* filename, XLOPER* options, XLOPER* minimal)\n"
+            << "    XLOPER12* filename, XLOPER12* options, XLOPER12* minimal)\n"
             << "{\n"
             << "    return " << xlServiceName << "->StartLogging(filename, options, minimal);\n"
             << "}\n"
@@ -557,7 +557,7 @@ ExcelService::writeXllSourceFile(const std::string& dirname) const
             << "\n"
             << m_import << "\n"
             << "XLOPER12* xl_" << m_service->ns << "_set_error_popups(\n"
-            << "    XLOPER* errorPopups)\n"
+            << "    XLOPER12* errorPopups)\n"
             << "{\n"
             << "    return " << xlServiceName << "->SetErrorPopups(errorPopups);\n"
             << "}\n"
@@ -1121,20 +1121,20 @@ void ExcelModule::declareFunction(
 
     if (func->returnsObject() && !hasBaseName && !nameAtEnd)
     {
-        ostr << sep << "    XLOPER* base_name";
+        ostr << sep << "    XLOPER12* base_name";
         sep = ",\n";
     }
 
     size_t nbInputs = func->inputs.size();
     for (size_t i = 0; i < nbInputs; ++i)
     {
-        ostr << sep << "    XLOPER* " << func->inputs[i]->name;
+        ostr << sep << "    XLOPER12* " << func->inputs[i]->name;
         sep = ",\n";
     }
 
     if (func->returnsObject() && !hasBaseName && nameAtEnd)
     {
-        ostr << sep << "    XLOPER* base_name";
+        ostr << sep << "    XLOPER12* base_name";
         sep = ",\n";
     }
 
@@ -1157,19 +1157,19 @@ void ExcelModule::implementFunction(
 
     if (func->returnsObject() && !hasBaseName && !nameAtEnd)
     {
-        ostr << sep << "    XLOPER* xl_base_name";
+        ostr << sep << "    XLOPER12* xl_base_name";
         sep = ",\n";
     }
 
     for (size_t i = 0; i < nbInputs; ++i)
     {
-        ostr << sep << "    XLOPER* xl_" << func->inputs[i]->name;
+        ostr << sep << "    XLOPER12* xl_" << func->inputs[i]->name;
         sep = ",\n";
     }
 
     if (func->returnsObject() && !hasBaseName && nameAtEnd)
     {
-        ostr << sep << "    XLOPER* xl_base_name";
+        ostr << sep << "    XLOPER12* xl_base_name";
         sep = ",\n";
     }
 
@@ -1380,7 +1380,7 @@ void ExcelModule::declareClass(
 
         if (!nameAtEnd && !noBaseName)
         {
-             ostr << "    XLOPER* base_name";
+             ostr << "    XLOPER12* base_name";
              sep = commaNewLine;
         }
 
@@ -1388,14 +1388,14 @@ void ExcelModule::declareClass(
         for (size_t i = 0; i < nbAttributes; ++i)
         {
             ostr << sep
-                 << "    XLOPER* " << cls->attributes[i]->name;
+                 << "    XLOPER12* " << cls->attributes[i]->name;
             sep = commaNewLine;
         }
 
         if (nameAtEnd && !noBaseName)
         {
             ostr << sep
-                 << "    XLOPER* base_name";
+                 << "    XLOPER12* base_name";
         }
         ostr << ");\n";
     }
@@ -1417,25 +1417,25 @@ void ExcelModule::declareClass(
         bool hasBaseName = funcHasBaseName(method->function.get());
         if (method->function->returnsObject() && !hasBaseName && !nameAtEnd)
         {
-            ostr << sep << "    XLOPER* base_name";
+            ostr << sep << "    XLOPER12* base_name";
             sep = ",\n";
         }
 
         if (!method->isStatic)
         {
-            ostr << sep << "    XLOPER* self";
+            ostr << sep << "    XLOPER12* self";
             sep = ",\n";
         }
 
         for (size_t i = 0; i < method->function->inputs.size(); ++i)
         {
-            ostr << sep << "    XLOPER* " << method->function->inputs[i]->name;
+            ostr << sep << "    XLOPER12* " << method->function->inputs[i]->name;
             sep = ",\n";
         }
 
         if (method->function->returnsObject() && !hasBaseName && nameAtEnd)
         {
-            ostr << sep << "    XLOPER* base_name";
+            ostr << sep << "    XLOPER12* base_name";
             sep = ",\n";
         }
         ostr << ");\n";
@@ -1459,20 +1459,20 @@ void ExcelModule::implementClass(
         if (!nameAtEnd && !noBaseName)
         {
             sep = ",\n";
-            ostr << "    XLOPER* xl_base_name";
+            ostr << "    XLOPER12* xl_base_name";
         }
 
         size_t nbAttributes = cls->attributes.size();
         for (size_t i = 0; i < nbAttributes; ++i)
         {
             ostr << sep
-                 << "    XLOPER* xl_" << cls->attributes[i]->name;
+                 << "    XLOPER12* xl_" << cls->attributes[i]->name;
             sep = ",\n";
         }
         if (nameAtEnd && !noBaseName)
         {
             ostr << sep
-                 << "    XLOPER* xl_base_name";
+                 << "    XLOPER12* xl_base_name";
         }
 
         ostr << ")\n";
@@ -1542,24 +1542,24 @@ void ExcelModule::implementClass(
         bool hasBaseName = funcHasBaseName(method->function.get());
         if (method->function->returnsObject() && !hasBaseName && !nameAtEnd)
         {
-            ostr << sep << "    XLOPER* xl_base_name";
+            ostr << sep << "    XLOPER12* xl_base_name";
             sep = ",\n";
         }
 
         if (!method->isStatic)
         {
-            ostr << sep << "    XLOPER* xl_self";
+            ostr << sep << "    XLOPER12* xl_self";
             sep = ",\n";
         }
 
         for (size_t i = 0; i < method->function->inputs.size(); ++i)
         {
-            ostr << sep << "    XLOPER* xl_" << method->function->inputs[i]->name;
+            ostr << sep << "    XLOPER12* xl_" << method->function->inputs[i]->name;
             sep = ",\n";
         }
         if (method->function->returnsObject() && !hasBaseName && nameAtEnd)
         {
-            ostr << sep << "    XLOPER* xl_base_name";
+            ostr << sep << "    XLOPER12* xl_base_name";
             sep = ",\n";
         }
         ostr << ")\n";

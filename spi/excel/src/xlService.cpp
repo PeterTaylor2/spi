@@ -283,7 +283,7 @@ void ExcelService::RegisterStandardFunctions(const std::string& xll,
             nsReg,
             args,
             "Returns the text representation of an object",
-            help, false, false, "QPPPPP");
+            help);
     }
 
     if (!objectFromString.empty())
@@ -302,7 +302,7 @@ void ExcelService::RegisterStandardFunctions(const std::string& xll,
             nsReg,
             args,
             "Creates an object from the text representation of an object",
-            help, false, false, "QQP");
+            help);
     }
 
     if (!objectGet.empty())
@@ -752,8 +752,7 @@ void ExcelService::RegisterFunction(
             throw RuntimeError("Too many arguments (%d) to Excel function %s",
                                numArgs, xlFuncName.c_str());
         }
-        std::string argTypes(numArgs, 'P');
-        argTypes[0] = 'Q';
+        std::string argTypes(numArgs, 'Q');
 
         if (xlArgTypes && strlen(xlArgTypes) == numArgs)
             argTypes = std::string(xlArgTypes);
@@ -876,7 +875,7 @@ void ExcelService::RegisterFunction(
 
         XLOPER12 res;
         int xlret = Excel12v (xlfRegister,
-                &res, /* not interested in any return details */
+                &res,
                 numInputs,
                 &xInputs[0]);
 
@@ -988,7 +987,7 @@ XLOPER12* ExcelService::ErrorHandler12(const char* err)
     // Note that the free bit is added afterwards - and this is why we cannot
     // try to return a static
     //
-    // we will have to hope we have the memory to allocated a single XLOPER
+    // we will have to hope we have the memory to allocated a single XLOPER12
     // otherwise we are in deep trouble anyway :)
 
     xlo->xltype = xltypeErr;
@@ -1036,18 +1035,18 @@ static XLOPER* TempHelp(const std::vector<std::string>& argsHelp, size_t i)
 }
 
 XLOPER12* ExcelService::StartLogging(
-    XLOPER* xl_filename,
-    XLOPER* xl_options,
-    XLOPER* xl_minimal)
+    XLOPER12* xl_filename,
+    XLOPER12* xl_options,
+    XLOPER12* xl_minimal)
 {
     XLOPER12* xlo;
     try
     {
         Value output = spi::StartLogging(
             m_service,
-            xloperToValue(xl_filename),
-            xloperToValue(xl_options),
-            xloperToValue(xl_minimal),
+            xloper12ToValue(xl_filename),
+            xloper12ToValue(xl_options),
+            xloper12ToValue(xl_minimal),
             getInputContext());
 
         xlo = xloper12MakeFromValue(output);
@@ -1106,13 +1105,13 @@ XLOPER12* ExcelService::IsLogging(void)
     return xloper12Output(xlo);
 }
 
-XLOPER12* ExcelService::SetErrorPopups(XLOPER* xl_errorPopups)
+XLOPER12* ExcelService::SetErrorPopups(XLOPER12* xl_errorPopups)
 {
     XLOPER12* xlo = NULL;
 
     try
     {
-        bool errorPopups = xloperToBool(xl_errorPopups, "errorPopups");
+        bool errorPopups = xloper12ToBool(xl_errorPopups, "errorPopups");
         g_errorPopups = errorPopups;
         xlo = xloper12FromBool(errorPopups);
     }
@@ -1128,13 +1127,13 @@ XLOPER12* ExcelService::SetErrorPopups(XLOPER* xl_errorPopups)
     return xloper12Output(xlo);
 }
 
-XLOPER12* ExcelService::HelpFunc(XLOPER* xl_name)
+XLOPER12* ExcelService::HelpFunc(XLOPER12* xl_name)
 {
     XLOPER12 *xlo = NULL;
 
     try
     {
-        Value name = xloperToValue(xl_name);
+        Value name = xloper12ToValue(xl_name);
         Value output = spi::HelpFunc(m_service, name, getInputContext());
         if (name.getString(true).empty())
             xlo = xloper12MakeFromValue(output, true);
@@ -1154,7 +1153,7 @@ XLOPER12* ExcelService::HelpFunc(XLOPER* xl_name)
 }
 
 
-XLOPER12* ExcelService::HelpEnum(XLOPER* xl_name)
+XLOPER12* ExcelService::HelpEnum(XLOPER12* xl_name)
 {
     XLOPER12 *xlo = NULL;
 
@@ -1162,7 +1161,7 @@ XLOPER12* ExcelService::HelpEnum(XLOPER* xl_name)
     {
         Value output = spi::HelpEnum(
             m_service,
-            xloperToValue(xl_name),
+            xloper12ToValue(xl_name),
             getInputContext());
         xlo = xloper12MakeFromValue(output, true);
     }
@@ -1292,22 +1291,22 @@ XLOPER12* ExcelService::GetTimings()
 }
 
 XLOPER12* ExcelService::ObjectToString(
-    XLOPER* xl_handle,
-    XLOPER* xl_format,
-    XLOPER* xl_options,
-    XLOPER* xl_hMetaData,
-    XLOPER* xl_mergeMetaData)
+    XLOPER12* xl_handle,
+    XLOPER12* xl_format,
+    XLOPER12* xl_options,
+    XLOPER12* xl_hMetaData,
+    XLOPER12* xl_mergeMetaData)
 {
     XLOPER12 *xlo = NULL;
 
     try
     {
         Value output = spi::ObjectToString(
-            xloperToValue(xl_handle),
-            xloperToValue(xl_format),
-            xloperToValue(xl_options),
-            xloperToValue(xl_hMetaData),
-            xloperToValue(xl_mergeMetaData),
+            xloper12ToValue(xl_handle),
+            xloper12ToValue(xl_format),
+            xloper12ToValue(xl_options),
+            xloper12ToValue(xl_hMetaData),
+            xloper12ToValue(xl_mergeMetaData),
             getInputContext(),
             true);
         xlo = xloper12MakeFromValue(output, true);
@@ -1325,7 +1324,7 @@ XLOPER12* ExcelService::ObjectToString(
 }
 
 XLOPER12* ExcelService::ObjectFromString(
-    XLOPER* xl_baseName,
+    XLOPER12* xl_baseName,
     XLOPER12* xl_strings)
 {
     XLOPER12* xlo = NULL;
@@ -1337,7 +1336,7 @@ XLOPER12* ExcelService::ObjectFromString(
             xloper12ToValue(xl_strings),
             getInputContext(),
             true);
-        xlo = xloper12MakeFromValue(output, false, 1, xloperToValue(xl_baseName), mandatoryBaseName());
+        xlo = xloper12MakeFromValue(output, false, 1, xloper12ToValue(xl_baseName), mandatoryBaseName());
     }
     catch (ExcelInputError&)
     {
@@ -1351,24 +1350,24 @@ XLOPER12* ExcelService::ObjectFromString(
 }
 
 XLOPER12* ExcelService::ObjectToFile(
-    XLOPER* xl_handle,
-    XLOPER* xl_fileName,
-    XLOPER* xl_format,
-    XLOPER* xl_options,
-    XLOPER* xl_hMetaData,
-    XLOPER* xl_mergeMetaData)
+    XLOPER12* xl_handle,
+    XLOPER12* xl_fileName,
+    XLOPER12* xl_format,
+    XLOPER12* xl_options,
+    XLOPER12* xl_hMetaData,
+    XLOPER12* xl_mergeMetaData)
 {
     XLOPER12 *xlo = NULL;
 
     try
     {
         Value output = spi::ObjectToFile(
-            xloperToValue(xl_handle),
-            xloperToValue(xl_fileName),
-            xloperToValue(xl_format),
-            xloperToValue(xl_options),
-            xloperToValue(xl_hMetaData),
-            xloperToValue(xl_mergeMetaData),
+            xloper12ToValue(xl_handle),
+            xloper12ToValue(xl_fileName),
+            xloper12ToValue(xl_format),
+            xloper12ToValue(xl_options),
+            xloper12ToValue(xl_hMetaData),
+            xloper12ToValue(xl_mergeMetaData),
             getInputContext());
         xlo = xloper12MakeFromValue(output);
     }
@@ -1385,8 +1384,8 @@ XLOPER12* ExcelService::ObjectToFile(
 }
 
 XLOPER12* ExcelService::ObjectFromFile(
-    XLOPER* xl_baseName,
-    XLOPER* xl_fileName)
+    XLOPER12* xl_baseName,
+    XLOPER12* xl_fileName)
 {
     XLOPER12* xlo = NULL;
 
@@ -1394,9 +1393,9 @@ XLOPER12* ExcelService::ObjectFromFile(
     {
         Value output = spi::ObjectFromFile(
             m_service,
-            xloperToValue(xl_fileName),
+            xloper12ToValue(xl_fileName),
             getInputContext());
-        xlo = xloper12MakeFromValue(output, false, 1, xloperToValue(xl_baseName), mandatoryBaseName());
+        xlo = xloper12MakeFromValue(output, false, 1, xloper12ToValue(xl_baseName), mandatoryBaseName());
     }
     catch (ExcelInputError&)
     {
@@ -1410,11 +1409,11 @@ XLOPER12* ExcelService::ObjectFromFile(
 }
 
 XLOPER12* ExcelService::ObjectFromURL(
-    XLOPER* baseName, XLOPER* url, XLOPER* timeout, XLOPER* names, 
-    XLOPER* v1, XLOPER* v2, XLOPER* v3, XLOPER* v4, XLOPER* v5,
-    XLOPER* v6, XLOPER* v7, XLOPER* v8, XLOPER* v9, XLOPER* v10,
-    XLOPER* v11, XLOPER* v12, XLOPER* v13, XLOPER* v14, XLOPER* v15,
-    XLOPER* v16, XLOPER* v17, XLOPER* v18, XLOPER* v19, XLOPER* v20)
+    XLOPER12* baseName, XLOPER12* url, XLOPER12* timeout, XLOPER12* names, 
+    XLOPER12* v1, XLOPER12* v2, XLOPER12* v3, XLOPER12* v4, XLOPER12* v5,
+    XLOPER12* v6, XLOPER12* v7, XLOPER12* v8, XLOPER12* v9, XLOPER12* v10,
+    XLOPER12* v11, XLOPER12* v12, XLOPER12* v13, XLOPER12* v14, XLOPER12* v15,
+    XLOPER12* v16, XLOPER12* v17, XLOPER12* v18, XLOPER12* v19, XLOPER12* v20)
 {
     XLOPER12* xlo = NULL;
 
@@ -1422,32 +1421,32 @@ XLOPER12* ExcelService::ObjectFromURL(
     {
         Value output = spi::ObjectFromURL(
             m_service,
-            xloperToValue(url),
-            xloperToValue(timeout),
-            xloperToValue(names),
-            xloperToValue(v1),
-            xloperToValue(v2),
-            xloperToValue(v3),
-            xloperToValue(v4),
-            xloperToValue(v5),
-            xloperToValue(v6),
-            xloperToValue(v7),
-            xloperToValue(v8),
-            xloperToValue(v9),
-            xloperToValue(v10),
-            xloperToValue(v11),
-            xloperToValue(v12),
-            xloperToValue(v13),
-            xloperToValue(v14),
-            xloperToValue(v15),
-            xloperToValue(v16),
-            xloperToValue(v17),
-            xloperToValue(v18),
-            xloperToValue(v19),
-            xloperToValue(v20),
+            xloper12ToValue(url),
+            xloper12ToValue(timeout),
+            xloper12ToValue(names),
+            xloper12ToValue(v1),
+            xloper12ToValue(v2),
+            xloper12ToValue(v3),
+            xloper12ToValue(v4),
+            xloper12ToValue(v5),
+            xloper12ToValue(v6),
+            xloper12ToValue(v7),
+            xloper12ToValue(v8),
+            xloper12ToValue(v9),
+            xloper12ToValue(v10),
+            xloper12ToValue(v11),
+            xloper12ToValue(v12),
+            xloper12ToValue(v13),
+            xloper12ToValue(v14),
+            xloper12ToValue(v15),
+            xloper12ToValue(v16),
+            xloper12ToValue(v17),
+            xloper12ToValue(v18),
+            xloper12ToValue(v19),
+            xloper12ToValue(v20),
             getInputContext());
         xlo = xloper12MakeFromValue(
-            output, false, 1, xloperToValue(baseName), mandatoryBaseName());
+            output, false, 1, xloper12ToValue(baseName), mandatoryBaseName());
     }
     catch (ExcelInputError&)
     {
@@ -1460,14 +1459,14 @@ XLOPER12* ExcelService::ObjectFromURL(
     return xloper12Output(xlo);
 }
 
-XLOPER12* ExcelService::ObjectGet(XLOPER* xl_handle, XLOPER* xl_name)
+XLOPER12* ExcelService::ObjectGet(XLOPER12* xl_handle, XLOPER12* xl_name)
 {
     XLOPER12* xlo = NULL;
 
     try
     {
-        Value name = xloperToValue(xl_name);
-        Value handle = xloperToValue(xl_handle);
+        Value name = xloper12ToValue(xl_name);
+        Value handle = xloper12ToValue(xl_handle);
         bool fillBlank = true;
         Value output = spi::ObjectGet(handle, name, getInputContext());
         // what if the output is an object?
@@ -1503,33 +1502,33 @@ XLOPER12* ExcelService::ObjectGet(XLOPER* xl_handle, XLOPER* xl_name)
     return xloper12Output(xlo);
 }
 
-XLOPER12* ExcelService::ObjectPut(XLOPER* baseName, XLOPER* handle, XLOPER* names,
-    XLOPER* v1, XLOPER* v2, XLOPER* v3, XLOPER* v4, XLOPER* v5,
-    XLOPER* v6, XLOPER* v7, XLOPER* v8, XLOPER* v9, XLOPER* v10,
-    XLOPER* v11, XLOPER* v12, XLOPER* v13, XLOPER* v14, XLOPER* v15,
-    XLOPER* v16, XLOPER* v17, XLOPER* v18, XLOPER* v19, XLOPER* v20,
-    XLOPER* v21, XLOPER* v22, XLOPER* v23, XLOPER* v24, XLOPER* v25)
+XLOPER12* ExcelService::ObjectPut(XLOPER12* baseName, XLOPER12* handle, XLOPER12* names,
+    XLOPER12* v1, XLOPER12* v2, XLOPER12* v3, XLOPER12* v4, XLOPER12* v5,
+    XLOPER12* v6, XLOPER12* v7, XLOPER12* v8, XLOPER12* v9, XLOPER12* v10,
+    XLOPER12* v11, XLOPER12* v12, XLOPER12* v13, XLOPER12* v14, XLOPER12* v15,
+    XLOPER12* v16, XLOPER12* v17, XLOPER12* v18, XLOPER12* v19, XLOPER12* v20,
+    XLOPER12* v21, XLOPER12* v22, XLOPER12* v23, XLOPER12* v24, XLOPER12* v25)
 {
     XLOPER12* xlo = NULL;
 
     try
     {
         Value output = spi::ObjectPut(
-            xloperToValue(handle),
-            xloperToValue(names),
-            xloperToValue(v1), xloperToValue(v2), xloperToValue(v3),
-            xloperToValue(v4), xloperToValue(v5), xloperToValue(v6),
-            xloperToValue(v7), xloperToValue(v8), xloperToValue(v9),
-            xloperToValue(v10), xloperToValue(v11), xloperToValue(v12),
-            xloperToValue(v13), xloperToValue(v14), xloperToValue(v15),
-            xloperToValue(v16), xloperToValue(v17), xloperToValue(v18),
-            xloperToValue(v19), xloperToValue(v20), xloperToValue(v21),
-            xloperToValue(v22), xloperToValue(v23), xloperToValue(v24),
-            xloperToValue(v25),
+            xloper12ToValue(handle),
+            xloper12ToValue(names),
+            xloper12ToValue(v1), xloper12ToValue(v2), xloper12ToValue(v3),
+            xloper12ToValue(v4), xloper12ToValue(v5), xloper12ToValue(v6),
+            xloper12ToValue(v7), xloper12ToValue(v8), xloper12ToValue(v9),
+            xloper12ToValue(v10), xloper12ToValue(v11), xloper12ToValue(v12),
+            xloper12ToValue(v13), xloper12ToValue(v14), xloper12ToValue(v15),
+            xloper12ToValue(v16), xloper12ToValue(v17), xloper12ToValue(v18),
+            xloper12ToValue(v19), xloper12ToValue(v20), xloper12ToValue(v21),
+            xloper12ToValue(v22), xloper12ToValue(v23), xloper12ToValue(v24),
+            xloper12ToValue(v25),
             getInputContext());
 
         xlo = xloper12MakeFromValue(output, false, 1,
-            xloperToValue(baseName), mandatoryBaseName());
+            xloper12ToValue(baseName), mandatoryBaseName());
     }
     catch (ExcelInputError&)
     {
@@ -1543,33 +1542,33 @@ XLOPER12* ExcelService::ObjectPut(XLOPER* baseName, XLOPER* handle, XLOPER* name
 
 }
 
-XLOPER12* ExcelService::ObjectPutMetaData(XLOPER* baseName, XLOPER* handle, XLOPER* names,
-    XLOPER* v1, XLOPER* v2, XLOPER* v3, XLOPER* v4, XLOPER* v5,
-    XLOPER* v6, XLOPER* v7, XLOPER* v8, XLOPER* v9, XLOPER* v10,
-    XLOPER* v11, XLOPER* v12, XLOPER* v13, XLOPER* v14, XLOPER* v15,
-    XLOPER* v16, XLOPER* v17, XLOPER* v18, XLOPER* v19, XLOPER* v20,
-    XLOPER* v21, XLOPER* v22, XLOPER* v23, XLOPER* v24, XLOPER* v25)
+XLOPER12* ExcelService::ObjectPutMetaData(XLOPER12* baseName, XLOPER12* handle, XLOPER12* names,
+    XLOPER12* v1, XLOPER12* v2, XLOPER12* v3, XLOPER12* v4, XLOPER12* v5,
+    XLOPER12* v6, XLOPER12* v7, XLOPER12* v8, XLOPER12* v9, XLOPER12* v10,
+    XLOPER12* v11, XLOPER12* v12, XLOPER12* v13, XLOPER12* v14, XLOPER12* v15,
+    XLOPER12* v16, XLOPER12* v17, XLOPER12* v18, XLOPER12* v19, XLOPER12* v20,
+    XLOPER12* v21, XLOPER12* v22, XLOPER12* v23, XLOPER12* v24, XLOPER12* v25)
 {
     XLOPER12* xlo = NULL;
 
     try
     {
         Value output = spi::ObjectPutMetaData(
-            xloperToValue(handle),
-            xloperToValue(names),
-            xloperToValue(v1), xloperToValue(v2), xloperToValue(v3),
-            xloperToValue(v4), xloperToValue(v5), xloperToValue(v6),
-            xloperToValue(v7), xloperToValue(v8), xloperToValue(v9),
-            xloperToValue(v10), xloperToValue(v11), xloperToValue(v12),
-            xloperToValue(v13), xloperToValue(v14), xloperToValue(v15),
-            xloperToValue(v16), xloperToValue(v17), xloperToValue(v18),
-            xloperToValue(v19), xloperToValue(v20), xloperToValue(v21),
-            xloperToValue(v22), xloperToValue(v23), xloperToValue(v24),
-            xloperToValue(v25),
+            xloper12ToValue(handle),
+            xloper12ToValue(names),
+            xloper12ToValue(v1), xloper12ToValue(v2), xloper12ToValue(v3),
+            xloper12ToValue(v4), xloper12ToValue(v5), xloper12ToValue(v6),
+            xloper12ToValue(v7), xloper12ToValue(v8), xloper12ToValue(v9),
+            xloper12ToValue(v10), xloper12ToValue(v11), xloper12ToValue(v12),
+            xloper12ToValue(v13), xloper12ToValue(v14), xloper12ToValue(v15),
+            xloper12ToValue(v16), xloper12ToValue(v17), xloper12ToValue(v18),
+            xloper12ToValue(v19), xloper12ToValue(v20), xloper12ToValue(v21),
+            xloper12ToValue(v22), xloper12ToValue(v23), xloper12ToValue(v24),
+            xloper12ToValue(v25),
             getInputContext());
 
         xlo = xloper12MakeFromValue(output, false, 1,
-            xloperToValue(baseName), mandatoryBaseName());
+            xloper12ToValue(baseName), mandatoryBaseName());
     }
     catch (ExcelInputError&)
     {
@@ -1585,17 +1584,17 @@ XLOPER12* ExcelService::ObjectPutMetaData(XLOPER* baseName, XLOPER* handle, XLOP
 
 
 
-XLOPER12* ExcelService::ObjectToMap(XLOPER* baseName, XLOPER* handle)
+XLOPER12* ExcelService::ObjectToMap(XLOPER12* baseName, XLOPER12* handle)
 {
     XLOPER12* xlo = NULL;
 
     try
     {
         Value output = spi::ObjectToMap(
-            xloperToValue(handle),
+            xloper12ToValue(handle),
             getInputContext());
         xlo = xloper12MakeFromValue(
-            output, false, 1, xloperToValue(baseName), mandatoryBaseName());
+            output, false, 1, xloper12ToValue(baseName), mandatoryBaseName());
     }
     catch (ExcelInputError&)
     {
@@ -1608,14 +1607,14 @@ XLOPER12* ExcelService::ObjectToMap(XLOPER* baseName, XLOPER* handle)
     return xloper12Output(xlo);
 }
 
-XLOPER12* ExcelService::ObjectCount(XLOPER* xl_className)
+XLOPER12* ExcelService::ObjectCount(XLOPER12* xl_className)
 {
     XLOPER12* xlo = NULL;
 
     try
     {
         Value output = spi::ObjectCount(
-            xloperToValue(xl_className),
+            xloper12ToValue(xl_className),
             getInputContext());
         xlo = xloper12MakeFromValue(output);
     }
@@ -1630,14 +1629,14 @@ XLOPER12* ExcelService::ObjectCount(XLOPER* xl_className)
     return xloper12Output(xlo);
 }
 
-XLOPER12* ExcelService::ObjectFree(XLOPER* xl_handle)
+XLOPER12* ExcelService::ObjectFree(XLOPER12* xl_handle)
 {
     XLOPER12* xlo = NULL;
 
     try
     {
         Value output = spi::ObjectFree(
-            xloperToValue(xl_handle),
+            xloper12ToValue(xl_handle),
             getInputContext());
         xlo = xloper12MakeFromValue(output);
     }
@@ -1673,15 +1672,15 @@ XLOPER12* ExcelService::ObjectFreeAll()
     return xloper12Output(xlo);
 }
 
-XLOPER12* ExcelService::ObjectList(XLOPER* xl_prefix, XLOPER* xl_className)
+XLOPER12* ExcelService::ObjectList(XLOPER12* xl_prefix, XLOPER12* xl_className)
 {
     XLOPER12* xlo = NULL;
 
     try
     {
         Value output = spi::ObjectList(
-            xloperToValue(xl_prefix),
-            xloperToValue(xl_className),
+            xloper12ToValue(xl_prefix),
+            xloper12ToValue(xl_className),
             getInputContext());
         xlo = xloper12MakeFromValue(output);
     }
@@ -1696,14 +1695,14 @@ XLOPER12* ExcelService::ObjectList(XLOPER* xl_prefix, XLOPER* xl_className)
     return xloper12Output(xlo);
 }
 
-XLOPER12* ExcelService::ObjectClassName(XLOPER* xl_handle)
+XLOPER12* ExcelService::ObjectClassName(XLOPER12* xl_handle)
 {
     XLOPER12* xlo = NULL;
 
     try
     {
         Value output = spi::ObjectClassName(
-            xloperToValue(xl_handle),
+            xloper12ToValue(xl_handle),
             getInputContext());
         xlo = xloper12MakeFromValue(output);
     }
@@ -1718,7 +1717,7 @@ XLOPER12* ExcelService::ObjectClassName(XLOPER* xl_handle)
     return xloper12Output(xlo);
 }
 
-XLOPER12* ExcelService::ObjectCoerce(XLOPER* xl_baseName, XLOPER* xl_className, XLOPER* xl_value)
+XLOPER12* ExcelService::ObjectCoerce(XLOPER12* xl_baseName, XLOPER12* xl_className, XLOPER12* xl_value)
 {
     XLOPER12* xlo = NULL;
 
@@ -1726,11 +1725,11 @@ XLOPER12* ExcelService::ObjectCoerce(XLOPER* xl_baseName, XLOPER* xl_className, 
     {
         Value output = spi::ObjectCoerce(
             m_service,
-            xloperToValue(xl_className),
-            xloperToValue(xl_value),
+            xloper12ToValue(xl_className),
+            xloper12ToValue(xl_value),
             getInputContext());
 
-        xlo = xloper12MakeFromValue(output, false, 1, xloperToValue(xl_baseName));
+        xlo = xloper12MakeFromValue(output, false, 1, xloper12ToValue(xl_baseName));
     }
     catch (ExcelInputError&)
     {
@@ -1743,15 +1742,15 @@ XLOPER12* ExcelService::ObjectCoerce(XLOPER* xl_baseName, XLOPER* xl_className, 
     return xloper12Output(xlo);
 }
 
-XLOPER12 * ExcelService::ObjectSHA(XLOPER * handle, XLOPER * version)
+XLOPER12 * ExcelService::ObjectSHA(XLOPER12 * handle, XLOPER12 * version)
 {
     XLOPER12* xlo = NULL;
 
     try
     {
         Value output = spi::ObjectSHA(
-            xloperToValue(handle),
-            xloperToValue(version),
+            xloper12ToValue(handle),
+            xloper12ToValue(version),
             getInputContext());
 
         xlo = xloper12MakeFromValue(output);
@@ -1787,7 +1786,7 @@ XLOPER12* ExcelService::UrlCacheSize()
     return xloper12Output(xlo);
 }
 
-XLOPER12* ExcelService::UrlCacheSave(XLOPER* filename)
+XLOPER12* ExcelService::UrlCacheSave(XLOPER12* filename)
 {
     XLOPER12* xlo = NULL;
 
@@ -1795,7 +1794,7 @@ XLOPER12* ExcelService::UrlCacheSave(XLOPER* filename)
     {
         Value output = spi::UrlCacheSave(
             m_service,
-            xloperToValue(filename),
+            xloper12ToValue(filename),
             getInputContext());
 
         xlo = xloper12MakeFromValue(output);
@@ -1811,7 +1810,7 @@ XLOPER12* ExcelService::UrlCacheSave(XLOPER* filename)
     return xloper12Output(xlo);
 }
 
-XLOPER12* ExcelService::UrlCacheLoad(XLOPER* filename)
+XLOPER12* ExcelService::UrlCacheLoad(XLOPER12* filename)
 {
     XLOPER12* xlo = NULL;
 
@@ -1819,7 +1818,7 @@ XLOPER12* ExcelService::UrlCacheLoad(XLOPER* filename)
     {
         Value output = spi::UrlCacheLoad(
             m_service,
-            xloperToValue(filename),
+            xloper12ToValue(filename),
             getInputContext());
 
         xlo = xloper12MakeFromValue(output);
