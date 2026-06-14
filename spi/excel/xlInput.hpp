@@ -34,10 +34,7 @@
 #include <spi/Namespace.hpp>
 
 typedef struct xloper XLOPER;
-
-#if SPI_XL_VERSION >= 12
 typedef struct xloper12 XLOPER12;
-#endif
 
 SPI_BEGIN_NAMESPACE
 
@@ -62,15 +59,17 @@ std::string xloperToString(
     bool optional=false,
     const char* defaultValue="");
 
-#if SPI_XL_VERSION >= 12
+bool xloper12ToBool(
+    XLOPER12* oper,
+    const char* name,
+    bool optional=false,
+    bool defaultValue=false);
 
 std::string xloper12ToString(
     XLOPER12* oper,
     const char* name,
     bool optional = false,
     const char* defaultValue = "");
-
-#endif
 
 SPI_END_NAMESPACE
 

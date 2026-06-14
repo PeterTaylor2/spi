@@ -39,10 +39,7 @@
 #include <string>
 
 typedef struct xloper XLOPER;
-
-#if SPI_XL_VERSION >= 12
 typedef struct xloper12 XLOPER12;
-#endif
 
 #include "xlValue.hpp"
 
@@ -156,68 +153,66 @@ public:
      * show up in a pop-up window.
      */
     XLOPER* ErrorHandler(const char* err);
+    XLOPER12* ErrorHandler12(const char* err);
 
     /**
      * These methods need the service. You should create functions
      * that can call these methods using get_service() to get the
      * service object.
      */
-    XLOPER* StartLogging(XLOPER* filename, XLOPER* options, XLOPER* minimal);
-    XLOPER* StopLogging(void);
-    XLOPER* IsLogging(void);
-    XLOPER* SetErrorPopups(XLOPER* errorPopups);
-    XLOPER* HelpFunc(XLOPER* name);
-    XLOPER* HelpEnum(XLOPER* name);
-    XLOPER* StartTiming();
-    XLOPER* StopTiming();
-    XLOPER* ClearTimings();
-    XLOPER* GetTimings();
+    XLOPER12* StartLogging(XLOPER* filename, XLOPER* options, XLOPER* minimal);
+    XLOPER12* StopLogging(void);
+    XLOPER12* IsLogging(void);
+    XLOPER12* SetErrorPopups(XLOPER* errorPopups);
+    XLOPER12* HelpFunc(XLOPER* name);
+    XLOPER12* HelpEnum(XLOPER* name);
+    XLOPER12* StartTiming();
+    XLOPER12* StopTiming();
+    XLOPER12* ClearTimings();
+    XLOPER12* GetTimings();
 
-    XLOPER* ObjectToString(XLOPER* handle, XLOPER* format, XLOPER* options,
+    XLOPER12* ObjectToString(XLOPER* handle, XLOPER* format, XLOPER* options,
         XLOPER* hMetaData, XLOPER* mergeMetaData);
-    XLOPER* ObjectFromString(XLOPER* baseName, XLOPER* strings);
-#if SPI_XL_VERSION >= 12
-    XLOPER* ObjectFromString(XLOPER* baseName, XLOPER12* str);
-#endif
+    XLOPER12* ObjectFromString(XLOPER* baseName, XLOPER12* str);
 
-    XLOPER* ObjectToFile(XLOPER* handle, XLOPER* fileName, XLOPER* format,
+    XLOPER12* ObjectToFile(XLOPER* handle, XLOPER* fileName, XLOPER* format,
         XLOPER* options, XLOPER* hMetaData, XLOPER* mergeMetaData);
-    XLOPER* ObjectFromFile(XLOPER* baseName, XLOPER* fileName);
-    XLOPER* ObjectFromURL(XLOPER* baseName, XLOPER* url, XLOPER* timeout,
+    XLOPER12* ObjectFromFile(XLOPER* baseName, XLOPER* fileName);
+    XLOPER12* ObjectFromURL(XLOPER* baseName, XLOPER* url, XLOPER* timeout,
         XLOPER* names, 
         XLOPER* v1, XLOPER* v2, XLOPER* v3, XLOPER* v4, XLOPER* v5,
         XLOPER* v6, XLOPER* v7, XLOPER* v8, XLOPER* v9, XLOPER* v10,
         XLOPER* v11, XLOPER* v12, XLOPER* v13, XLOPER* v14, XLOPER* v15,
         XLOPER* v16, XLOPER* v17, XLOPER* v18, XLOPER* v19, XLOPER* v20);
 
-    XLOPER* ObjectGet(XLOPER* handle, XLOPER* name);
-    XLOPER* ObjectPut(XLOPER* baseName, XLOPER* handle, XLOPER* names,
+    XLOPER12* ObjectGet(XLOPER* handle, XLOPER* name);
+    XLOPER12* ObjectPut(XLOPER* baseName, XLOPER* handle, XLOPER* names,
         XLOPER* v1, XLOPER* v2, XLOPER* v3, XLOPER* v4, XLOPER* v5,
         XLOPER* v6, XLOPER* v7, XLOPER* v8, XLOPER* v9, XLOPER* v10,
         XLOPER* v11, XLOPER* v12, XLOPER* v13, XLOPER* v14, XLOPER* v15,
         XLOPER* v16, XLOPER* v17, XLOPER* v18, XLOPER* v19, XLOPER* v20,
         XLOPER* v21, XLOPER* v22, XLOPER* v23, XLOPER* v24, XLOPER* v25);
-    XLOPER* ObjectPutMetaData(XLOPER* baseName, XLOPER* handle, XLOPER* names,
+    XLOPER12* ObjectPutMetaData(XLOPER* baseName, XLOPER* handle, XLOPER* names,
         XLOPER* v1, XLOPER* v2, XLOPER* v3, XLOPER* v4, XLOPER* v5,
         XLOPER* v6, XLOPER* v7, XLOPER* v8, XLOPER* v9, XLOPER* v10,
         XLOPER* v11, XLOPER* v12, XLOPER* v13, XLOPER* v14, XLOPER* v15,
         XLOPER* v16, XLOPER* v17, XLOPER* v18, XLOPER* v19, XLOPER* v20,
         XLOPER* v21, XLOPER* v22, XLOPER* v23, XLOPER* v24, XLOPER* v25);
-    XLOPER* ObjectToMap(XLOPER* baseName, XLOPER* handle);
+    XLOPER12* ObjectToMap(XLOPER* baseName, XLOPER* handle);
 
-    XLOPER* ObjectCount(XLOPER* className);
-    XLOPER* ObjectFree(XLOPER* handle);
-    XLOPER* ObjectFreeAll();
-    XLOPER* ObjectList(XLOPER* prefix, XLOPER* className);
-    XLOPER* ObjectClassName(XLOPER* handle);
-    XLOPER* ObjectCoerce(XLOPER* baseName, XLOPER* className, XLOPER* value);
-    XLOPER* ObjectSHA(XLOPER* handle, XLOPER* version);
+    XLOPER12* ObjectCount(XLOPER* className);
+    XLOPER12* ObjectFree(XLOPER* handle);
+    XLOPER12* ObjectFreeAll();
+    XLOPER12* ObjectList(XLOPER* prefix, XLOPER* className);
+    XLOPER12* ObjectClassName(XLOPER* handle);
+    XLOPER12* ObjectCoerce(XLOPER* baseName, XLOPER* className, XLOPER* value);
+    XLOPER12* ObjectSHA(XLOPER* handle, XLOPER* version);
 
-    XLOPER* UrlCacheSize();
-    XLOPER* UrlCacheSave(XLOPER* filename);
-    XLOPER* UrlCacheLoad(XLOPER* filename);
-    XLOPER* UrlCacheInit();
-    XLOPER* UrlCacheClear();
+    XLOPER12* UrlCacheSize();
+    XLOPER12* UrlCacheSave(XLOPER* filename);
+    XLOPER12* UrlCacheLoad(XLOPER* filename);
+    XLOPER12* UrlCacheInit();
+    XLOPER12* UrlCacheClear();
 
     FunctionCaller* getFunctionCaller(const char* name);
     InputContext* getInputContext();

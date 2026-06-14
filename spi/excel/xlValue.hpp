@@ -43,10 +43,7 @@
 #include <spi/InputValues.hpp>
 
 typedef struct xloper XLOPER;
-
-#if SPI_XL_VERSION >= 12
 typedef struct xloper12 XLOPER12;
-#endif
 
 SPI_BEGIN_NAMESPACE
 
@@ -68,10 +65,8 @@ struct XLInputValues
 SPI_XL_IMPORT /* only needed for export by excel-test executables */
 spi::Value xloperToValue(XLOPER* oper);
 
-#if SPI_XL_VERSION >= 12
 SPI_XL_IMPORT /* only needed for export by excel-test executables */
 spi::Value xloper12ToValue(XLOPER12* oper);
-#endif
 
 /**
  * Creates an XLOPER from a Value.
@@ -86,11 +81,30 @@ XLOPER* xloperMakeFromValue(
     const std::string& baseNamePrefix = std::string(),
     bool fillBlank = false);
 
+SPI_XL_IMPORT
+XLOPER12* xloper12MakeFromValue(
+    const spi::Value& in,
+    bool expandArrays = false,
+    size_t numVars = 1,
+    const spi::Value& baseNameValue = spi::Value(),
+    bool mandatoryBaseName = false,
+    const std::string& baseNamePrefix = std::string(),
+    bool fillBlank = false);
+
 /**
  * Set the value in an xloper to the given Value.
  */
 void xloperSetFromValue(
     XLOPER* oper,
+    const spi::Value& in,
+    bool expandArrays,
+    const std::string& baseName = std::string(),
+    int baseNameIndex = 0,
+    bool mandatoryBaseName = false,
+    bool fillBlank = false);
+
+void xloper12SetFromValue(
+    XLOPER12* oper,
     const spi::Value& in,
     bool expandArrays,
     const std::string& baseName = std::string(),

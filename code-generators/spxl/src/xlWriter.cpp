@@ -126,6 +126,7 @@ ExcelService::writeXllHeaderFile(const std::string& dirname) const
          << "#include <spi/Namespace.hpp>\n"
          << "\n"
          << "typedef struct xloper XLOPER;\n"
+         << "typedef struct xloper12 XLOPER12;\n"
          << "\n"
          << "SPI_BEGIN_NAMESPACE\n"
          << "class ExcelService;\n"
@@ -162,11 +163,11 @@ ExcelService::writeXllHeaderFile(const std::string& dirname) const
          << "\n"
          << "/*\n"
          << std::string(75, '*') << "\n"
-         << "** Standard Excel function to release returned XLOPER memory.\n"
+         << "** Standard Excel function to release returned XLOPER12 memory.\n"
          << std::string(75, '*') << "\n"
          << "*/\n"
          << m_import << "\n"
-         << "void xlAutoFree(XLOPER*);\n"
+         << "void xlAutoFree12(XLOPER12*);\n"
          << "\n"
          << "} /* end of extern \"C\" */\n";
 
@@ -340,12 +341,12 @@ ExcelService::writeXllSourceFile(const std::string& dirname) const
          << "\n"
          << "/*\n"
          << std::string(75, '*') << "\n"
-         << "** Standard Excel function to release returned XLOPER memory.\n"
+         << "** Standard Excel function to release returned XLOPER12 memory.\n"
          << std::string(75, '*') << "\n"
          << "*/\n"
-         << "void xlAutoFree(XLOPER* x)\n"
+         << "void xlAutoFree12(XLOPER12* x)\n"
          << "{\n"
-         << "    spi::xloperFree(x);\n"
+         << "    spi::xloper12Free(x);\n"
          << "}\n";
 
     if (!m_service->sharedService)
@@ -362,27 +363,27 @@ ExcelService::writeXllSourceFile(const std::string& dirname) const
         // call to RegisterStandardFunctions
 
         ostr << m_import << "\n"
-            << "XLOPER* xl_" << m_service->ns << "_help_func(\n"
+            << "XLOPER12* xl_" << m_service->ns << "_help_func(\n"
             << "    XLOPER* name)\n"
             << "{\n"
             << "    return " << xlServiceName << "->HelpFunc(name);\n"
             << "}\n"
             << "\n"
             << m_import << "\n"
-            << "XLOPER* xl_" << m_service->ns << "_help_func_list()\n"
+            << "XLOPER12* xl_" << m_service->ns << "_help_func_list()\n"
             << "{\n"
             << "    return " << xlServiceName << "->HelpFunc(NULL);\n"
             << "}\n"
             << "\n"
             << m_import << "\n"
-            << "XLOPER* xl_" << m_service->ns << "_object_coerce(\n"
+            << "XLOPER12* xl_" << m_service->ns << "_object_coerce(\n"
             << "    XLOPER* className, XLOPER* value, XLOPER* baseName)\n"
             << "{\n"
             << "    return " << xlServiceName << "->ObjectCoerce(baseName, className, value);\n"
             << "}\n"
             << "\n"
             << m_import << "\n"
-            << "XLOPER* xl_" << m_service->ns << "_help_enum(\n"
+            << "XLOPER12* xl_" << m_service->ns << "_help_enum(\n"
             << "    XLOPER* name)\n"
             << "{\n"
             << "    return " << xlServiceName << "->HelpEnum(name);\n"
@@ -392,7 +393,7 @@ ExcelService::writeXllSourceFile(const std::string& dirname) const
         if (!m_options.noObjectFuncs)
         {
             ostr << m_import << "\n"
-                << "XLOPER* xl_" << m_service->ns << "_object_to_string(\n"
+                << "XLOPER12* xl_" << m_service->ns << "_object_to_string(\n"
                 << "    XLOPER* handle,\n"
                 << "    XLOPER* format,\n"
                 << "    XLOPER* options,\n"
@@ -404,15 +405,15 @@ ExcelService::writeXllSourceFile(const std::string& dirname) const
                 << "}\n"
                 << "\n"
                 << m_import << "\n"
-                << "XLOPER* xl_" << m_service->ns << "_object_from_string(\n"
-                << "    XLOPER* strings,\n"
+                << "XLOPER12* xl_" << m_service->ns << "_object_from_string(\n"
+                << "    XLOPER12* strings,\n"
                 << "    XLOPER* baseName)\n"
                 << "{\n"
                 << "    return " << xlServiceName << "->ObjectFromString(baseName, strings);\n"
                 << "}\n"
                 << "\n"
                 << m_import << "\n"
-                << "XLOPER* xl_" << m_service->ns << "_object_get(\n"
+                << "XLOPER12* xl_" << m_service->ns << "_object_get(\n"
                 << "    XLOPER* handle,\n"
                 << "    XLOPER* name)\n"
                 << "{\n"
@@ -420,7 +421,7 @@ ExcelService::writeXllSourceFile(const std::string& dirname) const
                 << "}\n"
                 << "\n"
                 << m_import << "\n"
-                << "XLOPER* xl_" << m_service->ns << "_object_put(\n"
+                << "XLOPER12* xl_" << m_service->ns << "_object_put(\n"
                 << "    XLOPER* handle,\n"
                 << "    XLOPER* baseName,\n"
                 << "    XLOPER* names,\n"
@@ -458,7 +459,7 @@ ExcelService::writeXllSourceFile(const std::string& dirname) const
                 << "}\n"
                 << "\n"
                 << m_import << "\n"
-                << "XLOPER* xl_" << m_service->ns << "_object_to_file(\n"
+                << "XLOPER12* xl_" << m_service->ns << "_object_to_file(\n"
                 << "    XLOPER* handle, XLOPER* fileName, XLOPER* format, "
                 << "XLOPER* options, XLOPER* metaData, XLOPER* mergeMetaData)\n"
                 << "{\n"
@@ -467,48 +468,48 @@ ExcelService::writeXllSourceFile(const std::string& dirname) const
                 << "}\n"
                 << "\n"
                 << m_import << "\n"
-                << "XLOPER* xl_" << m_service->ns << "_object_from_file(\n"
+                << "XLOPER12* xl_" << m_service->ns << "_object_from_file(\n"
                 << "    XLOPER* fileName, XLOPER* baseName)\n"
                 << "{\n"
                 << "    return " << xlServiceName << "->ObjectFromFile(baseName, fileName);\n"
                 << "}\n"
                 << "\n"
                 << m_import << "\n"
-                << "XLOPER* xl_" << m_service->ns << "_object_count(\n"
+                << "XLOPER12* xl_" << m_service->ns << "_object_count(\n"
                 << "    XLOPER* className)\n"
                 << "{\n"
                 << "    return " << xlServiceName << "->ObjectCount(className);\n"
                 << "}\n"
                 << "\n"
                 << m_import << "\n"
-                << "XLOPER* xl_" << m_service->ns << "_object_free(\n"
+                << "XLOPER12* xl_" << m_service->ns << "_object_free(\n"
                 << "    XLOPER* handle)\n"
                 << "{\n"
                 << "    return " << xlServiceName << "->ObjectFree(handle);\n"
                 << "}\n"
                 << "\n"
                 << m_import << "\n"
-                << "XLOPER* xl_" << m_service->ns << "_object_free_all()\n"
+                << "XLOPER12* xl_" << m_service->ns << "_object_free_all()\n"
                 << "{\n"
                 << "    return " << xlServiceName << "->ObjectFreeAll();\n"
                 << "}\n"
                 << "\n"
                 << m_import << "\n"
-                << "XLOPER* xl_" << m_service->ns << "_object_list(\n"
+                << "XLOPER12* xl_" << m_service->ns << "_object_list(\n"
                 << "    XLOPER* prefix, XLOPER* className)\n"
                 << "{\n"
                 << "    return " << xlServiceName << "->ObjectList(prefix, className);\n"
                 << "}\n"
                 << "\n"
                 << m_import << "\n"
-                << "XLOPER* xl_" << m_service->ns << "_object_class_name(\n"
+                << "XLOPER12* xl_" << m_service->ns << "_object_class_name(\n"
                 << "    XLOPER* handle)\n"
                 << "{\n"
                 << "    return " << xlServiceName << "->ObjectClassName(handle);\n"
                 << "}\n"
                 << "\n"
                 << m_import << "\n"
-                << "XLOPER* xl_" << m_service->ns << "_object_sha(\n"
+                << "XLOPER12* xl_" << m_service->ns << "_object_sha(\n"
                 << "    XLOPER* handle,\n"
                 << "    XLOPER* version)\n"
                 << "{\n"
@@ -518,44 +519,44 @@ ExcelService::writeXllSourceFile(const std::string& dirname) const
 
         ostr << "\n"
             << m_import << "\n"
-            << "XLOPER* xl_" << m_service->ns << "_start_logging(\n"
+            << "XLOPER12* xl_" << m_service->ns << "_start_logging(\n"
             << "    XLOPER* filename, XLOPER* options, XLOPER* minimal)\n"
             << "{\n"
             << "    return " << xlServiceName << "->StartLogging(filename, options, minimal);\n"
             << "}\n"
             << "\n"
             << m_import << "\n"
-            << "XLOPER* xl_" << m_service->ns << "_stop_logging()\n"
+            << "XLOPER12* xl_" << m_service->ns << "_stop_logging()\n"
             << "{\n"
             << "    return " << xlServiceName << "->StopLogging();\n"
             << "}\n"
             << "\n"
             << m_import << "\n"
-            << "XLOPER* xl_" << m_service->ns << "_start_timing()\n"
+            << "XLOPER12* xl_" << m_service->ns << "_start_timing()\n"
             << "{\n"
             << "    return " << xlServiceName << "->StartTiming();\n"
             << "}\n"
             << "\n"
             << m_import << "\n"
-            << "XLOPER* xl_" << m_service->ns << "_stop_timing()\n"
+            << "XLOPER12* xl_" << m_service->ns << "_stop_timing()\n"
             << "{\n"
             << "    return " << xlServiceName << "->StopTiming();\n"
             << "}\n"
             << "\n"
             << m_import << "\n"
-            << "XLOPER* xl_" << m_service->ns << "_clear_timings()\n"
+            << "XLOPER12* xl_" << m_service->ns << "_clear_timings()\n"
             << "{\n"
             << "    return " << xlServiceName << "->ClearTimings();\n"
             << "}\n"
             << "\n"
             << m_import << "\n"
-            << "XLOPER* xl_" << m_service->ns << "_get_timings()\n"
+            << "XLOPER12* xl_" << m_service->ns << "_get_timings()\n"
             << "{\n"
             << "    return " << xlServiceName << "->GetTimings();\n"
             << "}\n"
             << "\n"
             << m_import << "\n"
-            << "XLOPER* xl_" << m_service->ns << "_set_error_popups(\n"
+            << "XLOPER12* xl_" << m_service->ns << "_set_error_popups(\n"
             << "    XLOPER* errorPopups)\n"
             << "{\n"
             << "    return " << xlServiceName << "->SetErrorPopups(errorPopups);\n"
@@ -843,6 +844,7 @@ std::string ExcelModule::writeHeaderFile(const std::string& dirname) const
 
     ostr << "\n"
          << "typedef struct xloper XLOPER;\n"
+         << "typedef struct xloper12 XLOPER12;\n"
          << "\n"
          << "SPI_BEGIN_NAMESPACE\n"
          << "class ExcelService;\n"
@@ -1012,7 +1014,7 @@ void writeFunctionStart(
 {
     ostr << "{\n"
          << "    static spi::FunctionCaller* func = 0;\n"
-         << "    XLOPER* xl_my_output = 0;\n"
+         << "    XLOPER12* xl_my_output = 0;\n"
          << "    spi::ExcelTimer xl_timer(" << service->name()
          << "_excel_service, \"" << funcName << "\");\n";
 
@@ -1021,7 +1023,7 @@ void writeFunctionStart(
     if (isSlow)
     {
         ostr << "    if (inExcelFunctionWizard())\n"
-             << "        return spi::xloperInFunctionWizard();\n";
+             << "        return spi::xloper12InFunctionWizard();\n";
     }
 
     ostr << "    try\n"
@@ -1066,7 +1068,7 @@ void writePreCallChecks(
         ostr << spaces << "if (x.noCallInWizard && inExcelFunctionWizard())\n"
              << spaces << "{\n"
              << spaces << "    xl_timer.SetNotCalled();\n"
-             << spaces << "    return spi::xloperInFunctionWizard();\n"
+             << spaces << "    return spi::xloper12InFunctionWizard();\n"
              << spaces << "}\n\n";
     }
 }
@@ -1079,21 +1081,21 @@ void writeExceptionHandlingAndReturn(
          << "    catch (spi::ExcelInputError&)\n"
          << "    {\n"
          << "        xl_timer.SetNotCalled();\n"
-         << "        return spi::xloperInputError();\n"
+         << "        return spi::xloper12InputError();\n"
          << "    }\n"
          << "    catch (std::exception &e)\n"
          << "    {\n"
          << "        xl_timer.SetFailure();\n"
-         << "        return " << service->name() << "_excel_service->ErrorHandler(e.what());\n"
+         << "        return " << service->name() << "_excel_service->ErrorHandler12(e.what());\n"
          << "    }\n"
          << "    catch (...)\n" // last resort but shouldn't happen since functor calls catch all
          << "    {\n"
          << "        xl_timer.SetFailure();\n"
          << "        return " << service->name() 
-         << "_excel_service->ErrorHandler(\"Unknown exception!\");\n"
+         << "_excel_service->ErrorHandler12(\"Unknown exception!\");\n"
          << "    }\n"
          << "\n"
-         << "    return spi::xloperOutput(xl_my_output);\n"
+         << "    return spi::xloper12Output(xl_my_output);\n"
          << "}\n";
 }
 } // end of anonymous namespace
@@ -1112,7 +1114,7 @@ void ExcelModule::declareFunction(
 
     ostr << "\n"
          << service->import() << "\n"
-         << "XLOPER* xl_" << service->ns() << "_" << makeNamespaceSep(module->ns, "_")
+         << "XLOPER12* xl_" << service->ns() << "_" << makeNamespaceSep(module->ns, "_")
          << func->name << "(";
 
     const char* sep = "\n";
@@ -1147,7 +1149,7 @@ void ExcelModule::implementFunction(
     bool hasBaseName = funcHasBaseName(func);
 
     ostr << "\n"
-         << "XLOPER* xl_" << service->ns() << "_" << makeNamespaceSep(module->ns, "_")
+         << "XLOPER12* xl_" << service->ns() << "_" << makeNamespaceSep(module->ns, "_")
          << func->name << "(";
 
     size_t nbInputs = func->inputs.size();
@@ -1216,7 +1218,7 @@ void ExcelModule::implementFunction(
     if (func->outputs.size() > 0)
     {
         SPI_PRE_CONDITION(!func->returnType);
-        ostr << "        xl_my_output = spi::xloperMakeFromValue(output"
+        ostr << "        xl_my_output = spi::xloper12MakeFromValue(output"
              << ", false, " << func->outputs.size();
         if (func->returnsObject())
         {
@@ -1228,11 +1230,11 @@ void ExcelModule::implementFunction(
     }
     else if (!func->returnType)
     {
-        ostr << "        xl_my_output = spi::xloperFromBool(true);\n";
+        ostr << "        xl_my_output = spi::xloper12FromBool(true);\n";
     }
     else if (func->returnsObject())
     {
-        ostr << "        xl_my_output = spi::xloperMakeFromValue(output"
+        ostr << "        xl_my_output = spi::xloper12MakeFromValue(output"
              << ", false, 1, x.baseName";
         if (service->nameMandatory())
             ostr << ", true";
@@ -1240,7 +1242,7 @@ void ExcelModule::implementFunction(
     }
     else
     {
-        ostr << "        xl_my_output = spi::xloperMakeFromValue(output);\n";
+        ostr << "        xl_my_output = spi::xloper12MakeFromValue(output);\n";
     }
     writeExceptionHandlingAndReturn(ostr, service);
 }
@@ -1373,7 +1375,7 @@ void ExcelModule::declareClass(
 
         ostr << "\n"
              << service->import() << "\n"
-             << "XLOPER* xl_" << service->ns() << "_"
+             << "XLOPER12* xl_" << service->ns() << "_"
              << makeNamespaceSep(module->ns, "_") << cls->name << "(\n";
 
         if (!nameAtEnd && !noBaseName)
@@ -1406,7 +1408,7 @@ void ExcelModule::declareClass(
 
         ostr << "\n"
              << service->import() << "\n"
-             << "XLOPER* xl_" << service->ns() << "_"
+             << "XLOPER12* xl_" << service->ns() << "_"
              << makeNamespaceSep(module->ns, "_") << cls->name
              << "_" << method->function->name << "(";
 
@@ -1451,7 +1453,7 @@ void ExcelModule::implementClass(
         bool noBaseName = cls->asValue;
 
         ostr << "\n"
-             << "XLOPER* xl_" << service->ns() << "_"
+             << "XLOPER12* xl_" << service->ns() << "_"
              << makeNamespaceSep(module->ns, "_") << cls->name << "(\n";
 
         if (!nameAtEnd && !noBaseName)
@@ -1509,7 +1511,7 @@ void ExcelModule::implementClass(
         writePreCallChecks(ostr, noBaseName ? 0 : 1, service->nameMandatory(), isSlow);
 
         ostr << "        spi::Value output = spi::CallInContext(func, x.iv, get_input_context());\n";
-        ostr << "        xl_my_output = spi::xloperMakeFromValue(output"
+        ostr << "        xl_my_output = spi::xloper12MakeFromValue(output"
             << ", false, 1";
 
         if (!noBaseName)
@@ -1532,7 +1534,7 @@ void ExcelModule::implementClass(
             continue;
 
         ostr << "\n"
-             << "XLOPER* xl_" << service->ns() << "_"
+             << "XLOPER12* xl_" << service->ns() << "_"
              << makeNamespaceSep(module->ns, "_") << cls->name
              << "_" << method->function->name << "(";
 
@@ -1614,11 +1616,11 @@ void ExcelModule::implementClass(
 
         if (!method->function->returnType)
         {
-            ostr << "        xl_my_output = spi::xloperFromBool(true);\n";
+            ostr << "        xl_my_output = spi::xloper12FromBool(true);\n";
         }
         else if (method->function->returnsObject())
         {
-            ostr << "        xl_my_output = spi::xloperMakeFromValue(output"
+            ostr << "        xl_my_output = spi::xloper12MakeFromValue(output"
                  << ", false, 1, x.baseName";
             if (service->nameMandatory())
                 ostr << ", true";
@@ -1626,7 +1628,7 @@ void ExcelModule::implementClass(
         }
         else
         {
-            ostr << "        xl_my_output = spi::xloperMakeFromValue(output);\n";
+            ostr << "        xl_my_output = spi::xloper12MakeFromValue(output);\n";
         }
 
         writeExceptionHandlingAndReturn(ostr, service);
