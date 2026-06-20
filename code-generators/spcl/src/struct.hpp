@@ -191,7 +191,8 @@ private:
         bool canHide, const std::string& hideIf,
         ClassAttributeAccess accessLevel,
         const VerbatimConstSP& propertyCode,
-        const ConverterConstSP& converter);
+        const ConverterConstSP& converter,
+        bool noThrow);
 
 public:
     const std::vector<std::string>& description() const { return m_description; }

@@ -514,6 +514,7 @@ ClassAttributeConstSP parseClassAttribute(
         accessorDefaultOptions["canHide"] = BoolConstant::Make(false);
         accessorDefaultOptions["hideIf"] = StringConstant::Make();
         accessorDefaultOptions["noCopy"] = BoolConstant::Make(false);
+        accessorDefaultOptions["noThrow"] = BoolConstant::Make(false);
     }
     ParserOptions accessorOptions;
     accessorOptions = parseOptions(lexer, "{;", accessorDefaultOptions, false);
@@ -522,6 +523,7 @@ ClassAttributeConstSP parseClassAttribute(
     bool canHide = getOption(accessorOptions, "canHide")->getBool();
     std::string hideIf = getOption(accessorOptions, "hideIf")->getString();
     bool noCopy = getOption(accessorOptions, "noCopy")->getBool();
+    bool noThrow = getOption(accessorOptions, "noThrow")->getBool();
     token = lexer.getToken();
     if (token.type == '{')
     {
@@ -546,7 +548,7 @@ ClassAttributeConstSP parseClassAttribute(
     }
 
     ClassAttributeConstSP classAttribute = ClassAttribute::Make(
-        attr, accessLevel, code, noConvert, canHide, hideIf, noCopy, converter);
+        attr, accessLevel, code, noConvert, canHide, hideIf, noCopy, converter, noThrow);
 
     return classAttribute;
 }

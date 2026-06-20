@@ -175,7 +175,8 @@ public:
         bool canHide,
         const std::string& hideIf,
         bool noCopy,
-        const ConverterConstSP& converter);
+        const ConverterConstSP& converter,
+        bool noThrow);
 
     const AttributeConstSP& attribute() const;
     ClassAttributeAccess accessLevel() const;
@@ -187,6 +188,7 @@ public:
     bool canHide() const;
     const std::string& hideIf() const;
     bool noCopy() const;
+    bool noThrow() const;
 
     static std::vector<AttributeConstSP> getAttributeVector(
         const std::vector<ClassAttributeConstSP>& classAttributes);
@@ -200,7 +202,8 @@ protected:
         bool canHide,
         const std::string& hideIf,
         bool noCopy,
-        const ConverterConstSP& converter);
+        const ConverterConstSP& converter,
+        bool noThrow);
 
 private:
     AttributeConstSP m_attribute;
@@ -211,6 +214,7 @@ private:
     std::string m_hideIf;
     bool m_noCopy;
     ConverterConstSP m_converter;
+    bool m_noThrow;
 };
 
 

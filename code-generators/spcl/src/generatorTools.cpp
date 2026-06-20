@@ -696,10 +696,13 @@ void writeOpenAccessor(
     bool noCopy                 = attr->noCopy();
     DataTypeConstSP dataType    = attr->attribute()->dataType();
     int arrayDim = attr->attribute()->arrayDim();
+    bool catchException         = attr->noThrow() && !innerContext;
 
     std::string nameAccessor = accessorFormat ?
         spi_util::StringFormat(accessorFormat, name.c_str()) :
         name;
+
+    const char* indent = catchException ? "    " : "";
 
     if (!innerContext)
     {
@@ -715,6 +718,13 @@ void writeOpenAccessor(
              << name << "() const\n"
              << "{";
 
+        if (catchException)
+        {
+            ostr << "\n"
+                << "    try\n"
+                << "    {";
+        }
+
         if (dataType->needsTranslation() && !noConvert)
         {
             // we need a helper function from the helper class
@@ -727,51 +737,51 @@ void writeOpenAccessor(
             switch(arrayDim)
             {
             case 2:
-                ostr << "    const " << dataType->innerArrayType(arrayDim)
-                     << "& i_matrix = " << value << ";\n"
+                ostr << indent << "    const " << dataType->innerArrayType(arrayDim)
+                     << indent << "& i_matrix = " << value << ";\n"
                      << "\n"
-                     << "    size_t nr = i_matrix.Rows();\n"
-                     << "    size_t nc = i_matrix.Cols();\n"
-                     << "    " << dataType->outerArrayType(arrayDim)
+                     << indent << "    size_t nr = i_matrix.Rows();\n"
+                     << indent << "    size_t nc = i_matrix.Cols();\n"
+                     << indent << "    " << dataType->outerArrayType(arrayDim)
                      << " matrix(nr, nc);\n"
                      << "\n"
-                     << "    for (size_t i = 0; i < nr; ++i)\n"
-                     << "        for (size_t j = 0; j < nc; ++j)\n"
-                     << "            matrix[i][j] = "
+                     << indent << "    for (size_t i = 0; i < nr; ++i)\n"
+                     << indent << "        for (size_t j = 0; j < nc; ++j)\n"
+                     << indent << "            matrix[i][j] = "
                      << dataType->translateInner("i_matrix[i][j]", !noCopy) << ";\n"
                      << "\n"
-                     << "    return matrix;\n";
+                     << indent << "    return matrix;\n";
                 break;
             case 1:
-                ostr << "    const " << dataType->innerArrayType(arrayDim)
+                ostr << indent << "    const " << dataType->innerArrayType(arrayDim)
                      << "& i_values = " << value << ";\n"
                      << "\n"
-                     << "    " << dataType->outerArrayType(arrayDim) << " values;\n"
+                     << indent << "    " << dataType->outerArrayType(arrayDim) << " values;\n"
                      << "\n"
-                     << "    for (size_t i_ = 0; i_ < i_values.size(); ++i_)\n"
-                     << "        values.push_back("
+                     << indent << "    for (size_t i_ = 0; i_ < i_values.size(); ++i_)\n"
+                     << indent << "        values.push_back("
                      << dataType->translateInner("i_values[i_]", !noCopy)
                      << ");\n"
                      << "\n"
-                     << "    return values;\n";
+                     << indent << "    return values;\n";
                 break;
             case 0:
                 // one liner could do the trick for scalars, but let us
                 // be safe rather than sorry and do it in two lines
-                ostr << "    " << dataType->innerValueType()
+                ostr << indent << "    " << dataType->innerValueType()
                      << " i_value = " << value << ";\n"
-                     << "    return " << dataType->translateInner("i_value", !noCopy)
+                     << indent << "    return " << dataType->translateInner("i_value", !noCopy)
                      << ";\n";
                 break;
             }
-            ostr << "}\n";
+            ostr << indent << "}\n";
         }
         else if (noConvert)
         {
             // we don't even provide self in this case but we must have code
             if (!code)
                 throw spi::RuntimeError("LOGICAL ERROR: noConvert but no code");
-            writeVerbatim(ostr, code);
+            writeVerbatim(ostr, code, strlen(indent));
         }
         else
         {
@@ -781,19 +791,19 @@ void writeOpenAccessor(
             ostr << "\n";
             if (hasVerbatim)
             {
-                ostr << "    const " << className << "* o = this;\n";
+                ostr << indent << "    const " << className << "* o = this;\n";
             }
-            ostr << "    inner_type self = get_inner();\n";
+            ostr << indent << "    inner_type self = get_inner();\n";
 
             if (!code)
             {
                 ostr << "\n"
-                     << "    return self->" << nameAccessor << ";\n"
-                     << "}\n";
+                    << indent << "    return self->" << nameAccessor << ";\n"
+                    << indent << "}\n";
             }
             else
             {
-                writeVerbatim(ostr, code);
+                writeVerbatim(ostr, code, strlen(indent));
             }
         }
     }
@@ -809,20 +819,59 @@ void writeOpenAccessor(
         ostr << " " << className << "_Helper::get_" << name << "(const "
              << className << "* o)\n"
              << "{\n"
-             << "    " << className << "::inner_type self = o->get_inner();";
+             << indent << "    " << className << "::inner_type self = o->get_inner();";
 
         // same implementation as above for when we didn't need
         // translation and could implement inside the main class
         if (!code)
         {
             ostr << "\n"
-                 << "    return self->" << nameAccessor << ";\n"
-                 << "}\n";
+                << indent << "    return self->" << nameAccessor << ";\n"
+                << indent << "}\n";
         }
         else
         {
-            writeVerbatim(ostr, code);
+            writeVerbatim(ostr, code, strlen(indent));
         }
+    }
+    if (catchException)
+    {
+        ostr << "    catch(...)\n"
+            << "    {\n"
+            << "        ";
+        
+        if (arrayDim > 0)
+        {
+            ostr << "return " << dataType->outerArrayType(arrayDim) << "();\n";
+        }
+        else
+        {
+            spdoc::PublicType publicType = dataType->publicType();
+            ConstantConstSP defaultValue = attr->attribute()->defaultValue();
+
+            if (!defaultValue)
+            {
+                defaultValue = Constant::UNDEFINED;
+            }
+
+            if (defaultValue)
+            {
+                std::string defaultValueCode = defaultValue->toCode(publicType);
+                if (defaultValueCode.empty())
+                {
+                    // not sure this ever happens - but nevertheless we assume that
+                    // the publicType represents something to be constructed
+                    ostr << "return " << dataType->outerValueType() << "();\n";
+                }
+                else
+                {
+                    ostr << "return " << defaultValueCode << ";\n";
+                }
+            }
+        }
+
+        ostr << "    }\n"
+            << "}\n";
     }
 }
 

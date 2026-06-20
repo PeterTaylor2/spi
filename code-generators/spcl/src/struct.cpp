@@ -122,7 +122,8 @@ void Struct::addClassAttribute(const ClassAttributeConstSP& ca)
         ca->hideIf(),
         ca->accessLevel(),
         ca->fromInnerCode(),
-        ca->converter());
+        ca->converter(),
+        ca->noThrow());
 }
 
 void Struct::addAttribute(const AttributeConstSP& attribute,
@@ -130,7 +131,8 @@ void Struct::addAttribute(const AttributeConstSP& attribute,
     const std::string& hideIf,
     ClassAttributeAccess accessLevel,
     const VerbatimConstSP& code,
-    const ConverterConstSP& converter)
+    const ConverterConstSP& converter,
+    bool noThrow)
 {
     if (accessLevel == ClassAttributeAccess::PROPERTY)
     {
@@ -140,7 +142,7 @@ void Struct::addAttribute(const AttributeConstSP& attribute,
 
         m_classProperties.push_back(
             ClassAttribute::Make(attribute, accessLevel, code,
-                true, canHide, hideIf, false, converter));
+                true, canHide, hideIf, false, converter, noThrow));
     }
     else
     {
@@ -148,10 +150,13 @@ void Struct::addAttribute(const AttributeConstSP& attribute,
             SPI_THROW_RUNTIME_ERROR("Code must not be defined for attribute "
                 << attribute->name() << " of struct " << m_name);
 
+        if (noThrow)
+            SPI_THROW_RUNTIME_ERROR("Can only define noThrow for properties of struct " << m_name);
+
         m_attributes.push_back(attribute);
         m_classAttributes.push_back(
             ClassAttribute::Make(attribute, accessLevel, code,
-                true, canHide, hideIf, false, converter));
+                true, canHide, hideIf, false, converter, false));
     }
 }
 

@@ -729,7 +729,8 @@ ClassProperty::inner_type ClassProperty::make_inner(
         false,
         std::string(),
         false,
-        ::ConverterConstSP());
+        ::ConverterConstSP(),
+        false);
 }
 
 ClassProperty::inner_type ClassProperty::get_inner() const

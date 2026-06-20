@@ -179,7 +179,7 @@ void writeOpenAccessor(
     bool innerContext,
     bool hasVerbatim,
     bool usePropertyName=false,
-    const char* accessorFormat=NULL);
+    const char* accessorFormat=nullptr);
 
 void writeClosedAccessor(
     GeneratedOutput& ostr,

@@ -259,11 +259,12 @@ ClassAttributeConstSP ClassAttribute::Make(
     bool canHide,
     const std::string& hideIf,
     bool noCopy,
-    const ConverterConstSP& converter)
+    const ConverterConstSP& converter,
+    bool noThrow)
 {
     return ClassAttributeConstSP
         (new ClassAttribute(attribute, accessLevel, fromInnerCode, noConvert,
-                            canHide, hideIf, noCopy, converter));
+                            canHide, hideIf, noCopy, converter, noThrow));
 }
 
 ClassAttribute::ClassAttribute(
@@ -274,7 +275,8 @@ ClassAttribute::ClassAttribute(
     bool canHide,
     const std::string& hideIf,
     bool noCopy,
-    const ConverterConstSP& converter)
+    const ConverterConstSP& converter,
+    bool noThrow)
     :
     m_attribute(attribute),
     m_accessLevel(accessLevel),
@@ -283,7 +285,8 @@ ClassAttribute::ClassAttribute(
     m_canHide(canHide),
     m_hideIf(hideIf),
     m_noCopy(noCopy),
-    m_converter(converter)
+    m_converter(converter),
+    m_noThrow(noThrow)
 {}
 
 const AttributeConstSP& ClassAttribute::attribute() const
@@ -327,6 +330,11 @@ bool ClassAttribute::noCopy() const
 const ConverterConstSP& ClassAttribute::converter() const
 {
     return m_converter;
+}
+
+bool ClassAttribute::noThrow() const
+{
+    return m_noThrow;
 }
 
 spdoc::ClassAttributeConstSP ClassAttribute::getDoc(bool isStruct, bool isProperty) const
