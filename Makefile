@@ -29,7 +29,8 @@ test
 EXTRA_VCPROJ_DIRS=\
 makefiles\
 makefiles/gendep\
-makefiles/cversion
+makefiles/cversion\
+makefiles/dia2dump
 
 BUILD_DIRS=$(RUNTIME_BUILD_DIRS) code-generators $(TEST_BUILD_DIRS)
 
