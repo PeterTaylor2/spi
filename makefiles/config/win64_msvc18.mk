@@ -116,3 +116,7 @@ I_SYS_LIBS=\
  ws2_32.lib\
  $(G_UUID_LIBS)\
  wldap32.lib
+
+G_MSVC_VERSION=18
+G_MSVC_HOME=$(I_VS18_HOME)
+
