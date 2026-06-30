@@ -37,6 +37,8 @@
 #include <spi/StringUtil.hpp>
 #include <spi/CommonRuntime.hpp>
 
+#include <spi_util/Utils.hpp>
+
 #define NEW(T)         (T*)calloc(sizeof(T),1)
 #define NEW_ARRAY(T,n) (T*)calloc(sizeof(T),n)
 #define FREE(p)        if (p) free(p)
@@ -76,6 +78,41 @@ void xloperFreeContents(XLOPER* xloper)
         else if (xloper->xltype & xltypeStr)
         {
             FREE (xloper->val.str);
+        }
+        xloper->xltype = 0;
+    }
+}
+
+void xloper12FreeContents(XLOPER12* xloper);
+
+/*
+***************************************************************************
+** xloperFreeContents
+**
+** Frees the contents of an XLOPER.
+***************************************************************************
+*/
+void xloper12FreeContents(XLOPER12* xloper)
+{
+    if (xloper)
+    {
+        if (xloper->xltype & xltypeMulti)
+        {
+            size_t  size; /* Size of the array */
+            size_t  pos;  /* Iterator for array */
+            XLOPER12* xpos; /* XLOPER at pos */
+
+            size = xloper->val.array.rows * xloper->val.array.columns;
+            for (pos = 0; pos < size; ++pos)
+            {
+                xpos = xloper->val.array.lparray + pos;
+                xloper12FreeContents(xpos);
+            }
+            FREE(xloper->val.array.lparray);
+        }
+        else if (xloper->xltype & xltypeStr)
+        {
+            FREE(xloper->val.str);
         }
         xloper->xltype = 0;
     }
@@ -130,6 +167,16 @@ void xloperFree(XLOPER* xloper)
     }
 }
 
+SPI_XL_IMPORT
+void xloper12Free(XLOPER12* xloper)
+{
+    if (xloper)
+    {
+        xloper12FreeContents(xloper);
+        FREE(xloper);
+    }
+}
+
 /**
 ***************************************************************************
 ** xloperMakeEmpty
@@ -146,6 +193,11 @@ void xloperFree(XLOPER* xloper)
 XLOPER* xloperMakeEmpty()
 {
     return NEW(XLOPER);
+}
+
+XLOPER12* xloper12MakeEmpty()
+{
+    return NEW(XLOPER12);
 }
 
 /**
@@ -172,6 +224,25 @@ void xloperSetString(XLOPER* xloper, const std::string& str)
     xloper->val.str[0] = (unsigned char)len;
     if (len > 0)
         strncpy(xloper->val.str+1, str.c_str(), len);
+}
+
+void xloper12SetString(XLOPER12* xloper, const std::string& str)
+{
+    int len = spi_util::IntegerCast<int>(str.length());
+    if (len > 65535)
+        len = 65535;
+
+    xloper->val.str = NEW_ARRAY(XCHAR, len + 1);
+    if (xloper->val.str == NULL)
+        throw RuntimeError("Memory allocation failure");
+
+    xloper->xltype = xltypeStr;
+    xloper->val.str[0] = (XCHAR)len;
+    if (len > 0)
+    {
+        MultiByteToWideChar(CP_ACP, 0, str.c_str(), len, 
+            xloper->val.str + 1, len);
+    }
 }
 
 static void xlCallArea
@@ -277,6 +348,63 @@ XLOPER* xloperSetArray(XLOPER* xloper, int numRows, int numCols, bool expand)
     return xloper->val.array.lparray;
 }
 
+XLOPER12* xloper12SetArray(XLOPER12* xloper, int numRows, int numCols, bool expand)
+{
+    // inside the structure rows and columns are of type WORD
+    // this is much smaller than int, so we had better validate
+    static int maxWord = 0xffff;
+
+    if (numRows > maxWord || numRows < 0)
+    {
+        throw RuntimeError("Number of rows %d out of range", int(numRows));
+    }
+
+    if (numCols > maxWord || numCols < 0)
+    {
+        throw RuntimeError("Number of columns %d out of range", (int)numCols);
+    }
+
+    if (numRows == 0 || numCols == 0)
+    {
+        xloper->xltype = xltypeNil;
+        return NULL;
+    }
+
+    // for an array we expand to fill the calling area
+    // potentially this should be a matter for configuration
+    if (expand)
+    {
+        try
+        {
+            int callRows, callCols;
+            xlCallArea(&callRows, &callCols);
+            if (callRows > numRows)
+                numRows = callRows;
+
+            if (callCols > numCols)
+                numCols = callCols;
+        }
+        catch (...)
+        {
+            // ignore failures
+        }
+    }
+
+    xloper->val.array.lparray = NEW_ARRAY(XLOPER12, numRows * numCols);
+    if (!xloper->val.array.lparray)
+        throw RuntimeError("Memory allocation failure");
+
+    xloper->val.array.rows = (WORD)numRows;
+    xloper->val.array.columns = (WORD)numCols;
+    xloper->xltype = xltypeMulti;
+
+    int arraySize = numRows * numCols;
+    for (int i = 0; i < arraySize; ++i)
+        xloper->val.array.lparray[i].xltype = xltypeNil;
+
+    return xloper->val.array.lparray;
+}
+
 /*
 ***************************************************************************
 ** Convert from double to Date
@@ -337,9 +465,6 @@ void xlDateReset()
 */
 std::string xlCellName()
 {
-
-#if SPI_XL_VERSION >= 12
-
     std::string cellName;
 
     XLOPER12 xCaller;
@@ -401,72 +526,6 @@ done:
         return "None";
 
     return cellName;
-
-
-#else
-
-    std::string cellName;
-
-    XLOPER xCaller;
-    XLOPER xSheet;
-    XLOPER xAddress;
-
-    bool freeCaller = false;
-    bool freeSheet = false;
-    bool freeAddress = false;
-
-    int status = -1;
-
-    if (Excel (xlfCaller, &xCaller, 0) != xlretSuccess ||
-        !(xCaller.xltype & xltypeSRef))
-    {
-        goto done; /* failure */
-    }
-    freeCaller = true;
-
-    if (Excel (xlSheetNm, &xSheet, 1, &xCaller) != xlretSuccess ||
-        !(xSheet.xltype & xltypeStr))
-    {
-        goto done; /* failure */
-    }
-    freeSheet = true;
-
-    if (Excel (xlfAddress,
-               &xAddress,
-               3,
-               TempNum(xCaller.val.sref.ref.rwFirst + 1),
-               TempNum(xCaller.val.sref.ref.colFirst + 1),
-               TempNum(4)) != xlretSuccess ||
-        !(xAddress.xltype & xltypeStr))
-    {
-        goto done; /* failure */
-    }
-    freeAddress = true;
-
-    {
-        std::string sheet   = xloperToString(&xSheet, "sheet");
-        std::string address = xloperToString(&xAddress, "address");
-        cellName = StringFormat("%s!%s", sheet.c_str(), address.c_str());
-    }
-    status = 0;
-
-done:
-
-    if (freeCaller)
-        Excel (xlFree,0,1,&xCaller);
-
-    if (freeSheet)
-        Excel (xlFree,0,1,&xSheet);
-
-    if (freeAddress)
-        Excel (xlFree,0,1,&xAddress);
-
-    if (status != 0)
-        return "None";
-
-    return cellName;
-#endif
-
 }
 
 std::string g_xl_version_string;

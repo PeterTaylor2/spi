@@ -65,4 +65,39 @@ XLOPER* xloperFromBool(bool value)
     return xloperMakeFromValue(Value(value));
 }
 
+XLOPER12* xloper12Output(XLOPER12* xlo)
+{
+    if (!xlo)
+        return xloper12Error(xlerrNull);
+
+    xlo->xltype |= xlbitDLLFree;
+    return xlo;
+}
+
+XLOPER12* xloper12InFunctionWizard()
+{
+    // for the moment we return #N/A
+    return xloper12Error(xlerrNA);
+}
+
+XLOPER12* xloper12InputError()
+{
+    return xloper12Error(xlerrNA);
+}
+
+XLOPER12* xloper12Error(int errorCode)
+{
+    static XLOPER12 xlo;
+
+    xlo.xltype = xltypeErr;
+    xlo.val.err = errorCode;
+
+    return &xlo;
+}
+
+SPI_XL_IMPORT XLOPER12* xloper12FromBool(bool value)
+{
+    return xloper12MakeFromValue(Value(value));
+}
+
 SPI_END_NAMESPACE

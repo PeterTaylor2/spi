@@ -104,9 +104,7 @@ static XLOPER* TempHelp(const std::vector<std::string>& argsHelp, size_t i);
 static XLOPER* GetXLL();
 static void FreeXLL(XLOPER*);
 
-#if SPI_XL_VERSION >= 12
 static XLOPER12* TempString12(const std::string& str);
-#endif
 
 std::string GetXLLName()
 {
@@ -728,121 +726,7 @@ void ExcelService::RegisterFunction(
     {
         bool failed = false;
         int xlFailureCode = 0;
-#if SPI_XL_VERSION == 4
-        size_t numArgs;
-        size_t maxArgs = 31;
-        int    maxLenArgNames = 254;
-        const size_t maxHelp = 19;
-        const char* maxHelpMsg = "20 or more inputs - no help available. ";
 
-        // there is a case for us concatenating something from the service
-        // with the function name at this point - it would save us from
-        // having to do it outside
-
-        maxLenArgNames -= (xlFuncName.length() + 2);
-        numArgs = args.size() + 1; // inputs and outputs
-        if (numArgs > maxArgs)
-        {
-            throw RuntimeError("Too many arguments (%d) to Excel function %s",
-                               numArgs, xlFuncName.c_str());
-        }
-        std::string argTypes(numArgs, 'P');
-        if (xlArgTypes && strlen(xlArgTypes) == numArgs)
-            argTypes = std::string(xlArgTypes);
-
-        std::string argNames = StringJoin(",", args);
-        if ((int)argNames.length() > maxLenArgNames)
-        {
-            int oversize = (int)argNames.length() - maxLenArgNames;
-
-            std::vector<std::string> shortArgs(args);
-            for (size_t i = shortArgs.size(); oversize > 0 && i > 0; --i)
-            {
-                const std::string& arg = args[i-1];
-                std::string shortArg;
-
-                if (spi::StringEndsWith(arg, "?"))
-                    shortArg = spi::StringFormat("arg%d?", (int)i);
-                else
-                    shortArg = spi::StringFormat("arg%d", (int)i);
-
-                shortArgs[i-1] = shortArg;
-                oversize += shortArg.length();
-                oversize -= arg.length();
-            }
-
-            argNames = StringJoin(",", shortArgs);
-            SPI_POST_CONDITION((int)argNames.length() <= maxLenArgNames);
-        }
-
-        FreeAllTempMemory();
-
-        std::vector<XLOPER*> xInputs;
-
-        if (volatileInExcel)
-            argTypes += "!";
-
-        xInputs.push_back(TempString(xllName));
-        xInputs.push_back(TempString(cFuncName));
-        xInputs.push_back(TempString(argTypes));
-        if (m_upperCase)
-        {
-            xInputs.push_back(TempString(PrefixUpper(xlFuncName, m_sep)));
-        }
-        else
-        {
-            xInputs.push_back(TempString(xlFuncName));
-        }
-        xInputs.push_back(TempString(argNames));
-        if (hiddenFromWizard)
-            xInputs.push_back(TempNum(0));
-        else
-            xInputs.push_back(TempNum(1));
-        xInputs.push_back(TempString(xlCatName));
-        xInputs.push_back(TempStrConst(""));
-        xInputs.push_back(TempStrConst(""));
-        xInputs.push_back(TempString(funcHelp));
-        for (size_t i = 0; i < argsHelp.size() && i < maxHelp; ++i)
-        {
-            std::string argHelp;
-            if (argsHelp[i].empty() && i < args.size())
-            {
-                argHelp = args[i];
-                if (StringEndsWith(argHelp, "?"))
-                    argHelp = argHelp.substr(0, argHelp.length()-1) + " (optional)";
-            }
-            else
-            {
-                argHelp = argsHelp[i];
-            }
-            if (i+1 == argsHelp.size())
-                argHelp = argHelp + ". ";
-
-            xInputs.push_back(TempString(argHelp));
-        }
-
-        if (argsHelp.size() > maxHelp)
-        {
-            xInputs.push_back(TempString(maxHelpMsg));
-        }
-
-        int numInputs = (int)xInputs.size();
-        if (numInputs > 30)
-            numInputs = 30;
-
-        XLOPER res;
-        int xlret = Excel4v (xlfRegister,
-                &res, /* not interested in any return details */
-                numInputs,
-                &xInputs[0]);
-
-        if (res.xltype == xltypeErr)
-        {
-            failed = true;
-            xlFailureCode = res.val.err;
-        }
-
-#elif SPI_XL_VERSION >= 12
         size_t numArgs;
         size_t maxArgs = 64; // the actual limit is 255
         // however we are shortening the argument names to be 255
@@ -868,7 +752,8 @@ void ExcelService::RegisterFunction(
             throw RuntimeError("Too many arguments (%d) to Excel function %s",
                                numArgs, xlFuncName.c_str());
         }
-        std::string argTypes(numArgs, 'P');
+        std::string argTypes(numArgs, 'Q');
+
         if (xlArgTypes && strlen(xlArgTypes) == numArgs)
             argTypes = std::string(xlArgTypes);
 
@@ -990,7 +875,7 @@ void ExcelService::RegisterFunction(
 
         XLOPER12 res;
         int xlret = Excel12v (xlfRegister,
-                &res, /* not interested in any return details */
+                &res,
                 numInputs,
                 &xInputs[0]);
 
@@ -1000,9 +885,6 @@ void ExcelService::RegisterFunction(
             xlFailureCode = res.val.err;
         }
 
-#else
-#error "Excel version must be 4 or at least 12"
-#endif
         if (failed)
         {
             std::string errmsg = StringFormat("Failed to register %s with code (%d)",
@@ -1027,46 +909,58 @@ void ExcelService::UnregisterAllFunctions()
     m_registeredFunctions.clear();
 }
 
+namespace
+{
+    void ErrorHandlerHelper(
+        const char* err,
+        const spi::ServiceSP& svc,
+        bool errorPopups)
+    {
+        // static time_t timeOfLastError = 0;
+        static std::string lastCellName;
+
+        std::string cellName = xlCellName();
+
+        // when called from Excel the last error will also contain the cellName
+        std::string errorPlusCell;
+        if (cellName == "None")
+        {
+            errorPlusCell = err;
+        }
+        else
+        {
+            errorPlusCell = StringFormat(
+                "Failed at %s\n%s", cellName.c_str(), err);
+        }
+        svc->set_last_error(errorPlusCell);
+
+        // the idea is that we pop-up the error window as follows:
+        //
+        // 1. not called from Visual Basic (cellName != "None")
+        // 2. the user recalcs the offending cell
+        if (errorPopups && cellName != "None" && cellName == lastCellName)
+        {
+            // we definitely don't want error pop-ups while we are in
+            // the function wizard - that way lies madness
+            if (!inExcelFunctionWizard())
+            {
+                std::string title = "Excel Error at " + cellName;
+                ::MessageBox(NULL, err, title.c_str(), MB_SETFOREGROUND);
+            }
+        }
+
+        lastCellName = cellName;
+    }
+}
+
 /*
  * Make an XLOPER error object. If we have error popups, this will also
  * show up in a pop-up window when we re-calculated the last failure.
  */
 XLOPER* ExcelService::ErrorHandler(const char* err)
 {
-    // static time_t timeOfLastError = 0;
-    static std::string lastCellName;
+    ErrorHandlerHelper(err, m_service, errorPopups());
 
-    std::string cellName = xlCellName();
-
-    // when called from Excel the last error will also contain the cellName
-    std::string errorPlusCell;
-    if (cellName == "None")
-    {
-        errorPlusCell = err;
-    }
-    else
-    {
-        errorPlusCell = StringFormat(
-            "Failed at %s\n%s", cellName.c_str(), err);
-    }
-    m_service->set_last_error(errorPlusCell);
-
-    // the idea is that we pop-up the error window as follows:
-    //
-    // 1. not called from Visual Basic (cellName != "None")
-    // 2. the user recalcs the offending cell
-    if (errorPopups() && cellName != "None" && cellName == lastCellName)
-    {
-        // we definitely don't want error pop-ups while we are in
-        // the function wizard - that way lies madness
-        if(!inExcelFunctionWizard())
-        {
-            std::string title = "Excel Error at " + cellName;
-            ::MessageBox(NULL, err, title.c_str(), MB_SETFOREGROUND);
-        }
-    }
-
-    lastCellName = cellName;
     XLOPER* xlo = NEW(XLOPER);
 
     // Note that the free bit is added afterwards - and this is why we cannot
@@ -1076,6 +970,27 @@ XLOPER* ExcelService::ErrorHandler(const char* err)
     // otherwise we are in deep trouble anyway :)
 
     xlo->xltype  = xltypeErr;
+    if (m_errNA)
+        xlo->val.err = xlerrNA;
+    else
+        xlo->val.err = xlerrNum;
+
+    return xlo;
+}
+
+XLOPER12* ExcelService::ErrorHandler12(const char* err)
+{
+    ErrorHandlerHelper(err, m_service, errorPopups());
+
+    XLOPER12* xlo = NEW(XLOPER12);
+
+    // Note that the free bit is added afterwards - and this is why we cannot
+    // try to return a static
+    //
+    // we will have to hope we have the memory to allocated a single XLOPER12
+    // otherwise we are in deep trouble anyway :)
+
+    xlo->xltype = xltypeErr;
     if (m_errNA)
         xlo->val.err = xlerrNA;
     else
@@ -1102,15 +1017,12 @@ static XLOPER* TempString(
     return TempStrConst(str.c_str());
 }
 
-#if SPI_XL_VERSION >= 12
-
 static XLOPER12* TempString12(
     const std::string& str)
 {
     std::wstring tmp(str.begin(), str.end());
     return TempStr12(tmp.c_str());
 }
-#endif
 
 static XLOPER* TempHelp(const std::vector<std::string>& argsHelp, size_t i)
 {
@@ -1122,215 +1034,215 @@ static XLOPER* TempHelp(const std::vector<std::string>& argsHelp, size_t i)
     return TempStrConst("");
 }
 
-XLOPER* ExcelService::StartLogging(
-    XLOPER* xl_filename,
-    XLOPER* xl_options,
-    XLOPER* xl_minimal)
+XLOPER12* ExcelService::StartLogging(
+    XLOPER12* xl_filename,
+    XLOPER12* xl_options,
+    XLOPER12* xl_minimal)
 {
-    XLOPER* xlo;
+    XLOPER12* xlo;
     try
     {
         Value output = spi::StartLogging(
             m_service,
-            xloperToValue(xl_filename),
-            xloperToValue(xl_options),
-            xloperToValue(xl_minimal),
+            xloper12ToValue(xl_filename),
+            xloper12ToValue(xl_options),
+            xloper12ToValue(xl_minimal),
             getInputContext());
 
-        xlo = xloperMakeFromValue(output);
+        xlo = xloper12MakeFromValue(output);
     }
     catch (ExcelInputError&)
     {
-        return xloperInputError();
+        return xloper12InputError();
     }
     catch (std::exception &e)
     {
-        return ErrorHandler(e.what());
+        return ErrorHandler12(e.what());
     }
 
-    return xloperOutput(xlo);
+    return xloper12Output(xlo);
 }
 
-XLOPER* ExcelService::StopLogging(void)
+XLOPER12* ExcelService::StopLogging(void)
 {
-    XLOPER* xlo = NULL;
+    XLOPER12* xlo = NULL;
 
     try
     {
         Value output = spi::StopLogging(m_service);
-        xlo = xloperMakeFromValue(output);
+        xlo = xloper12MakeFromValue(output);
     }
     catch (ExcelInputError&)
     {
-        return xloperInputError();
+        return xloper12InputError();
     }
     catch (std::exception &e)
     {
-        return ErrorHandler(e.what());
+        return ErrorHandler12(e.what());
     }
 
-    return xloperOutput(xlo);
+    return xloper12Output(xlo);
 }
 
-XLOPER* ExcelService::IsLogging(void)
+XLOPER12* ExcelService::IsLogging(void)
 {
-    XLOPER* xlo = NULL;
+    XLOPER12* xlo = NULL;
 
     try
     {
         Value output = spi::IsLogging(m_service);
-        xlo = xloperMakeFromValue(output);
+        xlo = xloper12MakeFromValue(output);
     }
     catch (ExcelInputError&)
     {
-        return xloperInputError();
+        return xloper12InputError();
     }
     catch (std::exception &e)
     {
-        return ErrorHandler(e.what());
+        return ErrorHandler12(e.what());
     }
 
-    return xloperOutput(xlo);
+    return xloper12Output(xlo);
 }
 
-XLOPER* ExcelService::SetErrorPopups(XLOPER* xl_errorPopups)
+XLOPER12* ExcelService::SetErrorPopups(XLOPER12* xl_errorPopups)
 {
-    XLOPER* xlo = NULL;
+    XLOPER12* xlo = NULL;
 
     try
     {
-        bool errorPopups = xloperToBool(xl_errorPopups, "errorPopups");
+        bool errorPopups = xloper12ToBool(xl_errorPopups, "errorPopups");
         g_errorPopups = errorPopups;
-        xlo = xloperFromBool(errorPopups);
+        xlo = xloper12FromBool(errorPopups);
     }
     catch (ExcelInputError&)
     {
-        return xloperInputError();
+        return xloper12InputError();
     }
     catch (std::exception &e)
     {
-        return ErrorHandler(e.what());
+        return ErrorHandler12(e.what());
     }
 
-    return xloperOutput(xlo);
+    return xloper12Output(xlo);
 }
 
-XLOPER* ExcelService::HelpFunc(XLOPER* xl_name)
+XLOPER12* ExcelService::HelpFunc(XLOPER12* xl_name)
 {
-    XLOPER *xlo = NULL;
+    XLOPER12 *xlo = NULL;
 
     try
     {
-        Value name = xloperToValue(xl_name);
+        Value name = xloper12ToValue(xl_name);
         Value output = spi::HelpFunc(m_service, name, getInputContext());
         if (name.getString(true).empty())
-            xlo = xloperMakeFromValue(output, true);
+            xlo = xloper12MakeFromValue(output, true);
         else
-            xlo = xloperMakeFromValue(output, true, 4);
+            xlo = xloper12MakeFromValue(output, true, 4);
     }
     catch (ExcelInputError&)
     {
-        return xloperInputError();
+        return xloper12InputError();
     }
     catch (std::exception &e)
     {
-        return ErrorHandler(e.what());
+        return ErrorHandler12(e.what());
     }
 
-    return xloperOutput(xlo);
+    return xloper12Output(xlo);
 }
 
 
-XLOPER* ExcelService::HelpEnum(XLOPER* xl_name)
+XLOPER12* ExcelService::HelpEnum(XLOPER12* xl_name)
 {
-    XLOPER *xlo = NULL;
+    XLOPER12 *xlo = NULL;
 
     try
     {
         Value output = spi::HelpEnum(
             m_service,
-            xloperToValue(xl_name),
+            xloper12ToValue(xl_name),
             getInputContext());
-        xlo = xloperMakeFromValue(output, true);
+        xlo = xloper12MakeFromValue(output, true);
     }
     catch (ExcelInputError&)
     {
-        return xloperInputError();
+        return xloper12InputError();
     }
     catch (std::exception &e)
     {
-        return ErrorHandler(e.what());
+        return ErrorHandler12(e.what());
     }
 
-    return xloperOutput(xlo);
+    return xloper12Output(xlo);
 }
 
-XLOPER* ExcelService::StartTiming()
+XLOPER12* ExcelService::StartTiming()
 {
-    XLOPER* xlo = NULL;
+    XLOPER12* xlo = NULL;
 
     try
     {
-        xlo = xloperFromBool(g_timing);
+        xlo = xloper12FromBool(g_timing);
         g_timing = true;
     }
     catch (ExcelInputError&)
     {
-        return xloperInputError();
+        return xloper12InputError();
     }
     catch (std::exception &e)
     {
-        return ErrorHandler(e.what());
+        return ErrorHandler12(e.what());
     }
 
-    return xloperOutput(xlo);
+    return xloper12Output(xlo);
 }
 
-XLOPER* ExcelService::StopTiming()
+XLOPER12* ExcelService::StopTiming()
 {
-    XLOPER* xlo = NULL;
+    XLOPER12* xlo = NULL;
 
     try
     {
-        xlo = xloperFromBool(g_timing);
+        xlo = xloper12FromBool(g_timing);
         g_timing = false;
     }
     catch (ExcelInputError&)
     {
-        return xloperInputError();
+        return xloper12InputError();
     }
     catch (std::exception &e)
     {
-        return ErrorHandler(e.what());
+        return ErrorHandler12(e.what());
     }
 
-    return xloperOutput(xlo);
+    return xloper12Output(xlo);
 }
 
-XLOPER* ExcelService::ClearTimings()
+XLOPER12* ExcelService::ClearTimings()
 {
-    XLOPER* xlo = NULL;
+    XLOPER12* xlo = NULL;
 
     try
     {
-        xlo = xloperFromBool(true);
+        xlo = xloper12FromBool(true);
         g_timings.clear();
     }
     catch (ExcelInputError&)
     {
-        return xloperInputError();
+        return xloper12InputError();
     }
     catch (std::exception &e)
     {
-        return ErrorHandler(e.what());
+        return ErrorHandler12(e.what());
     }
 
-    return xloperOutput(xlo);
+    return xloper12Output(xlo);
 }
 
-XLOPER* ExcelService::GetTimings()
+XLOPER12* ExcelService::GetTimings()
 {
-    XLOPER* xlo = NULL;
+    XLOPER12* xlo = NULL;
 
     try
     {
@@ -1340,13 +1252,13 @@ XLOPER* ExcelService::GetTimings()
 
         try
         {
-            xlo = xloperMakeEmpty();
-            XLOPER* x = xloperSetArray(xlo, (int)g_timings.size(), 4, false);
+            xlo = xloper12MakeEmpty();
+            XLOPER12* x = xloper12SetArray(xlo, (int)g_timings.size(), 4, false);
 
             std::map<std::string,ExcelTimings>::const_iterator iter;
             for (iter = g_timings.begin(); iter != g_timings.end(); ++iter)
             {
-                xloperSetString(x, iter->first);
+                xloper12SetString(x, iter->first);
                 ++x;
                 x->xltype  = xltypeNum;
                 x->val.num = iter->second.numCalls;
@@ -1361,228 +1273,200 @@ XLOPER* ExcelService::GetTimings()
         }
         catch (...)
         {
-            xloperFree(xlo);
+            xloper12Free(xlo);
             xlo = NULL;
             throw;
         }
     }
     catch (ExcelInputError&)
     {
-        return xloperInputError();
+        return xloper12InputError();
     }
     catch (std::exception &e)
     {
-        return ErrorHandler(e.what());
+        return ErrorHandler12(e.what());
     }
 
-    return xloperOutput(xlo);
+    return xloper12Output(xlo);
 }
 
-XLOPER* ExcelService::ObjectToString(
-    XLOPER* xl_handle,
-    XLOPER* xl_format,
-    XLOPER* xl_options,
-    XLOPER* xl_hMetaData,
-    XLOPER* xl_mergeMetaData)
+XLOPER12* ExcelService::ObjectToString(
+    XLOPER12* xl_handle,
+    XLOPER12* xl_format,
+    XLOPER12* xl_options,
+    XLOPER12* xl_hMetaData,
+    XLOPER12* xl_mergeMetaData)
 {
-    XLOPER *xlo = NULL;
+    XLOPER12 *xlo = NULL;
 
     try
     {
         Value output = spi::ObjectToString(
-            xloperToValue(xl_handle),
-            xloperToValue(xl_format),
-            xloperToValue(xl_options),
-            xloperToValue(xl_hMetaData),
-            xloperToValue(xl_mergeMetaData),
+            xloper12ToValue(xl_handle),
+            xloper12ToValue(xl_format),
+            xloper12ToValue(xl_options),
+            xloper12ToValue(xl_hMetaData),
+            xloper12ToValue(xl_mergeMetaData),
             getInputContext(),
             true);
-        xlo = xloperMakeFromValue(output, true);
+        xlo = xloper12MakeFromValue(output, true);
     }
     catch (ExcelInputError&)
     {
-        return xloperInputError();
-    }
-    catch (std::exception &e)
-    {
-        return ErrorHandler(e.what());
-    }
-
-    return xloperOutput(xlo);
-}
-
-XLOPER* ExcelService::ObjectFromString(
-    XLOPER* xl_baseName,
-    XLOPER* xl_strings)
-{
-    XLOPER* xlo = NULL;
-
-    try
-    {
-        Value output = spi::ObjectFromString(
-            m_service,
-            xloperToValue(xl_strings),
-            getInputContext(),
-            true);
-        xlo = xloperMakeFromValue(output, false, 1, xloperToValue(xl_baseName), mandatoryBaseName());
-    }
-    catch (ExcelInputError&)
-    {
-        return xloperInputError();
-    }
-    catch (std::exception &e)
-    {
-        return ErrorHandler(e.what());
-    }
-    return xloperOutput(xlo);
-}
-
-#if SPI_XL_VERSION >= 12
-
-XLOPER* ExcelService::ObjectFromString(XLOPER* xl_baseName, XLOPER12* xl_str)
-{
-    XLOPER* xlo = NULL;
-
-    try
-    {
-        Value output = spi::ObjectFromString(
-            m_service,
-            xloper12ToValue(xl_str),
-            getInputContext(),
-            true);
-        xlo = xloperMakeFromValue(output, false, 1, xloperToValue(xl_baseName), mandatoryBaseName());
-    }
-    catch (ExcelInputError&)
-    {
-        return xloperInputError();
+        return xloper12InputError();
     }
     catch (std::exception& e)
     {
-        return ErrorHandler(e.what());
+        return ErrorHandler12(e.what());
     }
-    return xloperOutput(xlo);
+
+    return xloper12Output(xlo);
 }
 
-#endif
-
-XLOPER* ExcelService::ObjectToFile(
-    XLOPER* xl_handle,
-    XLOPER* xl_fileName,
-    XLOPER* xl_format,
-    XLOPER* xl_options,
-    XLOPER* xl_hMetaData,
-    XLOPER* xl_mergeMetaData)
+XLOPER12* ExcelService::ObjectFromString(
+    XLOPER12* xl_baseName,
+    XLOPER12* xl_strings)
 {
-    XLOPER *xlo = NULL;
+    XLOPER12* xlo = NULL;
+
+    try
+    {
+        Value output = spi::ObjectFromString(
+            m_service,
+            xloper12ToValue(xl_strings),
+            getInputContext(),
+            true);
+        xlo = xloper12MakeFromValue(output, false, 1, xloper12ToValue(xl_baseName), mandatoryBaseName());
+    }
+    catch (ExcelInputError&)
+    {
+        return xloper12InputError();
+    }
+    catch (std::exception &e)
+    {
+        return ErrorHandler12(e.what());
+    }
+    return xloper12Output(xlo);
+}
+
+XLOPER12* ExcelService::ObjectToFile(
+    XLOPER12* xl_handle,
+    XLOPER12* xl_fileName,
+    XLOPER12* xl_format,
+    XLOPER12* xl_options,
+    XLOPER12* xl_hMetaData,
+    XLOPER12* xl_mergeMetaData)
+{
+    XLOPER12 *xlo = NULL;
 
     try
     {
         Value output = spi::ObjectToFile(
-            xloperToValue(xl_handle),
-            xloperToValue(xl_fileName),
-            xloperToValue(xl_format),
-            xloperToValue(xl_options),
-            xloperToValue(xl_hMetaData),
-            xloperToValue(xl_mergeMetaData),
+            xloper12ToValue(xl_handle),
+            xloper12ToValue(xl_fileName),
+            xloper12ToValue(xl_format),
+            xloper12ToValue(xl_options),
+            xloper12ToValue(xl_hMetaData),
+            xloper12ToValue(xl_mergeMetaData),
             getInputContext());
-        xlo = xloperMakeFromValue(output);
+        xlo = xloper12MakeFromValue(output);
     }
     catch (ExcelInputError&)
     {
-        return xloperInputError();
+        return xloper12InputError();
     }
     catch (std::exception &e)
     {
-        return ErrorHandler(e.what());
+        return ErrorHandler12(e.what());
     }
 
-    return xloperOutput(xlo);
+    return xloper12Output(xlo);
 }
 
-XLOPER* ExcelService::ObjectFromFile(
-    XLOPER* xl_baseName,
-    XLOPER* xl_fileName)
+XLOPER12* ExcelService::ObjectFromFile(
+    XLOPER12* xl_baseName,
+    XLOPER12* xl_fileName)
 {
-    XLOPER* xlo = NULL;
+    XLOPER12* xlo = NULL;
 
     try
     {
         Value output = spi::ObjectFromFile(
             m_service,
-            xloperToValue(xl_fileName),
+            xloper12ToValue(xl_fileName),
             getInputContext());
-        xlo = xloperMakeFromValue(output, false, 1, xloperToValue(xl_baseName), mandatoryBaseName());
+        xlo = xloper12MakeFromValue(output, false, 1, xloper12ToValue(xl_baseName), mandatoryBaseName());
     }
     catch (ExcelInputError&)
     {
-        return xloperInputError();
+        return xloper12InputError();
     }
     catch (std::exception &e)
     {
-        return ErrorHandler(e.what());
+        return ErrorHandler12(e.what());
     }
-    return xloperOutput(xlo);
+    return xloper12Output(xlo);
 }
 
-XLOPER* ExcelService::ObjectFromURL(
-    XLOPER* baseName, XLOPER* url, XLOPER* timeout, XLOPER* names, 
-    XLOPER* v1, XLOPER* v2, XLOPER* v3, XLOPER* v4, XLOPER* v5,
-    XLOPER* v6, XLOPER* v7, XLOPER* v8, XLOPER* v9, XLOPER* v10,
-    XLOPER* v11, XLOPER* v12, XLOPER* v13, XLOPER* v14, XLOPER* v15,
-    XLOPER* v16, XLOPER* v17, XLOPER* v18, XLOPER* v19, XLOPER* v20)
+XLOPER12* ExcelService::ObjectFromURL(
+    XLOPER12* baseName, XLOPER12* url, XLOPER12* timeout, XLOPER12* names, 
+    XLOPER12* v1, XLOPER12* v2, XLOPER12* v3, XLOPER12* v4, XLOPER12* v5,
+    XLOPER12* v6, XLOPER12* v7, XLOPER12* v8, XLOPER12* v9, XLOPER12* v10,
+    XLOPER12* v11, XLOPER12* v12, XLOPER12* v13, XLOPER12* v14, XLOPER12* v15,
+    XLOPER12* v16, XLOPER12* v17, XLOPER12* v18, XLOPER12* v19, XLOPER12* v20)
 {
-    XLOPER* xlo = NULL;
+    XLOPER12* xlo = NULL;
 
     try
     {
         Value output = spi::ObjectFromURL(
             m_service,
-            xloperToValue(url),
-            xloperToValue(timeout),
-            xloperToValue(names),
-            xloperToValue(v1),
-            xloperToValue(v2),
-            xloperToValue(v3),
-            xloperToValue(v4),
-            xloperToValue(v5),
-            xloperToValue(v6),
-            xloperToValue(v7),
-            xloperToValue(v8),
-            xloperToValue(v9),
-            xloperToValue(v10),
-            xloperToValue(v11),
-            xloperToValue(v12),
-            xloperToValue(v13),
-            xloperToValue(v14),
-            xloperToValue(v15),
-            xloperToValue(v16),
-            xloperToValue(v17),
-            xloperToValue(v18),
-            xloperToValue(v19),
-            xloperToValue(v20),
+            xloper12ToValue(url),
+            xloper12ToValue(timeout),
+            xloper12ToValue(names),
+            xloper12ToValue(v1),
+            xloper12ToValue(v2),
+            xloper12ToValue(v3),
+            xloper12ToValue(v4),
+            xloper12ToValue(v5),
+            xloper12ToValue(v6),
+            xloper12ToValue(v7),
+            xloper12ToValue(v8),
+            xloper12ToValue(v9),
+            xloper12ToValue(v10),
+            xloper12ToValue(v11),
+            xloper12ToValue(v12),
+            xloper12ToValue(v13),
+            xloper12ToValue(v14),
+            xloper12ToValue(v15),
+            xloper12ToValue(v16),
+            xloper12ToValue(v17),
+            xloper12ToValue(v18),
+            xloper12ToValue(v19),
+            xloper12ToValue(v20),
             getInputContext());
-        xlo = xloperMakeFromValue(
-            output, false, 1, xloperToValue(baseName), mandatoryBaseName());
+        xlo = xloper12MakeFromValue(
+            output, false, 1, xloper12ToValue(baseName), mandatoryBaseName());
     }
     catch (ExcelInputError&)
     {
-        return xloperInputError();
+        return xloper12InputError();
     }
     catch (std::exception &e)
     {
-        return ErrorHandler(e.what());
+        return ErrorHandler12(e.what());
     }
-    return xloperOutput(xlo);
+    return xloper12Output(xlo);
 }
 
-XLOPER* ExcelService::ObjectGet(XLOPER* xl_handle, XLOPER* xl_name)
+XLOPER12* ExcelService::ObjectGet(XLOPER12* xl_handle, XLOPER12* xl_name)
 {
-    XLOPER* xlo = NULL;
+    XLOPER12* xlo = NULL;
 
     try
     {
-        Value name = xloperToValue(xl_name);
-        Value handle = xloperToValue(xl_handle);
+        Value name = xloper12ToValue(xl_name);
+        Value handle = xloper12ToValue(xl_handle);
         bool fillBlank = true;
         Value output = spi::ObjectGet(handle, name, getInputContext());
         // what if the output is an object?
@@ -1598,396 +1482,396 @@ XLOPER* ExcelService::ObjectGet(XLOPER* xl_handle, XLOPER* xl_name)
 
         if (name.getType() == Value::ARRAY)
         {
-            xlo = xloperMakeFromValue(output, true, name.getArray()->size(),
+            xlo = xloper12MakeFromValue(output, true, name.getArray()->size(),
                 name, mandatoryBaseName(), baseNamePrefix, fillBlank);
         }
         else
         {
-            xlo = xloperMakeFromValue(output, true, 1, name, mandatoryBaseName(),
+            xlo = xloper12MakeFromValue(output, true, 1, name, mandatoryBaseName(),
                 baseNamePrefix, fillBlank);
         }
     }
     catch (ExcelInputError&)
     {
-        return xloperInputError();
+        return xloper12InputError();
     }
     catch (std::exception &e)
     {
-        return ErrorHandler(e.what());
+        return ErrorHandler12(e.what());
     }
-    return xloperOutput(xlo);
+    return xloper12Output(xlo);
 }
 
-XLOPER* ExcelService::ObjectPut(XLOPER* baseName, XLOPER* handle, XLOPER* names,
-    XLOPER* v1, XLOPER* v2, XLOPER* v3, XLOPER* v4, XLOPER* v5,
-    XLOPER* v6, XLOPER* v7, XLOPER* v8, XLOPER* v9, XLOPER* v10,
-    XLOPER* v11, XLOPER* v12, XLOPER* v13, XLOPER* v14, XLOPER* v15,
-    XLOPER* v16, XLOPER* v17, XLOPER* v18, XLOPER* v19, XLOPER* v20,
-    XLOPER* v21, XLOPER* v22, XLOPER* v23, XLOPER* v24, XLOPER* v25)
+XLOPER12* ExcelService::ObjectPut(XLOPER12* baseName, XLOPER12* handle, XLOPER12* names,
+    XLOPER12* v1, XLOPER12* v2, XLOPER12* v3, XLOPER12* v4, XLOPER12* v5,
+    XLOPER12* v6, XLOPER12* v7, XLOPER12* v8, XLOPER12* v9, XLOPER12* v10,
+    XLOPER12* v11, XLOPER12* v12, XLOPER12* v13, XLOPER12* v14, XLOPER12* v15,
+    XLOPER12* v16, XLOPER12* v17, XLOPER12* v18, XLOPER12* v19, XLOPER12* v20,
+    XLOPER12* v21, XLOPER12* v22, XLOPER12* v23, XLOPER12* v24, XLOPER12* v25)
 {
-    XLOPER* xlo = NULL;
+    XLOPER12* xlo = NULL;
 
     try
     {
         Value output = spi::ObjectPut(
-            xloperToValue(handle),
-            xloperToValue(names),
-            xloperToValue(v1), xloperToValue(v2), xloperToValue(v3),
-            xloperToValue(v4), xloperToValue(v5), xloperToValue(v6),
-            xloperToValue(v7), xloperToValue(v8), xloperToValue(v9),
-            xloperToValue(v10), xloperToValue(v11), xloperToValue(v12),
-            xloperToValue(v13), xloperToValue(v14), xloperToValue(v15),
-            xloperToValue(v16), xloperToValue(v17), xloperToValue(v18),
-            xloperToValue(v19), xloperToValue(v20), xloperToValue(v21),
-            xloperToValue(v22), xloperToValue(v23), xloperToValue(v24),
-            xloperToValue(v25),
+            xloper12ToValue(handle),
+            xloper12ToValue(names),
+            xloper12ToValue(v1), xloper12ToValue(v2), xloper12ToValue(v3),
+            xloper12ToValue(v4), xloper12ToValue(v5), xloper12ToValue(v6),
+            xloper12ToValue(v7), xloper12ToValue(v8), xloper12ToValue(v9),
+            xloper12ToValue(v10), xloper12ToValue(v11), xloper12ToValue(v12),
+            xloper12ToValue(v13), xloper12ToValue(v14), xloper12ToValue(v15),
+            xloper12ToValue(v16), xloper12ToValue(v17), xloper12ToValue(v18),
+            xloper12ToValue(v19), xloper12ToValue(v20), xloper12ToValue(v21),
+            xloper12ToValue(v22), xloper12ToValue(v23), xloper12ToValue(v24),
+            xloper12ToValue(v25),
             getInputContext());
 
-        xlo = xloperMakeFromValue(output, false, 1,
-            xloperToValue(baseName), mandatoryBaseName());
+        xlo = xloper12MakeFromValue(output, false, 1,
+            xloper12ToValue(baseName), mandatoryBaseName());
     }
     catch (ExcelInputError&)
     {
-        return xloperInputError();
+        return xloper12InputError();
     }
     catch (std::exception &e)
     {
-        return ErrorHandler(e.what());
+        return ErrorHandler12(e.what());
     }
-    return xloperOutput(xlo);
+    return xloper12Output(xlo);
 
 }
 
-XLOPER* ExcelService::ObjectPutMetaData(XLOPER* baseName, XLOPER* handle, XLOPER* names,
-    XLOPER* v1, XLOPER* v2, XLOPER* v3, XLOPER* v4, XLOPER* v5,
-    XLOPER* v6, XLOPER* v7, XLOPER* v8, XLOPER* v9, XLOPER* v10,
-    XLOPER* v11, XLOPER* v12, XLOPER* v13, XLOPER* v14, XLOPER* v15,
-    XLOPER* v16, XLOPER* v17, XLOPER* v18, XLOPER* v19, XLOPER* v20,
-    XLOPER* v21, XLOPER* v22, XLOPER* v23, XLOPER* v24, XLOPER* v25)
+XLOPER12* ExcelService::ObjectPutMetaData(XLOPER12* baseName, XLOPER12* handle, XLOPER12* names,
+    XLOPER12* v1, XLOPER12* v2, XLOPER12* v3, XLOPER12* v4, XLOPER12* v5,
+    XLOPER12* v6, XLOPER12* v7, XLOPER12* v8, XLOPER12* v9, XLOPER12* v10,
+    XLOPER12* v11, XLOPER12* v12, XLOPER12* v13, XLOPER12* v14, XLOPER12* v15,
+    XLOPER12* v16, XLOPER12* v17, XLOPER12* v18, XLOPER12* v19, XLOPER12* v20,
+    XLOPER12* v21, XLOPER12* v22, XLOPER12* v23, XLOPER12* v24, XLOPER12* v25)
 {
-    XLOPER* xlo = NULL;
+    XLOPER12* xlo = NULL;
 
     try
     {
         Value output = spi::ObjectPutMetaData(
-            xloperToValue(handle),
-            xloperToValue(names),
-            xloperToValue(v1), xloperToValue(v2), xloperToValue(v3),
-            xloperToValue(v4), xloperToValue(v5), xloperToValue(v6),
-            xloperToValue(v7), xloperToValue(v8), xloperToValue(v9),
-            xloperToValue(v10), xloperToValue(v11), xloperToValue(v12),
-            xloperToValue(v13), xloperToValue(v14), xloperToValue(v15),
-            xloperToValue(v16), xloperToValue(v17), xloperToValue(v18),
-            xloperToValue(v19), xloperToValue(v20), xloperToValue(v21),
-            xloperToValue(v22), xloperToValue(v23), xloperToValue(v24),
-            xloperToValue(v25),
+            xloper12ToValue(handle),
+            xloper12ToValue(names),
+            xloper12ToValue(v1), xloper12ToValue(v2), xloper12ToValue(v3),
+            xloper12ToValue(v4), xloper12ToValue(v5), xloper12ToValue(v6),
+            xloper12ToValue(v7), xloper12ToValue(v8), xloper12ToValue(v9),
+            xloper12ToValue(v10), xloper12ToValue(v11), xloper12ToValue(v12),
+            xloper12ToValue(v13), xloper12ToValue(v14), xloper12ToValue(v15),
+            xloper12ToValue(v16), xloper12ToValue(v17), xloper12ToValue(v18),
+            xloper12ToValue(v19), xloper12ToValue(v20), xloper12ToValue(v21),
+            xloper12ToValue(v22), xloper12ToValue(v23), xloper12ToValue(v24),
+            xloper12ToValue(v25),
             getInputContext());
 
-        xlo = xloperMakeFromValue(output, false, 1,
-            xloperToValue(baseName), mandatoryBaseName());
+        xlo = xloper12MakeFromValue(output, false, 1,
+            xloper12ToValue(baseName), mandatoryBaseName());
     }
     catch (ExcelInputError&)
     {
-        return xloperInputError();
+        return xloper12InputError();
     }
     catch (std::exception& e)
     {
-        return ErrorHandler(e.what());
+        return ErrorHandler12(e.what());
     }
-    return xloperOutput(xlo);
+    return xloper12Output(xlo);
 
 }
 
 
 
-XLOPER* ExcelService::ObjectToMap(XLOPER* baseName, XLOPER* handle)
+XLOPER12* ExcelService::ObjectToMap(XLOPER12* baseName, XLOPER12* handle)
 {
-    XLOPER* xlo = NULL;
+    XLOPER12* xlo = NULL;
 
     try
     {
         Value output = spi::ObjectToMap(
-            xloperToValue(handle),
+            xloper12ToValue(handle),
             getInputContext());
-        xlo = xloperMakeFromValue(
-            output, false, 1, xloperToValue(baseName), mandatoryBaseName());
+        xlo = xloper12MakeFromValue(
+            output, false, 1, xloper12ToValue(baseName), mandatoryBaseName());
     }
     catch (ExcelInputError&)
     {
-        return xloperInputError();
+        return xloper12InputError();
     }
     catch (std::exception &e)
     {
-        return ErrorHandler(e.what());
+        return ErrorHandler12(e.what());
     }
-    return xloperOutput(xlo);
+    return xloper12Output(xlo);
 }
 
-XLOPER* ExcelService::ObjectCount(XLOPER* xl_className)
+XLOPER12* ExcelService::ObjectCount(XLOPER12* xl_className)
 {
-    XLOPER* xlo = NULL;
+    XLOPER12* xlo = NULL;
 
     try
     {
         Value output = spi::ObjectCount(
-            xloperToValue(xl_className),
+            xloper12ToValue(xl_className),
             getInputContext());
-        xlo = xloperMakeFromValue(output);
+        xlo = xloper12MakeFromValue(output);
     }
     catch (ExcelInputError&)
     {
-        return xloperInputError();
+        return xloper12InputError();
     }
     catch (std::exception &e)
     {
-        return ErrorHandler(e.what());
+        return ErrorHandler12(e.what());
     }
-    return xloperOutput(xlo);
+    return xloper12Output(xlo);
 }
 
-XLOPER* ExcelService::ObjectFree(XLOPER* xl_handle)
+XLOPER12* ExcelService::ObjectFree(XLOPER12* xl_handle)
 {
-    XLOPER* xlo = NULL;
+    XLOPER12* xlo = NULL;
 
     try
     {
         Value output = spi::ObjectFree(
-            xloperToValue(xl_handle),
+            xloper12ToValue(xl_handle),
             getInputContext());
-        xlo = xloperMakeFromValue(output);
+        xlo = xloper12MakeFromValue(output);
     }
     catch (ExcelInputError&)
     {
-        return xloperInputError();
+        return xloper12InputError();
     }
     catch (std::exception &e)
     {
-        return ErrorHandler(e.what());
+        return ErrorHandler12(e.what());
     }
-    return xloperOutput(xlo);
+    return xloper12Output(xlo);
 }
 
-XLOPER* ExcelService::ObjectFreeAll()
+XLOPER12* ExcelService::ObjectFreeAll()
 {
-    XLOPER* xlo = NULL;
+    XLOPER12* xlo = NULL;
 
     try
     {
         Value output = spi::ObjectFreeAll();
         m_service->clear_read_cache();
-        xlo = xloperMakeFromValue(output);
+        xlo = xloper12MakeFromValue(output);
     }
     catch (ExcelInputError&)
     {
-        return xloperInputError();
+        return xloper12InputError();
     }
     catch (std::exception &e)
     {
-        return ErrorHandler(e.what());
+        return ErrorHandler12(e.what());
     }
-    return xloperOutput(xlo);
+    return xloper12Output(xlo);
 }
 
-XLOPER* ExcelService::ObjectList(XLOPER* xl_prefix, XLOPER* xl_className)
+XLOPER12* ExcelService::ObjectList(XLOPER12* xl_prefix, XLOPER12* xl_className)
 {
-    XLOPER* xlo = NULL;
+    XLOPER12* xlo = NULL;
 
     try
     {
         Value output = spi::ObjectList(
-            xloperToValue(xl_prefix),
-            xloperToValue(xl_className),
+            xloper12ToValue(xl_prefix),
+            xloper12ToValue(xl_className),
             getInputContext());
-        xlo = xloperMakeFromValue(output);
+        xlo = xloper12MakeFromValue(output);
     }
     catch (ExcelInputError&)
     {
-        return xloperInputError();
+        return xloper12InputError();
     }
     catch (std::exception &e)
     {
-        return ErrorHandler(e.what());
+        return ErrorHandler12(e.what());
     }
-    return xloperOutput(xlo);
+    return xloper12Output(xlo);
 }
 
-XLOPER* ExcelService::ObjectClassName(XLOPER* xl_handle)
+XLOPER12* ExcelService::ObjectClassName(XLOPER12* xl_handle)
 {
-    XLOPER* xlo = NULL;
+    XLOPER12* xlo = NULL;
 
     try
     {
         Value output = spi::ObjectClassName(
-            xloperToValue(xl_handle),
+            xloper12ToValue(xl_handle),
             getInputContext());
-        xlo = xloperMakeFromValue(output);
+        xlo = xloper12MakeFromValue(output);
     }
     catch (ExcelInputError&)
     {
-        return xloperInputError();
+        return xloper12InputError();
     }
     catch (std::exception &e)
     {
-        return ErrorHandler(e.what());
+        return ErrorHandler12(e.what());
     }
-    return xloperOutput(xlo);
+    return xloper12Output(xlo);
 }
 
-XLOPER* ExcelService::ObjectCoerce(XLOPER* xl_baseName, XLOPER* xl_className, XLOPER* xl_value)
+XLOPER12* ExcelService::ObjectCoerce(XLOPER12* xl_baseName, XLOPER12* xl_className, XLOPER12* xl_value)
 {
-    XLOPER* xlo = NULL;
+    XLOPER12* xlo = NULL;
 
     try
     {
         Value output = spi::ObjectCoerce(
             m_service,
-            xloperToValue(xl_className),
-            xloperToValue(xl_value),
+            xloper12ToValue(xl_className),
+            xloper12ToValue(xl_value),
             getInputContext());
 
-        xlo = xloperMakeFromValue(output, false, 1, xloperToValue(xl_baseName));
+        xlo = xloper12MakeFromValue(output, false, 1, xloper12ToValue(xl_baseName));
     }
     catch (ExcelInputError&)
     {
-        return xloperInputError();
+        return xloper12InputError();
     }
     catch (std::exception &e)
     {
-        return ErrorHandler(e.what());
+        return ErrorHandler12(e.what());
     }
-    return xloperOutput(xlo);
+    return xloper12Output(xlo);
 }
 
-XLOPER * ExcelService::ObjectSHA(XLOPER * handle, XLOPER * version)
+XLOPER12 * ExcelService::ObjectSHA(XLOPER12 * handle, XLOPER12 * version)
 {
-    XLOPER* xlo = NULL;
+    XLOPER12* xlo = NULL;
 
     try
     {
         Value output = spi::ObjectSHA(
-            xloperToValue(handle),
-            xloperToValue(version),
+            xloper12ToValue(handle),
+            xloper12ToValue(version),
             getInputContext());
 
-        xlo = xloperMakeFromValue(output);
+        xlo = xloper12MakeFromValue(output);
     }
     catch (ExcelInputError&)
     {
-        return xloperInputError();
+        return xloper12InputError();
     }
     catch (std::exception &e)
     {
-        return ErrorHandler(e.what());
+        return ErrorHandler12(e.what());
     }
-    return xloperOutput(xlo);
+    return xloper12Output(xlo);
 }
 
-XLOPER* ExcelService::UrlCacheSize()
+XLOPER12* ExcelService::UrlCacheSize()
 {
-    XLOPER* xlo = NULL;
+    XLOPER12* xlo = NULL;
 
     try
     {
         Value output = spi::UrlCacheSize(m_service);
-        xlo = xloperMakeFromValue(output);
+        xlo = xloper12MakeFromValue(output);
     }
     catch (ExcelInputError&)
     {
-        return xloperInputError();
+        return xloper12InputError();
     }
     catch (std::exception &e)
     {
-        return ErrorHandler(e.what());
+        return ErrorHandler12(e.what());
     }
-    return xloperOutput(xlo);
+    return xloper12Output(xlo);
 }
 
-XLOPER* ExcelService::UrlCacheSave(XLOPER* filename)
+XLOPER12* ExcelService::UrlCacheSave(XLOPER12* filename)
 {
-    XLOPER* xlo = NULL;
+    XLOPER12* xlo = NULL;
 
     try
     {
         Value output = spi::UrlCacheSave(
             m_service,
-            xloperToValue(filename),
+            xloper12ToValue(filename),
             getInputContext());
 
-        xlo = xloperMakeFromValue(output);
+        xlo = xloper12MakeFromValue(output);
     }
     catch (ExcelInputError&)
     {
-        return xloperInputError();
+        return xloper12InputError();
     }
     catch (std::exception &e)
     {
-        return ErrorHandler(e.what());
+        return ErrorHandler12(e.what());
     }
-    return xloperOutput(xlo);
+    return xloper12Output(xlo);
 }
 
-XLOPER* ExcelService::UrlCacheLoad(XLOPER* filename)
+XLOPER12* ExcelService::UrlCacheLoad(XLOPER12* filename)
 {
-    XLOPER* xlo = NULL;
+    XLOPER12* xlo = NULL;
 
     try
     {
         Value output = spi::UrlCacheLoad(
             m_service,
-            xloperToValue(filename),
+            xloper12ToValue(filename),
             getInputContext());
 
-        xlo = xloperMakeFromValue(output);
+        xlo = xloper12MakeFromValue(output);
     }
     catch (ExcelInputError&)
     {
-        return xloperInputError();
+        return xloper12InputError();
     }
     catch (std::exception &e)
     {
-        return ErrorHandler(e.what());
+        return ErrorHandler12(e.what());
     }
-    return xloperOutput(xlo);
+    return xloper12Output(xlo);
 }
 
-XLOPER* ExcelService::UrlCacheInit()
+XLOPER12* ExcelService::UrlCacheInit()
 {
-    XLOPER* xlo = NULL;
+    XLOPER12* xlo = NULL;
 
     try
     {
         Value output = spi::UrlCacheInit(m_service);
-        xlo = xloperMakeFromValue(output);
+        xlo = xloper12MakeFromValue(output);
     }
     catch (ExcelInputError&)
     {
-        return xloperInputError();
+        return xloper12InputError();
     }
     catch (std::exception &e)
     {
-        return ErrorHandler(e.what());
+        return ErrorHandler12(e.what());
     }
-    return xloperOutput(xlo);
+    return xloper12Output(xlo);
 }
 
-XLOPER* ExcelService::UrlCacheClear()
+XLOPER12* ExcelService::UrlCacheClear()
 {
-    XLOPER* xlo = NULL;
+    XLOPER12* xlo = NULL;
 
     try
     {
         Value output = spi::UrlCacheClear(m_service);
-        xlo = xloperMakeFromValue(output);
+        xlo = xloper12MakeFromValue(output);
     }
     catch (ExcelInputError&)
     {
-        return xloperInputError();
+        return xloper12InputError();
     }
     catch (std::exception &e)
     {
-        return ErrorHandler(e.what());
+        return ErrorHandler12(e.what());
     }
-    return xloperOutput(xlo);
+    return xloper12Output(xlo);
 }
 
 spdoc::ServiceConstSP ExcelService::getDoc()

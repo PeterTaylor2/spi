@@ -34,6 +34,7 @@
 #include <string>
 
 typedef struct xloper XLOPER;
+typedef struct xloper12 XLOPER12;
 
 SPI_BEGIN_NAMESPACE
 
@@ -51,6 +52,9 @@ SPI_BEGIN_NAMESPACE
 SPI_XL_IMPORT
 void xloperFree(XLOPER* xloper);
 
+SPI_XL_IMPORT
+void xloper12Free(XLOPER12* xloper);
+
 /**
 ***************************************************************************
 ** xloperMakeEmpty
@@ -61,6 +65,7 @@ void xloperFree(XLOPER* xloper);
 ***************************************************************************
 */
 XLOPER* xloperMakeEmpty();
+XLOPER12* xloper12MakeEmpty();
 
 /**
 ***************************************************************************
@@ -73,6 +78,7 @@ XLOPER* xloperMakeEmpty();
 ***************************************************************************
 */
 void xloperSetString(XLOPER* xloper, const std::string& str);
+void xloper12SetString(XLOPER12* xloper, const std::string& str);
 
 /**
 ***************************************************************************
@@ -92,6 +98,7 @@ void xloperSetString(XLOPER* xloper, const std::string& str);
 ***************************************************************************
 */
 XLOPER* xloperSetArray(XLOPER* xloper, int numRows, int numCols, bool expand);
+XLOPER12* xloper12SetArray(XLOPER12* xloper, int numRows, int numCols, bool expand);
 
 /**
  * Convert double to Date.

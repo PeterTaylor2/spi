@@ -70,7 +70,6 @@ namespace
         return std::string(buf);
     }
 
-#if SPI_XL_VERSION >= 12
     std::string xl12StringToString(const XCHAR* in)
     {
         int cch = in[0];
@@ -89,7 +88,6 @@ namespace
         free(ast);
         return str;
     }
-#endif
 }
 
 /*
@@ -183,8 +181,6 @@ spi::Value xloperToValue(XLOPER* oper)
     }
 }
 
-#if SPI_XL_VERSION >= 12
-
 spi::Value xloper12ToValue(XLOPER12 * oper)
 {
     if (!oper)
@@ -264,8 +260,6 @@ spi::Value xloper12ToValue(XLOPER12 * oper)
     }
 
 }
-
-#endif
 
 ///*
 //**************************************************************************
@@ -679,6 +673,396 @@ void xloperSetFromValue(
     }
 }
 
+/**
+***************************************************************************
+** Creates an XLOPER12 from a Value.
+***************************************************************************
+*/
+XLOPER12* xloper12MakeFromValue(
+    const spi::Value& in,
+    bool expandArrays,
+    size_t numVars,
+    const spi::Value& baseNameValue,
+    bool mandatoryBaseName,
+    const std::string& baseNamePrefix,
+    bool fillBlank)
+{
+    SPI_PRE_CONDITION(numVars >= 1);
+
+    XLOPER12* xloper = xloper12MakeEmpty();
+    try
+    {
+        if (numVars == 1)
+        {
+            std::string baseName = baseNamePrefix + baseNameValue.getString(true);
+            xloper12SetFromValue(xloper, in, expandArrays, baseName, 0, mandatoryBaseName, fillBlank);
+        }
+        else
+        {
+            // we expect Value to be an array of size numVars
+            IArrayConstSP vars = in.getArray();
+            IArrayConstSP baseNames = baseNameValue.getArray(true);
+            size_t nbBaseNames = baseNames->size();
+            if (vars->size() != numVars)
+                throw spi::RuntimeError("array size mismatch");
+
+            // first of all we need to determine whether any of the
+            // outputs are in fact arrays - in that case we need to
+            // create a rectangular array
+            //
+            // otherwise we create a flat array
+            //
+            // FIXME: if more than one of the values is an object
+            // then we will have a problem with baseName
+            size_t maxSize = 1;
+            for (size_t i = 0; i < numVars; ++i)
+            {
+                Value var = vars->getItem(i);
+                if (var.getType() != Value::ARRAY)
+                    continue;
+                size_t arraySize = var.getArray()->size();
+                if (arraySize > maxSize)
+                    maxSize = arraySize;
+            }
+            XLOPER12* x = xloper12SetArray(xloper, (int)maxSize, (int)numVars,
+                expandArrays);
+
+            int numCols = xloper->val.array.columns;
+            int numRows = xloper->val.array.rows;
+            SPI_POST_CONDITION(numCols >= (int)numVars);
+            SPI_POST_CONDITION(numRows >= (int)maxSize);
+
+            // first variable in first column
+            // second variable in second column etc.
+            for (size_t i = 0; i < numVars; ++i)
+            {
+                Value var = vars->getItem(i);
+                std::string baseName = baseNamePrefix + (i < nbBaseNames ?
+                    baseNames->getItem(i).getString(true) : "");
+                size_t arraySize = 0;
+                if (var.getType() != Value::ARRAY)
+                {
+                    xloper12SetFromValue(x + i, var, false, baseName, 0, mandatoryBaseName, fillBlank);
+                    arraySize = 1;
+                }
+                else
+                {
+                    IArrayConstSP values = var.getArray();
+                    arraySize = values->size();
+                    for (size_t j = 0; j < arraySize; ++j)
+                    {
+                        xloper12SetFromValue(x + i + j * numCols, values->getItem(j), false,
+                            baseName, (int)j + 1, mandatoryBaseName, fillBlank);
+                    }
+                }
+                if (expandArrays)
+                {
+                    // TBD: should we try and match the type of the last element
+                    for (int j = (int)arraySize; j < numRows; ++j)
+                    {
+                        XLOPER12* xlo = x + i + j * numCols;
+                        xloper12SetString(xlo, std::string());
+                    }
+                }
+            }
+        }
+        return xloper;
+    }
+    catch (...)
+    {
+        xloper12Free(xloper);
+        throw;
+    }
+}
+
+/*
+***************************************************************************
+** Set the value in an xloper to the given Value.
+***************************************************************************
+*/
+void xloper12SetFromValue(
+    XLOPER12* xloper,
+    const spi::Value& in,
+    bool expandArrays,
+    const std::string& baseName,
+    int baseNameIndex,
+    bool mandatoryBaseName,
+    bool fillBlank)
+{
+    switch (in.getType())
+    {
+    case Value::UNDEFINED:
+        xloper12SetString(xloper, std::string());
+        break;
+    case Value::CHAR:
+        // treat as string of size one
+        xloper12SetString(xloper, std::string(1, in.getChar()));
+        break;
+    case Value::STRING:
+        xloper12SetString(xloper, in.getString());
+        break;
+    case Value::INT:
+        xloper->xltype = xltypeNum;
+        xloper->val.num = in.getInt();
+        break;
+    case Value::DOUBLE:
+    {
+        double value = in.getDouble();
+
+        if (_isnan(value))
+        {
+            xloper->xltype = xltypeErr;
+            xloper->val.err = xlerrNum;
+        }
+        else if (!_finite(value))
+        {
+            xloper->xltype = xltypeErr;
+            xloper->val.err = xlerrDiv0;
+        }
+        else
+        {
+            xloper->xltype = xltypeNum;
+            xloper->val.num = value;
+        }
+        break;
+    }
+    case Value::BOOL:
+        // treat as bool
+        xloper->xltype = xltypeBool;
+        xloper->val.xbool = in.getBool() ? 1 : 0;
+        break;
+    case Value::DATE:
+        // treat as double
+        xloper->xltype = xltypeNum;
+        xloper->val.num = xlDateToDouble(in.getDate());
+        break;
+    case Value::DATETIME:
+        // treat as double
+    {
+        spi::DateTime dt = in.getDateTime();
+        double datePart = xlDateToDouble(dt.Date());
+        double timePart = spi::DateTime::TimeToDouble(dt.Time());
+        xloper->xltype = xltypeNum;
+        xloper->val.num = datePart + timePart;
+    }
+    break;
+    case Value::ARRAY:
+    {
+        // depending on the dimensions of the output create a
+        // rectangular array - we cannot output more than two
+        // dimensions in Excel
+        //
+        // populate the array by calling back into this function
+        IArrayConstSP valarray = in.getArray();
+        size_t arraySize = valarray->size();
+        std::vector<size_t> dimensions = valarray->dimensions();
+
+        size_t numRows;
+        size_t numCols;
+        switch (dimensions.size())
+        {
+        case 0:
+            numRows = 1;
+            numCols = 1;
+            break;
+        case 1:
+            numRows = dimensions[0];
+            numCols = 1;
+            break;
+        case 2:
+            numRows = dimensions[0];
+            numCols = dimensions[1];
+            break;
+        default:
+            SPI_THROW_RUNTIME_ERROR("Cannot convert " << dimensions.size()
+                << " dimensional array to Excel array");
+        }
+        SPI_POST_CONDITION(arraySize == (numCols * numRows));
+
+        int xNumRows = numRows > 0 ? (int)numRows : 1;
+        int xNumCols = numCols > 0 ? (int)numCols : 1;
+
+        XLOPER12* xlarray = xloper12SetArray(xloper, xNumRows, xNumCols, expandArrays);
+        // if we have expandArrays then xNumCols and xNumRows can increase
+        xNumCols = xloper->val.array.columns;
+        xNumRows = xloper->val.array.rows;
+        // but cannot be allowed to decrease
+        SPI_POST_CONDITION(xNumRows >= (int)numRows);
+        SPI_POST_CONDITION(xNumCols >= (int)numCols);
+
+        // now we use numRows,numCols for indexing into valarray
+        // but xNumRows and xNumCols for indexing into xlarray
+
+        for (size_t i = 0; i < numRows; ++i)
+        {
+            for (size_t j = 0; j < numCols; ++j)
+            {
+                size_t k = i * numCols + j;
+                xloper12SetFromValue(&xlarray[i * xNumCols + j], valarray->getItem(k),
+                    false, baseName, (int)k + 1, mandatoryBaseName);
+            }
+        }
+
+        if ((int)numRows < xNumRows)
+        {
+            // we need to fill each the array with a type that matches the
+            // type of the values in the array
+            //
+            // if the array is empty we use NULL and the rest blanks
+            //
+            // if the array is not empty we use the type of the last
+            // field in each column for the remainder of that column
+            //
+            // it appears that setting the values to xltypeNil ends
+            // up as 0 on the spreadsheet
+            if (numRows == 0)
+            {
+                for (size_t j = 0; j < numCols; ++j)
+                {
+                    XLOPER12* xlo = &xlarray[j];
+                    xloper12SetString(xlo, "NULL");
+                    for (int i = 1; i < xNumRows; ++i)
+                    {
+                        XLOPER12* xlo = &xlarray[i * xNumCols + j];
+                        xloper12SetString(xlo, std::string());
+                    }
+                }
+            }
+            else if (fillBlank)
+            {
+                for (size_t j = 0; j < numCols; ++j)
+                {
+                    // fill with blank strings
+                    for (int i = (int)numRows; i < xNumRows; ++i)
+                    {
+                        XLOPER12* xlo = &xlarray[i * xNumCols + j];
+                        xloper12SetString(xlo, std::string());
+                    }
+                }
+            }
+            else
+            {
+                for (size_t j = 0; j < numCols; ++j)
+                {
+                    Value lastValue = valarray->getItem((numRows - 1) * numCols + j);
+                    switch (lastValue.getType())
+                    {
+                    case Value::INT:
+                    case Value::DOUBLE:
+                    case Value::DATE:
+                    case Value::DATETIME:
+                        // fill with zeroes (why was this done in the past?)
+                        for (int i = (int)numRows; i < xNumRows; ++i)
+                        {
+                            XLOPER12* xlo = &xlarray[i * xNumCols + j];
+                            xlo->xltype = xltypeNum;
+                            xlo->val.num = 0.0;
+                        }
+                        break;
+                    default:
+                        // fill with blank strings
+                        for (int i = (int)numRows; i < xNumRows; ++i)
+                        {
+                            XLOPER12* xlo = &xlarray[i * xNumCols + j];
+                            xloper12SetString(xlo, std::string());
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        if ((int)numCols < xNumCols)
+        {
+            // for extra columns we will use #N/A
+            for (int i = 0; i < xNumRows; ++i)
+            {
+                for (int j = (int)numCols; j < xNumCols; ++j)
+                {
+                    XLOPER12* xlo = &xlarray[i * xNumCols + j];
+                    xlo->xltype = xltypeErr;
+                    xlo->val.err = xlerrNA;
+
+                    // if we change our mind and want to use empty string
+                    // then use the following function call instead
+                    //xloperSetString(xlo, std::string());
+                }
+            }
+        }
+        break;
+    }
+    case Value::OBJECT:
+    {
+        bool noCellName = false;
+        std::ostringstream fullBaseName;
+        if (baseName.length() > 0)
+        {
+            if (baseName[baseName.length() - 1] == '#')
+                noCellName = true;
+            fullBaseName << baseName;
+        }
+        else if (mandatoryBaseName)
+        {
+            throw RuntimeError("No base name provided");
+        }
+
+        if (baseNameIndex > 0)
+            fullBaseName << "[" << baseNameIndex << "]";
+
+        if (!noCellName)
+            fullBaseName << "#" << xlCellName();
+
+        std::string handle = ObjectHandleSave(fullBaseName.str(), in);
+        xloper12SetFromValue(xloper, Value(handle), false);
+        break;
+    }
+    case Value::MAP:
+    {
+        MapConstSP vm = in.getMap();
+        switch (vm->MapType())
+        {
+        case Map::VARIANT:
+        {
+            Variant var(vm);
+            xloper12SetFromValue(xloper, var.GetValue(), false);
+            break;
+        }
+        case Map::MATRIX:
+        {
+            MatrixData<Value> matrix = MatrixData<Value>::FromMap(vm);
+            int rows = INT(matrix.Rows());
+            int cols = INT(matrix.Cols());
+            const std::vector<Value>& data = matrix.Data();
+            XLOPER12* xlarray = xloper12SetArray(xloper, rows, cols, expandArrays);
+            int xlRows = xloper->val.array.rows;
+            int xlCols = xloper->val.array.columns;
+            SPI_POST_CONDITION(xlRows >= rows);
+            SPI_POST_CONDITION(xlCols >= cols);
+            for (int r = 0; r < rows; ++r)
+            {
+                for (int c = 0; c < cols; ++c)
+                {
+                    int i = r * cols + c;
+                    int j = r * xlCols + c;
+                    xloper12SetFromValue(&xlarray[j], data[j], false, baseName,
+                        (int)i + 1, mandatoryBaseName);
+                }
+            }
+            break;
+        }
+        default:
+            throw RuntimeError("Cannot create Excel output from Map");
+        }
+        break;
+    }
+    default:
+        // create #NUM! error
+        xloper->xltype = xltypeErr;
+        xloper->xltype = xlerrNum;
+        break;
+    }
+}
+
 XLInputValues::XLInputValues(const char* name)
     :
     iv(name),
@@ -722,8 +1106,8 @@ XLInputValues xlGetInputValues(
         inputs.reserve(nbArgs);
         for (int i = 0; i < nbArgs; ++i)
         {
-            XLOPER* xloper = va_arg(args, XLOPER*);
-            inputs.push_back(xloperToValue(xloper));
+            XLOPER12* xloper = va_arg(args, XLOPER12*);
+            inputs.push_back(xloper12ToValue(xloper));
         }
 
         if (baseNameAtEnd)

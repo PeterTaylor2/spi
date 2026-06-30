@@ -36,6 +36,7 @@
 #include <vector>
 
 typedef struct xloper XLOPER;
+typedef struct xloper12 XLOPER12;
 
 SPI_BEGIN_NAMESPACE
 
@@ -44,6 +45,12 @@ SPI_XL_IMPORT XLOPER* xloperInFunctionWizard();
 SPI_XL_IMPORT XLOPER* xloperInputError();
 XLOPER* xloperError(int errorCode);
 SPI_XL_IMPORT XLOPER* xloperFromBool(bool value);
+
+SPI_XL_IMPORT XLOPER12* xloper12Output(XLOPER12* xlo);
+SPI_XL_IMPORT XLOPER12* xloper12InFunctionWizard();
+SPI_XL_IMPORT XLOPER12* xloper12InputError();
+XLOPER12* xloper12Error(int errorCode);
+SPI_XL_IMPORT XLOPER12* xloper12FromBool(bool value);
 
 SPI_END_NAMESPACE
 

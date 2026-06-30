@@ -96,8 +96,6 @@ spi/c/src/*.hpp
 cs/spi.cs
 cs/spcs.csproj
 spi/excel/src/*.cpp
-spi/excel/src/xl4/*.c
-spi/excel/src/xl4/*.h
 spi/excel/src/xl12/*.c
 spi/excel/src/xl12/*.h
 spi/excel/src/xl12/*.cpp

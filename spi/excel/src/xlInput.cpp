@@ -80,7 +80,24 @@ std::string xloperToString(
     }
 }
 
-#if SPI_XL_VERSION>=12
+bool xloper12ToBool(
+    XLOPER12* oper,
+    const char* name,
+    bool optional,
+    bool defaultValue)
+{
+    static InputContext* context = InputContext::ExcelContext();
+    Value value = xloper12ToValue(oper);
+
+    try
+    {
+        return context->ValueToBool(value, optional, defaultValue);
+    }
+    catch (std::exception &e)
+    {
+        throw RuntimeError(e, name);
+    }
+}
 
 std::string xloper12ToString(
     XLOPER12 * oper,
@@ -101,7 +118,5 @@ std::string xloper12ToString(
     }
     return std::string();
 }
-
-#endif
 
 SPI_END_NAMESPACE
