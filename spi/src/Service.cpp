@@ -312,7 +312,8 @@ ObjectConstSP Service::object_from_data(
     const std::string& data, // can be binary or text
     const std::string& streamName,
     bool allowBinary,
-    const MapConstSP& metaData) const
+    const MapConstSP& metaData,
+    bool noThrow) const
 {
     // we will try the stream with all the streamers of the matching type
     // (binary or text)
@@ -334,22 +335,25 @@ ObjectConstSP Service::object_from_data(
 
     for (auto iter = formats.begin(); iter != formats.end(); ++iter)
     {
+        SPI_UTIL_CLOCK_BLOCK("Service::object_from_data: try_format_loop");
+
         const char* recognizer = IObjectStreamer::Recognizer(*iter);
 
         SPI_POST_CONDITION(recognizer);
-
-        // we are allowed an empty recognizer
-        // it should really be the last format registered
-        // short text is the relevant format
 
         // read the first N characters from the stream
         // if it matches the recognizer then we are good to go
         size_t rlen = strlen(recognizer);
 
+        if (rlen == 0)
+            continue; // we don't allow empty recognizers
+
         std::string buf = data.substr(0, rlen);
 
         if (buf == recognizer)
         {
+            SPI_UTIL_CLOCK_BLOCK(recognizer); // recognizer is const char* so we can use it as a clock block name
+
             IObjectStreamerSP streamer = IObjectStreamer::Make(
                 share_this(this), *iter);
 
@@ -357,42 +361,39 @@ ObjectConstSP Service::object_from_data(
 
             ObjectConstSP obj;
 
-            if (*recognizer)
+            obj = streamer->from_data(streamName, data, offset, metaData);
+
             {
-                obj = streamer->from_data(streamName, data, offset, metaData);
-            }
-            else
-            {
+                // put this code in a separate block so that we can separately measure the time taken to add the meta data
+                // we cannot put this outside the loop since the loop is broken by returning the object
+                SPI_UTIL_CLOCK_BLOCK("Service::object_from_data: add_meta_data");
+
+                double parseTime = clock.Time();
+                ObjectPutMetaData(obj,
+                    { "parseTime", "size" },
+                    { 1e3 * parseTime, size });
+
                 try
                 {
-                    obj = streamer->from_data(streamName, data, offset, metaData);
+                    DateTime timestamp = obj->get_timestamp(); // from object_id if it exists
+                    if (!timestamp)
+                        timestamp = DateTime::Now(true); // universal time
+                    ObjectPutMetaData(obj, "timestamp", timestamp);
                 }
                 catch (...)
                 {
-                    continue; // only the from_data function can recognize the text
+                    // ignore failures here
                 }
-            }
-
-            double parseTime = clock.Time();
-            ObjectPutMetaData(obj,
-                { "parseTime", "size" },
-                { 1e3 * parseTime, size });
-
-            try
-            {
-                DateTime timestamp = obj->get_timestamp(); // from object_id if it exists
-                if (!timestamp)
-                    timestamp = DateTime::Now(true); // universal time
-                ObjectPutMetaData(obj, "timestamp", timestamp);
-            }
-            catch (...)
-            {
-                // ignore failures here
             }
 
             return obj;
         }
     }
+
+    if (noThrow)
+        return ObjectConstSP();
+
+    SPI_UTIL_CLOCK_BLOCK("Service::object_from_data: unrecognized_exception");
 
     SPI_THROW_RUNTIME_ERROR(
         streamName << ": Could not recognize any of the file formats: "
@@ -400,21 +401,23 @@ ObjectConstSP Service::object_from_data(
 }
 
 ObjectConstSP Service::object_from_string(
-    const std::string& objectString) const
+    const std::string& objectString,
+    bool parserNoThrow) const
 {
     // strings are always in text format so we won't try binary formats
-    ObjectConstSP obj = object_from_data(objectString, std::string(), false);
+    ObjectConstSP obj = object_from_data(objectString, std::string(), false, {}, parserNoThrow);
     return obj;
 }
 
-ObjectConstSP Service::object_from_file(const std::string& filename) const
+ObjectConstSP Service::object_from_file(const std::string& filename, bool parserNoThrow) const
 {
 #ifndef SPI_STATIC
     if (spi_util::StringStartsWith(filename, "http://") ||
         spi_util::StringStartsWith(filename, "file://"))
     {
         const int timeout = 10; // measured in seconds
-        return object_from_url(filename, timeout);
+        const int cacheAge = 0;
+        return object_from_url(filename, timeout, cacheAge, parserNoThrow);
     }
 #endif
 
@@ -459,7 +462,7 @@ ObjectConstSP Service::object_from_file(const std::string& filename) const
     metaData->SetValue("filetime", Value(DateTime(timestamp)));
     metaData->SetValue("readTime", 1e3 * readTime);
 
-    ObjectConstSP obj = object_from_data(data, filename, true, metaData);
+    ObjectConstSP obj = object_from_data(data, filename, true, metaData, parserNoThrow);
 
     // to save memory, we need to avoid keeping huge objects in the read_cache
     // we cannot measure the amount of memory used by obj
@@ -478,7 +481,8 @@ ObjectConstSP Service::object_from_file(const std::string& filename) const
 ObjectConstSP Service::object_from_url(
     const std::string& url,
     int timeout,
-    int cacheAge) const
+    int cacheAge,
+    bool parserNoThrow) const
 {
 #ifndef SPI_STATIC
     try
@@ -495,7 +499,7 @@ ObjectConstSP Service::object_from_url(
         metaData->SetValue("url", url);
         metaData->SetValue("readTime", 1e3 * readTime);
 
-        return object_from_data(contents, url, true, metaData);
+        return object_from_data(contents, url, true, metaData, parserNoThrow);
     }
     catch (...)
     {

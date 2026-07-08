@@ -88,14 +88,16 @@ public:
     ObjectConstSP object_from_data(const std::string& data,
         const std::string& streamName,
         bool allowBinary,
-        const MapConstSP& metaData = MapConstSP()) const;
+        const MapConstSP& metaData = MapConstSP(),
+        bool noThrow=false) const;
     // convenience methods that call the fundamental object_from_data method
-    ObjectConstSP object_from_string(const std::string& objectString) const;
-    ObjectConstSP object_from_file(const std::string& filename) const;
+    ObjectConstSP object_from_string(const std::string& objectString, bool parserNoThrow=false) const;
+    ObjectConstSP object_from_file(const std::string& filename, bool parserNoThrow=false) const;
 
     ObjectConstSP object_from_url(const std::string& url,
         int timeout = 0,
-        int cacheAge = 0) const;
+        int cacheAge = 0,
+        bool parserNoThrow=false) const;
 
     ObjectConstSP object_coerce(const std::string& className,
         const Value& value,

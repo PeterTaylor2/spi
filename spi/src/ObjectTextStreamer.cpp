@@ -587,11 +587,10 @@ ObjectTextStreamerSP ObjectShortTextStreamer::Make(
 
 void ObjectShortTextStreamer::Register()
 {
-    // as long as this is registered first it will be used when format = ""
     IObjectStreamer::Register("SHORT",
         (IObjectStreamer::Maker*)ObjectShortTextStreamer::Make,
         false,
-        "");
+        "!");
 }
 
 /*

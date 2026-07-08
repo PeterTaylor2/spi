@@ -79,6 +79,14 @@ public:
         bool addObjectId = false) = 0;
 
     // by default the streamer does not use the recognizer string
+
+
+    // uses_recognizer means that the streamer will handle the recognizer
+    // i.e. from_data will expect the recognizer and to_stream will stream the recognizer
+    //
+    // if uses_recognizer is false (the default) then the service code will handle the recognizer
+    // i.e. the recognizer will be filtered out when calling from_data (using the offset) and
+    // before calling to_stream the service will stream the recognizer
     virtual bool uses_recognizer() const;
     virtual bool is_binary() const;
 
