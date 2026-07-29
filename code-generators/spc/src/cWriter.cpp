@@ -989,7 +989,7 @@ void CModule::implementClass(
             << "    SPI_C_LOCK_GUARD;\n"
             << "    try\n"
             << "    {\n"
-            << "        " << cppname << " self = " << cpptype << "::Make(";
+            << "        " << cppname << " self = " << cpptype << "::New(";
         
         const char* sep = "\n            ";
         const char* sep2 = ",\n            ";
