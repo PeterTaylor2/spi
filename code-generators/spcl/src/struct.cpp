@@ -303,6 +303,22 @@ void Struct::declare(
     for (size_t i = 0; i < m_coerceToVector.size(); ++i)
         m_coerceToVector[i]->declare(ostr, m_name);
 
+    if (!isAbstract() && !m_noMake)
+    {
+        ostr << "\n";
+        ostr << "    /** Use New when calling the constructor direct from the add-in level */\n";
+        if (m_byValue)
+        {
+            ostr << "    static " << m_name << " New";
+        }
+        else
+        {
+            ostr << "    static " << m_name << "ConstSP New";
+        }
+        writeFunctionInputs(ostr, false, allAttributes, true, 8);
+        ostr << ";\n";
+    }
+
     for (size_t i = 0; i < m_methods.size(); ++i)
         m_methods[i]->declare(ostr, m_dataType, m_name, types, svc);
 
@@ -490,6 +506,45 @@ void Struct::implement(
     const std::vector<AttributeConstSP>& allAttributes = AllAttributes();
     if (!isAbstract())
     {
+        if (!m_noMake)
+        {
+            if (m_byValue)
+            {
+                ostr << m_name << " " << m_name << "::New";
+            }
+            else
+            {
+                ostr << m_name << "ConstSP " << m_name << "::New";
+            }
+            writeFunctionInputs(ostr, false, allAttributes, false, 4);
+            ostr << "\n"
+                << "{\n";
+
+            if (recording)
+            {
+                ostr << "    spi::AddRecord(\"" << svc->getNamespace() << "." << getName(true, ".") << "\");\n";
+            }
+
+            ostr << "    SPI_PROFILE(\"" << svc->getNamespace() << "." << getName(true, ".") << "\");\n"
+                << "    " << svc->getName() << "_check_permission();\n";
+
+            // TBD: add logging
+
+            ostr << "\n"
+                << "    return Make";
+
+            if (allAttributes.size() > 0)
+            {
+                writeArgsCall(ostr, false, allAttributes, 15, 8);
+            }
+            else
+            {
+                ostr << "()";
+            }
+            ostr << ";\n";
+            ostr << "}\n\n";
+        }
+
         if (m_byValue)
         {
             ostr << m_name << " " << m_name << "::Make";
@@ -500,8 +555,8 @@ void Struct::implement(
         }
         writeFunctionInputs(ostr, false, allAttributes, false, 4);
         ostr << "\n"
-            << "{\n"
-            << "    " << svc->getName() << "_check_permission();\n";
+            << "{\n";
+
         if (m_byValue)
         {
             ostr << "    return " << m_name;

@@ -307,7 +307,7 @@ void WrapperClass::declare(
          << "public:\n";
 
     const std::vector<AttributeConstSP>& attributes = AllAttributes();
-    if (hasConstructor() && !m_noMake)
+    if (hasConstructor())
     {
         ostr << "    static " << m_name << "ConstSP Make";
         writeFunctionInputs(ostr, false, attributes, true, 8);
@@ -320,6 +320,14 @@ void WrapperClass::declare(
     for (size_t i = 0; i < m_coerceToVector.size(); ++i)
         m_coerceToVector[i]->declare(ostr, m_name);
 
+    if (hasConstructor() && !m_noMake)
+    {
+        ostr << "\n";
+        ostr << "    /** Use New when calling the constructor direct from the add-in level */\n";
+        ostr << "    static " << m_name << "ConstSP New";
+        writeFunctionInputs(ostr, false, attributes, true, 8);
+        ostr << ";\n";
+    }
     for (size_t i = 0; i < m_methods.size(); ++i)
         m_methods[i]->declare(ostr, m_dataType, m_name, types, svc, m_isDelegate);
 
@@ -427,14 +435,6 @@ void WrapperClass::declare(
              << "\n"
              << "    static std::vector<sub_class_wrapper*> "
              << "g_sub_class_wrappers;\n";
-    }
-
-    if (hasConstructor() && m_noMake)
-    {
-        // consider constructing as non-const if inner type is non-const
-        ostr << "    static " << m_name << "ConstSP Make";
-        writeFunctionInputs(ostr, false, attributes, true, 8);
-        ostr << ";\n";
     }
 
     ostr << "\n"
@@ -600,8 +600,51 @@ void WrapperClass::implement(
     writeEndCommentBlock(ostr);
 
     const std::vector<AttributeConstSP>& attributes = AllAttributes();
+
     if (hasConstructor())
     {
+        if (!m_noMake)
+        {
+            // write the static New method
+            // we should record it and we should probably log it (TBD)
+            // this is the function that can be called from add-in level
+            // the real construction is done in the existing Make method
+
+            ostr << m_name << "ConstSP " << m_name << "::New";
+            writeFunctionInputs(ostr, false, attributes, false, 4);
+
+            ostr << "\n"
+                << "{\n";
+
+            if (recording)
+            {
+                ostr << "    spi::AddRecord(\"" << svc->getNamespace() << "." << getName(true, ".") << "\");\n";
+            }
+
+            ostr << "    SPI_PROFILE(\"" << svc->getNamespace() << "." << getName(true, ".") << "\");\n";
+
+            // we simply call the Make function
+            // we will ask for permission but the Make function will not
+
+            ostr << "    " << svc->getName() << "_check_permission();\n";
+
+            // TBD: add logging
+
+            ostr << "\n"
+                << "    return Make";
+
+            if (attributes.size() > 0)
+            {
+                writeArgsCall(ostr, false, attributes, 15, 8);
+            }
+            else
+            {
+                ostr << "()";
+            }
+            ostr << ";\n"
+                << "}\n\n";
+        }
+            
         // write the static Make method
         ostr << m_name << "ConstSP " << m_name << "::Make";
         writeFunctionInputs(ostr, false, attributes, false, 4);
@@ -609,24 +652,16 @@ void WrapperClass::implement(
         ostr << "\n"
             << "{\n";
 
-        if (recording && !m_noMake)
-        {
-            ostr << "  spi::AddRecord(\"" << svc->getNamespace() << "." << getName(true, ".") << ".Make\");\n";
-        }
-
-        ostr << "  SPI_PROFILE(\"" << svc->getNamespace() << "." << getName(true, ".") << ".Make\");\n";
-
         if (m_innerClass->m_isOpen)
         {
             // we need to take account of the fact that the constructor
             // might return a singleton and hence we create the inner type
             // and then wrap it in order to use wrapper cache mechanism
-            ostr << "  " << svc->getName() << "_check_permission();\n";
             ostr << "  try\n"
                  << "  {\n"
                  << "    inner_type self = make_inner";
 
-            writeArgsCall(ostr, false, attributes, 33, 8);
+            writeArgsCall(ostr, false, attributes, 33, 12);
             ostr << ";\n";
             ostr << "    return Wrap(self);\n";
             ostr << "  }\n";
@@ -634,13 +669,12 @@ void WrapperClass::implement(
         }
         else
         {
-            ostr << "    " << svc->getName() << "_check_permission();\n";
             ostr << "    return " << m_name << "ConstSP(\n"
                  << "        new " << m_name;
 
             if (attributes.size() > 0)
             {
-                writeArgsCall(ostr, false, attributes, m_name.length() + 14, 12);
+                writeArgsCall(ostr, false, attributes, m_name.length() + 14, 16);
             }
             ostr << ");\n";
         }

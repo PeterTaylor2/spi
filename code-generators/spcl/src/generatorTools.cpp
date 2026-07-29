@@ -157,7 +157,7 @@ void writeArgsCall(
         argNames.push_back(prefix + name);
     }
 
-    // call the more general routine of the same name in genutils
+    // call the more general routine of the same name in spgtools
     writeArgsCall(ostr, argNames, startPos, indent, maxLine);
 }
 
@@ -1411,7 +1411,7 @@ void writeFunctionCaller(
         SPI_PRE_CONDITION(returnType);
         SPI_PRE_CONDITION(returnArrayDim == 0);
         functionIsPermutable = false;
-        caller = fullNamespace + "::" + className + "::Make";
+        caller = fullNamespace + "::" + className + "::New";
         name   = className;
         rname  = className;
     }
