@@ -618,20 +618,44 @@ void WrapperClass::implement(
 
             if (recording)
             {
-                ostr << "    spi::AddRecord(\"" << svc->getNamespace() << "." << getName(true, ".") << "\");\n";
+                ostr << "  spi::AddRecord(\"" << svc->getNamespace() << "." << getName(true, ".") << "\");\n";
             }
 
-            ostr << "    SPI_PROFILE(\"" << svc->getNamespace() << "." << getName(true, ".") << "\");\n";
+            ostr << "  SPI_PROFILE(\"" << svc->getNamespace() << "." << getName(true, ".") << "\");\n";
 
             // we simply call the Make function
             // we will ask for permission but the Make function will not
 
             ostr << "    " << svc->getName() << "_check_permission();\n";
 
-            // TBD: add logging
+            ostr << "  bool isLogging = " << svc->getName() << "_begin_function(";
+
+            bool m_noLog = false; // needs to be defined at wrapper class level
+
+            if (m_noLog)
+                ostr << "true";
+
+            ostr << ");\n"
+                << "  try\n"
+                << "  {\n";
+
+            if (!m_noLog)
+            {
+                ostr << "    if (isLogging)\n"
+                    << "    {\n";
+
+                writeFunctionConstructor(
+                    ostr, "_constructor", svc->getName(),
+                    m_ns, std::string(), m_name, attributes, 4);
+
+                ostr << "\n";
+                ostr << "        " << svc->getName()
+                    << "_service()->log_inputs(_constructor);\n"
+                    << "    }\n";
+            }
 
             ostr << "\n"
-                << "    return Make";
+                << "    " << m_name << "ConstSP _obj = Make";
 
             if (attributes.size() > 0)
             {
@@ -641,10 +665,25 @@ void WrapperClass::implement(
             {
                 ostr << "()";
             }
-            ostr << ";\n"
-                << "}\n\n";
+            ostr << ";\n";
+
+            if (!m_noLog)
+            {
+                writeFunctionOutputLogging(
+                    ostr, svc->getName(), m_dataType, false, "_obj", {});
+            }
+
+            ostr << "\n"
+                << "    " << svc->getName() << "_end_function();\n";
+
+            ostr << "\n"
+                << "    return _obj;\n";
+
+            ostr << "  }\n";
+            writeFunctionCatchBlock(ostr, svc->getName(), m_name);
+            ostr << "}\n\n";
         }
-            
+
         // write the static Make method
         ostr << m_name << "ConstSP " << m_name << "::Make";
         writeFunctionInputs(ostr, false, attributes, false, 4);

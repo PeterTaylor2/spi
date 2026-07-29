@@ -522,16 +522,41 @@ void Struct::implement(
 
             if (recording)
             {
-                ostr << "    spi::AddRecord(\"" << svc->getNamespace() << "." << getName(true, ".") << "\");\n";
+                ostr << "  spi::AddRecord(\"" << svc->getNamespace() << "." << getName(true, ".") << "\");\n";
             }
 
-            ostr << "    SPI_PROFILE(\"" << svc->getNamespace() << "." << getName(true, ".") << "\");\n"
+            ostr << "  SPI_PROFILE(\"" << svc->getNamespace() << "." << getName(true, ".") << "\");\n"
                 << "    " << svc->getName() << "_check_permission();\n";
 
-            // TBD: add logging
+            bool m_noLog = false; // needs to be defined at wrapper class level
+            if (m_byValue)
+                m_noLog = true; // else how do we log the output?
+
+            ostr << "  bool isLogging = " << svc->getName() << "_begin_function(";
+            if (m_noLog)
+                ostr << "true";
+
+            ostr << ");\n"
+                << "  try\n"
+                << "  {\n";
+
+            if (!m_noLog)
+            {
+                ostr << "    if (isLogging)\n"
+                    << "    {\n";
+
+                writeFunctionConstructor(
+                    ostr, "_constructor", svc->getName(),
+                    m_ns, std::string(), m_name, allAttributes, 4);
+
+                ostr << "\n";
+                ostr << "        " << svc->getName()
+                    << "_service()->log_inputs(_constructor);\n"
+                    << "    }\n";
+            }
 
             ostr << "\n"
-                << "    return Make";
+                << "    auto _obj = Make";
 
             if (allAttributes.size() > 0)
             {
@@ -542,6 +567,21 @@ void Struct::implement(
                 ostr << "()";
             }
             ostr << ";\n";
+
+            if (!m_noLog)
+            {
+                writeFunctionOutputLogging(
+                    ostr, svc->getName(), m_dataType, false, "_obj", {});
+            }
+
+            ostr << "\n"
+                << "    " << svc->getName() << "_end_function();\n";
+
+            ostr << "\n"
+                << "    return _obj;\n";
+
+            ostr << "  }\n";
+            writeFunctionCatchBlock(ostr, svc->getName(), m_name);
             ostr << "}\n\n";
         }
 
