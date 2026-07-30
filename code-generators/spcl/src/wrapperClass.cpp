@@ -700,7 +700,7 @@ void WrapperClass::implement(
                  << "  {\n"
                  << "    inner_type self = make_inner";
 
-            writeArgsCall(ostr, false, attributes, 33, 12);
+            writeArgsCall(ostr, false, attributes, 33, 8);
             ostr << ";\n";
             ostr << "    return Wrap(self);\n";
             ostr << "  }\n";

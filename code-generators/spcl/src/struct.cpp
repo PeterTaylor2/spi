@@ -526,7 +526,7 @@ void Struct::implement(
             }
 
             ostr << "  SPI_PROFILE(\"" << svc->getNamespace() << "." << getName(true, ".") << "\");\n"
-                << "    " << svc->getName() << "_check_permission();\n";
+                << "  " << svc->getName() << "_check_permission();\n";
 
             bool m_noLog = false; // needs to be defined at wrapper class level
             if (m_byValue)
