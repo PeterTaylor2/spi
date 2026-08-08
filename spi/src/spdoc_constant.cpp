@@ -285,10 +285,29 @@ bool Constant_Helper::getBool(
 * Implementation of IntConstant
 ****************************************************************************
 */
+IntConstantConstSP IntConstant::New(
+    int value)
+{
+  SPI_PROFILE("spdoc.IntConstant");
+  bool isLogging = spdoc_begin_function(true);
+  try
+  {
+
+    auto _obj = Make(value);
+
+    spdoc_end_function();
+
+    return _obj;
+  }
+  catch (std::exception& e)
+  { throw spdoc_catch_exception(isLogging, "IntConstant", e); }
+  catch (...)
+  { throw spdoc_catch_all(isLogging, "IntConstant"); }
+}
+
 IntConstantConstSP IntConstant::Make(
     int value)
 {
-    spdoc_check_permission();
     return IntConstantConstSP(
         new IntConstant(value));
 }
@@ -436,10 +455,29 @@ double IntConstant_Helper::getDouble(
 * Implementation of DateConstant
 ****************************************************************************
 */
+DateConstantConstSP DateConstant::New(
+    spi::Date value)
+{
+  SPI_PROFILE("spdoc.DateConstant");
+  bool isLogging = spdoc_begin_function(true);
+  try
+  {
+
+    auto _obj = Make(value);
+
+    spdoc_end_function();
+
+    return _obj;
+  }
+  catch (std::exception& e)
+  { throw spdoc_catch_exception(isLogging, "DateConstant", e); }
+  catch (...)
+  { throw spdoc_catch_all(isLogging, "DateConstant"); }
+}
+
 DateConstantConstSP DateConstant::Make(
     spi::Date value)
 {
-    spdoc_check_permission();
     return DateConstantConstSP(
         new DateConstant(value));
 }
@@ -556,10 +594,29 @@ spi::Date DateConstant_Helper::getDate(
 * Implementation of DateTimeConstant
 ****************************************************************************
 */
+DateTimeConstantConstSP DateTimeConstant::New(
+    spi::DateTime value)
+{
+  SPI_PROFILE("spdoc.DateTimeConstant");
+  bool isLogging = spdoc_begin_function(true);
+  try
+  {
+
+    auto _obj = Make(value);
+
+    spdoc_end_function();
+
+    return _obj;
+  }
+  catch (std::exception& e)
+  { throw spdoc_catch_exception(isLogging, "DateTimeConstant", e); }
+  catch (...)
+  { throw spdoc_catch_all(isLogging, "DateTimeConstant"); }
+}
+
 DateTimeConstantConstSP DateTimeConstant::Make(
     spi::DateTime value)
 {
-    spdoc_check_permission();
     return DateTimeConstantConstSP(
         new DateTimeConstant(value));
 }
@@ -674,10 +731,29 @@ spi::DateTime DateTimeConstant_Helper::getDateTime(
 * Implementation of DoubleConstant
 ****************************************************************************
 */
+DoubleConstantConstSP DoubleConstant::New(
+    double value)
+{
+  SPI_PROFILE("spdoc.DoubleConstant");
+  bool isLogging = spdoc_begin_function(true);
+  try
+  {
+
+    auto _obj = Make(value);
+
+    spdoc_end_function();
+
+    return _obj;
+  }
+  catch (std::exception& e)
+  { throw spdoc_catch_exception(isLogging, "DoubleConstant", e); }
+  catch (...)
+  { throw spdoc_catch_all(isLogging, "DoubleConstant"); }
+}
+
 DoubleConstantConstSP DoubleConstant::Make(
     double value)
 {
-    spdoc_check_permission();
     return DoubleConstantConstSP(
         new DoubleConstant(value));
 }
@@ -792,10 +868,29 @@ double DoubleConstant_Helper::getDouble(
 * Implementation of CharConstant
 ****************************************************************************
 */
+CharConstantConstSP CharConstant::New(
+    char value)
+{
+  SPI_PROFILE("spdoc.CharConstant");
+  bool isLogging = spdoc_begin_function(true);
+  try
+  {
+
+    auto _obj = Make(value);
+
+    spdoc_end_function();
+
+    return _obj;
+  }
+  catch (std::exception& e)
+  { throw spdoc_catch_exception(isLogging, "CharConstant", e); }
+  catch (...)
+  { throw spdoc_catch_all(isLogging, "CharConstant"); }
+}
+
 CharConstantConstSP CharConstant::Make(
     char value)
 {
-    spdoc_check_permission();
     return CharConstantConstSP(
         new CharConstant(value));
 }
@@ -910,10 +1005,29 @@ char CharConstant_Helper::getChar(
 * Implementation of StringConstant
 ****************************************************************************
 */
+StringConstantConstSP StringConstant::New(
+    const std::string& value)
+{
+  SPI_PROFILE("spdoc.StringConstant");
+  bool isLogging = spdoc_begin_function(true);
+  try
+  {
+
+    auto _obj = Make(value);
+
+    spdoc_end_function();
+
+    return _obj;
+  }
+  catch (std::exception& e)
+  { throw spdoc_catch_exception(isLogging, "StringConstant", e); }
+  catch (...)
+  { throw spdoc_catch_all(isLogging, "StringConstant"); }
+}
+
 StringConstantConstSP StringConstant::Make(
     const std::string& value)
 {
-    spdoc_check_permission();
     return StringConstantConstSP(
         new StringConstant(value));
 }
@@ -1028,10 +1142,29 @@ std::string StringConstant_Helper::getString(
 * Implementation of BoolConstant
 ****************************************************************************
 */
+BoolConstantConstSP BoolConstant::New(
+    bool value)
+{
+  SPI_PROFILE("spdoc.BoolConstant");
+  bool isLogging = spdoc_begin_function(true);
+  try
+  {
+
+    auto _obj = Make(value);
+
+    spdoc_end_function();
+
+    return _obj;
+  }
+  catch (std::exception& e)
+  { throw spdoc_catch_exception(isLogging, "BoolConstant", e); }
+  catch (...)
+  { throw spdoc_catch_all(isLogging, "BoolConstant"); }
+}
+
 BoolConstantConstSP BoolConstant::Make(
     bool value)
 {
-    spdoc_check_permission();
     return BoolConstantConstSP(
         new BoolConstant(value));
 }
@@ -1146,9 +1279,27 @@ bool BoolConstant_Helper::getBool(
 * Implementation of UndefinedConstant
 ****************************************************************************
 */
+UndefinedConstantConstSP UndefinedConstant::New()
+{
+  SPI_PROFILE("spdoc.UndefinedConstant");
+  bool isLogging = spdoc_begin_function(true);
+  try
+  {
+
+    auto _obj = Make();
+
+    spdoc_end_function();
+
+    return _obj;
+  }
+  catch (std::exception& e)
+  { throw spdoc_catch_exception(isLogging, "UndefinedConstant", e); }
+  catch (...)
+  { throw spdoc_catch_all(isLogging, "UndefinedConstant"); }
+}
+
 UndefinedConstantConstSP UndefinedConstant::Make()
 {
-    spdoc_check_permission();
     return UndefinedConstantConstSP(
         new UndefinedConstant);
 }

@@ -65,12 +65,13 @@ WrapperClassSP WrapperClass::Make(
     bool incomplete,
     const std::string& accessorFormat,
     const std::string& propertyFormat,
-    const std::string& constructor)
+    const std::string& constructor,
+    bool noLog)
 {
     return new WrapperClass(
         description, name, ns, innerClass, baseClass, isVirtual, noMake,
         objectName, isDelegate, canPut, noId, asValue, incomplete,
-        accessorFormat, propertyFormat, constructor);
+        accessorFormat, propertyFormat, constructor, noLog);
 }
 
 WrapperClass::WrapperClass(
@@ -89,7 +90,8 @@ WrapperClass::WrapperClass(
     bool incomplete,
     const std::string& accessorFormat,
     const std::string& propertyFormat,
-    const std::string& constructor)
+    const std::string& constructor,
+    bool noLog)
     :
     m_description(description),
     m_name(name),
@@ -107,6 +109,7 @@ WrapperClass::WrapperClass(
     m_accessorFormat(accessorFormat),
     m_propertyFormat(propertyFormat),
     m_constructor(constructor),
+    m_noLog(noLog),
     m_verbatimConstructor(),
     m_classAttributes(),
     m_methods(),
@@ -624,13 +627,7 @@ void WrapperClass::implement(
             ostr << "  SPI_PROFILE(\"" << svc->getNamespace() << "." << getName(true, ".") << "\");\n";
 
             // we simply call the Make function
-            // we will ask for permission but the Make function will not
-
-            ostr << "    " << svc->getName() << "_check_permission();\n";
-
             ostr << "  bool isLogging = " << svc->getName() << "_begin_function(";
-
-            bool m_noLog = false; // needs to be defined at wrapper class level
 
             if (m_noLog)
                 ostr << "true";

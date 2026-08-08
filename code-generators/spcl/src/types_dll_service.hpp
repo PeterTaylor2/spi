@@ -47,13 +47,6 @@ SPI_IMPORT
 void types_stop_service();
 
 SPI_IMPORT
-void types_start_logging(const char* filename, const char* options="",
-    bool minimal = false);
-
-SPI_IMPORT
-void types_stop_logging();
-
-SPI_IMPORT
 spi::ServiceSP types_exported_service();
 
 SPI_IMPORT

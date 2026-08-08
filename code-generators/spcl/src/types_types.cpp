@@ -211,11 +211,29 @@ InputConverterConstSP InputConverter::Coerce(const std::string& format)
 * Implementation of InputConverterStringFormat
 ****************************************************************************
 */
+InputConverterStringFormatConstSP InputConverterStringFormat::New(
+    const std::string& format)
+{
+  SPI_PROFILE("types.InputConverterStringFormat");
+  bool isLogging = types_begin_function(true);
+  try
+  {
+
+    InputConverterStringFormatConstSP _obj = Make(format);
+
+    types_end_function();
+
+    return _obj;
+  }
+  catch (std::exception& e)
+  { throw types_catch_exception(isLogging, "InputConverterStringFormat", e); }
+  catch (...)
+  { throw types_catch_all(isLogging, "InputConverterStringFormat"); }
+}
+
 InputConverterStringFormatConstSP InputConverterStringFormat::Make(
     const std::string& format)
 {
-  SPI_PROFILE("types.InputConverterStringFormat.Make");
-  types_check_permission();
   try
   {
     inner_type self = make_inner(format);
@@ -294,11 +312,29 @@ spi::Value InputConverterStringFormat::as_value() const
 * Implementation of InputConverterClass
 ****************************************************************************
 */
+InputConverterClassConstSP InputConverterClass::New(
+    const std::string& format)
+{
+  SPI_PROFILE("types.InputConverterClass");
+  bool isLogging = types_begin_function(true);
+  try
+  {
+
+    InputConverterClassConstSP _obj = Make(format);
+
+    types_end_function();
+
+    return _obj;
+  }
+  catch (std::exception& e)
+  { throw types_catch_exception(isLogging, "InputConverterClass", e); }
+  catch (...)
+  { throw types_catch_all(isLogging, "InputConverterClass"); }
+}
+
 InputConverterClassConstSP InputConverterClass::Make(
     const std::string& format)
 {
-  SPI_PROFILE("types.InputConverterClass.Make");
-  types_check_permission();
   try
   {
     inner_type self = make_inner(format);
@@ -372,6 +408,41 @@ return self->format(); }
 * Implementation of DataType
 ****************************************************************************
 */
+DataTypeConstSP DataType::New(
+    const std::string& name,
+    const std::string& nsService,
+    const std::string& cppName,
+    const std::string& outerType,
+    const std::string& innerType,
+    const std::string& innerRefType,
+    PublicType publicType,
+    const std::string& objectName,
+    bool isClosed,
+    bool noDoc,
+    const InputConverterConstSP& convertIn,
+    const std::string& convertOut,
+    const std::string& copyInner,
+    bool ignored)
+{
+  SPI_PROFILE("types.DataType");
+  bool isLogging = types_begin_function(true);
+  try
+  {
+
+    DataTypeConstSP _obj = Make(name, nsService, cppName, outerType, innerType, innerRefType,
+        publicType, objectName, isClosed, noDoc, convertIn, convertOut,
+        copyInner, ignored);
+
+    types_end_function();
+
+    return _obj;
+  }
+  catch (std::exception& e)
+  { throw types_catch_exception(isLogging, "DataType", e); }
+  catch (...)
+  { throw types_catch_all(isLogging, "DataType"); }
+}
+
 DataTypeConstSP DataType::Make(
     const std::string& name,
     const std::string& nsService,
@@ -388,8 +459,6 @@ DataTypeConstSP DataType::Make(
     const std::string& copyInner,
     bool ignored)
 {
-  SPI_PROFILE("types.DataType.Make");
-  types_check_permission();
   try
   {
     inner_type self = make_inner(name, nsService, cppName, outerType,
@@ -594,13 +663,33 @@ bool DataType::ignored() const
 * Implementation of Attribute
 ****************************************************************************
 */
+AttributeConstSP Attribute::New(
+    const DataTypeConstSP& dataType,
+    const std::string& name,
+    int arrayDim)
+{
+  SPI_PROFILE("types.Attribute");
+  bool isLogging = types_begin_function(true);
+  try
+  {
+
+    AttributeConstSP _obj = Make(dataType, name, arrayDim);
+
+    types_end_function();
+
+    return _obj;
+  }
+  catch (std::exception& e)
+  { throw types_catch_exception(isLogging, "Attribute", e); }
+  catch (...)
+  { throw types_catch_all(isLogging, "Attribute"); }
+}
+
 AttributeConstSP Attribute::Make(
     const DataTypeConstSP& dataType,
     const std::string& name,
     int arrayDim)
 {
-  SPI_PROFILE("types.Attribute.Make");
-  types_check_permission();
   try
   {
     inner_type self = make_inner(dataType, name, arrayDim);
@@ -698,11 +787,29 @@ int Attribute::arrayDim() const
 * Implementation of ClassProperty
 ****************************************************************************
 */
+ClassPropertyConstSP ClassProperty::New(
+    const AttributeConstSP& attribute)
+{
+  SPI_PROFILE("types.ClassProperty");
+  bool isLogging = types_begin_function(true);
+  try
+  {
+
+    ClassPropertyConstSP _obj = Make(attribute);
+
+    types_end_function();
+
+    return _obj;
+  }
+  catch (std::exception& e)
+  { throw types_catch_exception(isLogging, "ClassProperty", e); }
+  catch (...)
+  { throw types_catch_all(isLogging, "ClassProperty"); }
+}
+
 ClassPropertyConstSP ClassProperty::Make(
     const AttributeConstSP& attribute)
 {
-  SPI_PROFILE("types.ClassProperty.Make");
-  types_check_permission();
   try
   {
     inner_type self = make_inner(attribute);
@@ -782,12 +889,31 @@ return self->attribute(); }
 * Implementation of Enumerand
 ****************************************************************************
 */
+EnumerandConstSP Enumerand::New(
+    const std::string& code,
+    const std::vector<std::string>& strings)
+{
+  SPI_PROFILE("types.Enumerand");
+  bool isLogging = types_begin_function(true);
+  try
+  {
+
+    EnumerandConstSP _obj = Make(code, strings);
+
+    types_end_function();
+
+    return _obj;
+  }
+  catch (std::exception& e)
+  { throw types_catch_exception(isLogging, "Enumerand", e); }
+  catch (...)
+  { throw types_catch_all(isLogging, "Enumerand"); }
+}
+
 EnumerandConstSP Enumerand::Make(
     const std::string& code,
     const std::vector<std::string>& strings)
 {
-  SPI_PROFILE("types.Enumerand.Make");
-  types_check_permission();
   try
   {
     inner_type self = make_inner(code, strings);
@@ -879,12 +1005,31 @@ std::vector<std::string> Enumerand::strings() const
 * Implementation of Enum
 ****************************************************************************
 */
+EnumConstSP Enum::New(
+    const std::string& name,
+    const std::vector<EnumerandConstSP>& enumerands)
+{
+  SPI_PROFILE("types.Enum");
+  bool isLogging = types_begin_function(true);
+  try
+  {
+
+    EnumConstSP _obj = Make(name, enumerands);
+
+    types_end_function();
+
+    return _obj;
+  }
+  catch (std::exception& e)
+  { throw types_catch_exception(isLogging, "Enum", e); }
+  catch (...)
+  { throw types_catch_all(isLogging, "Enum"); }
+}
+
 EnumConstSP Enum::Make(
     const std::string& name,
     const std::vector<EnumerandConstSP>& enumerands)
 {
-  SPI_PROFILE("types.Enum.Make");
-  types_check_permission();
   try
   {
     inner_type self = make_inner(name, enumerands);
@@ -1030,6 +1175,39 @@ BaseClassConstSP BaseClass::Wrap(const inner_type& inner)
 * Implementation of BaseStruct
 ****************************************************************************
 */
+BaseStructConstSP BaseStruct::New(
+    const std::vector<std::string>& description,
+    const std::string& name,
+    const std::string& ns,
+    const BaseClassConstSP& baseClass,
+    bool noMake,
+    const std::string& objectName,
+    bool canPut,
+    bool noId,
+    bool isVirtual,
+    bool asValue,
+    bool byValue,
+    bool useAccessors,
+    bool noLog)
+{
+  SPI_PROFILE("types.BaseStruct");
+  bool isLogging = types_begin_function(true);
+  try
+  {
+
+    BaseStructConstSP _obj = Make(description, name, ns, baseClass, noMake, objectName, canPut,
+        noId, isVirtual, asValue, byValue, useAccessors, noLog);
+
+    types_end_function();
+
+    return _obj;
+  }
+  catch (std::exception& e)
+  { throw types_catch_exception(isLogging, "BaseStruct", e); }
+  catch (...)
+  { throw types_catch_all(isLogging, "BaseStruct"); }
+}
+
 BaseStructConstSP BaseStruct::Make(
     const std::vector<std::string>& description,
     const std::string& name,
@@ -1042,14 +1220,14 @@ BaseStructConstSP BaseStruct::Make(
     bool isVirtual,
     bool asValue,
     bool byValue,
-    bool useAccessors)
+    bool useAccessors,
+    bool noLog)
 {
-  SPI_PROFILE("types.BaseStruct.Make");
-  types_check_permission();
   try
   {
     inner_type self = make_inner(description, name, ns, baseClass, noMake,
-        objectName, canPut, noId, isVirtual, asValue, byValue, useAccessors);
+        objectName, canPut, noId, isVirtual, asValue, byValue, useAccessors,
+        noLog);
     return Wrap(self);
   }
   catch (std::exception& e)
@@ -1070,7 +1248,8 @@ BaseStruct::inner_type BaseStruct::make_inner(
     bool o_isVirtual,
     bool o_asValue,
     bool o_byValue,
-    bool o_useAccessors)
+    bool o_useAccessors,
+    bool o_noLog)
 {
     spi_boost::intrusive_ptr< ::Class const > baseClass;
 
@@ -1087,13 +1266,14 @@ BaseStruct::inner_type BaseStruct::make_inner(
     const bool& asValue = o_asValue;
     const bool& byValue = o_byValue;
     const bool& useAccessors = o_useAccessors;
+    const bool& noLog = o_noLog;
 
     bool incomplete = false;
     std::string constructor;
 
     ::StructSP self = ::Struct::Make(
         description, name, ns, baseClass, noMake, objectName, canPut, noId, isVirtual, asValue,
-        byValue, useAccessors, incomplete, constructor);
+        byValue, useAccessors, incomplete, constructor, noLog);
 
     SPI_POST_CONDITION(self->isAbstract());
 
@@ -1231,11 +1411,54 @@ bool BaseStruct::useAccessors() const
     return self->useAccessors();
 }
 
+bool BaseStruct::noLog() const
+{
+    inner_type self = get_inner();
+
+    return self->noLog();
+}
+
 /*
 ****************************************************************************
 * Implementation of InnerClass
 ****************************************************************************
 */
+InnerClassConstSP InnerClass::New(
+    const std::string& typeName,
+    const std::string& ns,
+    const std::string& freeFunc,
+    const std::string& copyFunc,
+    const std::string& preDeclaration,
+    const std::string& sharedPtr,
+    bool isShared,
+    bool isConst,
+    bool isOpen,
+    bool isStruct,
+    bool isCached,
+    bool isTemplate,
+    bool byValue,
+    const std::string& boolTest,
+    bool allowConst)
+{
+  SPI_PROFILE("types.InnerClass");
+  bool isLogging = types_begin_function(true);
+  try
+  {
+
+    InnerClassConstSP _obj = Make(typeName, ns, freeFunc, copyFunc, preDeclaration, sharedPtr,
+        isShared, isConst, isOpen, isStruct, isCached, isTemplate, byValue,
+        boolTest, allowConst);
+
+    types_end_function();
+
+    return _obj;
+  }
+  catch (std::exception& e)
+  { throw types_catch_exception(isLogging, "InnerClass", e); }
+  catch (...)
+  { throw types_catch_all(isLogging, "InnerClass"); }
+}
+
 InnerClassConstSP InnerClass::Make(
     const std::string& typeName,
     const std::string& ns,
@@ -1253,8 +1476,6 @@ InnerClassConstSP InnerClass::Make(
     const std::string& boolTest,
     bool allowConst)
 {
-  SPI_PROFILE("types.InnerClass.Make");
-  types_check_permission();
   try
   {
     inner_type self = make_inner(typeName, ns, freeFunc, copyFunc,
@@ -1451,6 +1672,42 @@ bool InnerClass::allowConst() const
 * Implementation of BaseWrapperClass
 ****************************************************************************
 */
+BaseWrapperClassConstSP BaseWrapperClass::New(
+    const std::vector<std::string>& description,
+    const std::string& name,
+    const std::string& ns,
+    const InnerClassConstSP& innerClass,
+    const BaseWrapperClassConstSP& baseClass,
+    bool isVirtual,
+    bool noMake,
+    const std::string& objectName,
+    bool isDelegate,
+    bool canPut,
+    bool noId,
+    const DataTypeConstSP& dataType,
+    bool asValue,
+    const std::vector<ClassPropertyConstSP>& classProperties,
+    bool noLog)
+{
+  SPI_PROFILE("types.BaseWrapperClass");
+  bool isLogging = types_begin_function(true);
+  try
+  {
+
+    BaseWrapperClassConstSP _obj = Make(description, name, ns, innerClass, baseClass, isVirtual,
+        noMake, objectName, isDelegate, canPut, noId, dataType, asValue,
+        classProperties, noLog);
+
+    types_end_function();
+
+    return _obj;
+  }
+  catch (std::exception& e)
+  { throw types_catch_exception(isLogging, "BaseWrapperClass", e); }
+  catch (...)
+  { throw types_catch_all(isLogging, "BaseWrapperClass"); }
+}
+
 BaseWrapperClassConstSP BaseWrapperClass::Make(
     const std::vector<std::string>& description,
     const std::string& name,
@@ -1465,15 +1722,14 @@ BaseWrapperClassConstSP BaseWrapperClass::Make(
     bool noId,
     const DataTypeConstSP& dataType,
     bool asValue,
-    const std::vector<ClassPropertyConstSP>& classProperties)
+    const std::vector<ClassPropertyConstSP>& classProperties,
+    bool noLog)
 {
-  SPI_PROFILE("types.BaseWrapperClass.Make");
-  types_check_permission();
   try
   {
     inner_type self = make_inner(description, name, ns, innerClass, baseClass,
         isVirtual, noMake, objectName, isDelegate, canPut, noId, dataType,
-        asValue, classProperties);
+        asValue, classProperties, noLog);
     return Wrap(self);
   }
   catch (std::exception& e)
@@ -1496,7 +1752,8 @@ BaseWrapperClass::inner_type BaseWrapperClass::make_inner(
     bool o_noId,
     const DataTypeConstSP& o_dataType,
     bool o_asValue,
-    const std::vector<ClassPropertyConstSP>& o_classProperties)
+    const std::vector<ClassPropertyConstSP>& o_classProperties,
+    bool o_noLog)
 {
     spi_boost::intrusive_ptr< ::InnerClass const > innerClass;
     spi_boost::intrusive_ptr< ::WrapperClass const > baseClass;
@@ -1524,6 +1781,7 @@ BaseWrapperClass::inner_type BaseWrapperClass::make_inner(
     const bool& canPut = o_canPut;
     const bool& noId = o_noId;
     const bool& asValue = o_asValue;
+    const bool& noLog = o_noLog;
 
     bool incomplete = false;
     std::string accessorFormat;
@@ -1533,7 +1791,7 @@ BaseWrapperClass::inner_type BaseWrapperClass::make_inner(
     ::WrapperClassSP self = ::WrapperClass::Make(
         description, name, ns, innerClass, baseClass, isVirtual,
         noMake, objectName, isDelegate, canPut, noId, asValue,
-        incomplete, accessorFormat, propertyFormat, constructor);
+        incomplete, accessorFormat, propertyFormat, constructor, noLog);
 
     SPI_POST_CONDITION(self->isAbstract());
 
@@ -1711,11 +1969,46 @@ std::vector< spi_boost::intrusive_ptr< ::ClassAttribute const > > BaseWrapperCla
     return self->classProperties();
 }
 
+bool BaseWrapperClass::noLog() const
+{
+    inner_type self = get_inner();
+
+    return self->noLog();
+}
+
 /*
 ****************************************************************************
 * Implementation of TypesLibrary
 ****************************************************************************
 */
+TypesLibraryConstSP TypesLibrary::New(
+    const std::string& name,
+    const std::string& ns,
+    const std::string& version,
+    const std::string& lastModuleName,
+    const std::vector<DataTypeConstSP>& dataTypes,
+    const std::vector<DataTypeConstSP>& publicDataTypes,
+    const std::vector<BaseClassConstSP>& baseClasses,
+    const std::vector<EnumConstSP>& enums)
+{
+  SPI_PROFILE("types.TypesLibrary");
+  bool isLogging = types_begin_function(true);
+  try
+  {
+
+    TypesLibraryConstSP _obj = Make(name, ns, version, lastModuleName, dataTypes, publicDataTypes,
+        baseClasses, enums);
+
+    types_end_function();
+
+    return _obj;
+  }
+  catch (std::exception& e)
+  { throw types_catch_exception(isLogging, "TypesLibrary", e); }
+  catch (...)
+  { throw types_catch_all(isLogging, "TypesLibrary"); }
+}
+
 TypesLibraryConstSP TypesLibrary::Make(
     const std::string& name,
     const std::string& ns,
@@ -1726,8 +2019,6 @@ TypesLibraryConstSP TypesLibrary::Make(
     const std::vector<BaseClassConstSP>& baseClasses,
     const std::vector<EnumConstSP>& enums)
 {
-  SPI_PROFILE("types.TypesLibrary.Make");
-  types_check_permission();
   try
   {
     inner_type self = make_inner(name, ns, version, lastModuleName, dataTypes,

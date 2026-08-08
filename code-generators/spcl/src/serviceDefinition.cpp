@@ -488,7 +488,8 @@ void ServiceDefinition::addServiceLevelModule()
             true, // noConvert
             {}, // excel options
             0, // cache size
-            false); // optional return type
+            false, // optional return type
+            true); // noRecord
 
         constructs.push_back(func);
     }
@@ -1215,15 +1216,20 @@ void ServiceDefinition::writeServiceHeaders(
         << "spi::ServiceSP " << m_name << "_start_service();\n"
         << "\n"
         << m_import << "\n"
-        << "void " << m_name << "_stop_service();\n"
-        << "\n"
-        << m_import << "\n"
-        << "void " << m_name << "_start_logging(const char* filename, const char* options=\"\",\n"
-        << "    bool minimal = false);\n"
-        << "\n"
-        << m_import << "\n"
-        << "void " << m_name << "_stop_logging();\n"
-        << "\n"
+        << "void " << m_name << "_stop_service();\n";
+
+    if (!m_noLog)
+    {
+        ostr << "\n"
+            << m_import << "\n"
+            << "void " << m_name << "_start_logging(const char* filename, const char* options=\"\",\n"
+            << "    bool minimal = false);\n"
+            << "\n"
+            << m_import << "\n"
+            << "void " << m_name << "_stop_logging();\n";
+    }
+
+    ostr << "\n"
         << m_import << "\n"
         << "spi::ServiceSP " << m_name << "_exported_service();\n"
         << "\n"
@@ -1586,16 +1592,19 @@ void ServiceDefinition::writeServiceSource(
          << "}\n"
          << "\n";
 
-    ostr << "void " << m_name << "_start_logging(const char* filename, const char* options, bool minimal)\n"
-        << "{\n"
-        << "    g_service->start_logging(filename, options, minimal);\n"
-        << "}\n"
-        << "\n"
-        << "void " << m_name << "_stop_logging()\n"
-        << "{\n"
-        << "    g_service->stop_logging();\n"
-        << "}\n"
-        << "\n";
+    if (!m_noLog)
+    {
+        ostr << "void " << m_name << "_start_logging(const char* filename, const char* options, bool minimal)\n"
+            << "{\n"
+            << "    g_service->start_logging(filename, options, minimal);\n"
+            << "}\n"
+            << "\n"
+            << "void " << m_name << "_stop_logging()\n"
+            << "{\n"
+            << "    g_service->stop_logging();\n"
+            << "}\n"
+            << "\n";
+    }
 
     ostr << "void " << m_name << "_set_time_out(spi::Date timeout, const char* msg)\n"
          << "{\n"

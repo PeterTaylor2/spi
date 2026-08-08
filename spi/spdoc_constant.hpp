@@ -136,6 +136,10 @@ public:
     static IntConstantConstSP Make(
         int value);
 
+    /** Use New when calling the constructor direct from the add-in level */
+    static IntConstantConstSP New(
+        int value);
+
     /**
     ************************************************************************
     * returns the string which should appear in documentation
@@ -189,6 +193,10 @@ public:
     static DateConstantConstSP Make(
         spi::Date value);
 
+    /** Use New when calling the constructor direct from the add-in level */
+    static DateConstantConstSP New(
+        spi::Date value);
+
     /**
     ************************************************************************
     * returns the string which should appear in documentation
@@ -233,6 +241,10 @@ class SPI_IMPORT DateTimeConstant : public Constant
 {
 public:
     static DateTimeConstantConstSP Make(
+        spi::DateTime value);
+
+    /** Use New when calling the constructor direct from the add-in level */
+    static DateTimeConstantConstSP New(
         spi::DateTime value);
 
     /**
@@ -281,6 +293,10 @@ public:
     static DoubleConstantConstSP Make(
         double value);
 
+    /** Use New when calling the constructor direct from the add-in level */
+    static DoubleConstantConstSP New(
+        double value);
+
     /**
     ************************************************************************
     * returns the string which should appear in documentation
@@ -325,6 +341,10 @@ class SPI_IMPORT CharConstant : public Constant
 {
 public:
     static CharConstantConstSP Make(
+        char value);
+
+    /** Use New when calling the constructor direct from the add-in level */
+    static CharConstantConstSP New(
         char value);
 
     /**
@@ -373,6 +393,10 @@ public:
     static StringConstantConstSP Make(
         const std::string& value);
 
+    /** Use New when calling the constructor direct from the add-in level */
+    static StringConstantConstSP New(
+        const std::string& value);
+
     /**
     ************************************************************************
     * returns the string which should appear in documentation
@@ -419,6 +443,10 @@ public:
     static BoolConstantConstSP Make(
         bool value);
 
+    /** Use New when calling the constructor direct from the add-in level */
+    static BoolConstantConstSP New(
+        bool value);
+
     /**
     ************************************************************************
     * returns the string which should appear in documentation
@@ -463,6 +491,9 @@ class SPI_IMPORT UndefinedConstant : public Constant
 {
 public:
     static UndefinedConstantConstSP Make();
+
+    /** Use New when calling the constructor direct from the add-in level */
+    static UndefinedConstantConstSP New();
 
     /**
     ************************************************************************

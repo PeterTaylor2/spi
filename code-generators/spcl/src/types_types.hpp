@@ -182,6 +182,10 @@ public:
     static InputConverterStringFormatConstSP Make(
         const std::string& format);
 
+    /** Use New when calling the constructor direct from the add-in level */
+    static InputConverterStringFormatConstSP New(
+        const std::string& format);
+
     /* public accessor methods */
     std::string format() const;
 
@@ -226,6 +230,10 @@ public:
     static InputConverterClassConstSP Make(
         const std::string& format);
 
+    /** Use New when calling the constructor direct from the add-in level */
+    static InputConverterClassConstSP New(
+        const std::string& format);
+
     /* public accessor methods */
     std::string format() const;
 
@@ -266,6 +274,23 @@ class SPI_IMPORT DataType : public spi::Object
 {
 public:
     static DataTypeConstSP Make(
+        const std::string& name,
+        const std::string& nsService,
+        const std::string& cppName,
+        const std::string& outerType,
+        const std::string& innerType,
+        const std::string& innerRefType,
+        PublicType publicType,
+        const std::string& objectName,
+        bool isClosed,
+        bool noDoc,
+        const InputConverterConstSP& convertIn,
+        const std::string& convertOut,
+        const std::string& copyInner,
+        bool ignored);
+
+    /** Use New when calling the constructor direct from the add-in level */
+    static DataTypeConstSP New(
         const std::string& name,
         const std::string& nsService,
         const std::string& cppName,
@@ -350,6 +375,12 @@ public:
         const std::string& name,
         int arrayDim);
 
+    /** Use New when calling the constructor direct from the add-in level */
+    static AttributeConstSP New(
+        const DataTypeConstSP& dataType,
+        const std::string& name,
+        int arrayDim);
+
     typedef spi::ObjectSmartPtr<Attribute> outer_type; 
 
     SPI_DECLARE_OBJECT_TYPE(Attribute);
@@ -395,6 +426,10 @@ public:
     static ClassPropertyConstSP Make(
         const AttributeConstSP& attribute);
 
+    /** Use New when calling the constructor direct from the add-in level */
+    static ClassPropertyConstSP New(
+        const AttributeConstSP& attribute);
+
     typedef spi::ObjectSmartPtr<ClassProperty> outer_type; 
 
     SPI_DECLARE_OBJECT_TYPE(ClassProperty);
@@ -434,6 +469,11 @@ class SPI_IMPORT Enumerand : public spi::Object
 {
 public:
     static EnumerandConstSP Make(
+        const std::string& code,
+        const std::vector<std::string>& strings);
+
+    /** Use New when calling the constructor direct from the add-in level */
+    static EnumerandConstSP New(
         const std::string& code,
         const std::vector<std::string>& strings);
 
@@ -478,6 +518,11 @@ class SPI_IMPORT Enum : public spi::Object
 {
 public:
     static EnumConstSP Make(
+        const std::string& name,
+        const std::vector<EnumerandConstSP>& enumerands);
+
+    /** Use New when calling the constructor direct from the add-in level */
+    static EnumConstSP New(
         const std::string& name,
         const std::vector<EnumerandConstSP>& enumerands);
 
@@ -569,7 +614,24 @@ public:
         bool isVirtual,
         bool asValue,
         bool byValue,
-        bool useAccessors);
+        bool useAccessors,
+        bool noLog);
+
+    /** Use New when calling the constructor direct from the add-in level */
+    static BaseStructConstSP New(
+        const std::vector<std::string>& description,
+        const std::string& name,
+        const std::string& ns,
+        const BaseClassConstSP& baseClass,
+        bool noMake,
+        const std::string& objectName,
+        bool canPut,
+        bool noId,
+        bool isVirtual,
+        bool asValue,
+        bool byValue,
+        bool useAccessors,
+        bool noLog);
 
     typedef spi::ObjectSmartPtr<BaseStruct> outer_type; 
 
@@ -604,7 +666,8 @@ private:
         bool isVirtual,
         bool asValue,
         bool byValue,
-        bool useAccessors);
+        bool useAccessors,
+        bool noLog);
 
     /* private accessor methods */
     std::vector<std::string> description() const;
@@ -619,6 +682,7 @@ private:
     bool asValue() const;
     bool byValue() const;
     bool useAccessors() const;
+    bool noLog() const;
 
     /* shared pointer to implementation */
     spi_boost::intrusive_ptr< ::Struct const > inner_value;
@@ -633,6 +697,24 @@ class SPI_IMPORT InnerClass : public spi::Object
 {
 public:
     static InnerClassConstSP Make(
+        const std::string& typeName,
+        const std::string& ns,
+        const std::string& freeFunc,
+        const std::string& copyFunc,
+        const std::string& preDeclaration,
+        const std::string& sharedPtr,
+        bool isShared,
+        bool isConst,
+        bool isOpen,
+        bool isStruct,
+        bool isCached,
+        bool isTemplate,
+        bool byValue,
+        const std::string& boolTest,
+        bool allowConst);
+
+    /** Use New when calling the constructor direct from the add-in level */
+    static InnerClassConstSP New(
         const std::string& typeName,
         const std::string& ns,
         const std::string& freeFunc,
@@ -729,7 +811,26 @@ public:
         bool noId,
         const DataTypeConstSP& dataType,
         bool asValue,
-        const std::vector<ClassPropertyConstSP>& classProperties);
+        const std::vector<ClassPropertyConstSP>& classProperties,
+        bool noLog);
+
+    /** Use New when calling the constructor direct from the add-in level */
+    static BaseWrapperClassConstSP New(
+        const std::vector<std::string>& description,
+        const std::string& name,
+        const std::string& ns,
+        const InnerClassConstSP& innerClass,
+        const BaseWrapperClassConstSP& baseClass,
+        bool isVirtual,
+        bool noMake,
+        const std::string& objectName,
+        bool isDelegate,
+        bool canPut,
+        bool noId,
+        const DataTypeConstSP& dataType,
+        bool asValue,
+        const std::vector<ClassPropertyConstSP>& classProperties,
+        bool noLog);
 
     typedef spi::ObjectSmartPtr<BaseWrapperClass> outer_type; 
 
@@ -766,7 +867,8 @@ private:
         bool noId,
         const DataTypeConstSP& dataType,
         bool asValue,
-        const std::vector<ClassPropertyConstSP>& classProperties);
+        const std::vector<ClassPropertyConstSP>& classProperties,
+        bool noLog);
 
     /* private accessor methods */
     std::vector<std::string> description() const;
@@ -783,6 +885,7 @@ private:
     DataTypeConstSP dataType() const;
     bool asValue() const;
     std::vector<ClassPropertyConstSP> classProperties() const;
+    bool noLog() const;
 
     /* shared pointer to implementation */
     spi_boost::intrusive_ptr< ::WrapperClass const > inner_value;
@@ -797,6 +900,17 @@ class SPI_IMPORT TypesLibrary : public spi::Object
 {
 public:
     static TypesLibraryConstSP Make(
+        const std::string& name,
+        const std::string& ns,
+        const std::string& version,
+        const std::string& lastModuleName,
+        const std::vector<DataTypeConstSP>& dataTypes,
+        const std::vector<DataTypeConstSP>& publicDataTypes,
+        const std::vector<BaseClassConstSP>& baseClasses,
+        const std::vector<EnumConstSP>& enums);
+
+    /** Use New when calling the constructor direct from the add-in level */
+    static TypesLibraryConstSP New(
         const std::string& name,
         const std::string& ns,
         const std::string& version,

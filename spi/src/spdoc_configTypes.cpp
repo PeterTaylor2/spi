@@ -39,6 +39,34 @@ SPDOC_BEGIN_NAMESPACE
 * Implementation of DataType
 ****************************************************************************
 */
+DataTypeConstSP DataType::New(
+    const std::string& name,
+    bool passByReference,
+    const std::string& refTypeName,
+    const std::string& valueTypeName,
+    PublicType publicType,
+    bool noDoc,
+    const std::string& nsService,
+    bool objectAsValue)
+{
+  SPI_PROFILE("spdoc.DataType");
+  bool isLogging = spdoc_begin_function(true);
+  try
+  {
+
+    auto _obj = Make(name, passByReference, refTypeName, valueTypeName, publicType,
+        noDoc, nsService, objectAsValue);
+
+    spdoc_end_function();
+
+    return _obj;
+  }
+  catch (std::exception& e)
+  { throw spdoc_catch_exception(isLogging, "DataType", e); }
+  catch (...)
+  { throw spdoc_catch_all(isLogging, "DataType"); }
+}
+
 DataTypeConstSP DataType::Make(
     const std::string& name,
     bool passByReference,
@@ -49,7 +77,6 @@ DataTypeConstSP DataType::Make(
     const std::string& nsService,
     bool objectAsValue)
 {
-    spdoc_check_permission();
     return DataTypeConstSP(
         new DataType(name, passByReference, refTypeName, valueTypeName,
             publicType, noDoc, nsService, objectAsValue));
@@ -167,6 +194,33 @@ std::string DataType_Helper::RefType(
 * Implementation of Attribute
 ****************************************************************************
 */
+AttributeConstSP Attribute::New(
+    const std::string& name,
+    const std::vector<std::string>& description,
+    const DataTypeConstSP& dataType,
+    int arrayDim,
+    bool isOptional,
+    const ConstantConstSP& defaultValue,
+    const std::string& alias)
+{
+  SPI_PROFILE("spdoc.Attribute");
+  bool isLogging = spdoc_begin_function(true);
+  try
+  {
+
+    auto _obj = Make(name, description, dataType, arrayDim, isOptional,
+        defaultValue, alias);
+
+    spdoc_end_function();
+
+    return _obj;
+  }
+  catch (std::exception& e)
+  { throw spdoc_catch_exception(isLogging, "Attribute", e); }
+  catch (...)
+  { throw spdoc_catch_all(isLogging, "Attribute"); }
+}
+
 AttributeConstSP Attribute::Make(
     const std::string& name,
     const std::vector<std::string>& description,
@@ -176,7 +230,6 @@ AttributeConstSP Attribute::Make(
     const ConstantConstSP& defaultValue,
     const std::string& alias)
 {
-    spdoc_check_permission();
     return AttributeConstSP(
         new Attribute(name, description, dataType, arrayDim, isOptional,
             defaultValue, alias));
@@ -279,6 +332,34 @@ bool Attribute::isArray() const
 * Implementation of ClassAttribute
 ****************************************************************************
 */
+ClassAttributeConstSP ClassAttribute::New(
+    const std::string& name,
+    const std::vector<std::string>& description,
+    const DataTypeConstSP& dataType,
+    int arrayDim,
+    bool isOptional,
+    const ConstantConstSP& defaultValue,
+    bool accessible,
+    const std::string& accessor)
+{
+  SPI_PROFILE("spdoc.ClassAttribute");
+  bool isLogging = spdoc_begin_function(true);
+  try
+  {
+
+    auto _obj = Make(name, description, dataType, arrayDim, isOptional,
+        defaultValue, accessible, accessor);
+
+    spdoc_end_function();
+
+    return _obj;
+  }
+  catch (std::exception& e)
+  { throw spdoc_catch_exception(isLogging, "ClassAttribute", e); }
+  catch (...)
+  { throw spdoc_catch_all(isLogging, "ClassAttribute"); }
+}
+
 ClassAttributeConstSP ClassAttribute::Make(
     const std::string& name,
     const std::vector<std::string>& description,
@@ -289,7 +370,6 @@ ClassAttributeConstSP ClassAttribute::Make(
     bool accessible,
     const std::string& accessor)
 {
-    spdoc_check_permission();
     return ClassAttributeConstSP(
         new ClassAttribute(name, description, dataType, arrayDim, isOptional,
             defaultValue, accessible, accessor));
@@ -398,13 +478,35 @@ Construct::Construct()
 * Implementation of SimpleType
 ****************************************************************************
 */
+SimpleTypeConstSP SimpleType::New(
+    const std::string& name,
+    const std::vector<std::string>& description,
+    const std::string& typeName,
+    bool noDoc)
+{
+  SPI_PROFILE("spdoc.SimpleType");
+  bool isLogging = spdoc_begin_function(true);
+  try
+  {
+
+    auto _obj = Make(name, description, typeName, noDoc);
+
+    spdoc_end_function();
+
+    return _obj;
+  }
+  catch (std::exception& e)
+  { throw spdoc_catch_exception(isLogging, "SimpleType", e); }
+  catch (...)
+  { throw spdoc_catch_all(isLogging, "SimpleType"); }
+}
+
 SimpleTypeConstSP SimpleType::Make(
     const std::string& name,
     const std::vector<std::string>& description,
     const std::string& typeName,
     bool noDoc)
 {
-    spdoc_check_permission();
     return SimpleTypeConstSP(
         new SimpleType(name, description, typeName, noDoc));
 }
@@ -501,6 +603,35 @@ std::vector<std::string> SimpleType_Helper::Summary(
 * Implementation of Function
 ****************************************************************************
 */
+FunctionConstSP Function::New(
+    const std::string& name,
+    const std::vector<std::string>& description,
+    const std::vector<std::string>& returnTypeDescription,
+    const DataTypeConstSP& returnType,
+    int returnArrayDim,
+    const std::vector<AttributeConstSP>& inputs,
+    const std::vector<AttributeConstSP>& outputs,
+    const std::vector<std::string>& excelOptions,
+    bool optionalReturnType)
+{
+  SPI_PROFILE("spdoc.Function");
+  bool isLogging = spdoc_begin_function(true);
+  try
+  {
+
+    auto _obj = Make(name, description, returnTypeDescription, returnType,
+        returnArrayDim, inputs, outputs, excelOptions, optionalReturnType);
+
+    spdoc_end_function();
+
+    return _obj;
+  }
+  catch (std::exception& e)
+  { throw spdoc_catch_exception(isLogging, "Function", e); }
+  catch (...)
+  { throw spdoc_catch_all(isLogging, "Function"); }
+}
+
 FunctionConstSP Function::Make(
     const std::string& name,
     const std::vector<std::string>& description,
@@ -512,7 +643,6 @@ FunctionConstSP Function::Make(
     const std::vector<std::string>& excelOptions,
     bool optionalReturnType)
 {
-    spdoc_check_permission();
     return FunctionConstSP(
         new Function(name, description, returnTypeDescription, returnType,
             returnArrayDim, inputs, outputs, excelOptions, optionalReturnType));
@@ -801,12 +931,33 @@ std::string Function_Helper::getType(
 * Implementation of Enumerand
 ****************************************************************************
 */
+EnumerandConstSP Enumerand::New(
+    const std::string& code,
+    const std::vector<std::string>& strings,
+    const std::vector<std::string>& description)
+{
+  SPI_PROFILE("spdoc.Enumerand");
+  bool isLogging = spdoc_begin_function(true);
+  try
+  {
+
+    auto _obj = Make(code, strings, description);
+
+    spdoc_end_function();
+
+    return _obj;
+  }
+  catch (std::exception& e)
+  { throw spdoc_catch_exception(isLogging, "Enumerand", e); }
+  catch (...)
+  { throw spdoc_catch_all(isLogging, "Enumerand"); }
+}
+
 EnumerandConstSP Enumerand::Make(
     const std::string& code,
     const std::vector<std::string>& strings,
     const std::vector<std::string>& description)
 {
-    spdoc_check_permission();
     return EnumerandConstSP(
         new Enumerand(code, strings, description));
 }
@@ -827,11 +978,31 @@ Enumerand::Enumerand(
 * Implementation of EnumConstructor
 ****************************************************************************
 */
+EnumConstructorConstSP EnumConstructor::New(
+    PublicType constructorType,
+    const std::vector<std::string>& description)
+{
+  SPI_PROFILE("spdoc.EnumConstructor");
+  bool isLogging = spdoc_begin_function(true);
+  try
+  {
+
+    auto _obj = Make(constructorType, description);
+
+    spdoc_end_function();
+
+    return _obj;
+  }
+  catch (std::exception& e)
+  { throw spdoc_catch_exception(isLogging, "EnumConstructor", e); }
+  catch (...)
+  { throw spdoc_catch_all(isLogging, "EnumConstructor"); }
+}
+
 EnumConstructorConstSP EnumConstructor::Make(
     PublicType constructorType,
     const std::vector<std::string>& description)
 {
-    spdoc_check_permission();
     return EnumConstructorConstSP(
         new EnumConstructor(constructorType, description));
 }
@@ -850,6 +1021,30 @@ EnumConstructor::EnumConstructor(
 * Implementation of Enum
 ****************************************************************************
 */
+EnumConstSP Enum::New(
+    const std::string& name,
+    const std::vector<std::string>& description,
+    const std::vector<EnumerandConstSP>& enumerands,
+    const std::vector<EnumConstructorConstSP>& constructors,
+    bool isBitmask)
+{
+  SPI_PROFILE("spdoc.Enum");
+  bool isLogging = spdoc_begin_function(true);
+  try
+  {
+
+    auto _obj = Make(name, description, enumerands, constructors, isBitmask);
+
+    spdoc_end_function();
+
+    return _obj;
+  }
+  catch (std::exception& e)
+  { throw spdoc_catch_exception(isLogging, "Enum", e); }
+  catch (...)
+  { throw spdoc_catch_all(isLogging, "Enum"); }
+}
+
 EnumConstSP Enum::Make(
     const std::string& name,
     const std::vector<std::string>& description,
@@ -857,7 +1052,6 @@ EnumConstSP Enum::Make(
     const std::vector<EnumConstructorConstSP>& constructors,
     bool isBitmask)
 {
-    spdoc_check_permission();
     return EnumConstSP(
         new Enum(name, description, enumerands, constructors, isBitmask));
 }
@@ -984,6 +1178,32 @@ std::vector<std::string> Enum_Helper::Summary(
 * Implementation of ClassMethod
 ****************************************************************************
 */
+ClassMethodConstSP ClassMethod::New(
+    const FunctionConstSP& function,
+    bool isConst,
+    bool isVirtual,
+    bool isStatic,
+    bool isImplementation,
+    const std::string& implements)
+{
+  SPI_PROFILE("spdoc.ClassMethod");
+  bool isLogging = spdoc_begin_function(true);
+  try
+  {
+
+    auto _obj = Make(function, isConst, isVirtual, isStatic, isImplementation,
+        implements);
+
+    spdoc_end_function();
+
+    return _obj;
+  }
+  catch (std::exception& e)
+  { throw spdoc_catch_exception(isLogging, "ClassMethod", e); }
+  catch (...)
+  { throw spdoc_catch_all(isLogging, "ClassMethod"); }
+}
+
 ClassMethodConstSP ClassMethod::Make(
     const FunctionConstSP& function,
     bool isConst,
@@ -992,7 +1212,6 @@ ClassMethodConstSP ClassMethod::Make(
     bool isImplementation,
     const std::string& implements)
 {
-    spdoc_check_permission();
     return ClassMethodConstSP(
         new ClassMethod(function, isConst, isVirtual, isStatic,
             isImplementation, implements));
@@ -1093,11 +1312,31 @@ std::vector<std::string> ClassMethod_Helper::Summary(
 * Implementation of CoerceFrom
 ****************************************************************************
 */
+CoerceFromConstSP CoerceFrom::New(
+    const std::vector<std::string>& description,
+    const AttributeConstSP& coerceFrom)
+{
+  SPI_PROFILE("spdoc.CoerceFrom");
+  bool isLogging = spdoc_begin_function(true);
+  try
+  {
+
+    auto _obj = Make(description, coerceFrom);
+
+    spdoc_end_function();
+
+    return _obj;
+  }
+  catch (std::exception& e)
+  { throw spdoc_catch_exception(isLogging, "CoerceFrom", e); }
+  catch (...)
+  { throw spdoc_catch_all(isLogging, "CoerceFrom"); }
+}
+
 CoerceFromConstSP CoerceFrom::Make(
     const std::vector<std::string>& description,
     const AttributeConstSP& coerceFrom)
 {
-    spdoc_check_permission();
     return CoerceFromConstSP(
         new CoerceFrom(description, coerceFrom));
 }
@@ -1157,12 +1396,33 @@ std::vector<std::string> CoerceFrom_Helper::Summary(
 * Implementation of CoerceTo
 ****************************************************************************
 */
+CoerceToConstSP CoerceTo::New(
+    const std::vector<std::string>& description,
+    const std::string& className,
+    const DataTypeConstSP& classType)
+{
+  SPI_PROFILE("spdoc.CoerceTo");
+  bool isLogging = spdoc_begin_function(true);
+  try
+  {
+
+    auto _obj = Make(description, className, classType);
+
+    spdoc_end_function();
+
+    return _obj;
+  }
+  catch (std::exception& e)
+  { throw spdoc_catch_exception(isLogging, "CoerceTo", e); }
+  catch (...)
+  { throw spdoc_catch_all(isLogging, "CoerceTo"); }
+}
+
 CoerceToConstSP CoerceTo::Make(
     const std::vector<std::string>& description,
     const std::string& className,
     const DataTypeConstSP& classType)
 {
-    spdoc_check_permission();
     return CoerceToConstSP(
         new CoerceTo(description, className, classType));
 }
@@ -1222,6 +1482,46 @@ std::vector<std::string> CoerceTo_Helper::Summary(
 * Implementation of Class
 ****************************************************************************
 */
+ClassConstSP Class::New(
+    const std::string& name,
+    const std::string& ns,
+    const std::vector<std::string>& description,
+    const std::string& baseClassName,
+    const std::vector<ClassAttributeConstSP>& attributes,
+    const std::vector<ClassAttributeConstSP>& properties,
+    const std::vector<ClassMethodConstSP>& methods,
+    const std::vector<CoerceFromConstSP>& coerceFrom,
+    const std::vector<CoerceToConstSP>& coerceTo,
+    bool isAbstract,
+    bool noMake,
+    const std::string& objectName,
+    const DataTypeConstSP& dataType,
+    bool isDelegate,
+    bool canPut,
+    bool hasDynamicAttributes,
+    bool asValue,
+    const std::string& constructor)
+{
+  SPI_PROFILE("spdoc.Class");
+  bool isLogging = spdoc_begin_function(true);
+  try
+  {
+
+    auto _obj = Make(name, ns, description, baseClassName, attributes, properties,
+        methods, coerceFrom, coerceTo, isAbstract, noMake, objectName,
+        dataType, isDelegate, canPut, hasDynamicAttributes, asValue,
+        constructor);
+
+    spdoc_end_function();
+
+    return _obj;
+  }
+  catch (std::exception& e)
+  { throw spdoc_catch_exception(isLogging, "Class", e); }
+  catch (...)
+  { throw spdoc_catch_all(isLogging, "Class"); }
+}
+
 ClassConstSP Class::Make(
     const std::string& name,
     const std::string& ns,
@@ -1242,7 +1542,6 @@ ClassConstSP Class::Make(
     bool asValue,
     const std::string& constructor)
 {
-    spdoc_check_permission();
     return ClassConstSP(
         new Class(name, ns, description, baseClassName, attributes,
             properties, methods, coerceFrom, coerceTo, isAbstract, noMake,
@@ -1500,13 +1799,35 @@ std::string Class_Helper::ServiceNamespace(
 * Implementation of Module
 ****************************************************************************
 */
+ModuleConstSP Module::New(
+    const std::string& name,
+    const std::vector<std::string>& description,
+    const std::string& ns,
+    const std::vector<ConstructConstSP>& constructs)
+{
+  SPI_PROFILE("spdoc.Module");
+  bool isLogging = spdoc_begin_function(true);
+  try
+  {
+
+    auto _obj = Make(name, description, ns, constructs);
+
+    spdoc_end_function();
+
+    return _obj;
+  }
+  catch (std::exception& e)
+  { throw spdoc_catch_exception(isLogging, "Module", e); }
+  catch (...)
+  { throw spdoc_catch_all(isLogging, "Module"); }
+}
+
 ModuleConstSP Module::Make(
     const std::string& name,
     const std::vector<std::string>& description,
     const std::string& ns,
     const std::vector<ConstructConstSP>& constructs)
 {
-    spdoc_check_permission();
     return ModuleConstSP(
         new Module(name, description, ns, constructs));
 }
@@ -1592,6 +1913,36 @@ std::vector<std::string> Module_Helper::combineSummaries(
 * Implementation of Service
 ****************************************************************************
 */
+ServiceConstSP Service::New(
+    const std::string& name,
+    const std::vector<std::string>& description,
+    const std::string& longName,
+    const std::string& ns,
+    const std::string& declSpec,
+    const std::string& version,
+    const std::vector<ModuleConstSP>& modules,
+    const std::vector<ClassConstSP>& importedBaseClasses,
+    const std::vector<EnumConstSP>& importedEnums,
+    bool sharedService)
+{
+  SPI_PROFILE("spdoc.Service");
+  bool isLogging = spdoc_begin_function(true);
+  try
+  {
+
+    auto _obj = Make(name, description, longName, ns, declSpec, version, modules,
+        importedBaseClasses, importedEnums, sharedService);
+
+    spdoc_end_function();
+
+    return _obj;
+  }
+  catch (std::exception& e)
+  { throw spdoc_catch_exception(isLogging, "Service", e); }
+  catch (...)
+  { throw spdoc_catch_all(isLogging, "Service"); }
+}
+
 ServiceConstSP Service::Make(
     const std::string& name,
     const std::vector<std::string>& description,
@@ -1604,7 +1955,6 @@ ServiceConstSP Service::Make(
     const std::vector<EnumConstSP>& importedEnums,
     bool sharedService)
 {
-    spdoc_check_permission();
     return ServiceConstSP(
         new Service(name, description, longName, ns, declSpec, version,
             modules, importedBaseClasses, importedEnums, sharedService));

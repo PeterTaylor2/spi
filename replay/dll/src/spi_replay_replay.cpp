@@ -82,12 +82,31 @@ ReplayActionConstSP ReplayAction::Wrap(const inner_type& inner)
 * Implementation of ReplayFunctionAction
 ****************************************************************************
 */
+ReplayFunctionActionConstSP ReplayFunctionAction::New(
+    const spi::MapObjectSP& inputs,
+    const spi::MapObjectSP& output)
+{
+  SPI_PROFILE("spi_replay.ReplayFunctionAction");
+  bool isLogging = replay_begin_function(true);
+  try
+  {
+
+    ReplayFunctionActionConstSP _obj = Make(inputs, output);
+
+    replay_end_function();
+
+    return _obj;
+  }
+  catch (std::exception& e)
+  { throw replay_catch_exception(isLogging, "ReplayFunctionAction", e); }
+  catch (...)
+  { throw replay_catch_all(isLogging, "ReplayFunctionAction"); }
+}
+
 ReplayFunctionActionConstSP ReplayFunctionAction::Make(
     const spi::MapObjectSP& inputs,
     const spi::MapObjectSP& output)
 {
-  SPI_PROFILE("spi_replay.ReplayFunctionAction.Make");
-  replay_check_permission();
   try
   {
     inner_type self = make_inner(inputs, output);
@@ -184,11 +203,29 @@ spi::MapConstSP ReplayFunctionAction_Helper::get_output(const ReplayFunctionActi
 * Implementation of ReplayObjectAction
 ****************************************************************************
 */
+ReplayObjectActionConstSP ReplayObjectAction::New(
+    const spi::MapObjectSP& inputs)
+{
+  SPI_PROFILE("spi_replay.ReplayObjectAction");
+  bool isLogging = replay_begin_function(true);
+  try
+  {
+
+    ReplayObjectActionConstSP _obj = Make(inputs);
+
+    replay_end_function();
+
+    return _obj;
+  }
+  catch (std::exception& e)
+  { throw replay_catch_exception(isLogging, "ReplayObjectAction", e); }
+  catch (...)
+  { throw replay_catch_all(isLogging, "ReplayObjectAction"); }
+}
+
 ReplayObjectActionConstSP ReplayObjectAction::Make(
     const spi::MapObjectSP& inputs)
 {
-  SPI_PROFILE("spi_replay.ReplayObjectAction.Make");
-  replay_check_permission();
   try
   {
     inner_type self = make_inner(inputs);
@@ -412,8 +449,6 @@ ReplayCodeGenerator::inner_type ReplayCodeGenerator::get_delegate() const
 ReplayLogConstSP ReplayLog::Make(
     const std::vector<spi::MapObjectSP>& items)
 {
-  SPI_PROFILE("spi_replay.ReplayLog.Make");
-  replay_check_permission();
   try
   {
     inner_type self = make_inner(items);

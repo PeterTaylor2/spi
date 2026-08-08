@@ -960,6 +960,7 @@ FunctionConstSP parseFunction(
     {
         functionDefaultOptions["noLog"]        = BoolConstant::Make(service->noLog());
         functionDefaultOptions["noConvert"]    = BoolConstant::Make(false);
+        functionDefaultOptions["noRecord"]     = BoolConstant::Make(false);
         functionDefaultOptions["excelOptions"] = StringConstant::Make("");
         functionDefaultOptions["ignore"]       = BoolConstant::Make(false);
         functionDefaultOptions["cache"]        = IntConstant::Make(0);
@@ -981,6 +982,7 @@ FunctionConstSP parseFunction(
         options = parseOptions(lexer, "{;", functionDefaultOptions, verbose);
     }
     bool ignore = getOption(options, "ignore")->getBool();
+    bool noRecord = getOption(options, "noRecord")->getBool();
 
     // at the end of the function we either have some code started by '{'
     // or the function is not implemented indicated by ;
@@ -1025,7 +1027,8 @@ FunctionConstSP parseFunction(
         getOption(options, "noConvert")->getBool(),
         excelOptions,
         getOption(options, "cache")->getInt(),
-        optionalReturnType);
+        optionalReturnType,
+        noRecord);
 
     if (func->hasIgnored())
     {
@@ -1107,7 +1110,8 @@ FunctionConstSP parseFunction(
             true, // noConvert - we are calling at the outer level so don't convert
             methodFunctionExcelOptions,
             0, // caching done at lower level
-            optionalReturnType); 
+            optionalReturnType,
+            noRecord); 
 
         // cannot add directly to module because then the constructs
         // are not defined in the correct order since cls at this point
@@ -1725,7 +1729,8 @@ void enumKeywordHandler(
                     true, // noConvert
                     noExcelOptions,
                     0, // cacheSize
-                    false); // optionalReturnType
+                    false, // optionalReturnType
+                    true); // noRecord
 
                 module->addConstruct(func);
             }
@@ -1762,7 +1767,8 @@ void enumKeywordHandler(
                     true, // noConvert
                     noExcelOptions,
                     0, // cacheSize
-                    false); // optionalReturnType
+                    false, // optionalReturnType
+                    true); // noRecord
 
                 module->addConstruct(func);
             }
@@ -1796,7 +1802,8 @@ void enumKeywordHandler(
                     true, // noConvert
                     noExcelOptions,
                     0, // cacheSize
-                    false); // optionalReturnType
+                    false, // optionalReturnType
+                    true); // noRecord
 
                 module->addConstruct(func);
             }
@@ -2479,8 +2486,10 @@ void writeTemplateDoc(GeneratedOutput& ostr, bool verbose)
 
 void initClassStructOptions(
     ParserOptions& defaultOptions,
+    const ServiceDefinitionConstSP& svc,
     bool wrapperClass)
 {
+    defaultOptions["noLog"] = BoolConstant::Make(svc->noLog());
     defaultOptions["noMake"] = BoolConstant::Make(false);
     defaultOptions["objectName"] = StringConstant::Make("");
     defaultOptions["canPut"] = BoolConstant::Make(false);
@@ -2564,7 +2573,8 @@ void addConstructorFunction(
         noConvert,
         excelOptions,
         constructorCache,
-        optionalReturnType);
+        optionalReturnType,
+        false); // noRecord
 
     module->addConstruct(func);
 }
@@ -2634,13 +2644,14 @@ void structKeywordHandler(
     static ParserOptions defaultOptions;
     if (defaultOptions.size() == 0)
     {
-        initClassStructOptions(defaultOptions, false);
+        initClassStructOptions(defaultOptions, service, false);
     }
     ParserOptions options;
     options = parseOptions(lexer, "{;", defaultOptions, verbose);
 
     bool incomplete = getIncompleteStructOrClass(lexer);
 
+    bool noLog = getOption(options, "noLog")->getBool();
     bool noMake = getOption(options, "noMake")->getBool();
     bool canPut = getOption(options, "canPut")->getBool();
     bool noId = getOption(options, "noId")->getBool();
@@ -2654,7 +2665,7 @@ void structKeywordHandler(
         description, name, module->moduleNamespace(), baseClass, noMake,
         getOption(options, "objectName")->getString(),
         canPut, noId, isVirtual, asValue, byValue, false, incomplete,
-        constructor);
+        constructor, noLog);
 
     // we need to register the type before parsing the contents in order to
     // allow references to itself in the structure definition
@@ -3238,13 +3249,14 @@ void classNoWrapHandler(
     static ParserOptions defaultOptions;
     if (defaultOptions.size() == 0)
     {
-        initClassStructOptions(defaultOptions, false);
+        initClassStructOptions(defaultOptions, service, false);
     }
 
     ParserOptions options;
     options = parseOptions(lexer, "{", defaultOptions, verbose);
     bool incomplete = getIncompleteStructOrClass(lexer);
 
+    bool noLog = getOption(options, "noLog")->getBool();
     bool noMake = getOption(options, "noMake")->getBool();
     bool canPut = getOption(options, "canPut")->getBool();
     bool noId = getOption(options, "noId")->getBool();
@@ -3259,7 +3271,7 @@ void classNoWrapHandler(
         baseClass, noMake,
         getOption(options, "objectName")->getString(),
         canPut, noId, isVirtual, asValue, byValue, true, incomplete,
-        constructor);
+        constructor, noLog);
 
     // we need to register the type before parsing the contents in order to
     // allow references to itself in the class definition
@@ -3478,7 +3490,7 @@ void classKeywordHandler(
     static ParserOptions defaultOptions;
     if (defaultOptions.size() == 0)
     {
-        initClassStructOptions(defaultOptions, true);
+        initClassStructOptions(defaultOptions, service, true);
     }
 
     lexer.returnToken(token);
@@ -3561,7 +3573,8 @@ void classKeywordHandler(
         incomplete,
         getOption(options, "accessorFormat")->getString(),
         getOption(options, "propertyFormat")->getString(),
-        constructor);
+        constructor,
+        getOption(options, "noLog")->getBool());
 
     // we need to register the type before parsing the contents in order to
     // allow references to itself in the class definition

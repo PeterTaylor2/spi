@@ -63,11 +63,12 @@ StructSP Struct::Make(
     bool                            byValue,
     bool useAccessors,
     bool incomplete,
-    const std::string& constructor)
+    const std::string& constructor,
+    bool noLog)
 {
     return new Struct(
         description, name, ns, baseClass, noMake, objectName, canPut, noId,
-        isVirtual, asValue, byValue, useAccessors, incomplete, constructor);
+        isVirtual, asValue, byValue, useAccessors, incomplete, constructor, noLog);
 }
 
 Struct::Struct(
@@ -84,7 +85,8 @@ Struct::Struct(
     bool                            byValue,
     bool useAccessors,
     bool incomplete,
-    const std::string& constructor)
+    const std::string& constructor,
+    bool noLog)
     :
     m_description(description),
     m_name(name),
@@ -100,6 +102,7 @@ Struct::Struct(
     m_useAccessors(useAccessors),
     m_incomplete(incomplete),
     m_constructor(constructor),
+    m_noLog(noLog),
     m_attributes(),
     m_methods(),
     m_verbatimStart(),
@@ -525,22 +528,21 @@ void Struct::implement(
                 ostr << "  spi::AddRecord(\"" << svc->getNamespace() << "." << getName(true, ".") << "\");\n";
             }
 
-            ostr << "  SPI_PROFILE(\"" << svc->getNamespace() << "." << getName(true, ".") << "\");\n"
-                << "  " << svc->getName() << "_check_permission();\n";
+            ostr << "  SPI_PROFILE(\"" << svc->getNamespace() << "." << getName(true, ".") << "\");\n";
 
-            bool m_noLog = false; // needs to be defined at wrapper class level
+            bool noLog = m_noLog;
             if (m_byValue)
-                m_noLog = true; // else how do we log the output?
+                noLog = true; // else how do we log the output?
 
             ostr << "  bool isLogging = " << svc->getName() << "_begin_function(";
-            if (m_noLog)
+            if (noLog)
                 ostr << "true";
 
             ostr << ");\n"
                 << "  try\n"
                 << "  {\n";
 
-            if (!m_noLog)
+            if (!noLog)
             {
                 ostr << "    if (isLogging)\n"
                     << "    {\n";
@@ -568,7 +570,7 @@ void Struct::implement(
             }
             ostr << ";\n";
 
-            if (!m_noLog)
+            if (!noLog)
             {
                 writeFunctionOutputLogging(
                     ostr, svc->getName(), m_dataType, false, "_obj", {});

@@ -96,6 +96,11 @@ public:
         const spi::MapObjectSP& inputs,
         const spi::MapObjectSP& output);
 
+    /** Use New when calling the constructor direct from the add-in level */
+    static ReplayFunctionActionConstSP New(
+        const spi::MapObjectSP& inputs,
+        const spi::MapObjectSP& output);
+
     /* public accessor methods */
     spi::MapObjectSP inputs() const;
     spi::MapObjectSP output() const;
@@ -138,6 +143,10 @@ class REPLAY_IMPORT ReplayObjectAction : public ReplayAction
 {
 public:
     static ReplayObjectActionConstSP Make(
+        const spi::MapObjectSP& inputs);
+
+    /** Use New when calling the constructor direct from the add-in level */
+    static ReplayObjectActionConstSP New(
         const spi::MapObjectSP& inputs);
 
     /* public accessor methods */
@@ -237,6 +246,8 @@ private:
 class REPLAY_IMPORT ReplayLog : public spi::Object
 {
 public:
+    static ReplayLogConstSP Make(
+        const std::vector<spi::MapObjectSP>& items);
 
     /**
     ************************************************************************
@@ -272,8 +283,6 @@ public:
     ~ReplayLog();
 
     static ReplayLogConstSP Wrap(const inner_type& inner);
-    static ReplayLogConstSP Make(
-        const std::vector<spi::MapObjectSP>& items);
 
 protected:
 

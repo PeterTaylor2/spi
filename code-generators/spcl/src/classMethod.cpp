@@ -458,9 +458,9 @@ void ClassMethod::implement(
         ostr << "{";
         ostr << "    " << svc->getName() << "_check_permission();\n";
 
-        if (recording)
+        if (recording && !m_function->m_noRecord)
         {
-            ostr << "  spi::AddRecord(\"" << svc->getNamespace() << "." << classType->name()
+            ostr << "    spi::AddRecord(\"" << svc->getNamespace() << "." << classType->name()
                 << "." << m_function->fullName() << "\");\n";
         }
         ostr << "    SPI_PROFILE(\"" << svc->getNamespace() << "." << classType->name()
@@ -492,7 +492,7 @@ void ClassMethod::implement(
         ostr << "{\n";
         ostr << "  bool isLogging = " << svc->getName() << "_begin_function();\n";
 
-        if (recording)
+        if (recording && !m_function->m_noRecord)
         {
             ostr << "  spi::AddRecord(\"" << svc->getNamespace() << "." << classType->name()
                 << "." << m_function->fullName() << "\");\n";

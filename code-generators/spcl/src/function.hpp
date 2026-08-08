@@ -67,7 +67,8 @@ public:
         bool                                 noConvert,
         const std::vector<std::string>&      excelOptions,
         int                                  cacheSize,
-        bool                                 optionalReturnType);
+        bool                                 optionalReturnType,
+        bool                                 noRecord);
 
     AttributeConstSP returns() const;
 
@@ -115,7 +116,8 @@ protected:
         bool                                 noConvert,
         const std::vector<std::string>&      excelOptions,
         int                                  cacheSize,
-        bool                                 optionalReturnType);
+        bool                                 optionalReturnType,
+        bool                                 noRecord);
 
 private:
     std::vector<std::string>      m_description;
@@ -133,6 +135,7 @@ private:
     int                           m_cacheSize;
     bool                          m_hasIgnored;
     bool                          m_optionalReturnType;
+    bool                          m_noRecord;
 
     mutable spdoc::FunctionConstSP m_doc;
 

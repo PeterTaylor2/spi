@@ -209,7 +209,7 @@ spi::Value ReplayFunctionAction_caller(
     const spi::MapObjectSP& output =
         in_context->ValueToInstance<spi::MapObject>(in_values[1]);
 
-    const ReplayFunctionActionConstSP& o_result = spi_replay::ReplayFunctionAction::Make(
+    const ReplayFunctionActionConstSP& o_result = spi_replay::ReplayFunctionAction::New(
         inputs, output);
     return spi::ObjectConstSP(o_result);
 }
@@ -309,7 +309,7 @@ spi::Value ReplayObjectAction_caller(
     const spi::MapObjectSP& inputs =
         in_context->ValueToInstance<spi::MapObject>(in_values[0]);
 
-    const ReplayObjectActionConstSP& o_result = spi_replay::ReplayObjectAction::Make(
+    const ReplayObjectActionConstSP& o_result = spi_replay::ReplayObjectAction::New(
         inputs);
     return spi::ObjectConstSP(o_result);
 }

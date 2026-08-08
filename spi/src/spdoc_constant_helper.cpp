@@ -406,7 +406,7 @@ spi::Value IntConstant_caller(
     int value =
         in_context->ValueToInt(in_values[0]);
 
-    const IntConstantConstSP& o_result = spdoc::IntConstant::Make(value);
+    const IntConstantConstSP& o_result = spdoc::IntConstant::New(value);
     return spi::ObjectConstSP(o_result);
 }
 
@@ -502,7 +502,7 @@ spi::Value DateConstant_caller(
     spi::Date value =
         in_context->ValueToDate(in_values[0]);
 
-    const DateConstantConstSP& o_result = spdoc::DateConstant::Make(value);
+    const DateConstantConstSP& o_result = spdoc::DateConstant::New(value);
     return spi::ObjectConstSP(o_result);
 }
 
@@ -598,7 +598,7 @@ spi::Value DateTimeConstant_caller(
     spi::DateTime value =
         in_context->ValueToDateTime(in_values[0]);
 
-    const DateTimeConstantConstSP& o_result = spdoc::DateTimeConstant::Make(
+    const DateTimeConstantConstSP& o_result = spdoc::DateTimeConstant::New(
         value);
     return spi::ObjectConstSP(o_result);
 }
@@ -695,7 +695,7 @@ spi::Value DoubleConstant_caller(
     double value =
         in_context->ValueToDouble(in_values[0]);
 
-    const DoubleConstantConstSP& o_result = spdoc::DoubleConstant::Make(value);
+    const DoubleConstantConstSP& o_result = spdoc::DoubleConstant::New(value);
     return spi::ObjectConstSP(o_result);
 }
 
@@ -791,7 +791,7 @@ spi::Value CharConstant_caller(
     char value =
         in_context->ValueToChar(in_values[0]);
 
-    const CharConstantConstSP& o_result = spdoc::CharConstant::Make(value);
+    const CharConstantConstSP& o_result = spdoc::CharConstant::New(value);
     return spi::ObjectConstSP(o_result);
 }
 
@@ -887,7 +887,7 @@ spi::Value StringConstant_caller(
     const std::string& value =
         in_context->ValueToString(in_values[0]);
 
-    const StringConstantConstSP& o_result = spdoc::StringConstant::Make(value);
+    const StringConstantConstSP& o_result = spdoc::StringConstant::New(value);
     return spi::ObjectConstSP(o_result);
 }
 
@@ -983,7 +983,7 @@ spi::Value BoolConstant_caller(
     bool value =
         in_context->ValueToBool(in_values[0]);
 
-    const BoolConstantConstSP& o_result = spdoc::BoolConstant::Make(value);
+    const BoolConstantConstSP& o_result = spdoc::BoolConstant::New(value);
     return spi::ObjectConstSP(o_result);
 }
 
@@ -1073,7 +1073,7 @@ spi::Value UndefinedConstant_caller(
     const spi::InputContext*       in_context,
     const std::vector<spi::Value>& in_values)
 {
-    const UndefinedConstantConstSP& o_result = spdoc::UndefinedConstant::Make();
+    const UndefinedConstantConstSP& o_result = spdoc::UndefinedConstant::New();
     return spi::ObjectConstSP(o_result);
 }
 

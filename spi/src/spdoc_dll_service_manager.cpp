@@ -133,16 +133,6 @@ std::runtime_error spdoc_catch_all(bool isLogging, const char* name)
     return spi::RuntimeError(e, name);
 }
 
-void spdoc_start_logging(const char* filename, const char* options, bool minimal)
-{
-    g_service->start_logging(filename, options, minimal);
-}
-
-void spdoc_stop_logging()
-{
-    g_service->stop_logging();
-}
-
 void spdoc_set_time_out(spi::Date timeout, const char* msg)
 {
     g_time_out = timeout;

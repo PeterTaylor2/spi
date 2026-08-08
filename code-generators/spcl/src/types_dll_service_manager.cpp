@@ -133,16 +133,6 @@ std::runtime_error types_catch_all(bool isLogging, const char* name)
     return spi::RuntimeError(e, name);
 }
 
-void types_start_logging(const char* filename, const char* options, bool minimal)
-{
-    g_service->start_logging(filename, options, minimal);
-}
-
-void types_stop_logging()
-{
-    g_service->stop_logging();
-}
-
 void types_set_time_out(spi::Date timeout, const char* msg)
 {
     g_time_out = timeout;

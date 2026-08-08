@@ -58,12 +58,13 @@ FunctionConstSP Function::Make(
     bool                                 noConvert,
     const std::vector<std::string>&      excelOptions,
     int                                  cacheSize,
-    bool                                 optionalReturnType)
+    bool                                 optionalReturnType,
+    bool                                 noRecord)
 {
     return new Function(description, returnTypeDescription, returnType,
         returnArrayDim, name, ns, args,
         implementation, noLog, noConvert, excelOptions, cacheSize,
-        optionalReturnType);
+        optionalReturnType, noRecord);
 }
 
 Function::Function(
@@ -79,7 +80,8 @@ Function::Function(
     bool                                 noConvert,
     const std::vector<std::string>& excelOptions,
     int                                  cacheSize,
-    bool                                 optionalReturnType)
+    bool                                 optionalReturnType,
+    bool                                 noRecord)
     :
     m_description(description),
     m_returnTypeDescription(returnTypeDescription),
@@ -95,7 +97,8 @@ Function::Function(
     m_excelOptions(),
     m_cacheSize(cacheSize),
     m_hasIgnored(),
-    m_optionalReturnType(optionalReturnType)
+    m_optionalReturnType(optionalReturnType),
+    m_noRecord(noRecord)
 {
     SPI_PRE_CONDITION(cacheSize >= 0);
 
@@ -338,7 +341,8 @@ void Function::implement(
 
     ostr << "\n"
         << "{\n";
-    if (recording)
+
+    if (recording && !m_noRecord)
     {
         ostr << "  spi::AddRecord(\"" << svc->getNamespace() << "." << fullName() << "\");\n";
     }

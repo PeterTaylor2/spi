@@ -70,7 +70,8 @@ public:
         bool incomplete,
         const std::string& accessorFormat,
         const std::string& propertyFormat,
-        const std::string& constructor);
+        const std::string& constructor,
+        bool noLog);
 
     void addClassAttribute(const ClassAttributeConstSP& classAttribute);
     void addMethod(const ClassMethodConstSP& method);
@@ -161,7 +162,8 @@ protected:
         bool incomplete,
         const std::string& accessorFormat,
         const std::string& propertyFormat,
-        const std::string& constructor);
+        const std::string& constructor,
+        bool noLog);
 
 private:
     std::vector<std::string>           m_description;
@@ -180,6 +182,7 @@ private:
     std::string                        m_accessorFormat;
     std::string                        m_propertyFormat;
     std::string                        m_constructor;
+    bool                               m_noLog;
 
 private:
     std::string                        m_verbatimStart;
@@ -220,6 +223,7 @@ public:
     bool asValue() const { return m_asValue; }
     const DataTypeConstSP& dataType() const { return m_dataType; }
     const std::vector<ClassAttributeConstSP>& classProperties() const { return m_classProperties; }
+    bool noLog() const { return m_noLog; }
 
     void setVerbatimConstructor(const VerbatimConstSP& verbatimConstructor);
     void setDataType(const DataTypeConstSP& dataType);

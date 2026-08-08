@@ -71,6 +71,17 @@ public:
         const std::string& nsService = "",
         bool objectAsValue = false);
 
+    /** Use New when calling the constructor direct from the add-in level */
+    static DataTypeConstSP New(
+        const std::string& name,
+        bool passByReference,
+        const std::string& refTypeName,
+        const std::string& valueTypeName,
+        PublicType publicType,
+        bool noDoc,
+        const std::string& nsService = "",
+        bool objectAsValue = false);
+
     /**
     ************************************************************************
     * Returns the value type (includes the namespace)
@@ -123,6 +134,16 @@ class SPI_IMPORT Attribute : public spi::Object
 {
 public:
     static AttributeConstSP Make(
+        const std::string& name,
+        const std::vector<std::string>& description,
+        const DataTypeConstSP& dataType,
+        int arrayDim = 0,
+        bool isOptional = false,
+        const ConstantConstSP& defaultValue = {},
+        const std::string& alias = std::string());
+
+    /** Use New when calling the constructor direct from the add-in level */
+    static AttributeConstSP New(
         const std::string& name,
         const std::vector<std::string>& description,
         const DataTypeConstSP& dataType,
@@ -194,6 +215,17 @@ public:
     ************************************************************************
     */
     operator AttributeConstSP() const;
+
+    /** Use New when calling the constructor direct from the add-in level */
+    static ClassAttributeConstSP New(
+        const std::string& name,
+        const std::vector<std::string>& description,
+        const DataTypeConstSP& dataType,
+        int arrayDim,
+        bool isOptional,
+        const ConstantConstSP& defaultValue,
+        bool accessible,
+        const std::string& accessor);
 
     /**
     ************************************************************************
@@ -297,6 +329,13 @@ public:
         const std::string& typeName,
         bool noDoc = false);
 
+    /** Use New when calling the constructor direct from the add-in level */
+    static SimpleTypeConstSP New(
+        const std::string& name,
+        const std::vector<std::string>& description,
+        const std::string& typeName,
+        bool noDoc = false);
+
     /**
     ************************************************************************
     * Returns "SIMPLE_TYPE"
@@ -346,6 +385,18 @@ class SPI_IMPORT Function : public Construct
 {
 public:
     static FunctionConstSP Make(
+        const std::string& name,
+        const std::vector<std::string>& description,
+        const std::vector<std::string>& returnTypeDescription,
+        const DataTypeConstSP& returnType,
+        int returnArrayDim = 0,
+        const std::vector<AttributeConstSP>& inputs = {},
+        const std::vector<AttributeConstSP>& outputs = {},
+        const std::vector<std::string>& excelOptions = {},
+        bool optionalReturnType = false);
+
+    /** Use New when calling the constructor direct from the add-in level */
+    static FunctionConstSP New(
         const std::string& name,
         const std::vector<std::string>& description,
         const std::vector<std::string>& returnTypeDescription,
@@ -440,6 +491,12 @@ public:
         const std::vector<std::string>& strings = {},
         const std::vector<std::string>& description = {});
 
+    /** Use New when calling the constructor direct from the add-in level */
+    static EnumerandConstSP New(
+        const std::string& code,
+        const std::vector<std::string>& strings = {},
+        const std::vector<std::string>& description = {});
+
     typedef spi::ObjectSmartPtr<Enumerand> outer_type;
 
     SPI_DECLARE_OBJECT_TYPE(Enumerand);
@@ -470,6 +527,11 @@ public:
         PublicType constructorType,
         const std::vector<std::string>& description = {});
 
+    /** Use New when calling the constructor direct from the add-in level */
+    static EnumConstructorConstSP New(
+        PublicType constructorType,
+        const std::vector<std::string>& description = {});
+
     typedef spi::ObjectSmartPtr<EnumConstructor> outer_type;
 
     SPI_DECLARE_OBJECT_TYPE(EnumConstructor);
@@ -495,6 +557,14 @@ class SPI_IMPORT Enum : public Construct
 {
 public:
     static EnumConstSP Make(
+        const std::string& name,
+        const std::vector<std::string>& description = {},
+        const std::vector<EnumerandConstSP>& enumerands = {},
+        const std::vector<EnumConstructorConstSP>& constructors = {},
+        bool isBitmask = false);
+
+    /** Use New when calling the constructor direct from the add-in level */
+    static EnumConstSP New(
         const std::string& name,
         const std::vector<std::string>& description = {},
         const std::vector<EnumerandConstSP>& enumerands = {},
@@ -559,6 +629,15 @@ public:
         bool isImplementation = false,
         const std::string& implements = "");
 
+    /** Use New when calling the constructor direct from the add-in level */
+    static ClassMethodConstSP New(
+        const FunctionConstSP& function,
+        bool isConst,
+        bool isVirtual = false,
+        bool isStatic = false,
+        bool isImplementation = false,
+        const std::string& implements = "");
+
     /**
     ************************************************************************
     * No description.
@@ -606,6 +685,11 @@ public:
         const std::vector<std::string>& description,
         const AttributeConstSP& coerceFrom);
 
+    /** Use New when calling the constructor direct from the add-in level */
+    static CoerceFromConstSP New(
+        const std::vector<std::string>& description,
+        const AttributeConstSP& coerceFrom);
+
     /**
     ************************************************************************
     * No description.
@@ -642,6 +726,12 @@ class SPI_IMPORT CoerceTo : public spi::Object
 {
 public:
     static CoerceToConstSP Make(
+        const std::vector<std::string>& description,
+        const std::string& className,
+        const DataTypeConstSP& classType);
+
+    /** Use New when calling the constructor direct from the add-in level */
+    static CoerceToConstSP New(
         const std::vector<std::string>& description,
         const std::string& className,
         const DataTypeConstSP& classType);
@@ -683,6 +773,27 @@ class SPI_IMPORT Class : public Construct
 {
 public:
     static ClassConstSP Make(
+        const std::string& name,
+        const std::string& ns,
+        const std::vector<std::string>& description,
+        const std::string& baseClassName,
+        const std::vector<ClassAttributeConstSP>& attributes,
+        const std::vector<ClassAttributeConstSP>& properties,
+        const std::vector<ClassMethodConstSP>& methods,
+        const std::vector<CoerceFromConstSP>& coerceFrom,
+        const std::vector<CoerceToConstSP>& coerceTo,
+        bool isAbstract,
+        bool noMake,
+        const std::string& objectName,
+        const DataTypeConstSP& dataType,
+        bool isDelegate = false,
+        bool canPut = false,
+        bool hasDynamicAttributes = false,
+        bool asValue = false,
+        const std::string& constructor = "");
+
+    /** Use New when calling the constructor direct from the add-in level */
+    static ClassConstSP New(
         const std::string& name,
         const std::string& ns,
         const std::vector<std::string>& description,
@@ -799,6 +910,13 @@ public:
         const std::string& ns = "",
         const std::vector<ConstructConstSP>& constructs = {});
 
+    /** Use New when calling the constructor direct from the add-in level */
+    static ModuleConstSP New(
+        const std::string& name,
+        const std::vector<std::string>& description = {},
+        const std::string& ns = "",
+        const std::vector<ConstructConstSP>& constructs = {});
+
     /**
     ************************************************************************
     * No description.
@@ -840,6 +958,19 @@ class SPI_IMPORT Service : public spi::Object
 {
 public:
     static ServiceConstSP Make(
+        const std::string& name,
+        const std::vector<std::string>& description,
+        const std::string& longName,
+        const std::string& ns,
+        const std::string& declSpec,
+        const std::string& version,
+        const std::vector<ModuleConstSP>& modules = {},
+        const std::vector<ClassConstSP>& importedBaseClasses = {},
+        const std::vector<EnumConstSP>& importedEnums = {},
+        bool sharedService = false);
+
+    /** Use New when calling the constructor direct from the add-in level */
+    static ServiceConstSP New(
         const std::string& name,
         const std::vector<std::string>& description,
         const std::string& longName,

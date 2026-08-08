@@ -150,7 +150,7 @@ spi::Value DataType_caller(
     bool objectAsValue =
         in_context->ValueToBool(in_values[7], true, false);
 
-    const DataTypeConstSP& o_result = spdoc::DataType::Make(name,
+    const DataTypeConstSP& o_result = spdoc::DataType::New(name,
         passByReference, refTypeName, valueTypeName, publicType, noDoc,
         nsService, objectAsValue);
     return spi::ObjectConstSP(o_result);
@@ -336,8 +336,8 @@ spi::Value Attribute_caller(
     const std::string& alias =
         in_context->ValueToString(in_values[6], true);
 
-    const AttributeConstSP& o_result = spdoc::Attribute::Make(name,
-        description, dataType, arrayDim, isOptional, defaultValue, alias);
+    const AttributeConstSP& o_result = spdoc::Attribute::New(name, description,
+        dataType, arrayDim, isOptional, defaultValue, alias);
     return spi::ObjectConstSP(o_result);
 }
 
@@ -517,7 +517,7 @@ spi::Value ClassAttribute_caller(
     const std::string& accessor =
         in_context->ValueToString(in_values[7]);
 
-    const ClassAttributeConstSP& o_result = spdoc::ClassAttribute::Make(name,
+    const ClassAttributeConstSP& o_result = spdoc::ClassAttribute::New(name,
         description, dataType, arrayDim, isOptional, defaultValue, accessible,
         accessor);
     return spi::ObjectConstSP(o_result);
@@ -797,7 +797,7 @@ spi::Value SimpleType_caller(
     bool noDoc =
         in_context->ValueToBool(in_values[3], true, false);
 
-    const SimpleTypeConstSP& o_result = spdoc::SimpleType::Make(name,
+    const SimpleTypeConstSP& o_result = spdoc::SimpleType::New(name,
         description, typeName, noDoc);
     return spi::ObjectConstSP(o_result);
 }
@@ -938,7 +938,7 @@ spi::Value Function_caller(
     bool optionalReturnType =
         in_context->ValueToBool(in_values[8], true, false);
 
-    const FunctionConstSP& o_result = spdoc::Function::Make(name, description,
+    const FunctionConstSP& o_result = spdoc::Function::New(name, description,
         returnTypeDescription, returnType, returnArrayDim, inputs, outputs,
         excelOptions, optionalReturnType);
     return spi::ObjectConstSP(o_result);
@@ -1123,7 +1123,7 @@ spi::Value Enumerand_caller(
     std::vector<std::string> description =
         in_context->ValueToStringVector(in_values[2]);
 
-    const EnumerandConstSP& o_result = spdoc::Enumerand::Make(code, strings,
+    const EnumerandConstSP& o_result = spdoc::Enumerand::New(code, strings,
         description);
     return spi::ObjectConstSP(o_result);
 }
@@ -1226,7 +1226,7 @@ spi::Value EnumConstructor_caller(
     std::vector<std::string> description =
         in_context->ValueToStringVector(in_values[1]);
 
-    const EnumConstructorConstSP& o_result = spdoc::EnumConstructor::Make(
+    const EnumConstructorConstSP& o_result = spdoc::EnumConstructor::New(
         constructorType, description);
     return spi::ObjectConstSP(o_result);
 }
@@ -1344,7 +1344,7 @@ spi::Value Enum_caller(
     bool isBitmask =
         in_context->ValueToBool(in_values[4], true, false);
 
-    const EnumConstSP& o_result = spdoc::Enum::Make(name, description,
+    const EnumConstSP& o_result = spdoc::Enum::New(name, description,
         enumerands, constructors, isBitmask);
     return spi::ObjectConstSP(o_result);
 }
@@ -1471,7 +1471,7 @@ spi::Value ClassMethod_caller(
     const std::string& implements =
         in_context->ValueToString(in_values[5], true, "");
 
-    const ClassMethodConstSP& o_result = spdoc::ClassMethod::Make(function,
+    const ClassMethodConstSP& o_result = spdoc::ClassMethod::New(function,
         isConst, isVirtual, isStatic, isImplementation, implements);
     return spi::ObjectConstSP(o_result);
 }
@@ -1605,7 +1605,7 @@ spi::Value CoerceFrom_caller(
     const AttributeConstSP& coerceFrom =
         in_context->ValueToInstance<Attribute const>(in_values[1]);
 
-    const CoerceFromConstSP& o_result = spdoc::CoerceFrom::Make(description,
+    const CoerceFromConstSP& o_result = spdoc::CoerceFrom::New(description,
         coerceFrom);
     return spi::ObjectConstSP(o_result);
 }
@@ -1740,7 +1740,7 @@ spi::Value CoerceTo_caller(
     const DataTypeConstSP& classType =
         in_context->ValueToInstance<DataType const>(in_values[2]);
 
-    const CoerceToConstSP& o_result = spdoc::CoerceTo::Make(description,
+    const CoerceToConstSP& o_result = spdoc::CoerceTo::New(description,
         className, classType);
     return spi::ObjectConstSP(o_result);
 }
@@ -1954,7 +1954,7 @@ spi::Value Class_caller(
     const std::string& constructor =
         in_context->ValueToString(in_values[17], true, "");
 
-    const ClassConstSP& o_result = spdoc::Class::Make(name, ns, description,
+    const ClassConstSP& o_result = spdoc::Class::New(name, ns, description,
         baseClassName, attributes, properties, methods, coerceFrom, coerceTo,
         isAbstract, noMake, objectName, dataType, isDelegate, canPut,
         hasDynamicAttributes, asValue, constructor);
@@ -2131,7 +2131,7 @@ spi::Value Module_caller(
     std::vector<ConstructConstSP> constructs =
         in_context->ValueToInstanceVector<Construct const>(in_values[3]);
 
-    const ModuleConstSP& o_result = spdoc::Module::Make(name, description, ns,
+    const ModuleConstSP& o_result = spdoc::Module::New(name, description, ns,
         constructs);
     return spi::ObjectConstSP(o_result);
 }
@@ -2304,7 +2304,7 @@ spi::Value Service_caller(
     bool sharedService =
         in_context->ValueToBool(in_values[9], true, false);
 
-    const ServiceConstSP& o_result = spdoc::Service::Make(name, description,
+    const ServiceConstSP& o_result = spdoc::Service::New(name, description,
         longName, ns, declSpec, version, modules, importedBaseClasses,
         importedEnums, sharedService);
     return spi::ObjectConstSP(o_result);
