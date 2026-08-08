@@ -5,8 +5,6 @@ VisualStudioVersion = 18.0.0.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "svo", "svo\svo.pyproj", "{FA751092-C016-4594-BA98-C01B867673FB}"
 EndProject
-Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "excel", "excel\python\excel.pyproj", "{833A8621-016D-4585-AC89-DD38FE648235}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,8 +13,6 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{FA751092-C016-4594-BA98-C01B867673FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FA751092-C016-4594-BA98-C01B867673FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{833A8621-016D-4585-AC89-DD38FE648235}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{833A8621-016D-4585-AC89-DD38FE648235}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
