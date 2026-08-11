@@ -37,12 +37,6 @@ namespace csv
 SPI_UTIL_DECLARE_RC_CLASS(JSONValue);
 
 SPI_UTIL_IMPORT
-void UDPUpload(
-    const std::string& serverName,
-    int serverPort,
-    const std::string& data);
-
-SPI_UTIL_IMPORT
 void UDPUploadCSV(
     const std::string& serverName,
     int serverPort,

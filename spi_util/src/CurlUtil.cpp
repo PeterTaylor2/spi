@@ -84,5 +84,13 @@ void errorHandler(CURLcode status)
     }
 }
 
+void ShutdownCURL()
+{
+    SPI_UTIL_LOCAL_LOCK;
+
+    if (GlobalInitialisation)
+        GlobalInitialisation.reset();
+}
+
 SPI_UTIL_END_NAMESPACE
 

@@ -21,7 +21,8 @@
 #ifndef SPI_UTIL_INIT_CURL_HPP
 #define SPI_UTIL_INIT_CURL_HPP
 
-#include "Namespace.hpp"
+#include "../Namespace.hpp"
+
 #ifdef _MSC_VER
 #include <spi_curl/curl.h>
 #else
@@ -32,6 +33,7 @@ SPI_UTIL_NAMESPACE
 
 void InitializeCURL();
 void errorHandler(CURLcode status);
+void ShutdownCURL();
 
 SPI_UTIL_END_NAMESPACE
 

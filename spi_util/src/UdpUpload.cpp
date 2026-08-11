@@ -52,44 +52,14 @@
 
 #include <string.h>
 
-#if false
-#include "CurlUtil.hpp"
-#endif
-
 #define BEGIN_ANONYMOUS_NAMESPACE namespace {
 #define END_ANONYMOUS_NAMESPACE }
 
 SPI_UTIL_NAMESPACE
 
+extern void ShutdownCURL();
+
 BEGIN_ANONYMOUS_NAMESPACE
-
-#if false
-
-// we will be re-implementing this using the socket API instead of libcurl
-
-struct UploadData
-{
-    const char* data;
-    size_t len;
-    size_t pos;
-};
-
-size_t read_callback(char* buffer, size_t size, size_t nitems, void* userdata)
-{
-    UploadData* up = (UploadData*)userdata;
-
-    size_t max = size * nitems;
-    size_t remaining = up->len - up->pos;
-    size_t to_copy = remaining < max ? remaining : max;
-    if (to_copy > 0)
-    {
-        memcpy(buffer, up->data + up->pos, to_copy);
-        up->pos += to_copy;
-        return to_copy;
-    }
-    return 0; // no more data
-}
-#endif
 
 #ifdef _MSC_VER
 
@@ -104,39 +74,6 @@ void errorHandler(const char* errmsg)
 
 END_ANONYMOUS_NAMESPACE
 
-void UDPUpload(const std::string& serverName, int serverPort, const std::string& data)
-{
-#if true
-    SPI_UTIL_THROW_RUNTIME_ERROR("UDPUpload is disabled for now - needs to be re-implemented using the socket API instead of libcurl");
-#else
-    if (serverName.empty() || serverPort == 0 || data.empty())
-        return;
-
-    // libcurl read callback that feeds data from the string
-    struct UploadData upload({ data.c_str(), data.size(), 0 });
-
-    InitializeCURL();
-
-    // Initialize libcurl and perform an UDP upload to the configured server/port
-    CURL* curl = curl_easy_init();
-    if (curl)
-    {
-        std::string url = "udp://" + serverName + ":" + std::to_string(serverPort);
-        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-        curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
-        curl_easy_setopt(curl, CURLOPT_READFUNCTION, read_callback);
-        curl_easy_setopt(curl, CURLOPT_READDATA, &upload);
-        curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)upload.len);
-
-        // Perform the transfer. Ignore errors silently here.
-        CURLcode res = curl_easy_perform(curl);
-        (void)res;
-
-        curl_easy_cleanup(curl);
-    }
-#endif
-}
-
 void UDPUploadCSV(
     const std::string& serverName,
     int serverPort,
@@ -144,6 +81,8 @@ void UDPUploadCSV(
 {
     if (serverName.empty() || serverPort == 0 || !data || data->numRows() == 0)
         return;
+
+    ShutdownCURL(); // we cannot use LIBCURL for UDP but CURL may block using the socket libraries
 
 #ifdef _MSC_VER
     {
@@ -171,7 +110,7 @@ void UDPUploadCSV(
         recvAddress.sin_port = htons(serverPort);
         recvAddress.sin_addr.s_addr = inet_addr(serverName.c_str());
 
-        // send one line at a time - each line has seven columns and none of these should be too long
+        // send one line at a time
         size_t NR = data->numRows();
 
         for (size_t i = 0; i < NR; ++i)
@@ -211,7 +150,7 @@ void UDPUploadCSV(
         recvAddress.sin_port = htons(serverPort);
         recvAddress.sin_addr.s_addr = inet_addr(serverName.c_str());
 
-        // send one line at a time - each line has seven columns and none of these should be too long
+        // send one line at a time
         size_t NR = data->numRows();
 
         for (size_t i = 0; i < NR; ++i)
@@ -239,6 +178,8 @@ void UDPUploadJSON(
 {
     if (serverName.empty() || serverPort == 0 || jsonValues.size() == 0)
         return;
+
+    ShutdownCURL(); // we cannot use LIBCURL for UDP but CURL may block using the socket libraries
 
 #ifdef _MSC_VER
     {
