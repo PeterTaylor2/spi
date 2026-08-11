@@ -114,5 +114,6 @@ I_SYS_LIBS=\
  comctl32.lib\
  user32.lib\
  ws2_32.lib\
+ crypt32.lib\
  $(G_UUID_LIBS)\
  wldap32.lib
