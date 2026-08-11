@@ -967,7 +967,8 @@ public:
         const std::vector<ModuleConstSP>& modules = {},
         const std::vector<ClassConstSP>& importedBaseClasses = {},
         const std::vector<EnumConstSP>& importedEnums = {},
-        bool sharedService = false);
+        bool sharedService = false,
+        const std::string& shutdown = "");
 
     /** Use New when calling the constructor direct from the add-in level */
     static ServiceConstSP New(
@@ -980,7 +981,8 @@ public:
         const std::vector<ModuleConstSP>& modules = {},
         const std::vector<ClassConstSP>& importedBaseClasses = {},
         const std::vector<EnumConstSP>& importedEnums = {},
-        bool sharedService = false);
+        bool sharedService = false,
+        const std::string& shutdown = "");
 
     /**
     ************************************************************************
@@ -1117,7 +1119,8 @@ protected:
         const std::vector<ModuleConstSP>& modules,
         const std::vector<ClassConstSP>& importedBaseClasses,
         const std::vector<EnumConstSP>& importedEnums,
-        bool sharedService);
+        bool sharedService,
+        const std::string& shutdown);
 
 public:
 
@@ -1131,6 +1134,7 @@ public:
     const std::vector<ClassConstSP> importedBaseClasses;
     const std::vector<EnumConstSP> importedEnums;
     const bool sharedService;
+    const std::string shutdown;
 
 private:
     friend class Service_Helper;

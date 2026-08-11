@@ -335,8 +335,15 @@ ExcelService::writeXllSourceFile(const std::string& dirname) const
          << "        delete " << xlServiceName << ";\n"
          << "        " << xlServiceName << " = 0;\n"
          << "    }\n"
-         << "\n"
-         << "    return 1;\n"
+         << "\n";
+
+    if (!m_service->shutdown.empty())
+    {
+        ostr << "    " << m_service->shutdown << "();\n"
+            << "\n";
+    }
+
+    ostr << "    return 1;\n"
          << "}\n"
          << "\n"
          << "/*\n"

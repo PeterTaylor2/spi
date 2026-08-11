@@ -2246,6 +2246,7 @@ void Service::to_map(
     obj_map->SetInstanceVector<Class const>("importedBaseClasses", importedBaseClasses, !public_only && (importedBaseClasses.size() == 0));
     obj_map->SetInstanceVector<Enum const>("importedEnums", importedEnums, !public_only && (importedEnums.size() == 0));
     obj_map->SetBool("sharedService", sharedService, !public_only && (sharedService == false));
+    obj_map->SetString("shutdown", shutdown, !public_only && (shutdown.empty()));
 }
 
 spi::ObjectConstSP Service::object_from_map(
@@ -2272,9 +2273,11 @@ spi::ObjectConstSP Service::object_from_map(
         = obj_map->GetInstanceVector<Enum const>("importedEnums", value_to_object);
     bool sharedService
         = obj_map->GetBool("sharedService", true, false);
+    const std::string& shutdown
+        = obj_map->GetString("shutdown", true);
 
     return new Service(name, description, longName, ns, declSpec, version,
-        modules, importedBaseClasses, importedEnums, sharedService);
+        modules, importedBaseClasses, importedEnums, sharedService, shutdown);
 }
 
 SPI_IMPLEMENT_OBJECT_TYPE(Service, "Service", spdoc_service, false, 0);
@@ -2303,16 +2306,18 @@ spi::Value Service_caller(
         in_context->ValueToInstanceVector<Enum const>(in_values[8]);
     bool sharedService =
         in_context->ValueToBool(in_values[9], true, false);
+    const std::string& shutdown =
+        in_context->ValueToString(in_values[10], true, "");
 
     const ServiceConstSP& o_result = spdoc::Service::New(name, description,
         longName, ns, declSpec, version, modules, importedBaseClasses,
-        importedEnums, sharedService);
+        importedEnums, sharedService, shutdown);
     return spi::ObjectConstSP(o_result);
 }
 
 spi::FunctionCaller Service_FunctionCaller = {
     "Service",
-    10,
+    11,
     {
         {"name", spi::ArgType::STRING, "string", false, false, false},
         {"description", spi::ArgType::STRING, "string", true, false, false},
@@ -2323,7 +2328,8 @@ spi::FunctionCaller Service_FunctionCaller = {
         {"modules", spi::ArgType::OBJECT, "Module", true, false, false},
         {"importedBaseClasses", spi::ArgType::OBJECT, "Class", true, false, false},
         {"importedEnums", spi::ArgType::OBJECT, "Enum", true, false, false},
-        {"sharedService", spi::ArgType::BOOL, "bool", false, true, false}
+        {"sharedService", spi::ArgType::BOOL, "bool", false, true, false},
+        {"shutdown", spi::ArgType::STRING, "string", false, true, false}
     },
     Service_caller
 };

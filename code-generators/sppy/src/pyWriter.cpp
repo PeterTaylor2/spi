@@ -433,6 +433,12 @@ std::string PythonService::writePydSourceFile(const std::string& dirname) const
              << module->name << "_update_functions(svc);\n";
     }
 
+    if (!m_service->shutdown.empty())
+    {
+        ostr << "\n"
+            << "    Py_AtExit(" << m_service->shutdown << ");\n";
+    }
+
     ostr << "\n"
          << "    svc->RegisterFunctions();\n"
          << "#if PY_MAJOR_VERSION >= 3\n"

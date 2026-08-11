@@ -1020,9 +1020,13 @@ spdoc::ServiceConstSP ServiceDefinition::getDoc() const
             importedEnums.push_back(enums[i]->getDoc());
     }
 
+    std::string shutdown = m_shutdown ?
+        m_namespace + "::" + m_name + "_shutdown" : "";
+
     return spdoc::Service::Make(m_name, m_description, m_longName,
         m_namespace, m_declSpec, m_version.versionString(), moduleDocs,
-        importedBaseClasses, importedEnums, isSharedService());
+        importedBaseClasses, importedEnums, isSharedService(),
+        shutdown);
 }
 
 void ServiceDefinition::writeMakefileProperties(
@@ -1243,6 +1247,13 @@ void ServiceDefinition::writeServiceHeaders(
         << "const char* " << m_name << "_startup_directory();\n"
         << "\n";
 
+    if (m_shutdown)
+    {
+        ostr << m_import << "\n"
+            << "void " << m_name << "_shutdown();\n"
+            << "\n";
+    }
+
     if (!isSharedService())
     {
         ostr << m_import << "\n"
@@ -1291,11 +1302,6 @@ void ServiceDefinition::writeServiceHeaders(
     {
         ostr2 << "void " << m_name << "_startup(const std::string& "
             << m_startupDirname << ");\n";
-    }
-
-    if (m_shutdown)
-    {
-        ostr2 << "void " << m_name << "_shutdown();\n";
     }
 
     ostr2 << "\n";
@@ -1366,7 +1372,8 @@ void ServiceDefinition::writeServiceSource(
 
     if (m_shutdown)
     {
-        ostr << "#include <stdlib.h>\n";
+        ostr << "#include <stdlib.h>\n"
+            << "#include <iostream>\n";
     }
 
     ostr << "\n";
@@ -1432,10 +1439,33 @@ void ServiceDefinition::writeServiceSource(
 
     if (m_shutdown)
     {
+        std::string funcname = m_name + "_shutdown";
+
         ostr << "\n"
-             << "void " << m_name << "_shutdown()\n"
-             << "{";
-        writeVerbatim(ostr, m_shutdown);
+            << "void " << funcname << "()\n"
+            << "{\n"
+            << "    static bool hasShutdown = false;\n"
+            << "\n"
+            << "    if (!hasShutdown)\n"
+            << "    {\n"
+            << "        try\n"
+            << "        {";
+
+        writeVerbatim(ostr, m_shutdown, 8);
+
+        ostr << "        catch(std::exception& e)\n"
+            << "        {\n"
+            << "            std::cerr << \"" << funcname << " failed due to \" << e.what() << std::endl;\n"
+            << "            return;\n"
+            << "        }\n"
+            << "        catch(...)\n"
+            << "        {\n"
+            << "            std::cerr << \"" << funcname << " failed due to unknown exception\" << std::endl;\n"
+            << "            return;\n"
+            << "        }\n"
+            << "        hasShutdown = true;\n"
+            << "    }\n"
+            << "}\n";
     }
 
     // the MakeService function should be called once from <name>_init
@@ -1513,6 +1543,11 @@ void ServiceDefinition::writeServiceSource(
     }
 
     // not clear that atexit is the best way to handle the shutdown
+    // we will invoke shutdown via Python (Py_AtExit) and Excel (xlAutoClose)
+    // as a last resort via atexit
+    //
+    // shutdown will have a flag to denote that shutdown has happened so that
+    // we don't invoke the body of the shutdown functions more than once
     if (m_shutdown)
     {
         ostr << "\n"
