@@ -177,9 +177,6 @@ spi::FunctionCaller MapClassName_FunctionCaller = {
     MapClassName_caller
 };
 
-spi::ObjectType MapClassName_FunctionObjectType =
-    spi::FunctionObjectType("spi_replay.MapClassName");
-
 spi::Value MapFieldNames_caller(
     const spi::InputContext*       in_context,
     const std::vector<spi::Value>& in_values)
@@ -200,9 +197,6 @@ spi::FunctionCaller MapFieldNames_FunctionCaller = {
     MapFieldNames_caller
 };
 
-spi::ObjectType MapFieldNames_FunctionObjectType =
-    spi::FunctionObjectType("spi_replay.MapFieldNames");
-
 spi::Value MapRef_caller(
     const spi::InputContext*       in_context,
     const std::vector<spi::Value>& in_values)
@@ -222,9 +216,6 @@ spi::FunctionCaller MapRef_FunctionCaller = {
     },
     MapRef_caller
 };
-
-spi::ObjectType MapRef_FunctionObjectType =
-    spi::FunctionObjectType("spi_replay.MapRef");
 
 spi::Value MapGetValue_caller(
     const spi::InputContext*       in_context,
@@ -257,19 +248,12 @@ spi::FunctionCaller MapGetValue_FunctionCaller = {
     MapGetValue_caller
 };
 
-spi::ObjectType MapGetValue_FunctionObjectType =
-    spi::FunctionObjectType("spi_replay.MapGetValue");
-
 void map_register_object_types(const spi::ServiceSP& svc)
 {
     svc->add_enum_info(ValueType::get_enum_info());
-    svc->add_object_type(&MapClassName_FunctionObjectType);
     svc->add_function_caller(&MapClassName_FunctionCaller);
-    svc->add_object_type(&MapFieldNames_FunctionObjectType);
     svc->add_function_caller(&MapFieldNames_FunctionCaller);
-    svc->add_object_type(&MapRef_FunctionObjectType);
     svc->add_function_caller(&MapRef_FunctionCaller);
-    svc->add_object_type(&MapGetValue_FunctionObjectType);
     svc->add_function_caller(&MapGetValue_FunctionCaller);
 }
 

@@ -595,8 +595,7 @@ void WrapperClass::declareHelper(
 void WrapperClass::implement(
     GeneratedOutput& ostr,
     const ServiceDefinitionSP& svc,
-    bool types,
-    bool recording) const
+    bool types) const
 {
     writeStartCommentBlock(ostr);
     ostr << "* Implementation of " << m_name << "\n";
@@ -618,11 +617,6 @@ void WrapperClass::implement(
 
             ostr << "\n"
                 << "{\n";
-
-            if (recording)
-            {
-                ostr << "  spi::AddRecord(\"" << svc->getNamespace() << "." << getName(true, ".") << "\");\n";
-            }
 
             ostr << "  SPI_PROFILE(\"" << svc->getNamespace() << "." << getName(true, ".") << "\");\n";
 
@@ -1104,7 +1098,7 @@ void WrapperClass::implement(
     // innerClass->fullTypeName includes const which we don't want here
     std::string innerClassName = m_innerClass->m_ns + "::" + m_innerClass->m_typeName;
     for (size_t i = 0; i < m_methods.size(); ++i)
-        m_methods[i]->implement(ostr, m_dataType, m_name, innerClassName, types, svc, false, recording);
+        m_methods[i]->implement(ostr, m_dataType, m_name, innerClassName, types, svc, false);
 
     for (size_t i = 0; i < m_classAttributes.size(); ++i)
     {
@@ -1223,7 +1217,8 @@ void WrapperClass::implement(
 void WrapperClass::implementHelper(
     GeneratedOutput& ostr,
     const ServiceDefinitionSP& svc,
-    bool types) const
+    bool types,
+    bool recording) const
 {
     writeStartCommentBlock(ostr);
     ostr << "* Implementation of " << m_name << "\n";
@@ -1383,13 +1378,18 @@ void WrapperClass::implementHelper(
 
         if (!m_noMake)
         {
-            writeFunctionCaller(ostr, m_ns, m_name, std::string(),
+            writeFunctionCaller(ostr, recording, m_ns, m_name, std::string(),
                 m_dataType, 0, DataTypeConstSP(), svc, AllAttributes());
+
+            if (!svc->noLog())
+            {
+                writeFunctionObjectType(ostr, m_ns, m_name, svc->getNamespace());
+            }
         }
     }
 
     for (size_t i = 0; i < m_methods.size(); ++i)
-        m_methods[i]->implementHelper(ostr, m_dataType, m_name, types, svc);
+        m_methods[i]->implementHelper(ostr, m_dataType, m_name, types, svc, recording);
 
     if (m_innerClass->m_isCached && !m_isVirtual)
     {
@@ -1402,6 +1402,7 @@ void WrapperClass::implementHelper(
 void WrapperClass::implementRegistration(
     GeneratedOutput& ostr,
     const char* serviceName,
+    const ServiceDefinitionSP& svc,
     bool types) const
 {
     ostr << "    " << serviceName << "->add_object_type(&"
@@ -1409,12 +1410,17 @@ void WrapperClass::implementRegistration(
 
     if (!isAbstract() && !m_noMake)
     {
+        if (!svc->noLog())
+        {
+            ostr << "    " << serviceName << "->add_object_type(&" << m_name
+                << "_FunctionObjectType);\n";
+        }
         ostr << "    " << serviceName << "->add_function_caller(&" << m_name
              << "_FunctionCaller);\n";
     }
 
     for (size_t i = 0; i < m_methods.size(); ++i)
-        m_methods[i]->implementRegistration(ostr, m_name, serviceName, types);
+        m_methods[i]->implementRegistration(ostr, serviceName, m_name, svc, types);
 
     if (m_baseClass && m_innerClass->m_isOpen)
     {

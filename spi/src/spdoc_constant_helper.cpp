@@ -136,9 +136,6 @@ spi::FunctionCaller Constant_typeName_FunctionCaller = {
     Constant_typeName_caller
 };
 
-spi::ObjectType Constant_typeName_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.Constant.typeName");
-
 spi::Value Constant_docString_caller(
     const spi::InputContext*       in_context,
     const std::vector<spi::Value>& in_values)
@@ -158,9 +155,6 @@ spi::FunctionCaller Constant_docString_FunctionCaller = {
     },
     Constant_docString_caller
 };
-
-spi::ObjectType Constant_docString_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.Constant.docString");
 
 spi::Value Constant_getInt_caller(
     const spi::InputContext*       in_context,
@@ -182,9 +176,6 @@ spi::FunctionCaller Constant_getInt_FunctionCaller = {
     Constant_getInt_caller
 };
 
-spi::ObjectType Constant_getInt_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.Constant.getInt");
-
 spi::Value Constant_getDate_caller(
     const spi::InputContext*       in_context,
     const std::vector<spi::Value>& in_values)
@@ -204,9 +195,6 @@ spi::FunctionCaller Constant_getDate_FunctionCaller = {
     },
     Constant_getDate_caller
 };
-
-spi::ObjectType Constant_getDate_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.Constant.getDate");
 
 spi::Value Constant_getDateTime_caller(
     const spi::InputContext*       in_context,
@@ -228,9 +216,6 @@ spi::FunctionCaller Constant_getDateTime_FunctionCaller = {
     Constant_getDateTime_caller
 };
 
-spi::ObjectType Constant_getDateTime_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.Constant.getDateTime");
-
 spi::Value Constant_getDouble_caller(
     const spi::InputContext*       in_context,
     const std::vector<spi::Value>& in_values)
@@ -250,9 +235,6 @@ spi::FunctionCaller Constant_getDouble_FunctionCaller = {
     },
     Constant_getDouble_caller
 };
-
-spi::ObjectType Constant_getDouble_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.Constant.getDouble");
 
 spi::Value Constant_getChar_caller(
     const spi::InputContext*       in_context,
@@ -274,9 +256,6 @@ spi::FunctionCaller Constant_getChar_FunctionCaller = {
     Constant_getChar_caller
 };
 
-spi::ObjectType Constant_getChar_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.Constant.getChar");
-
 spi::Value Constant_getString_caller(
     const spi::InputContext*       in_context,
     const std::vector<spi::Value>& in_values)
@@ -297,9 +276,6 @@ spi::FunctionCaller Constant_getString_FunctionCaller = {
     Constant_getString_caller
 };
 
-spi::ObjectType Constant_getString_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.Constant.getString");
-
 spi::Value Constant_getBool_caller(
     const spi::InputContext*       in_context,
     const std::vector<spi::Value>& in_values)
@@ -319,9 +295,6 @@ spi::FunctionCaller Constant_getBool_FunctionCaller = {
     },
     Constant_getBool_caller
 };
-
-spi::ObjectType Constant_getBool_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.Constant.getBool");
 
 /*
 ****************************************************************************
@@ -1087,23 +1060,14 @@ spi::FunctionCaller UndefinedConstant_FunctionCaller = {
 void constant_register_object_types(const spi::ServiceSP& svc)
 {
     svc->add_object_type(&Constant::object_type);
-    svc->add_object_type(&Constant_typeName_FunctionObjectType);
     svc->add_function_caller(&Constant_typeName_FunctionCaller);
-    svc->add_object_type(&Constant_docString_FunctionObjectType);
     svc->add_function_caller(&Constant_docString_FunctionCaller);
-    svc->add_object_type(&Constant_getInt_FunctionObjectType);
     svc->add_function_caller(&Constant_getInt_FunctionCaller);
-    svc->add_object_type(&Constant_getDate_FunctionObjectType);
     svc->add_function_caller(&Constant_getDate_FunctionCaller);
-    svc->add_object_type(&Constant_getDateTime_FunctionObjectType);
     svc->add_function_caller(&Constant_getDateTime_FunctionCaller);
-    svc->add_object_type(&Constant_getDouble_FunctionObjectType);
     svc->add_function_caller(&Constant_getDouble_FunctionCaller);
-    svc->add_object_type(&Constant_getChar_FunctionObjectType);
     svc->add_function_caller(&Constant_getChar_FunctionCaller);
-    svc->add_object_type(&Constant_getString_FunctionObjectType);
     svc->add_function_caller(&Constant_getString_FunctionCaller);
-    svc->add_object_type(&Constant_getBool_FunctionObjectType);
     svc->add_function_caller(&Constant_getBool_FunctionCaller);
     svc->add_object_type(&IntConstant::object_type);
     svc->add_function_caller(&IntConstant_FunctionCaller);

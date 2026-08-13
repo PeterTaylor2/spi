@@ -432,9 +432,6 @@ spi::FunctionCaller ReplayCodeGenerator_GenerateFunction_FunctionCaller = {
     ReplayCodeGenerator_GenerateFunction_caller
 };
 
-spi::ObjectType ReplayCodeGenerator_GenerateFunction_FunctionObjectType =
-    spi::FunctionObjectType("spi_replay.ReplayCodeGenerator.GenerateFunction");
-
 spi::Value ReplayCodeGenerator_GenerateObject_caller(
     const spi::InputContext*       in_context,
     const std::vector<spi::Value>& in_values)
@@ -457,9 +454,6 @@ spi::FunctionCaller ReplayCodeGenerator_GenerateObject_FunctionCaller = {
     },
     ReplayCodeGenerator_GenerateObject_caller
 };
-
-spi::ObjectType ReplayCodeGenerator_GenerateObject_FunctionObjectType =
-    spi::FunctionObjectType("spi_replay.ReplayCodeGenerator.GenerateObject");
 
 /*
 ****************************************************************************
@@ -562,9 +556,6 @@ spi::FunctionCaller ReplayLog_generateCode_FunctionCaller = {
     ReplayLog_generateCode_caller
 };
 
-spi::ObjectType ReplayLog_generateCode_FunctionObjectType =
-    spi::FunctionObjectType("spi_replay.ReplayLog.generateCode");
-
 spi::Value ReplayLog_Read_caller(
     const spi::InputContext*       in_context,
     const std::vector<spi::Value>& in_values)
@@ -585,9 +576,6 @@ spi::FunctionCaller ReplayLog_Read_FunctionCaller = {
     ReplayLog_Read_caller
 };
 
-spi::ObjectType ReplayLog_Read_FunctionObjectType =
-    spi::FunctionObjectType("spi_replay.ReplayLog.Read");
-
 void replay_register_object_types(const spi::ServiceSP& svc)
 {
     svc->add_object_type(&ReplayAction::object_type);
@@ -598,14 +586,10 @@ void replay_register_object_types(const spi::ServiceSP& svc)
     svc->add_function_caller(&ReplayObjectAction_FunctionCaller);
     ReplayAction::g_sub_class_wrappers.push_back(ReplayObjectAction::BaseWrap);
     svc->add_object_type(&ReplayCodeGenerator::object_type);
-    svc->add_object_type(&ReplayCodeGenerator_GenerateFunction_FunctionObjectType);
     svc->add_function_caller(&ReplayCodeGenerator_GenerateFunction_FunctionCaller);
-    svc->add_object_type(&ReplayCodeGenerator_GenerateObject_FunctionObjectType);
     svc->add_function_caller(&ReplayCodeGenerator_GenerateObject_FunctionCaller);
     svc->add_object_type(&ReplayLog::object_type);
-    svc->add_object_type(&ReplayLog_generateCode_FunctionObjectType);
     svc->add_function_caller(&ReplayLog_generateCode_FunctionCaller);
-    svc->add_object_type(&ReplayLog_Read_FunctionObjectType);
     svc->add_function_caller(&ReplayLog_Read_FunctionCaller);
 }
 

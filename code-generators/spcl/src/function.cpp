@@ -285,8 +285,7 @@ void Function::declareHelper(
 void Function::implement(
     GeneratedOutput& ostr,
     const ServiceDefinitionSP& svc,
-    bool types,
-    bool recording) const
+    bool types) const
 {
     // we put everything needed to run the function into the regular stream
     // we put everything else into the helper stream
@@ -342,10 +341,6 @@ void Function::implement(
     ostr << "\n"
         << "{\n";
 
-    if (recording && !m_noRecord)
-    {
-        ostr << "  spi::AddRecord(\"" << svc->getNamespace() << "." << fullName() << "\");\n";
-    }
     ostr << "  SPI_PROFILE(\"" << svc->getNamespace() << "." << fullName() << "\");\n";
 
     if (sessionLogging())
@@ -487,7 +482,8 @@ void Function::implement(
 void Function::implementHelper(
     GeneratedOutput& ostr,
     const ServiceDefinitionSP& svc,
-    bool types) const
+    bool types,
+    bool recording) const
 {
     // we put everything needed to run the function into the regular stream
     // we put everything else into the helper stream
@@ -497,13 +493,19 @@ void Function::implementHelper(
 
     bool noFunctor = m_noLog;
 
+    if (m_noRecord)
+        recording = false;
+
     writeFunctionCaller(
-        ostr, m_ns, std::string(), m_name, m_returnType,
+        ostr, recording, m_ns, std::string(), m_name, m_returnType,
         m_returnArrayDim, DataTypeConstSP(),
         svc, m_inputs, m_outputs);
 
-    writeFunctionObjectType(
-        ostr, m_ns, m_name, svc->getNamespace());
+    if (!svc->noLog())
+    {
+        writeFunctionObjectType(
+            ostr, m_ns, m_name, svc->getNamespace());
+    }
 }
 
 bool Function::neededByTypesLibrary() const
@@ -517,14 +519,18 @@ bool Function::neededByTypesLibrary() const
 void Function::implementRegistration(
     GeneratedOutput& ostr,
     const char* serviceName,
+    const ServiceDefinitionSP& svc,
     bool types) const
 {
     if (types && !neededByTypesLibrary())
         return;
 
-    ostr << "    " << serviceName << "->add_object_type(&" << m_name
-         << "_FunctionObjectType);\n"
-         << "    " << serviceName << "->add_function_caller(&" << m_name
+    if (!svc->noLog())
+    {
+        ostr << "    " << serviceName << "->add_object_type(&" << m_name
+            << "_FunctionObjectType);\n";
+    }
+    ostr << "    " << serviceName << "->add_function_caller(&" << m_name
          << "_FunctionCaller);\n";
 }
 

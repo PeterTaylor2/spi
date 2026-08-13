@@ -103,19 +103,20 @@ public:
         const std::string& innerClassName,
         bool types,
         const ServiceDefinitionSP& svc,
-        bool noHelper,
-        bool recording) const;
+        bool noHelper) const;
 
     void implementHelper(GeneratedOutput& ostr,
         const DataTypeConstSP& classType,
         const std::string& className,
         bool types,
-        const ServiceDefinitionSP& svc) const;
+        const ServiceDefinitionSP& svc,
+        bool recording) const;
 
     void implementRegistration(
         GeneratedOutput& ostr,
-        const std::string& className,
         const char* serviceName,
+        const std::string& className,
+        const ServiceDefinitionSP& svc,
         bool types) const;
 
     spdoc::ClassMethodConstSP getDoc() const;

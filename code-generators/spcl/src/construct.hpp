@@ -74,23 +74,24 @@ public:
     virtual void declareHelper(
         GeneratedOutput& ostr,
         const ServiceDefinitionSP& svc,
-        bool types) const = 0;
+        bool types) const;
 
     virtual void implement(
         GeneratedOutput& ostr,
         const ServiceDefinitionSP& svc,
-        bool types,
-        bool recording) const = 0;
+        bool types) const = 0;
 
     virtual void implementHelper(
         GeneratedOutput& ostr,
         const ServiceDefinitionSP& svc,
-        bool types) const = 0;
+        bool types,
+        bool recording) const;
 
     virtual void implementRegistration(
         GeneratedOutput& ostr,
         const char* serviceName,
-        bool types) const = 0;
+        const ServiceDefinitionSP& svc,
+        bool types) const;
 
     virtual void declareTypeConversions(
         GeneratedOutput& ostr,

@@ -120,30 +120,10 @@ bool SimpleType::declareInClasses() const
     return false; // no declarations either way...
 }
 
-void SimpleType::declareHelper(
-    GeneratedOutput& ostr,
-    const ServiceDefinitionSP& svc,
-    bool types) const
-{
-    //ostr << "\n";
-    //ostr << svc->getImport() << "\n";
-    //ostr << innerTypeName << " " << name << "_convert_in("
-    //     << outerDataType->outerReferenceType() << " "
-    //     << convertInVarName << ");\n";
-
-    //if (convertOut)
-    //{
-    //    ostr << svc->getImport() << "\n";
-    //    ostr << outerDataType->outerValueType() << " " << name << "_convert_out(const "
-    //         << innerTypeName << "& " << convertOutVarName << ");\n";
-    //}
-}
-
 void SimpleType::implement(
     GeneratedOutput& ostr,
     const ServiceDefinitionSP& svc,
-    bool types,
-    bool recording) const
+    bool types) const
 {
     ostr << "\n";
     ostr << m_innerTypeName << " " << m_name << "_convert_in("
@@ -166,20 +146,6 @@ void SimpleType::implement(
         ostr << "{";
         writeVerbatim(ostr, m_convertOut);
     }
-}
-
-void SimpleType::implementHelper(
-    GeneratedOutput& ostr,
-    const ServiceDefinitionSP& svc,
-    bool types) const
-{
-}
-
-void SimpleType::implementRegistration(
-    GeneratedOutput& ostr,
-    const char* serviceName,
-    bool types) const
-{
 }
 
 const char* SimpleType::type() const

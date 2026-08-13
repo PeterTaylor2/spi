@@ -1376,6 +1376,7 @@ std::string writeCallToInnerFunction(
  */
 void writeFunctionCaller(
     GeneratedOutput&        ostr,
+    bool recording,
     const std::string&      ns,
     const std::string&      className,
     const std::string&      functionName,
@@ -1394,6 +1395,8 @@ void writeFunctionCaller(
     bool isConstructor = !className.empty() && functionName.empty();
     std::vector<AttributeConstSP> functorInputs;
     std::string fullNamespace = svc->fullNamespace(ns);
+    std::string fullNamespaceDot = svc->fullNamespace(ns, ".");
+    std::string recordName;
 
     if (className.empty())
     {
@@ -1402,7 +1405,8 @@ void writeFunctionCaller(
         caller = fullNamespace + "::" + functionName;
         name   = functionName;
         rname  = functionName;
-        //functorClass = "Func::" + functionName;
+        recordName = fullNamespaceDot + "." + functionName;
+         //functorClass = "Func::" + functionName;
     }
     else if (functionName.empty())
     {
@@ -1414,6 +1418,7 @@ void writeFunctionCaller(
         caller = fullNamespace + "::" + className + "::New";
         name   = className;
         rname  = className;
+        recordName = fullNamespaceDot + "." + className;
     }
     else if (instanceType)
     {
@@ -1426,6 +1431,7 @@ void writeFunctionCaller(
         // 'implements' instead of 'className'
 
         functorClass = className + "_Helper::Func_" + functionName;
+        recordName = fullNamespaceDot + "." + className + "." + functionName;
     }
     else
     {
@@ -1434,6 +1440,7 @@ void writeFunctionCaller(
         name   = className + "_" + functionName;
         rname  = className + "." + functionName;
         functorClass = className + "_Helper::Func_" + functionName;
+        recordName = fullNamespaceDot + "." + className + "." + functionName;
     }
 
     // function declaration - does not appear in any header files
@@ -1480,6 +1487,11 @@ void writeFunctionCaller(
 
     // we have now collected all the inputs
     // now we call the function (whatever it might be)
+
+    if (recording)
+    {
+        ostr << "    spi::AddRecord(\"" << recordName << "\");\n";
+    }
 
     //if (isConstructor || noFunctor)
     {

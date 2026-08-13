@@ -1020,13 +1020,18 @@ spdoc::ServiceConstSP ServiceDefinition::getDoc() const
             importedEnums.push_back(enums[i]->getDoc());
     }
 
-    std::string shutdown = m_shutdown ?
-        m_namespace + "::" + m_name + "_shutdown" : "";
+    std::vector<std::string> shutdowns;
+
+    if (m_shutdown)
+    {
+        std::string shutdown = m_namespace + "::" + m_name + "_shutdown";
+        shutdowns.push_back(shutdown);
+    }
 
     return spdoc::Service::Make(m_name, m_description, m_longName,
         m_namespace, m_declSpec, m_version.versionString(), moduleDocs,
         importedBaseClasses, importedEnums, isSharedService(),
-        shutdown);
+        shutdowns);
 }
 
 void ServiceDefinition::writeMakefileProperties(

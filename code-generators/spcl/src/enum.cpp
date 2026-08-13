@@ -781,17 +781,10 @@ void Enum::declare(
     ostr << "};\n";
 }
 
-void Enum::declareHelper(
-    GeneratedOutput& ostr,
-    const ServiceDefinitionSP& svc,
-    bool types) const
-{}
-
 void Enum::implement(
     GeneratedOutput& ostr,
     const ServiceDefinitionSP& svc,
-    bool types,
-    bool recording) const
+    bool types) const
 {
     if (m_bitmask)
     {
@@ -866,7 +859,8 @@ void Enum::implement(
 void Enum::implementHelper(
     GeneratedOutput& ostr,
     const ServiceDefinitionSP& svc,
-    bool types) const
+    bool types,
+    bool recording) const
 {
     if (m_bitmask)
     {
@@ -967,6 +961,7 @@ void Enum::implementHelper(
 void Enum::implementRegistration(
     GeneratedOutput& ostr,
     const char* serviceName,
+    const ServiceDefinitionSP& svc,
     bool types) const
 {
     ostr << "    " << serviceName << "->add_enum_info(" << m_name

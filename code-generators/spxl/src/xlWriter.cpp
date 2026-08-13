@@ -337,10 +337,13 @@ ExcelService::writeXllSourceFile(const std::string& dirname) const
          << "    }\n"
          << "\n";
 
-    if (!m_service->shutdown.empty())
+    if (m_service->hasShutdown())
     {
-        ostr << "    " << m_service->shutdown << "();\n"
-            << "\n";
+        for (auto iter = m_service->shutdowns.rbegin(); iter != m_service->shutdowns.rend(); ++iter)
+        {
+            ostr << "    " << *iter << "();\n";
+        }
+        ostr << "\n";
     }
 
     ostr << "    return 1;\n"

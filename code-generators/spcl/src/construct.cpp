@@ -65,6 +65,26 @@ void Construct::writeInnerPreDeclaration(
     NamespaceManager& nsm) const
 {}
 
+void Construct::declareHelper(
+    GeneratedOutput& ostr,
+    const ServiceDefinitionSP& svc,
+    bool types) const
+{}
+
+void Construct::implementHelper(
+    GeneratedOutput& ostr,
+    const ServiceDefinitionSP& svc,
+    bool types,
+    bool recording) const
+{}
+
+void Construct::implementRegistration(
+    GeneratedOutput& ostr,
+    const char* serviceName,
+    const ServiceDefinitionSP& svc,
+    bool types) const
+{}
+
 void Construct::SplitTypedef(const std::string& td,
     std::string& td1,
     std::string& td2)

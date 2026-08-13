@@ -50,7 +50,8 @@ struct Options
         imports(),
         license(),
         writeBackup(),
-        satellites()
+        satellites(),
+        recording()
     {}
 
     bool noGeneratedCodeNotice;
@@ -58,6 +59,7 @@ struct Options
     std::string license;
     bool writeBackup;
     std::vector<std::string> satellites;
+    bool recording;
 };
 
 /**
@@ -90,6 +92,7 @@ public:
     bool noGeneratedCodeNotice() const;
     const std::string& license() const;
     bool writeBackup() const;
+    bool recording() const;
 
 protected:
     CService(
@@ -177,6 +180,8 @@ private:
     void functionDeclareArgs(
         std::vector<std::string>& args,
         const spdoc::Function* func) const;
+
+    bool recording() const;
 };
 
 /**

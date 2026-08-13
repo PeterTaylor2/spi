@@ -123,17 +123,10 @@ bool MapClass::hasNonConstMethods() const
     return false;
 }
 
-void MapClass::declareHelper(
-    GeneratedOutput& ostr,
-    const ServiceDefinitionSP& svc,
-    bool types) const
-{}
-
 void MapClass::implement(
     GeneratedOutput& ostr,
     const ServiceDefinitionSP& svc,
-    bool types,
-    bool recording) const
+    bool types) const
 {
     // we put the constructor into the regular stream
     // we put the object functions into the helper stream
@@ -164,7 +157,8 @@ void MapClass::implement(
 void MapClass::implementHelper(
     GeneratedOutput& ostr,
     const ServiceDefinitionSP& svc,
-    bool types) const
+    bool types,
+    bool recording) const
 {
     ostr << "\n"
          << "SPI_IMPLEMENT_MAP_OBJECT_TYPE(" << m_name << ", \""
@@ -177,6 +171,7 @@ void MapClass::implementHelper(
 void MapClass::implementRegistration(
     GeneratedOutput& ostr,
     const char* serviceName,
+    const ServiceDefinitionSP& svc,
     bool types) const
 {
     ostr << "    " << serviceName << "->add_object_type(&"

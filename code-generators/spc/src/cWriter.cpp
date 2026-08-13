@@ -212,8 +212,16 @@ std::string CService::writePublicHeaderFile(const std::string& dirname,
     {
         ostr << "\n"
             << m_import << "\n"
-            << "int init_" << m_service->ns << "();\n"
-            << "\n"
+            << "int init_" << m_service->ns << "();\n";
+
+        if (m_service->hasShutdown())
+        {
+            ostr << "\n"
+                << m_import << "\n"
+                << "void shutdown_" << m_service->ns << "();\n";
+        }
+
+        ostr << "\n"
             << m_import << "\n"
             << "int " << m_service->ns << "_service_version(char** version);\n"
             << "\n"
@@ -337,6 +345,24 @@ std::string CService::writeSourceFile(const std::string& dirname) const
         << "    return 0;\n"
         << "}\n";
 
+    if (m_service->hasShutdown())
+    {
+        // note the shutdown function have their own try..catch blocks to prevent
+        // exceptions from being thrown - so we don't need to double check here
+        ostr << "\n"
+            << m_import << "\n"
+            << "void shutdown_" << m_service->ns << "()\n"
+            << "{\n"
+            << "    SPI_C_LOCK_GUARD;\n";
+
+        for (auto iter = m_service->shutdowns.rbegin(); iter != m_service->shutdowns.rend(); ++iter)
+        {
+            ostr << "    " << *iter << "();\n";
+        }
+        ostr << "    return;\n"
+            << "}\n";
+    }
+
     if (!m_service->sharedService)
     {
         ostr << "\n"
@@ -451,6 +477,11 @@ const std::string& CService::license() const
 bool CService::writeBackup() const
 {
     return m_options.writeBackup;
+}
+
+bool CService::recording() const
+{
+    return m_options.recording;
 }
 
 /*
@@ -675,6 +706,12 @@ void CModule::implementFunction(
         << "    SPI_C_LOCK_GUARD;\n"
         << "    try\n"
         << "    {\n";
+
+    if (recording())
+    {
+        std::string recordName = service->ns() + "." + makeNamespaceSep(module->ns, ".") + func->name;
+        ostr << "        spi::AddRecord(\"" << recordName << "\");\n";
+    }
 
     for (size_t i = 0; i < func->outputs.size(); ++i)
     {
@@ -988,8 +1025,15 @@ void CModule::implementClass(
         ostr << "{\n"
             << "    SPI_C_LOCK_GUARD;\n"
             << "    try\n"
-            << "    {\n"
-            << "        " << cppname << " self = " << cpptype << "::New(";
+            << "    {\n";
+
+        if (recording())
+        {
+            std::string recordName = spi_util::StringReplace(cpptype, "::", ".");
+            ostr << "        spi::AddRecord(\"" << recordName << "\");\n";
+        }
+
+        ostr << "        " << cppname << " self = " << cpptype << "::New(";
         
         const char* sep = "\n            ";
         const char* sep2 = ",\n            ";
@@ -1485,6 +1529,12 @@ void CModule::implementClassMethod(
             << "            spi_Error_set_function(__FUNCTION__, \"NULL inputs\");\n"
             << "            return -1;\n"
             << "        }\n";
+    }
+
+    if (recording())
+    {
+        std::string recordName = service->ns() + "." + makeNamespaceSep(module->ns, ".") + cls->name + "." + func->name;
+        ostr << "        spi::AddRecord(\"" << recordName << "\");\n";
     }
 
     for (size_t i = 0; i < func->outputs.size(); ++i)
@@ -2025,6 +2075,11 @@ void CModule::functionDeclareArgs(
         std::string arg = CFunctionArg(func->outputs[i], true);
         args.push_back(arg);
     }
+}
+
+bool CModule::recording() const
+{
+    return service->recording();
 }
 
 CDataType::CDataType(const spdoc::DataTypeConstSP& dataType) 

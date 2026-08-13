@@ -243,6 +243,7 @@ void writeFromValueInContext(
 
 void writeFunctionCaller(
     GeneratedOutput&        ostr,
+    bool recording,
     const std::string&      ns,
     const std::string&      className,
     const std::string&      functionName,

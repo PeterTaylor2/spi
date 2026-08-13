@@ -234,22 +234,19 @@ public:
 
     bool declareInClasses() const override;
 
-    void declareHelper(GeneratedOutput& ostr,
+    void implement(GeneratedOutput& ostr,
         const ServiceDefinitionSP& svc,
         bool types) const override;
 
-    void implement(GeneratedOutput& ostr,
+    void implementHelper(GeneratedOutput& ostr,
         const ServiceDefinitionSP& svc,
         bool types,
         bool recording) const override;
 
-    void implementHelper(GeneratedOutput& ostr,
-        const ServiceDefinitionSP& svc,
-        bool types) const override;
-
     void implementRegistration(
         GeneratedOutput& ostr,
         const char* serviceName,
+        const ServiceDefinitionSP& svc,
         bool types) const override;
 
     void declareTypeConversions(

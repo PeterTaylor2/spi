@@ -496,8 +496,7 @@ void Struct::declareHelper(
 void Struct::implement(
     GeneratedOutput& ostr,
     const ServiceDefinitionSP& svc,
-    bool types,
-    bool recording) const
+    bool types) const
 {
     // we put the constructor into the regular stream
     // we put the object functions into the helper stream
@@ -522,11 +521,6 @@ void Struct::implement(
             writeFunctionInputs(ostr, false, allAttributes, false, 4);
             ostr << "\n"
                 << "{\n";
-
-            if (recording)
-            {
-                ostr << "  spi::AddRecord(\"" << svc->getNamespace() << "." << getName(true, ".") << "\");\n";
-            }
 
             ostr << "  SPI_PROFILE(\"" << svc->getNamespace() << "." << getName(true, ".") << "\");\n";
 
@@ -672,7 +666,7 @@ void Struct::implement(
     for (size_t i = 0; i < m_methods.size(); ++i)
     {
         bool noHelper = !methodNeedsHelper(m_methods[i]);
-        m_methods[i]->implement(ostr, m_dataType, m_name, "", types, svc, noHelper, recording);
+        m_methods[i]->implement(ostr, m_dataType, m_name, "", types, svc, noHelper);
     }
 
     if (m_dynamicPropertiesCode)
@@ -708,7 +702,8 @@ void Struct::implement(
 void Struct::implementHelper(
     GeneratedOutput& ostr,
     const ServiceDefinitionSP& svc,
-    bool types) const
+    bool types,
+    bool recording) const
 {
     // we put the constructor into the regular stream
     // we put the object functions into the helper stream
@@ -801,17 +796,21 @@ void Struct::implementHelper(
 
         if (!m_noMake)
         {
-            // FIXME: why might we want to use a Functor here?
-            writeFunctionCaller(ostr, /*false,*/ m_ns, m_name, std::string(),
+            writeFunctionCaller(ostr, recording, m_ns, m_name, std::string(),
                 m_dataType, 0, DataTypeConstSP(),
                 svc, m_attributes);
+
+            if (!svc->noLog())
+            {
+                writeFunctionObjectType(ostr, m_ns, m_name, svc->getNamespace());
+            }
         }
     }
 
     for (size_t i = 0; i < m_methods.size(); ++i)
     {
         if (methodNeedsHelper(m_methods[i]))
-            m_methods[i]->implementHelper(ostr, m_dataType, m_name, types, svc);
+            m_methods[i]->implementHelper(ostr, m_dataType, m_name, types, svc, recording);
     }
 
 }
@@ -819,6 +818,7 @@ void Struct::implementHelper(
 void Struct::implementRegistration(
     GeneratedOutput& ostr,
     const char* serviceName,
+    const ServiceDefinitionSP& svc,
     bool types) const
 {
     ostr << "    " << serviceName << "->add_object_type(&"
@@ -826,12 +826,17 @@ void Struct::implementRegistration(
 
     if (!isAbstract() && !m_noMake)
     {
+        if (!svc->noLog())
+        {
+            ostr << "    " << serviceName << "->add_object_type(&" << m_name
+                << "_FunctionObjectType);\n";
+        }
         ostr << "    " << serviceName << "->add_function_caller(&" << m_name
              << "_FunctionCaller);\n";
     }
 
     for (size_t i = 0; i < m_methods.size(); ++i)
-        m_methods[i]->implementRegistration(ostr, m_name, serviceName, types);
+        m_methods[i]->implementRegistration(ostr, serviceName, m_name, svc, types);
 }
 
 const char* Struct::type() const

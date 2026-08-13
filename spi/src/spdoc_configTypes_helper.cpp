@@ -192,9 +192,6 @@ spi::FunctionCaller DataType_ValueType_FunctionCaller = {
     DataType_ValueType_caller
 };
 
-spi::ObjectType DataType_ValueType_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.DataType.ValueType");
-
 spi::Value DataType_RefType_caller(
     const spi::InputContext*       in_context,
     const std::vector<spi::Value>& in_values)
@@ -214,9 +211,6 @@ spi::FunctionCaller DataType_RefType_FunctionCaller = {
     },
     DataType_RefType_caller
 };
-
-spi::ObjectType DataType_RefType_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.DataType.RefType");
 
 /*
 ****************************************************************************
@@ -381,9 +375,6 @@ spi::FunctionCaller Attribute_encoding_FunctionCaller = {
     },
     Attribute_encoding_caller
 };
-
-spi::ObjectType Attribute_encoding_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.Attribute.encoding");
 
 /*
 ****************************************************************************
@@ -562,9 +553,6 @@ spi::FunctionCaller ClassAttribute_encoding_FunctionCaller = {
     ClassAttribute_encoding_caller
 };
 
-spi::ObjectType ClassAttribute_encoding_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.ClassAttribute.encoding");
-
 /*
 ****************************************************************************
 * Implementation of Construct
@@ -669,9 +657,6 @@ spi::FunctionCaller Construct_getType_FunctionCaller = {
     Construct_getType_caller
 };
 
-spi::ObjectType Construct_getType_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.Construct.getType");
-
 spi::Value Construct_Summary_caller(
     const spi::InputContext*       in_context,
     const std::vector<spi::Value>& in_values)
@@ -695,9 +680,6 @@ spi::FunctionCaller Construct_Summary_FunctionCaller = {
     },
     Construct_Summary_caller
 };
-
-spi::ObjectType Construct_Summary_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.Construct.Summary");
 
 /*
 ****************************************************************************
@@ -981,9 +963,6 @@ spi::FunctionCaller Function_returnsObject_FunctionCaller = {
     Function_returnsObject_caller
 };
 
-spi::ObjectType Function_returnsObject_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.Function.returnsObject");
-
 spi::Value Function_returns_caller(
     const spi::InputContext*       in_context,
     const std::vector<spi::Value>& in_values)
@@ -1004,9 +983,6 @@ spi::FunctionCaller Function_returns_FunctionCaller = {
     Function_returns_caller
 };
 
-spi::ObjectType Function_returns_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.Function.returns");
-
 spi::Value Function_objectCount_caller(
     const spi::InputContext*       in_context,
     const std::vector<spi::Value>& in_values)
@@ -1026,9 +1002,6 @@ spi::FunctionCaller Function_objectCount_FunctionCaller = {
     },
     Function_objectCount_caller
 };
-
-spi::ObjectType Function_objectCount_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.Function.objectCount");
 
 /*
 ****************************************************************************
@@ -1514,9 +1487,6 @@ spi::FunctionCaller ClassMethod_Summary_FunctionCaller = {
     ClassMethod_Summary_caller
 };
 
-spi::ObjectType ClassMethod_Summary_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.ClassMethod.Summary");
-
 /*
 ****************************************************************************
 * Implementation of CoerceFrom
@@ -1643,9 +1613,6 @@ spi::FunctionCaller CoerceFrom_Summary_FunctionCaller = {
     },
     CoerceFrom_Summary_caller
 };
-
-spi::ObjectType CoerceFrom_Summary_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.CoerceFrom.Summary");
 
 /*
 ****************************************************************************
@@ -1779,9 +1746,6 @@ spi::FunctionCaller CoerceTo_Summary_FunctionCaller = {
     },
     CoerceTo_Summary_caller
 };
-
-spi::ObjectType CoerceTo_Summary_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.CoerceTo.Summary");
 
 /*
 ****************************************************************************
@@ -2007,9 +1971,6 @@ spi::FunctionCaller Class_ObjectName_FunctionCaller = {
     Class_ObjectName_caller
 };
 
-spi::ObjectType Class_ObjectName_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.Class.ObjectName");
-
 spi::Value Class_ServiceNamespace_caller(
     const spi::InputContext*       in_context,
     const std::vector<spi::Value>& in_values)
@@ -2029,9 +1990,6 @@ spi::FunctionCaller Class_ServiceNamespace_FunctionCaller = {
     },
     Class_ServiceNamespace_caller
 };
-
-spi::ObjectType Class_ServiceNamespace_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.Class.ServiceNamespace");
 
 /*
 ****************************************************************************
@@ -2172,9 +2130,6 @@ spi::FunctionCaller Module_combineSummaries_FunctionCaller = {
     Module_combineSummaries_caller
 };
 
-spi::ObjectType Module_combineSummaries_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.Module.combineSummaries");
-
 /*
 ****************************************************************************
 * Implementation of Service
@@ -2246,7 +2201,11 @@ void Service::to_map(
     obj_map->SetInstanceVector<Class const>("importedBaseClasses", importedBaseClasses, !public_only && (importedBaseClasses.size() == 0));
     obj_map->SetInstanceVector<Enum const>("importedEnums", importedEnums, !public_only && (importedEnums.size() == 0));
     obj_map->SetBool("sharedService", sharedService, !public_only && (sharedService == false));
-    obj_map->SetString("shutdown", shutdown, !public_only && (shutdown.empty()));
+    obj_map->SetStringVector("shutdowns", shutdowns, !public_only && (shutdowns.size() == 0));
+    if (public_only)
+    {
+        obj_map->SetBool("hasShutdown", hasShutdown());
+    }
 }
 
 spi::ObjectConstSP Service::object_from_map(
@@ -2273,11 +2232,11 @@ spi::ObjectConstSP Service::object_from_map(
         = obj_map->GetInstanceVector<Enum const>("importedEnums", value_to_object);
     bool sharedService
         = obj_map->GetBool("sharedService", true, false);
-    const std::string& shutdown
-        = obj_map->GetString("shutdown", true);
+    const std::vector<std::string>& shutdowns
+        = obj_map->GetStringVector("shutdowns");
 
     return new Service(name, description, longName, ns, declSpec, version,
-        modules, importedBaseClasses, importedEnums, sharedService, shutdown);
+        modules, importedBaseClasses, importedEnums, sharedService, shutdowns);
 }
 
 SPI_IMPLEMENT_OBJECT_TYPE(Service, "Service", spdoc_service, false, 0);
@@ -2306,12 +2265,12 @@ spi::Value Service_caller(
         in_context->ValueToInstanceVector<Enum const>(in_values[8]);
     bool sharedService =
         in_context->ValueToBool(in_values[9], true, false);
-    const std::string& shutdown =
-        in_context->ValueToString(in_values[10], true, "");
+    std::vector<std::string> shutdowns =
+        in_context->ValueToStringVector(in_values[10]);
 
     const ServiceConstSP& o_result = spdoc::Service::New(name, description,
         longName, ns, declSpec, version, modules, importedBaseClasses,
-        importedEnums, sharedService, shutdown);
+        importedEnums, sharedService, shutdowns);
     return spi::ObjectConstSP(o_result);
 }
 
@@ -2329,7 +2288,7 @@ spi::FunctionCaller Service_FunctionCaller = {
         {"importedBaseClasses", spi::ArgType::OBJECT, "Class", true, false, false},
         {"importedEnums", spi::ArgType::OBJECT, "Enum", true, false, false},
         {"sharedService", spi::ArgType::BOOL, "bool", false, true, false},
-        {"shutdown", spi::ArgType::STRING, "string", false, true, false}
+        {"shutdowns", spi::ArgType::STRING, "string", true, false, false}
     },
     Service_caller
 };
@@ -2358,9 +2317,6 @@ spi::FunctionCaller Service_CombineSharedServices_FunctionCaller = {
     Service_CombineSharedServices_caller
 };
 
-spi::ObjectType Service_CombineSharedServices_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.Service.CombineSharedServices");
-
 spi::Value Service_Summary_caller(
     const spi::InputContext*       in_context,
     const std::vector<spi::Value>& in_values)
@@ -2383,9 +2339,6 @@ spi::FunctionCaller Service_Summary_FunctionCaller = {
     },
     Service_Summary_caller
 };
-
-spi::ObjectType Service_Summary_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.Service.Summary");
 
 spi::Value Service_combineSummaries_caller(
     const spi::InputContext*       in_context,
@@ -2411,9 +2364,6 @@ spi::FunctionCaller Service_combineSummaries_FunctionCaller = {
     Service_combineSummaries_caller
 };
 
-spi::ObjectType Service_combineSummaries_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.Service.combineSummaries");
-
 spi::Value Service_getEnums_caller(
     const spi::InputContext*       in_context,
     const std::vector<spi::Value>& in_values)
@@ -2433,9 +2383,6 @@ spi::FunctionCaller Service_getEnums_FunctionCaller = {
     },
     Service_getEnums_caller
 };
-
-spi::ObjectType Service_getEnums_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.Service.getEnums");
 
 spi::Value Service_getEnum_caller(
     const spi::InputContext*       in_context,
@@ -2460,9 +2407,6 @@ spi::FunctionCaller Service_getEnum_FunctionCaller = {
     Service_getEnum_caller
 };
 
-spi::ObjectType Service_getEnum_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.Service.getEnum");
-
 spi::Value Service_getEnumerands_caller(
     const spi::InputContext*       in_context,
     const std::vector<spi::Value>& in_values)
@@ -2486,9 +2430,6 @@ spi::FunctionCaller Service_getEnumerands_FunctionCaller = {
     Service_getEnumerands_caller
 };
 
-spi::ObjectType Service_getEnumerands_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.Service.getEnumerands");
-
 spi::Value Service_getClasses_caller(
     const spi::InputContext*       in_context,
     const std::vector<spi::Value>& in_values)
@@ -2508,9 +2449,6 @@ spi::FunctionCaller Service_getClasses_FunctionCaller = {
     },
     Service_getClasses_caller
 };
-
-spi::ObjectType Service_getClasses_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.Service.getClasses");
 
 spi::Value Service_getClass_caller(
     const spi::InputContext*       in_context,
@@ -2534,9 +2472,6 @@ spi::FunctionCaller Service_getClass_FunctionCaller = {
     },
     Service_getClass_caller
 };
-
-spi::ObjectType Service_getClass_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.Service.getClass");
 
 spi::Value Service_isSubClass_caller(
     const spi::InputContext*       in_context,
@@ -2563,9 +2498,6 @@ spi::FunctionCaller Service_isSubClass_FunctionCaller = {
     },
     Service_isSubClass_caller
 };
-
-spi::ObjectType Service_isSubClass_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.Service.isSubClass");
 
 spi::Value Service_getPropertyClass_caller(
     const spi::InputContext*       in_context,
@@ -2594,9 +2526,6 @@ spi::FunctionCaller Service_getPropertyClass_FunctionCaller = {
     Service_getPropertyClass_caller
 };
 
-spi::ObjectType Service_getPropertyClass_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.Service.getPropertyClass");
-
 spi::Value Service_getConstructs_caller(
     const spi::InputContext*       in_context,
     const std::vector<spi::Value>& in_values)
@@ -2616,9 +2545,6 @@ spi::FunctionCaller Service_getConstructs_FunctionCaller = {
     },
     Service_getConstructs_caller
 };
-
-spi::ObjectType Service_getConstructs_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.Service.getConstructs");
 
 spi::Value Service_getConstruct_caller(
     const spi::InputContext*       in_context,
@@ -2643,39 +2569,27 @@ spi::FunctionCaller Service_getConstruct_FunctionCaller = {
     Service_getConstruct_caller
 };
 
-spi::ObjectType Service_getConstruct_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.Service.getConstruct");
-
 void configTypes_register_object_types(const spi::ServiceSP& svc)
 {
     svc->add_object_type(&DataType::object_type);
     svc->add_function_caller(&DataType_FunctionCaller);
-    svc->add_object_type(&DataType_ValueType_FunctionObjectType);
     svc->add_function_caller(&DataType_ValueType_FunctionCaller);
-    svc->add_object_type(&DataType_RefType_FunctionObjectType);
     svc->add_function_caller(&DataType_RefType_FunctionCaller);
     svc->add_object_type(&Attribute::object_type);
     svc->add_function_caller(&Attribute_FunctionCaller);
-    svc->add_object_type(&Attribute_encoding_FunctionObjectType);
     svc->add_function_caller(&Attribute_encoding_FunctionCaller);
     svc->add_object_type(&ClassAttribute::object_type);
     svc->add_function_caller(&ClassAttribute_FunctionCaller);
-    svc->add_object_type(&ClassAttribute_encoding_FunctionObjectType);
     svc->add_function_caller(&ClassAttribute_encoding_FunctionCaller);
     svc->add_object_type(&Construct::object_type);
-    svc->add_object_type(&Construct_getType_FunctionObjectType);
     svc->add_function_caller(&Construct_getType_FunctionCaller);
-    svc->add_object_type(&Construct_Summary_FunctionObjectType);
     svc->add_function_caller(&Construct_Summary_FunctionCaller);
     svc->add_object_type(&SimpleType::object_type);
     svc->add_function_caller(&SimpleType_FunctionCaller);
     svc->add_object_type(&Function::object_type);
     svc->add_function_caller(&Function_FunctionCaller);
-    svc->add_object_type(&Function_returnsObject_FunctionObjectType);
     svc->add_function_caller(&Function_returnsObject_FunctionCaller);
-    svc->add_object_type(&Function_returns_FunctionObjectType);
     svc->add_function_caller(&Function_returns_FunctionCaller);
-    svc->add_object_type(&Function_objectCount_FunctionObjectType);
     svc->add_function_caller(&Function_objectCount_FunctionCaller);
     svc->add_object_type(&Enumerand::object_type);
     svc->add_function_caller(&Enumerand_FunctionCaller);
@@ -2685,51 +2599,33 @@ void configTypes_register_object_types(const spi::ServiceSP& svc)
     svc->add_function_caller(&Enum_FunctionCaller);
     svc->add_object_type(&ClassMethod::object_type);
     svc->add_function_caller(&ClassMethod_FunctionCaller);
-    svc->add_object_type(&ClassMethod_Summary_FunctionObjectType);
     svc->add_function_caller(&ClassMethod_Summary_FunctionCaller);
     svc->add_object_type(&CoerceFrom::object_type);
     svc->add_function_caller(&CoerceFrom_FunctionCaller);
-    svc->add_object_type(&CoerceFrom_Summary_FunctionObjectType);
     svc->add_function_caller(&CoerceFrom_Summary_FunctionCaller);
     svc->add_object_type(&CoerceTo::object_type);
     svc->add_function_caller(&CoerceTo_FunctionCaller);
-    svc->add_object_type(&CoerceTo_Summary_FunctionObjectType);
     svc->add_function_caller(&CoerceTo_Summary_FunctionCaller);
     svc->add_object_type(&Class::object_type);
     svc->add_function_caller(&Class_FunctionCaller);
-    svc->add_object_type(&Class_ObjectName_FunctionObjectType);
     svc->add_function_caller(&Class_ObjectName_FunctionCaller);
-    svc->add_object_type(&Class_ServiceNamespace_FunctionObjectType);
     svc->add_function_caller(&Class_ServiceNamespace_FunctionCaller);
     svc->add_object_type(&Module::object_type);
     svc->add_function_caller(&Module_FunctionCaller);
-    svc->add_object_type(&Module_combineSummaries_FunctionObjectType);
     svc->add_function_caller(&Module_combineSummaries_FunctionCaller);
     svc->add_object_type(&Service::object_type);
     svc->add_function_caller(&Service_FunctionCaller);
-    svc->add_object_type(&Service_CombineSharedServices_FunctionObjectType);
     svc->add_function_caller(&Service_CombineSharedServices_FunctionCaller);
-    svc->add_object_type(&Service_Summary_FunctionObjectType);
     svc->add_function_caller(&Service_Summary_FunctionCaller);
-    svc->add_object_type(&Service_combineSummaries_FunctionObjectType);
     svc->add_function_caller(&Service_combineSummaries_FunctionCaller);
-    svc->add_object_type(&Service_getEnums_FunctionObjectType);
     svc->add_function_caller(&Service_getEnums_FunctionCaller);
-    svc->add_object_type(&Service_getEnum_FunctionObjectType);
     svc->add_function_caller(&Service_getEnum_FunctionCaller);
-    svc->add_object_type(&Service_getEnumerands_FunctionObjectType);
     svc->add_function_caller(&Service_getEnumerands_FunctionCaller);
-    svc->add_object_type(&Service_getClasses_FunctionObjectType);
     svc->add_function_caller(&Service_getClasses_FunctionCaller);
-    svc->add_object_type(&Service_getClass_FunctionObjectType);
     svc->add_function_caller(&Service_getClass_FunctionCaller);
-    svc->add_object_type(&Service_isSubClass_FunctionObjectType);
     svc->add_function_caller(&Service_isSubClass_FunctionCaller);
-    svc->add_object_type(&Service_getPropertyClass_FunctionObjectType);
     svc->add_function_caller(&Service_getPropertyClass_FunctionCaller);
-    svc->add_object_type(&Service_getConstructs_FunctionObjectType);
     svc->add_function_caller(&Service_getConstructs_FunctionCaller);
-    svc->add_object_type(&Service_getConstruct_FunctionObjectType);
     svc->add_function_caller(&Service_getConstruct_FunctionCaller);
 }
 

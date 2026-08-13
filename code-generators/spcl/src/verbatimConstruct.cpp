@@ -72,34 +72,12 @@ bool VerbatimConstruct::declareInClasses() const
     return false; // no declarations either way...
 }
 
-void VerbatimConstruct::declareHelper(
-    GeneratedOutput& ostr,
-    const ServiceDefinitionSP& svc,
-    bool types) const
-{
-}
-
 void VerbatimConstruct::implement(
     GeneratedOutput& ostr,
     const ServiceDefinitionSP& svc,
-    bool types,
-    bool recording) const
+    bool types) const
 {
     writeVerbatim(ostr, m_verbatim, 0, true);
-}
-
-void VerbatimConstruct::implementHelper(
-    GeneratedOutput& ostr,
-    const ServiceDefinitionSP& svc,
-    bool types) const
-{
-}
-
-void VerbatimConstruct::implementRegistration(
-    GeneratedOutput& ostr,
-    const char* serviceName,
-    bool types) const
-{
 }
 
 spdoc::ConstructConstSP VerbatimConstruct::getDoc() const

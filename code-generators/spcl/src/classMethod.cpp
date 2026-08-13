@@ -418,8 +418,7 @@ void ClassMethod::implement(
     const std::string& innerClassName,
     bool types,
     const ServiceDefinitionSP& svc,
-    bool noHelper,
-    bool recording) const
+    bool noHelper) const
 {
     // we put everything needed to run the function into the regular stream
     // we put everything else into the helper stream
@@ -458,11 +457,6 @@ void ClassMethod::implement(
         ostr << "{";
         ostr << "    " << svc->getName() << "_check_permission();\n";
 
-        if (recording && !m_function->m_noRecord)
-        {
-            ostr << "    spi::AddRecord(\"" << svc->getNamespace() << "." << classType->name()
-                << "." << m_function->fullName() << "\");\n";
-        }
         ostr << "    SPI_PROFILE(\"" << svc->getNamespace() << "." << classType->name()
             << "." << m_function->fullName() << "\");\n";
 
@@ -491,12 +485,6 @@ void ClassMethod::implement(
 
         ostr << "{\n";
         ostr << "  bool isLogging = " << svc->getName() << "_begin_function();\n";
-
-        if (recording && !m_function->m_noRecord)
-        {
-            ostr << "  spi::AddRecord(\"" << svc->getNamespace() << "." << classType->name()
-                << "." << m_function->fullName() << "\");\n";
-        }
 
         ostr << "  SPI_PROFILE(\"" << svc->getNamespace() << "." << classType->name()
             << "." << m_function->fullName() << "\");\n";
@@ -743,13 +731,17 @@ void ClassMethod::implementHelper(
     const DataTypeConstSP& classType,
     const std::string& className,
     bool types,
-    const ServiceDefinitionSP& svc) const
+    const ServiceDefinitionSP& svc,
+    bool recording) const
 {
     // we put everything needed to run the function into the regular stream
     // we put everything else into the helper stream
 
     if (m_isImplementation)
         return;
+
+    if (m_function->m_noRecord)
+        recording = false;
 
     if (types && !m_function->neededByTypesLibrary())
         return;
@@ -765,20 +757,23 @@ void ClassMethod::implementHelper(
     }
 
     writeFunctionCaller(
-        ostr, m_function->m_ns, className,
+        ostr, recording, m_function->m_ns, className,
         m_function->m_name, m_function->m_returnType,
         m_function->m_returnArrayDim, instanceType, svc,
         m_function->m_inputs, m_function->m_outputs);
 
-    writeFunctionObjectType(
-        ostr, m_function->m_ns, m_function->m_name, svc->getNamespace(), className);
-
+    if (!svc->noLog())
+    {
+        writeFunctionObjectType(
+            ostr, m_function->m_ns, m_function->m_name, svc->getNamespace(), className);
+    }
 }
 
 void ClassMethod::implementRegistration(
     GeneratedOutput& ostr,
-    const std::string& className,
     const char* serviceName,
+    const std::string& className,
+    const ServiceDefinitionSP& svc,
     bool types) const
 {
     if (m_isImplementation)
@@ -787,21 +782,13 @@ void ClassMethod::implementRegistration(
     if (types && !m_function->neededByTypesLibrary())
         return;
 
-    //if (!function->noLog)
-    //{
-    //    std::string functorClass = spi::StringFormat("%s_Helper::Func_%s",
-    //                                                 className.c_str(),
-    //                                                 function->name.c_str());
-
-    //    ostr << "    " << serviceName << "->add_object_type(&" << functorClass
-    //         << "::object_type);\n";
-    //}
-
-
-    ostr << "    " << serviceName << "->add_object_type(&"
-         << className << "_" << m_function->m_name
-         << "_FunctionObjectType);\n"
-         << "    " << serviceName << "->add_function_caller(&"
+    if (!svc->noLog())
+    {
+        ostr << "    " << serviceName << "->add_object_type(&"
+            << className << "_" << m_function->m_name
+            << "_FunctionObjectType);\n";
+    }
+    ostr << "    " << serviceName << "->add_function_caller(&"
          << className << "_" << m_function->m_name
          << "_FunctionCaller);\n";
 

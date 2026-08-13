@@ -170,13 +170,9 @@ spi::FunctionCaller verifyPrimitiveTypeName_FunctionCaller = {
     verifyPrimitiveTypeName_caller
 };
 
-spi::ObjectType verifyPrimitiveTypeName_FunctionObjectType =
-    spi::FunctionObjectType("spdoc.verifyPrimitiveTypeName");
-
 void publicType_register_object_types(const spi::ServiceSP& svc)
 {
     svc->add_enum_info(PublicType::get_enum_info());
-    svc->add_object_type(&verifyPrimitiveTypeName_FunctionObjectType);
     svc->add_function_caller(&verifyPrimitiveTypeName_FunctionCaller);
 }
 

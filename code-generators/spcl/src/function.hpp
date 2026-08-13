@@ -85,19 +85,20 @@ public:
 
     void implement(GeneratedOutput& ostr,
                    const ServiceDefinitionSP& svc,
-                   bool types,
-                   bool recording) const override;
+                   bool types) const override;
 
     void implementHelper(GeneratedOutput& ostr,
-                         const ServiceDefinitionSP& svc,
-                         bool types) const;
+        const ServiceDefinitionSP& svc,
+        bool types,
+        bool recording) const override;
 
     bool neededByTypesLibrary() const;
 
     void implementRegistration(
         GeneratedOutput& ostr,
         const char* serviceName,
-        bool types) const;
+        const ServiceDefinitionSP& svc,
+        bool types) const override;
 
     const char* type() const;
     spdoc::ConstructConstSP getDoc() const;
