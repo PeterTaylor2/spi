@@ -285,6 +285,11 @@ std::string CService::writeServiceFile(const std::string& dirname) const
         << "using System.Runtime.InteropServices;\n"
         << "using SPI;\n";
 
+    if (m_service->hasShutdown())
+    {
+        ostr << "using System.Runtime.Loader;\n";
+    }
+
     ostr << "\n"
         << "\n"
         << "namespace " << m_nsGlobal << " {\n";
@@ -296,8 +301,9 @@ std::string CService::writeServiceFile(const std::string& dirname) const
     {
         ostr << "\n"
             << m_csDllImport << "\n"
-            << "private static extern int init_" << m_service->ns << "();\n"
-            << "\n"
+            << "private static extern int init_" << m_service->ns << "();\n";
+
+        ostr << "\n"
             << m_csDllImport << "\n"
             << "private static extern int " << m_service->ns << "_service_version(out string version);\n"
             << "\n"
@@ -308,6 +314,18 @@ std::string CService::writeServiceFile(const std::string& dirname) const
             << "        throw spi.ErrorToException();\n"
             << "    }\n"
             << "}\n";
+
+        if (m_service->hasShutdown())
+        {
+            ostr << "\n"
+                << m_csDllImport << "\n"
+                << "private static extern void shutdown_" << m_service->ns << "();\n"
+                << "\n"
+                << "private static void shutdown_service()\n"
+                << "{\n"
+                << "    shutdown_" << m_service->ns << "();\n"
+                << "}\n";
+        }
 
         ostr << "\n"
             << "public static string " << m_service->ns << "_service_version()\n"
@@ -338,6 +356,12 @@ std::string CService::writeServiceFile(const std::string& dirname) const
 
         ostr << "    start_service();\n"
             << "    init_" << m_service->name << "_classes();\n";
+
+        if (m_service->hasShutdown())
+        {
+            ostr << "\n"
+                << "    AssemblyLoadContext.Default.Unloading += _ => shutdown_service();\n";
+        }
 
         for (size_t i = 0; i < m_options.satellites.size(); ++i)
         {
