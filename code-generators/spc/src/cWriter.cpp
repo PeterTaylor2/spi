@@ -212,14 +212,10 @@ std::string CService::writePublicHeaderFile(const std::string& dirname,
     {
         ostr << "\n"
             << m_import << "\n"
-            << "int init_" << m_service->ns << "();\n";
-
-        if (m_service->hasShutdown())
-        {
-            ostr << "\n"
-                << m_import << "\n"
-                << "void shutdown_" << m_service->ns << "();\n";
-        }
+            << "int init_" << m_service->ns << "();\n"
+            << "\n"
+            << m_import << "\n"
+            << "void shutdown_" << m_service->ns << "();\n";
 
         ostr << "\n"
             << m_import << "\n"
@@ -331,7 +327,8 @@ std::string CService::writeSourceFile(const std::string& dirname) const
         << "        g_service = " << m_service->ns
         << "::" << m_service->name << "_start_service();\n";
 
-    for (size_t i = 0; i < m_options.satellites.size(); ++i)
+    size_t numSatellites = m_options.satellites.size();
+    for (size_t i = 0; i < numSatellites; ++i)
     {
         ostr << "        " << m_service->ns << "::" << m_options.satellites[i] << "_start_service();\n";
     }
@@ -345,24 +342,26 @@ std::string CService::writeSourceFile(const std::string& dirname) const
         << "    return 0;\n"
         << "}\n";
 
-    if (m_service->hasShutdown())
+    // we always write the shutdown function
+    // 
+    // each individual shutdown function has its own try...catch unless the
+    // funciton is a no-op
+    ostr << "\n"
+        << m_import << "\n"
+        << "void shutdown_" << m_service->ns << "()\n"
+        << "{\n"
+        << "    SPI_C_LOCK_GUARD;\n";
+
+    for (size_t j = 0; j < numSatellites; ++j)
     {
-        // note the shutdown function have their own try..catch blocks to prevent
-        // exceptions from being thrown - so we don't need to double check here
-        ostr << "\n"
-            << m_import << "\n"
-            << "void shutdown_" << m_service->ns << "()\n"
-            << "{\n"
-            << "    SPI_C_LOCK_GUARD;\n";
-
-        for (auto iter = m_service->shutdowns.rbegin(); iter != m_service->shutdowns.rend(); ++iter)
-        {
-            ostr << "    " << *iter << "();\n";
-        }
-        ostr << "    return;\n"
-            << "}\n";
+        size_t i = numSatellites - j - 1;
+        ostr << "    " << m_service->ns << "::" << m_options.satellites[i] << "_shutdown();\n";
     }
+    ostr << "    " << m_service->ns << "::" << m_service->name << "_shutdown();\n";
+    ostr << "}\n";
 
+    // FIXME: remove this if condition - see the PRE_CONDITION at top of the function
+    SPI_POST_CONDITION(!sharedService());
     if (!m_service->sharedService)
     {
         ostr << "\n"

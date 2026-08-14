@@ -34,6 +34,8 @@
 #include "types_dll_time_out.hpp"
 #include <spi/spdoc_dll_service.hpp>
 #include <spi_util/FileUtil.hpp>
+#include <stdlib.h>
+#include <iostream>
 
 #include "types_types_helper.hpp"
 
@@ -45,6 +47,10 @@ static const bool* g_is_logging = NULL;
 static spi::Date g_time_out;
 static bool g_timed_out = false;
 static std::string g_time_out_error;
+
+void types_shutdown()
+{
+}
 
 static spi::ServiceSP MakeService()
 {

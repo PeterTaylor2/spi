@@ -433,13 +433,10 @@ std::string PythonService::writePydSourceFile(const std::string& dirname) const
              << module->name << "_update_functions(svc);\n";
     }
 
-    if (m_service->hasShutdown())
+    if (m_service->hasShutdown)
     {
         ostr << "\n";
-        for (auto iter = m_service->shutdowns.rbegin(); iter != m_service->shutdowns.rend(); ++iter)
-        {
-            ostr << "    Py_AtExit(" << *iter << ");\n";
-        }
+        ostr << "    Py_AtExit(" << m_service->shutdown() << ");\n";
     }
 
     ostr << "\n"

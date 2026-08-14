@@ -59,6 +59,9 @@ SPI_IMPORT
 const char* types_startup_directory();
 
 SPI_IMPORT
+void types_shutdown();
+
+SPI_IMPORT
 spdoc::ServiceConstSP types_service_doc();
 
 TYPES_END_NAMESPACE

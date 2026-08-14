@@ -55,6 +55,9 @@ REPLAY_IMPORT
 const char* replay_startup_directory();
 
 REPLAY_IMPORT
+void replay_shutdown();
+
+REPLAY_IMPORT
 spdoc::ServiceConstSP replay_service_doc();
 
 SPI_REPLAY_END_NAMESPACE

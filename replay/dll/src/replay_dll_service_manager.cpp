@@ -30,6 +30,8 @@
 #include "replay_dll_time_out.hpp"
 #include <spi/spdoc_dll_service.hpp>
 #include <spi_util/FileUtil.hpp>
+#include <stdlib.h>
+#include <iostream>
 
 #include "spi_replay_map_helper.hpp"
 #include "spi_replay_replay_helper.hpp"
@@ -42,6 +44,10 @@ static const bool* g_is_logging = NULL;
 static spi::Date g_time_out;
 static bool g_timed_out = false;
 static std::string g_time_out_error;
+
+void replay_shutdown()
+{
+}
 
 static spi::ServiceSP MakeService()
 {

@@ -1020,18 +1020,11 @@ spdoc::ServiceConstSP ServiceDefinition::getDoc() const
             importedEnums.push_back(enums[i]->getDoc());
     }
 
-    std::vector<std::string> shutdowns;
-
-    if (m_shutdown)
-    {
-        std::string shutdown = m_namespace + "::" + m_name + "_shutdown";
-        shutdowns.push_back(shutdown);
-    }
+    bool hasShutdown = !!m_shutdown;
 
     return spdoc::Service::Make(m_name, m_description, m_longName,
         m_namespace, m_declSpec, m_version.versionString(), moduleDocs,
-        importedBaseClasses, importedEnums, isSharedService(),
-        shutdowns);
+        importedBaseClasses, importedEnums, isSharedService(), hasShutdown);
 }
 
 void ServiceDefinition::writeMakefileProperties(
@@ -1250,14 +1243,10 @@ void ServiceDefinition::writeServiceHeaders(
         << "\n"
         << m_import << "\n"
         << "const char* " << m_name << "_startup_directory();\n"
+        << "\n"
+        << m_import << "\n"
+        << "void " << m_name << "_shutdown();\n"
         << "\n";
-
-    if (m_shutdown)
-    {
-        ostr << m_import << "\n"
-            << "void " << m_name << "_shutdown();\n"
-            << "\n";
-    }
 
     if (!isSharedService())
     {
@@ -1373,13 +1362,9 @@ void ServiceDefinition::writeServiceSource(
     }
 
     ostr << "#include <spi/spdoc_dll_service.hpp>\n"
-        << "#include <spi_util/FileUtil.hpp>\n";
-
-    if (m_shutdown)
-    {
-        ostr << "#include <stdlib.h>\n"
-            << "#include <iostream>\n";
-    }
+        << "#include <spi_util/FileUtil.hpp>\n"
+        << "#include <stdlib.h>\n"
+        << "#include <iostream>\n";
 
     ostr << "\n";
 
@@ -1442,14 +1427,16 @@ void ServiceDefinition::writeServiceSource(
         writeVerbatim(ostr, m_startup);
     }
 
+    std::string funcname = m_name + "_shutdown";
+
+    // we always write the shutdown function even it is a no-op
+    ostr << "\n"
+        << "void " << funcname << "()\n"
+        << "{\n";
+
     if (m_shutdown)
     {
-        std::string funcname = m_name + "_shutdown";
-
-        ostr << "\n"
-            << "void " << funcname << "()\n"
-            << "{\n"
-            << "    static bool hasShutdown = false;\n"
+        ostr << "    static bool hasShutdown = false;\n"
             << "\n"
             << "    if (!hasShutdown)\n"
             << "    {\n"
@@ -1469,9 +1456,9 @@ void ServiceDefinition::writeServiceSource(
             << "            return;\n"
             << "        }\n"
             << "        hasShutdown = true;\n"
-            << "    }\n"
-            << "}\n";
+            << "    }\n";
     }
+    ostr << "}\n";
 
     // the MakeService function should be called once from <name>_init
     // it registers all the classes with the service to support deserialization
@@ -1553,6 +1540,8 @@ void ServiceDefinition::writeServiceSource(
     //
     // shutdown will have a flag to denote that shutdown has happened so that
     // we don't invoke the body of the shutdown functions more than once
+    //
+    // we only use atexit if the shutdown function does something
     if (m_shutdown)
     {
         ostr << "\n"

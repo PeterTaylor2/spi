@@ -2201,10 +2201,10 @@ void Service::to_map(
     obj_map->SetInstanceVector<Class const>("importedBaseClasses", importedBaseClasses, !public_only && (importedBaseClasses.size() == 0));
     obj_map->SetInstanceVector<Enum const>("importedEnums", importedEnums, !public_only && (importedEnums.size() == 0));
     obj_map->SetBool("sharedService", sharedService, !public_only && (sharedService == false));
-    obj_map->SetStringVector("shutdowns", shutdowns, !public_only && (shutdowns.size() == 0));
+    obj_map->SetBool("hasShutdown", hasShutdown, !public_only && (hasShutdown == false));
     if (public_only)
     {
-        obj_map->SetBool("hasShutdown", hasShutdown());
+        obj_map->SetString("shutdown", shutdown());
     }
 }
 
@@ -2232,11 +2232,12 @@ spi::ObjectConstSP Service::object_from_map(
         = obj_map->GetInstanceVector<Enum const>("importedEnums", value_to_object);
     bool sharedService
         = obj_map->GetBool("sharedService", true, false);
-    const std::vector<std::string>& shutdowns
-        = obj_map->GetStringVector("shutdowns");
+    bool hasShutdown
+        = obj_map->GetBool("hasShutdown", true, false);
 
     return new Service(name, description, longName, ns, declSpec, version,
-        modules, importedBaseClasses, importedEnums, sharedService, shutdowns);
+        modules, importedBaseClasses, importedEnums, sharedService,
+        hasShutdown);
 }
 
 SPI_IMPLEMENT_OBJECT_TYPE(Service, "Service", spdoc_service, false, 0);
@@ -2265,12 +2266,12 @@ spi::Value Service_caller(
         in_context->ValueToInstanceVector<Enum const>(in_values[8]);
     bool sharedService =
         in_context->ValueToBool(in_values[9], true, false);
-    std::vector<std::string> shutdowns =
-        in_context->ValueToStringVector(in_values[10]);
+    bool hasShutdown =
+        in_context->ValueToBool(in_values[10], true, false);
 
     const ServiceConstSP& o_result = spdoc::Service::New(name, description,
         longName, ns, declSpec, version, modules, importedBaseClasses,
-        importedEnums, sharedService, shutdowns);
+        importedEnums, sharedService, hasShutdown);
     return spi::ObjectConstSP(o_result);
 }
 
@@ -2288,7 +2289,7 @@ spi::FunctionCaller Service_FunctionCaller = {
         {"importedBaseClasses", spi::ArgType::OBJECT, "Class", true, false, false},
         {"importedEnums", spi::ArgType::OBJECT, "Enum", true, false, false},
         {"sharedService", spi::ArgType::BOOL, "bool", false, true, false},
-        {"shutdowns", spi::ArgType::STRING, "string", true, false, false}
+        {"hasShutdown", spi::ArgType::BOOL, "bool", false, true, false}
     },
     Service_caller
 };

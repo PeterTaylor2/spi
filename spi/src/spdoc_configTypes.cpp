@@ -1924,7 +1924,7 @@ ServiceConstSP Service::New(
     const std::vector<ClassConstSP>& importedBaseClasses,
     const std::vector<EnumConstSP>& importedEnums,
     bool sharedService,
-    const std::vector<std::string>& shutdowns)
+    bool hasShutdown)
 {
   SPI_PROFILE("spdoc.Service");
   bool isLogging = spdoc_begin_function(true);
@@ -1932,7 +1932,7 @@ ServiceConstSP Service::New(
   {
 
     auto _obj = Make(name, description, longName, ns, declSpec, version, modules,
-        importedBaseClasses, importedEnums, sharedService, shutdowns);
+        importedBaseClasses, importedEnums, sharedService, hasShutdown);
 
     spdoc_end_function();
 
@@ -1955,12 +1955,12 @@ ServiceConstSP Service::Make(
     const std::vector<ClassConstSP>& importedBaseClasses,
     const std::vector<EnumConstSP>& importedEnums,
     bool sharedService,
-    const std::vector<std::string>& shutdowns)
+    bool hasShutdown)
 {
     return ServiceConstSP(
         new Service(name, description, longName, ns, declSpec, version,
             modules, importedBaseClasses, importedEnums, sharedService,
-            shutdowns));
+            hasShutdown));
 }
 
 Service::Service(
@@ -1974,7 +1974,7 @@ Service::Service(
     const std::vector<ClassConstSP>& importedBaseClasses,
     const std::vector<EnumConstSP>& importedEnums,
     bool sharedService,
-    const std::vector<std::string>& shutdowns)
+    bool hasShutdown)
     :
     spi::Object(true),
     name(name),
@@ -1987,7 +1987,7 @@ Service::Service(
     importedBaseClasses(importedBaseClasses),
     importedEnums(importedEnums),
     sharedService(sharedService),
-    shutdowns(shutdowns)
+    hasShutdown(hasShutdown)
 {}
 
 ServiceConstSP Service::CombineSharedServices(
@@ -2019,7 +2019,6 @@ ServiceConstSP Service_Helper::CombineSharedServices(
 
     SPI_PRE_CONDITION(!self->sharedService);
 
-    std::vector<std::string> shutdowns = self->shutdowns;
     std::vector<std::string> description = self->description;
     std::vector<ModuleConstSP> modules = self->modules;
     for (const auto& sharedService : sharedServices)
@@ -2044,9 +2043,6 @@ ServiceConstSP Service_Helper::CombineSharedServices(
         }
 
         modules.insert(modules.end(), sharedModules.begin(), sharedModules.end());
-
-        for (std::string shutdown : sharedService->shutdowns)
-            shutdowns.push_back(shutdown);
     }
 
     return Service::Make(
@@ -2060,7 +2056,7 @@ ServiceConstSP Service_Helper::CombineSharedServices(
         self->importedBaseClasses,
         self->importedEnums,
         false, // sharedService flag
-        shutdowns);
+        self->hasShutdown);
 }
 
 std::vector<std::string> Service::Summary(
@@ -2553,9 +2549,12 @@ ConstructConstSP Service_Helper::getConstruct(
     return iter->second;
 }
 
-bool Service::hasShutdown() const
+std::string Service::shutdown() const
 {
-    return shutdowns.size() > 0;
+    if (hasShutdown)
+        return ns + "::" + name + "_shutdown";
+
+    return std::string();
 }
 
 void Service::buildIndexEnums() const
