@@ -1836,7 +1836,7 @@ void CModule::implementEnum(GeneratedOutput & ostr,
     ostr << "\n"
         << cname << "_Vector* " << cname << "_Vector_new(int N)\n"
         << "{\n"
-        << "    SPI_C_LOCK_GUARD;"
+        << "    SPI_C_LOCK_GUARD;\n"
         << "    try\n"
         << "    {\n"
         << "        auto out = new std::vector<" << cppname << ">(TO_SIZE_T(N));\n"
