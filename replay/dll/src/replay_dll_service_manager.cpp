@@ -45,7 +45,7 @@ static spi::Date g_time_out;
 static bool g_timed_out = false;
 static std::string g_time_out_error;
 
-void replay_shutdown()
+void replay_shutdown() noexcept
 {
 }
 

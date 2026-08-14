@@ -1245,7 +1245,7 @@ void ServiceDefinition::writeServiceHeaders(
         << "const char* " << m_name << "_startup_directory();\n"
         << "\n"
         << m_import << "\n"
-        << "void " << m_name << "_shutdown();\n"
+        << "void " << m_name << "_shutdown() noexcept;\n"
         << "\n";
 
     if (!isSharedService())
@@ -1431,7 +1431,7 @@ void ServiceDefinition::writeServiceSource(
 
     // we always write the shutdown function even it is a no-op
     ostr << "\n"
-        << "void " << funcname << "()\n"
+        << "void " << funcname << "() noexcept\n"
         << "{\n";
 
     if (m_shutdown)

@@ -48,7 +48,7 @@ static spi::Date g_time_out;
 static bool g_timed_out = false;
 static std::string g_time_out_error;
 
-void types_shutdown()
+void types_shutdown() noexcept
 {
 }
 

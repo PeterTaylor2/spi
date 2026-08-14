@@ -59,7 +59,7 @@ SPI_IMPORT
 const char* types_startup_directory();
 
 SPI_IMPORT
-void types_shutdown();
+void types_shutdown() noexcept;
 
 SPI_IMPORT
 spdoc::ServiceConstSP types_service_doc();

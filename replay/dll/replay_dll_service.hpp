@@ -55,7 +55,7 @@ REPLAY_IMPORT
 const char* replay_startup_directory();
 
 REPLAY_IMPORT
-void replay_shutdown();
+void replay_shutdown() noexcept;
 
 REPLAY_IMPORT
 spdoc::ServiceConstSP replay_service_doc();
