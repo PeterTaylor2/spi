@@ -50,7 +50,7 @@ Constant::Constant()
 
 int Constant::getInt() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.Constant.getInt");
   try
   {
@@ -62,9 +62,9 @@ int Constant::getInt() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Constant.getInt", e); }
+  { throw spdoc_catch_exception("Constant.getInt", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Constant.getInt"); }
+  { throw spdoc_catch_all("Constant.getInt"); }
 }
 
 int Constant_Helper::getInt(
@@ -84,7 +84,7 @@ int Constant_Helper::getInt(
 
 spi::Date Constant::getDate() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.Constant.getDate");
   try
   {
@@ -96,9 +96,9 @@ spi::Date Constant::getDate() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Constant.getDate", e); }
+  { throw spdoc_catch_exception("Constant.getDate", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Constant.getDate"); }
+  { throw spdoc_catch_all("Constant.getDate"); }
 }
 
 spi::Date Constant_Helper::getDate(
@@ -118,7 +118,7 @@ spi::Date Constant_Helper::getDate(
 
 spi::DateTime Constant::getDateTime() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.Constant.getDateTime");
   try
   {
@@ -130,9 +130,9 @@ spi::DateTime Constant::getDateTime() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Constant.getDateTime", e); }
+  { throw spdoc_catch_exception("Constant.getDateTime", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Constant.getDateTime"); }
+  { throw spdoc_catch_all("Constant.getDateTime"); }
 }
 
 spi::DateTime Constant_Helper::getDateTime(
@@ -152,7 +152,7 @@ spi::DateTime Constant_Helper::getDateTime(
 
 double Constant::getDouble() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.Constant.getDouble");
   try
   {
@@ -164,9 +164,9 @@ double Constant::getDouble() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Constant.getDouble", e); }
+  { throw spdoc_catch_exception("Constant.getDouble", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Constant.getDouble"); }
+  { throw spdoc_catch_all("Constant.getDouble"); }
 }
 
 double Constant_Helper::getDouble(
@@ -186,7 +186,7 @@ double Constant_Helper::getDouble(
 
 char Constant::getChar() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.Constant.getChar");
   try
   {
@@ -198,9 +198,9 @@ char Constant::getChar() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Constant.getChar", e); }
+  { throw spdoc_catch_exception("Constant.getChar", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Constant.getChar"); }
+  { throw spdoc_catch_all("Constant.getChar"); }
 }
 
 char Constant_Helper::getChar(
@@ -220,7 +220,7 @@ char Constant_Helper::getChar(
 
 std::string Constant::getString() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.Constant.getString");
   try
   {
@@ -232,9 +232,9 @@ std::string Constant::getString() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Constant.getString", e); }
+  { throw spdoc_catch_exception("Constant.getString", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Constant.getString"); }
+  { throw spdoc_catch_all("Constant.getString"); }
 }
 
 std::string Constant_Helper::getString(
@@ -254,7 +254,7 @@ std::string Constant_Helper::getString(
 
 bool Constant::getBool() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.Constant.getBool");
   try
   {
@@ -266,9 +266,9 @@ bool Constant::getBool() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Constant.getBool", e); }
+  { throw spdoc_catch_exception("Constant.getBool", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Constant.getBool"); }
+  { throw spdoc_catch_all("Constant.getBool"); }
 }
 
 bool Constant_Helper::getBool(
@@ -289,7 +289,7 @@ IntConstantConstSP IntConstant::New(
     int value)
 {
   SPI_PROFILE("spdoc.IntConstant");
-  bool isLogging = spdoc_begin_function(true);
+  spdoc_begin_function();
   try
   {
 
@@ -300,9 +300,9 @@ IntConstantConstSP IntConstant::New(
     return _obj;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "IntConstant", e); }
+  { throw spdoc_catch_exception("IntConstant", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "IntConstant"); }
+  { throw spdoc_catch_all("IntConstant"); }
 }
 
 IntConstantConstSP IntConstant::Make(
@@ -326,7 +326,7 @@ IntConstant::IntConstant(
 
 std::string IntConstant::docString() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.IntConstant.docString");
   try
   {
@@ -338,9 +338,9 @@ std::string IntConstant::docString() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "IntConstant.docString", e); }
+  { throw spdoc_catch_exception("IntConstant.docString", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "IntConstant.docString"); }
+  { throw spdoc_catch_all("IntConstant.docString"); }
 }
 
 std::string IntConstant_Helper::docString(
@@ -359,7 +359,7 @@ std::string IntConstant_Helper::docString(
 
 std::string IntConstant::typeName() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.IntConstant.typeName");
   try
   {
@@ -371,9 +371,9 @@ std::string IntConstant::typeName() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "IntConstant.typeName", e); }
+  { throw spdoc_catch_exception("IntConstant.typeName", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "IntConstant.typeName"); }
+  { throw spdoc_catch_all("IntConstant.typeName"); }
 }
 
 std::string IntConstant_Helper::typeName(
@@ -392,7 +392,7 @@ std::string IntConstant_Helper::typeName(
 
 int IntConstant::getInt() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.IntConstant.getInt");
   try
   {
@@ -404,9 +404,9 @@ int IntConstant::getInt() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "IntConstant.getInt", e); }
+  { throw spdoc_catch_exception("IntConstant.getInt", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "IntConstant.getInt"); }
+  { throw spdoc_catch_all("IntConstant.getInt"); }
 }
 
 int IntConstant_Helper::getInt(
@@ -425,7 +425,7 @@ int IntConstant_Helper::getInt(
 
 double IntConstant::getDouble() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.IntConstant.getDouble");
   try
   {
@@ -437,9 +437,9 @@ double IntConstant::getDouble() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "IntConstant.getDouble", e); }
+  { throw spdoc_catch_exception("IntConstant.getDouble", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "IntConstant.getDouble"); }
+  { throw spdoc_catch_all("IntConstant.getDouble"); }
 }
 
 double IntConstant_Helper::getDouble(
@@ -459,7 +459,7 @@ DateConstantConstSP DateConstant::New(
     spi::Date value)
 {
   SPI_PROFILE("spdoc.DateConstant");
-  bool isLogging = spdoc_begin_function(true);
+  spdoc_begin_function();
   try
   {
 
@@ -470,9 +470,9 @@ DateConstantConstSP DateConstant::New(
     return _obj;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "DateConstant", e); }
+  { throw spdoc_catch_exception("DateConstant", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "DateConstant"); }
+  { throw spdoc_catch_all("DateConstant"); }
 }
 
 DateConstantConstSP DateConstant::Make(
@@ -496,7 +496,7 @@ DateConstant::DateConstant(
 
 std::string DateConstant::docString() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.DateConstant.docString");
   try
   {
@@ -508,9 +508,9 @@ std::string DateConstant::docString() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "DateConstant.docString", e); }
+  { throw spdoc_catch_exception("DateConstant.docString", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "DateConstant.docString"); }
+  { throw spdoc_catch_all("DateConstant.docString"); }
 }
 
 std::string DateConstant_Helper::docString(
@@ -531,7 +531,7 @@ std::string DateConstant_Helper::docString(
 
 std::string DateConstant::typeName() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.DateConstant.typeName");
   try
   {
@@ -543,9 +543,9 @@ std::string DateConstant::typeName() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "DateConstant.typeName", e); }
+  { throw spdoc_catch_exception("DateConstant.typeName", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "DateConstant.typeName"); }
+  { throw spdoc_catch_all("DateConstant.typeName"); }
 }
 
 std::string DateConstant_Helper::typeName(
@@ -564,7 +564,7 @@ std::string DateConstant_Helper::typeName(
 
 spi::Date DateConstant::getDate() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.DateConstant.getDate");
   try
   {
@@ -576,9 +576,9 @@ spi::Date DateConstant::getDate() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "DateConstant.getDate", e); }
+  { throw spdoc_catch_exception("DateConstant.getDate", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "DateConstant.getDate"); }
+  { throw spdoc_catch_all("DateConstant.getDate"); }
 }
 
 spi::Date DateConstant_Helper::getDate(
@@ -598,7 +598,7 @@ DateTimeConstantConstSP DateTimeConstant::New(
     spi::DateTime value)
 {
   SPI_PROFILE("spdoc.DateTimeConstant");
-  bool isLogging = spdoc_begin_function(true);
+  spdoc_begin_function();
   try
   {
 
@@ -609,9 +609,9 @@ DateTimeConstantConstSP DateTimeConstant::New(
     return _obj;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "DateTimeConstant", e); }
+  { throw spdoc_catch_exception("DateTimeConstant", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "DateTimeConstant"); }
+  { throw spdoc_catch_all("DateTimeConstant"); }
 }
 
 DateTimeConstantConstSP DateTimeConstant::Make(
@@ -635,7 +635,7 @@ DateTimeConstant::DateTimeConstant(
 
 std::string DateTimeConstant::docString() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.DateTimeConstant.docString");
   try
   {
@@ -647,9 +647,9 @@ std::string DateTimeConstant::docString() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "DateTimeConstant.docString", e); }
+  { throw spdoc_catch_exception("DateTimeConstant.docString", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "DateTimeConstant.docString"); }
+  { throw spdoc_catch_all("DateTimeConstant.docString"); }
 }
 
 std::string DateTimeConstant_Helper::docString(
@@ -668,7 +668,7 @@ std::string DateTimeConstant_Helper::docString(
 
 std::string DateTimeConstant::typeName() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.DateTimeConstant.typeName");
   try
   {
@@ -680,9 +680,9 @@ std::string DateTimeConstant::typeName() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "DateTimeConstant.typeName", e); }
+  { throw spdoc_catch_exception("DateTimeConstant.typeName", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "DateTimeConstant.typeName"); }
+  { throw spdoc_catch_all("DateTimeConstant.typeName"); }
 }
 
 std::string DateTimeConstant_Helper::typeName(
@@ -701,7 +701,7 @@ std::string DateTimeConstant_Helper::typeName(
 
 spi::DateTime DateTimeConstant::getDateTime() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.DateTimeConstant.getDateTime");
   try
   {
@@ -713,9 +713,9 @@ spi::DateTime DateTimeConstant::getDateTime() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "DateTimeConstant.getDateTime", e); }
+  { throw spdoc_catch_exception("DateTimeConstant.getDateTime", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "DateTimeConstant.getDateTime"); }
+  { throw spdoc_catch_all("DateTimeConstant.getDateTime"); }
 }
 
 spi::DateTime DateTimeConstant_Helper::getDateTime(
@@ -735,7 +735,7 @@ DoubleConstantConstSP DoubleConstant::New(
     double value)
 {
   SPI_PROFILE("spdoc.DoubleConstant");
-  bool isLogging = spdoc_begin_function(true);
+  spdoc_begin_function();
   try
   {
 
@@ -746,9 +746,9 @@ DoubleConstantConstSP DoubleConstant::New(
     return _obj;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "DoubleConstant", e); }
+  { throw spdoc_catch_exception("DoubleConstant", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "DoubleConstant"); }
+  { throw spdoc_catch_all("DoubleConstant"); }
 }
 
 DoubleConstantConstSP DoubleConstant::Make(
@@ -772,7 +772,7 @@ DoubleConstant::DoubleConstant(
 
 std::string DoubleConstant::docString() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.DoubleConstant.docString");
   try
   {
@@ -784,9 +784,9 @@ std::string DoubleConstant::docString() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "DoubleConstant.docString", e); }
+  { throw spdoc_catch_exception("DoubleConstant.docString", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "DoubleConstant.docString"); }
+  { throw spdoc_catch_all("DoubleConstant.docString"); }
 }
 
 std::string DoubleConstant_Helper::docString(
@@ -805,7 +805,7 @@ std::string DoubleConstant_Helper::docString(
 
 std::string DoubleConstant::typeName() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.DoubleConstant.typeName");
   try
   {
@@ -817,9 +817,9 @@ std::string DoubleConstant::typeName() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "DoubleConstant.typeName", e); }
+  { throw spdoc_catch_exception("DoubleConstant.typeName", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "DoubleConstant.typeName"); }
+  { throw spdoc_catch_all("DoubleConstant.typeName"); }
 }
 
 std::string DoubleConstant_Helper::typeName(
@@ -838,7 +838,7 @@ std::string DoubleConstant_Helper::typeName(
 
 double DoubleConstant::getDouble() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.DoubleConstant.getDouble");
   try
   {
@@ -850,9 +850,9 @@ double DoubleConstant::getDouble() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "DoubleConstant.getDouble", e); }
+  { throw spdoc_catch_exception("DoubleConstant.getDouble", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "DoubleConstant.getDouble"); }
+  { throw spdoc_catch_all("DoubleConstant.getDouble"); }
 }
 
 double DoubleConstant_Helper::getDouble(
@@ -872,7 +872,7 @@ CharConstantConstSP CharConstant::New(
     char value)
 {
   SPI_PROFILE("spdoc.CharConstant");
-  bool isLogging = spdoc_begin_function(true);
+  spdoc_begin_function();
   try
   {
 
@@ -883,9 +883,9 @@ CharConstantConstSP CharConstant::New(
     return _obj;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "CharConstant", e); }
+  { throw spdoc_catch_exception("CharConstant", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "CharConstant"); }
+  { throw spdoc_catch_all("CharConstant"); }
 }
 
 CharConstantConstSP CharConstant::Make(
@@ -909,7 +909,7 @@ CharConstant::CharConstant(
 
 std::string CharConstant::docString() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.CharConstant.docString");
   try
   {
@@ -921,9 +921,9 @@ std::string CharConstant::docString() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "CharConstant.docString", e); }
+  { throw spdoc_catch_exception("CharConstant.docString", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "CharConstant.docString"); }
+  { throw spdoc_catch_all("CharConstant.docString"); }
 }
 
 std::string CharConstant_Helper::docString(
@@ -942,7 +942,7 @@ std::string CharConstant_Helper::docString(
 
 std::string CharConstant::typeName() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.CharConstant.typeName");
   try
   {
@@ -954,9 +954,9 @@ std::string CharConstant::typeName() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "CharConstant.typeName", e); }
+  { throw spdoc_catch_exception("CharConstant.typeName", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "CharConstant.typeName"); }
+  { throw spdoc_catch_all("CharConstant.typeName"); }
 }
 
 std::string CharConstant_Helper::typeName(
@@ -975,7 +975,7 @@ std::string CharConstant_Helper::typeName(
 
 char CharConstant::getChar() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.CharConstant.getChar");
   try
   {
@@ -987,9 +987,9 @@ char CharConstant::getChar() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "CharConstant.getChar", e); }
+  { throw spdoc_catch_exception("CharConstant.getChar", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "CharConstant.getChar"); }
+  { throw spdoc_catch_all("CharConstant.getChar"); }
 }
 
 char CharConstant_Helper::getChar(
@@ -1009,7 +1009,7 @@ StringConstantConstSP StringConstant::New(
     const std::string& value)
 {
   SPI_PROFILE("spdoc.StringConstant");
-  bool isLogging = spdoc_begin_function(true);
+  spdoc_begin_function();
   try
   {
 
@@ -1020,9 +1020,9 @@ StringConstantConstSP StringConstant::New(
     return _obj;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "StringConstant", e); }
+  { throw spdoc_catch_exception("StringConstant", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "StringConstant"); }
+  { throw spdoc_catch_all("StringConstant"); }
 }
 
 StringConstantConstSP StringConstant::Make(
@@ -1046,7 +1046,7 @@ StringConstant::StringConstant(
 
 std::string StringConstant::docString() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.StringConstant.docString");
   try
   {
@@ -1058,9 +1058,9 @@ std::string StringConstant::docString() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "StringConstant.docString", e); }
+  { throw spdoc_catch_exception("StringConstant.docString", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "StringConstant.docString"); }
+  { throw spdoc_catch_all("StringConstant.docString"); }
 }
 
 std::string StringConstant_Helper::docString(
@@ -1079,7 +1079,7 @@ std::string StringConstant_Helper::docString(
 
 std::string StringConstant::typeName() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.StringConstant.typeName");
   try
   {
@@ -1091,9 +1091,9 @@ std::string StringConstant::typeName() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "StringConstant.typeName", e); }
+  { throw spdoc_catch_exception("StringConstant.typeName", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "StringConstant.typeName"); }
+  { throw spdoc_catch_all("StringConstant.typeName"); }
 }
 
 std::string StringConstant_Helper::typeName(
@@ -1112,7 +1112,7 @@ std::string StringConstant_Helper::typeName(
 
 std::string StringConstant::getString() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.StringConstant.getString");
   try
   {
@@ -1124,9 +1124,9 @@ std::string StringConstant::getString() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "StringConstant.getString", e); }
+  { throw spdoc_catch_exception("StringConstant.getString", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "StringConstant.getString"); }
+  { throw spdoc_catch_all("StringConstant.getString"); }
 }
 
 std::string StringConstant_Helper::getString(
@@ -1146,7 +1146,7 @@ BoolConstantConstSP BoolConstant::New(
     bool value)
 {
   SPI_PROFILE("spdoc.BoolConstant");
-  bool isLogging = spdoc_begin_function(true);
+  spdoc_begin_function();
   try
   {
 
@@ -1157,9 +1157,9 @@ BoolConstantConstSP BoolConstant::New(
     return _obj;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "BoolConstant", e); }
+  { throw spdoc_catch_exception("BoolConstant", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "BoolConstant"); }
+  { throw spdoc_catch_all("BoolConstant"); }
 }
 
 BoolConstantConstSP BoolConstant::Make(
@@ -1183,7 +1183,7 @@ BoolConstant::BoolConstant(
 
 std::string BoolConstant::docString() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.BoolConstant.docString");
   try
   {
@@ -1195,9 +1195,9 @@ std::string BoolConstant::docString() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "BoolConstant.docString", e); }
+  { throw spdoc_catch_exception("BoolConstant.docString", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "BoolConstant.docString"); }
+  { throw spdoc_catch_all("BoolConstant.docString"); }
 }
 
 std::string BoolConstant_Helper::docString(
@@ -1216,7 +1216,7 @@ std::string BoolConstant_Helper::docString(
 
 std::string BoolConstant::typeName() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.BoolConstant.typeName");
   try
   {
@@ -1228,9 +1228,9 @@ std::string BoolConstant::typeName() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "BoolConstant.typeName", e); }
+  { throw spdoc_catch_exception("BoolConstant.typeName", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "BoolConstant.typeName"); }
+  { throw spdoc_catch_all("BoolConstant.typeName"); }
 }
 
 std::string BoolConstant_Helper::typeName(
@@ -1249,7 +1249,7 @@ std::string BoolConstant_Helper::typeName(
 
 bool BoolConstant::getBool() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.BoolConstant.getBool");
   try
   {
@@ -1261,9 +1261,9 @@ bool BoolConstant::getBool() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "BoolConstant.getBool", e); }
+  { throw spdoc_catch_exception("BoolConstant.getBool", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "BoolConstant.getBool"); }
+  { throw spdoc_catch_all("BoolConstant.getBool"); }
 }
 
 bool BoolConstant_Helper::getBool(
@@ -1282,7 +1282,7 @@ bool BoolConstant_Helper::getBool(
 UndefinedConstantConstSP UndefinedConstant::New()
 {
   SPI_PROFILE("spdoc.UndefinedConstant");
-  bool isLogging = spdoc_begin_function(true);
+  spdoc_begin_function();
   try
   {
 
@@ -1293,9 +1293,9 @@ UndefinedConstantConstSP UndefinedConstant::New()
     return _obj;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "UndefinedConstant", e); }
+  { throw spdoc_catch_exception("UndefinedConstant", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "UndefinedConstant"); }
+  { throw spdoc_catch_all("UndefinedConstant"); }
 }
 
 UndefinedConstantConstSP UndefinedConstant::Make()
@@ -1312,7 +1312,7 @@ UndefinedConstantConstSP UndefinedConstant::Make()
 
 std::string UndefinedConstant::typeName() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.UndefinedConstant.typeName");
   try
   {
@@ -1324,9 +1324,9 @@ std::string UndefinedConstant::typeName() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "UndefinedConstant.typeName", e); }
+  { throw spdoc_catch_exception("UndefinedConstant.typeName", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "UndefinedConstant.typeName"); }
+  { throw spdoc_catch_all("UndefinedConstant.typeName"); }
 }
 
 std::string UndefinedConstant_Helper::typeName(
@@ -1345,7 +1345,7 @@ std::string UndefinedConstant_Helper::typeName(
 
 std::string UndefinedConstant::docString() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.UndefinedConstant.docString");
   try
   {
@@ -1357,9 +1357,9 @@ std::string UndefinedConstant::docString() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "UndefinedConstant.docString", e); }
+  { throw spdoc_catch_exception("UndefinedConstant.docString", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "UndefinedConstant.docString"); }
+  { throw spdoc_catch_all("UndefinedConstant.docString"); }
 }
 
 std::string UndefinedConstant_Helper::docString(
@@ -1378,7 +1378,7 @@ std::string UndefinedConstant_Helper::docString(
 
 int UndefinedConstant::getInt() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.UndefinedConstant.getInt");
   try
   {
@@ -1390,9 +1390,9 @@ int UndefinedConstant::getInt() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "UndefinedConstant.getInt", e); }
+  { throw spdoc_catch_exception("UndefinedConstant.getInt", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "UndefinedConstant.getInt"); }
+  { throw spdoc_catch_all("UndefinedConstant.getInt"); }
 }
 
 int UndefinedConstant_Helper::getInt(
@@ -1411,7 +1411,7 @@ int UndefinedConstant_Helper::getInt(
 
 spi::Date UndefinedConstant::getDate() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.UndefinedConstant.getDate");
   try
   {
@@ -1423,9 +1423,9 @@ spi::Date UndefinedConstant::getDate() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "UndefinedConstant.getDate", e); }
+  { throw spdoc_catch_exception("UndefinedConstant.getDate", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "UndefinedConstant.getDate"); }
+  { throw spdoc_catch_all("UndefinedConstant.getDate"); }
 }
 
 spi::Date UndefinedConstant_Helper::getDate(
@@ -1444,7 +1444,7 @@ spi::Date UndefinedConstant_Helper::getDate(
 
 spi::DateTime UndefinedConstant::getDateTime() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.UndefinedConstant.getDateTime");
   try
   {
@@ -1456,9 +1456,9 @@ spi::DateTime UndefinedConstant::getDateTime() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "UndefinedConstant.getDateTime", e); }
+  { throw spdoc_catch_exception("UndefinedConstant.getDateTime", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "UndefinedConstant.getDateTime"); }
+  { throw spdoc_catch_all("UndefinedConstant.getDateTime"); }
 }
 
 spi::DateTime UndefinedConstant_Helper::getDateTime(
@@ -1477,7 +1477,7 @@ spi::DateTime UndefinedConstant_Helper::getDateTime(
 
 double UndefinedConstant::getDouble() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.UndefinedConstant.getDouble");
   try
   {
@@ -1489,9 +1489,9 @@ double UndefinedConstant::getDouble() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "UndefinedConstant.getDouble", e); }
+  { throw spdoc_catch_exception("UndefinedConstant.getDouble", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "UndefinedConstant.getDouble"); }
+  { throw spdoc_catch_all("UndefinedConstant.getDouble"); }
 }
 
 double UndefinedConstant_Helper::getDouble(
@@ -1510,7 +1510,7 @@ double UndefinedConstant_Helper::getDouble(
 
 char UndefinedConstant::getChar() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.UndefinedConstant.getChar");
   try
   {
@@ -1522,9 +1522,9 @@ char UndefinedConstant::getChar() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "UndefinedConstant.getChar", e); }
+  { throw spdoc_catch_exception("UndefinedConstant.getChar", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "UndefinedConstant.getChar"); }
+  { throw spdoc_catch_all("UndefinedConstant.getChar"); }
 }
 
 char UndefinedConstant_Helper::getChar(
@@ -1543,7 +1543,7 @@ char UndefinedConstant_Helper::getChar(
 
 std::string UndefinedConstant::getString() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.UndefinedConstant.getString");
   try
   {
@@ -1555,9 +1555,9 @@ std::string UndefinedConstant::getString() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "UndefinedConstant.getString", e); }
+  { throw spdoc_catch_exception("UndefinedConstant.getString", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "UndefinedConstant.getString"); }
+  { throw spdoc_catch_all("UndefinedConstant.getString"); }
 }
 
 std::string UndefinedConstant_Helper::getString(
@@ -1576,7 +1576,7 @@ std::string UndefinedConstant_Helper::getString(
 
 bool UndefinedConstant::getBool() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.UndefinedConstant.getBool");
   try
   {
@@ -1588,9 +1588,9 @@ bool UndefinedConstant::getBool() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "UndefinedConstant.getBool", e); }
+  { throw spdoc_catch_exception("UndefinedConstant.getBool", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "UndefinedConstant.getBool"); }
+  { throw spdoc_catch_all("UndefinedConstant.getBool"); }
 }
 
 bool UndefinedConstant_Helper::getBool(

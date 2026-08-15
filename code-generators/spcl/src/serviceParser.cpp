@@ -60,7 +60,7 @@ ServiceDefinitionSP serviceKeywordHandler(
     //defaultOptions["spDynamicCast"] = StringConstant::Make("boost::dynamic_pointer_cast");
     defaultOptions["sharedPtrInclude"] = StringConstant::Make("<boost/shared_ptr.hpp>");
     defaultOptions["baseService"] = StringConstant::Make("");
-    defaultOptions["noLog"] = BoolConstant::Make(false);
+    defaultOptions["noLogging"] = BoolConstant::Make(false);
     defaultOptions["noClassMake"] = BoolConstant::Make(false);
     defaultOptions["recording"] = BoolConstant::Make(false);
     defaultOptions["useVersionedNamespace"] = BoolConstant::Make(false);
@@ -91,7 +91,7 @@ ServiceDefinitionSP serviceKeywordHandler(
         options["declSpec"]->getString(),
         options["sharedPtr"]->getString(),
         options["sharedPtrInclude"]->getString(),
-        options["noLog"]->getBool(),
+        options["noLogging"]->getBool(),
         options["useVersionedNamespace"]->getBool(),
         description,
         options["helpFunc"]->getString(),
@@ -154,7 +154,7 @@ void writeServiceKeywordDoc(
     writeTexOptionsTableRow(
         ostr, "baseService", "", "");
     writeTexOptionsTableRow(
-        ostr, "noLog", "False", "True or False");
+        ostr, "noLogging", "False", "True or False");
     writeTexOptionsTableRow(
         ostr, "useVersionedNamespace", "False", "True or False");
     writeTexEndOptionsTable(ostr);
@@ -183,7 +183,7 @@ void writeServiceKeywordDoc(
          << "another service, and that objects created in the base service can "
          << "be used in this service.\n"
          << "\n"
-         << "Setting \\texttt{noLog} to true will turn off the possibility of "
+         << "Setting \\texttt{noLogging} to true will turn off the possibility of "
          << "logging for this service.\n"
          << "The code required to support logging is quite considerable, so "
          << "you may wish to reduce the size of your library if you have no "

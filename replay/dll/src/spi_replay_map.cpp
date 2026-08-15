@@ -152,7 +152,7 @@ std::string MapClassName(
     const spi::MapObjectSP& m)
 {
   SPI_PROFILE("spi_replay.MapClassName");
-  bool isLogging = replay_begin_function(true);
+  replay_begin_function();
   try
   {
     spi::MapConstSP i_m;
@@ -165,9 +165,9 @@ std::string MapClassName(
     return i_result;
   }
   catch (std::exception& e)
-  { throw replay_catch_exception(isLogging, "MapClassName", e); }
+  { throw replay_catch_exception("MapClassName", e); }
   catch (...)
-  { throw replay_catch_all(isLogging, "MapClassName"); }
+  { throw replay_catch_all("MapClassName"); }
 }
 
 std::string MapClassName_Helper(
@@ -180,7 +180,7 @@ std::vector<std::string> MapFieldNames(
     const spi::MapObjectSP& m)
 {
   SPI_PROFILE("spi_replay.MapFieldNames");
-  bool isLogging = replay_begin_function(true);
+  replay_begin_function();
   try
   {
     spi::MapConstSP i_m;
@@ -193,9 +193,9 @@ std::vector<std::string> MapFieldNames(
     return i_result;
   }
   catch (std::exception& e)
-  { throw replay_catch_exception(isLogging, "MapFieldNames", e); }
+  { throw replay_catch_exception("MapFieldNames", e); }
   catch (...)
-  { throw replay_catch_all(isLogging, "MapFieldNames"); }
+  { throw replay_catch_all("MapFieldNames"); }
 }
 
 std::vector<std::string> MapFieldNames_Helper(
@@ -208,7 +208,7 @@ int MapRef(
     const spi::MapObjectSP& m)
 {
   SPI_PROFILE("spi_replay.MapRef");
-  bool isLogging = replay_begin_function(true);
+  replay_begin_function();
   try
   {
     spi::MapConstSP i_m;
@@ -221,9 +221,9 @@ int MapRef(
     return i_result;
   }
   catch (std::exception& e)
-  { throw replay_catch_exception(isLogging, "MapRef", e); }
+  { throw replay_catch_exception("MapRef", e); }
   catch (...)
-  { throw replay_catch_all(isLogging, "MapRef"); }
+  { throw replay_catch_all("MapRef"); }
 }
 
 int MapRef_Helper(
@@ -247,7 +247,7 @@ void MapGetValue(
     ValueType& valueType)
 {
   SPI_PROFILE("spi_replay.MapGetValue");
-  bool isLogging = replay_begin_function(true);
+  replay_begin_function();
   try
   {
     spi::MapConstSP i_m;
@@ -262,9 +262,9 @@ void MapGetValue(
     replay_end_function();
   }
   catch (std::exception& e)
-  { throw replay_catch_exception(isLogging, "MapGetValue", e); }
+  { throw replay_catch_exception("MapGetValue", e); }
   catch (...)
-  { throw replay_catch_all(isLogging, "MapGetValue"); }
+  { throw replay_catch_all("MapGetValue"); }
 }
 
 std::tuple< spi::Variant, ValueType > MapGetValue(

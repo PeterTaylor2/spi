@@ -50,7 +50,7 @@ DataTypeConstSP DataType::New(
     bool objectAsValue)
 {
   SPI_PROFILE("spdoc.DataType");
-  bool isLogging = spdoc_begin_function(true);
+  spdoc_begin_function();
   try
   {
 
@@ -62,9 +62,9 @@ DataTypeConstSP DataType::New(
     return _obj;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "DataType", e); }
+  { throw spdoc_catch_exception("DataType", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "DataType"); }
+  { throw spdoc_catch_all("DataType"); }
 }
 
 DataTypeConstSP DataType::Make(
@@ -110,7 +110,7 @@ DataType::DataType(
 
 std::string DataType::ValueType() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.DataType.ValueType");
   try
   {
@@ -123,9 +123,9 @@ std::string DataType::ValueType() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "DataType.ValueType", e); }
+  { throw spdoc_catch_exception("DataType.ValueType", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "DataType.ValueType"); }
+  { throw spdoc_catch_all("DataType.ValueType"); }
 }
 
 std::string DataType_Helper::ValueType(
@@ -149,7 +149,7 @@ std::string DataType_Helper::ValueType(
 
 std::string DataType::RefType() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.DataType.RefType");
   try
   {
@@ -162,9 +162,9 @@ std::string DataType::RefType() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "DataType.RefType", e); }
+  { throw spdoc_catch_exception("DataType.RefType", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "DataType.RefType"); }
+  { throw spdoc_catch_all("DataType.RefType"); }
 }
 
 std::string DataType_Helper::RefType(
@@ -204,7 +204,7 @@ AttributeConstSP Attribute::New(
     const std::string& alias)
 {
   SPI_PROFILE("spdoc.Attribute");
-  bool isLogging = spdoc_begin_function(true);
+  spdoc_begin_function();
   try
   {
 
@@ -216,9 +216,9 @@ AttributeConstSP Attribute::New(
     return _obj;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Attribute", e); }
+  { throw spdoc_catch_exception("Attribute", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Attribute"); }
+  { throw spdoc_catch_all("Attribute"); }
 }
 
 AttributeConstSP Attribute::Make(
@@ -267,7 +267,7 @@ std::string Attribute::encoding(
     bool isOutput,
     bool showDefault) const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.Attribute.encoding");
   try
   {
@@ -281,9 +281,9 @@ std::string Attribute::encoding(
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Attribute.encoding", e); }
+  { throw spdoc_catch_exception("Attribute.encoding", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Attribute.encoding"); }
+  { throw spdoc_catch_all("Attribute.encoding"); }
 }
 
 std::string Attribute_Helper::encoding(
@@ -343,7 +343,7 @@ ClassAttributeConstSP ClassAttribute::New(
     const std::string& accessor)
 {
   SPI_PROFILE("spdoc.ClassAttribute");
-  bool isLogging = spdoc_begin_function(true);
+  spdoc_begin_function();
   try
   {
 
@@ -355,9 +355,9 @@ ClassAttributeConstSP ClassAttribute::New(
     return _obj;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "ClassAttribute", e); }
+  { throw spdoc_catch_exception("ClassAttribute", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "ClassAttribute"); }
+  { throw spdoc_catch_all("ClassAttribute"); }
 }
 
 ClassAttributeConstSP ClassAttribute::Make(
@@ -413,7 +413,7 @@ ClassAttribute::operator AttributeConstSP() const
 std::string ClassAttribute::encoding(
     bool showDefault) const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.ClassAttribute.encoding");
   try
   {
@@ -427,9 +427,9 @@ std::string ClassAttribute::encoding(
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "ClassAttribute.encoding", e); }
+  { throw spdoc_catch_exception("ClassAttribute.encoding", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "ClassAttribute.encoding"); }
+  { throw spdoc_catch_all("ClassAttribute.encoding"); }
 }
 
 std::string ClassAttribute_Helper::encoding(
@@ -485,7 +485,7 @@ SimpleTypeConstSP SimpleType::New(
     bool noDoc)
 {
   SPI_PROFILE("spdoc.SimpleType");
-  bool isLogging = spdoc_begin_function(true);
+  spdoc_begin_function();
   try
   {
 
@@ -496,9 +496,9 @@ SimpleTypeConstSP SimpleType::New(
     return _obj;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "SimpleType", e); }
+  { throw spdoc_catch_exception("SimpleType", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "SimpleType"); }
+  { throw spdoc_catch_all("SimpleType"); }
 }
 
 SimpleTypeConstSP SimpleType::Make(
@@ -531,7 +531,7 @@ SimpleType::SimpleType(
 
 std::string SimpleType::getType() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.SimpleType.getType");
   try
   {
@@ -543,9 +543,9 @@ std::string SimpleType::getType() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "SimpleType.getType", e); }
+  { throw spdoc_catch_exception("SimpleType.getType", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "SimpleType.getType"); }
+  { throw spdoc_catch_all("SimpleType.getType"); }
 }
 
 std::string SimpleType_Helper::getType(
@@ -559,7 +559,7 @@ std::string SimpleType_Helper::getType(
 std::vector<std::string> SimpleType::Summary(
     bool includeDescription) const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.SimpleType.Summary");
   try
   {
@@ -572,9 +572,9 @@ std::vector<std::string> SimpleType::Summary(
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "SimpleType.Summary", e); }
+  { throw spdoc_catch_exception("SimpleType.Summary", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "SimpleType.Summary"); }
+  { throw spdoc_catch_all("SimpleType.Summary"); }
 }
 
 std::vector<std::string> SimpleType_Helper::Summary(
@@ -615,7 +615,7 @@ FunctionConstSP Function::New(
     bool optionalReturnType)
 {
   SPI_PROFILE("spdoc.Function");
-  bool isLogging = spdoc_begin_function(true);
+  spdoc_begin_function();
   try
   {
 
@@ -627,9 +627,9 @@ FunctionConstSP Function::New(
     return _obj;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Function", e); }
+  { throw spdoc_catch_exception("Function", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Function"); }
+  { throw spdoc_catch_all("Function"); }
 }
 
 FunctionConstSP Function::Make(
@@ -678,7 +678,7 @@ Function::Function(
 
 bool Function::returnsObject() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.Function.returnsObject");
   try
   {
@@ -690,9 +690,9 @@ bool Function::returnsObject() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Function.returnsObject", e); }
+  { throw spdoc_catch_exception("Function.returnsObject", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Function.returnsObject"); }
+  { throw spdoc_catch_all("Function.returnsObject"); }
 }
 
 bool Function_Helper::returnsObject(
@@ -713,7 +713,7 @@ bool Function_Helper::returnsObject(
 
 AttributeConstSP Function::returns() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.Function.returns");
   try
   {
@@ -725,9 +725,9 @@ AttributeConstSP Function::returns() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Function.returns", e); }
+  { throw spdoc_catch_exception("Function.returns", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Function.returns"); }
+  { throw spdoc_catch_all("Function.returns"); }
 }
 
 AttributeConstSP Function_Helper::returns(
@@ -746,7 +746,7 @@ AttributeConstSP Function_Helper::returns(
 
 int Function::objectCount() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.Function.objectCount");
   try
   {
@@ -758,9 +758,9 @@ int Function::objectCount() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Function.objectCount", e); }
+  { throw spdoc_catch_exception("Function.objectCount", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Function.objectCount"); }
+  { throw spdoc_catch_all("Function.objectCount"); }
 }
 
 int Function_Helper::objectCount(
@@ -799,7 +799,7 @@ int Function_Helper::objectCount(
 std::vector<std::string> Function::Summary(
     bool includeDescription) const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.Function.Summary");
   try
   {
@@ -812,9 +812,9 @@ std::vector<std::string> Function::Summary(
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Function.Summary", e); }
+  { throw spdoc_catch_exception("Function.Summary", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Function.Summary"); }
+  { throw spdoc_catch_all("Function.Summary"); }
 }
 
 std::vector<std::string> Function_Helper::Summary(
@@ -901,7 +901,7 @@ std::vector<std::string> Function_Helper::Summary(
 
 std::string Function::getType() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.Function.getType");
   try
   {
@@ -913,9 +913,9 @@ std::string Function::getType() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Function.getType", e); }
+  { throw spdoc_catch_exception("Function.getType", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Function.getType"); }
+  { throw spdoc_catch_all("Function.getType"); }
 }
 
 std::string Function_Helper::getType(
@@ -937,7 +937,7 @@ EnumerandConstSP Enumerand::New(
     const std::vector<std::string>& description)
 {
   SPI_PROFILE("spdoc.Enumerand");
-  bool isLogging = spdoc_begin_function(true);
+  spdoc_begin_function();
   try
   {
 
@@ -948,9 +948,9 @@ EnumerandConstSP Enumerand::New(
     return _obj;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Enumerand", e); }
+  { throw spdoc_catch_exception("Enumerand", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Enumerand"); }
+  { throw spdoc_catch_all("Enumerand"); }
 }
 
 EnumerandConstSP Enumerand::Make(
@@ -983,7 +983,7 @@ EnumConstructorConstSP EnumConstructor::New(
     const std::vector<std::string>& description)
 {
   SPI_PROFILE("spdoc.EnumConstructor");
-  bool isLogging = spdoc_begin_function(true);
+  spdoc_begin_function();
   try
   {
 
@@ -994,9 +994,9 @@ EnumConstructorConstSP EnumConstructor::New(
     return _obj;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "EnumConstructor", e); }
+  { throw spdoc_catch_exception("EnumConstructor", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "EnumConstructor"); }
+  { throw spdoc_catch_all("EnumConstructor"); }
 }
 
 EnumConstructorConstSP EnumConstructor::Make(
@@ -1029,7 +1029,7 @@ EnumConstSP Enum::New(
     bool isBitmask)
 {
   SPI_PROFILE("spdoc.Enum");
-  bool isLogging = spdoc_begin_function(true);
+  spdoc_begin_function();
   try
   {
 
@@ -1040,9 +1040,9 @@ EnumConstSP Enum::New(
     return _obj;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Enum", e); }
+  { throw spdoc_catch_exception("Enum", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Enum"); }
+  { throw spdoc_catch_all("Enum"); }
 }
 
 EnumConstSP Enum::Make(
@@ -1078,7 +1078,7 @@ Enum::Enum(
 
 std::string Enum::getType() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.Enum.getType");
   try
   {
@@ -1090,9 +1090,9 @@ std::string Enum::getType() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Enum.getType", e); }
+  { throw spdoc_catch_exception("Enum.getType", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Enum.getType"); }
+  { throw spdoc_catch_all("Enum.getType"); }
 }
 
 std::string Enum_Helper::getType(
@@ -1106,7 +1106,7 @@ std::string Enum_Helper::getType(
 std::vector<std::string> Enum::Summary(
     bool includeDescription) const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.Enum.Summary");
   try
   {
@@ -1119,9 +1119,9 @@ std::vector<std::string> Enum::Summary(
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Enum.Summary", e); }
+  { throw spdoc_catch_exception("Enum.Summary", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Enum.Summary"); }
+  { throw spdoc_catch_all("Enum.Summary"); }
 }
 
 std::vector<std::string> Enum_Helper::Summary(
@@ -1187,7 +1187,7 @@ ClassMethodConstSP ClassMethod::New(
     const std::string& implements)
 {
   SPI_PROFILE("spdoc.ClassMethod");
-  bool isLogging = spdoc_begin_function(true);
+  spdoc_begin_function();
   try
   {
 
@@ -1199,9 +1199,9 @@ ClassMethodConstSP ClassMethod::New(
     return _obj;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "ClassMethod", e); }
+  { throw spdoc_catch_exception("ClassMethod", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "ClassMethod"); }
+  { throw spdoc_catch_all("ClassMethod"); }
 }
 
 ClassMethodConstSP ClassMethod::Make(
@@ -1237,7 +1237,7 @@ ClassMethod::ClassMethod(
 std::vector<std::string> ClassMethod::Summary(
     bool includeDescription) const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.ClassMethod.Summary");
   try
   {
@@ -1250,9 +1250,9 @@ std::vector<std::string> ClassMethod::Summary(
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "ClassMethod.Summary", e); }
+  { throw spdoc_catch_exception("ClassMethod.Summary", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "ClassMethod.Summary"); }
+  { throw spdoc_catch_all("ClassMethod.Summary"); }
 }
 
 std::vector<std::string> ClassMethod_Helper::Summary(
@@ -1317,7 +1317,7 @@ CoerceFromConstSP CoerceFrom::New(
     const AttributeConstSP& coerceFrom)
 {
   SPI_PROFILE("spdoc.CoerceFrom");
-  bool isLogging = spdoc_begin_function(true);
+  spdoc_begin_function();
   try
   {
 
@@ -1328,9 +1328,9 @@ CoerceFromConstSP CoerceFrom::New(
     return _obj;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "CoerceFrom", e); }
+  { throw spdoc_catch_exception("CoerceFrom", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "CoerceFrom"); }
+  { throw spdoc_catch_all("CoerceFrom"); }
 }
 
 CoerceFromConstSP CoerceFrom::Make(
@@ -1353,7 +1353,7 @@ CoerceFrom::CoerceFrom(
 std::vector<std::string> CoerceFrom::Summary(
     bool includeDescription) const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.CoerceFrom.Summary");
   try
   {
@@ -1366,9 +1366,9 @@ std::vector<std::string> CoerceFrom::Summary(
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "CoerceFrom.Summary", e); }
+  { throw spdoc_catch_exception("CoerceFrom.Summary", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "CoerceFrom.Summary"); }
+  { throw spdoc_catch_all("CoerceFrom.Summary"); }
 }
 
 std::vector<std::string> CoerceFrom_Helper::Summary(
@@ -1402,7 +1402,7 @@ CoerceToConstSP CoerceTo::New(
     const DataTypeConstSP& classType)
 {
   SPI_PROFILE("spdoc.CoerceTo");
-  bool isLogging = spdoc_begin_function(true);
+  spdoc_begin_function();
   try
   {
 
@@ -1413,9 +1413,9 @@ CoerceToConstSP CoerceTo::New(
     return _obj;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "CoerceTo", e); }
+  { throw spdoc_catch_exception("CoerceTo", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "CoerceTo"); }
+  { throw spdoc_catch_all("CoerceTo"); }
 }
 
 CoerceToConstSP CoerceTo::Make(
@@ -1441,7 +1441,7 @@ CoerceTo::CoerceTo(
 std::vector<std::string> CoerceTo::Summary(
     bool includeDescription) const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.CoerceTo.Summary");
   try
   {
@@ -1454,9 +1454,9 @@ std::vector<std::string> CoerceTo::Summary(
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "CoerceTo.Summary", e); }
+  { throw spdoc_catch_exception("CoerceTo.Summary", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "CoerceTo.Summary"); }
+  { throw spdoc_catch_all("CoerceTo.Summary"); }
 }
 
 std::vector<std::string> CoerceTo_Helper::Summary(
@@ -1503,7 +1503,7 @@ ClassConstSP Class::New(
     const std::string& constructor)
 {
   SPI_PROFILE("spdoc.Class");
-  bool isLogging = spdoc_begin_function(true);
+  spdoc_begin_function();
   try
   {
 
@@ -1517,9 +1517,9 @@ ClassConstSP Class::New(
     return _obj;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Class", e); }
+  { throw spdoc_catch_exception("Class", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Class"); }
+  { throw spdoc_catch_all("Class"); }
 }
 
 ClassConstSP Class::Make(
@@ -1592,7 +1592,7 @@ Class::Class(
 std::vector<std::string> Class::Summary(
     bool includeDescription) const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.Class.Summary");
   try
   {
@@ -1605,9 +1605,9 @@ std::vector<std::string> Class::Summary(
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Class.Summary", e); }
+  { throw spdoc_catch_exception("Class.Summary", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Class.Summary"); }
+  { throw spdoc_catch_all("Class.Summary"); }
 }
 
 std::vector<std::string> Class_Helper::Summary(
@@ -1703,7 +1703,7 @@ std::vector<std::string> Class_Helper::Summary(
 
 std::string Class::getType() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.Class.getType");
   try
   {
@@ -1715,9 +1715,9 @@ std::string Class::getType() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Class.getType", e); }
+  { throw spdoc_catch_exception("Class.getType", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Class.getType"); }
+  { throw spdoc_catch_all("Class.getType"); }
 }
 
 std::string Class_Helper::getType(
@@ -1737,7 +1737,7 @@ std::string Class_Helper::getType(
 
 std::string Class::ObjectName() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.Class.ObjectName");
   try
   {
@@ -1749,9 +1749,9 @@ std::string Class::ObjectName() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Class.ObjectName", e); }
+  { throw spdoc_catch_exception("Class.ObjectName", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Class.ObjectName"); }
+  { throw spdoc_catch_all("Class.ObjectName"); }
 }
 
 std::string Class_Helper::ObjectName(
@@ -1766,7 +1766,7 @@ std::string Class_Helper::ObjectName(
 
 std::string Class::ServiceNamespace() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.Class.ServiceNamespace");
   try
   {
@@ -1778,9 +1778,9 @@ std::string Class::ServiceNamespace() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Class.ServiceNamespace", e); }
+  { throw spdoc_catch_exception("Class.ServiceNamespace", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Class.ServiceNamespace"); }
+  { throw spdoc_catch_all("Class.ServiceNamespace"); }
 }
 
 std::string Class_Helper::ServiceNamespace(
@@ -1806,7 +1806,7 @@ ModuleConstSP Module::New(
     const std::vector<ConstructConstSP>& constructs)
 {
   SPI_PROFILE("spdoc.Module");
-  bool isLogging = spdoc_begin_function(true);
+  spdoc_begin_function();
   try
   {
 
@@ -1817,9 +1817,9 @@ ModuleConstSP Module::New(
     return _obj;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Module", e); }
+  { throw spdoc_catch_exception("Module", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Module"); }
+  { throw spdoc_catch_all("Module"); }
 }
 
 ModuleConstSP Module::Make(
@@ -1849,7 +1849,7 @@ std::vector<std::string> Module::combineSummaries(
     const std::vector<ModuleConstSP>& modules,
     bool sort)
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.Module.combineSummaries");
   try
   {
@@ -1861,9 +1861,9 @@ std::vector<std::string> Module::combineSummaries(
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Module.combineSummaries", e); }
+  { throw spdoc_catch_exception("Module.combineSummaries", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Module.combineSummaries"); }
+  { throw spdoc_catch_all("Module.combineSummaries"); }
 }
 
 std::vector<std::string> Module_Helper::combineSummaries(
@@ -1925,26 +1925,26 @@ ServiceConstSP Service::New(
     const std::vector<EnumConstSP>& importedEnums,
     bool sharedService,
     bool hasShutdown,
-    bool noLog,
+    bool noLogging,
     bool recording)
 {
   SPI_PROFILE("spdoc.Service");
-  bool isLogging = spdoc_begin_function(true);
+  spdoc_begin_function();
   try
   {
 
     auto _obj = Make(name, description, longName, ns, declSpec, version, modules,
-        importedBaseClasses, importedEnums, sharedService, hasShutdown, noLog,
-        recording);
+        importedBaseClasses, importedEnums, sharedService, hasShutdown,
+        noLogging, recording);
 
     spdoc_end_function();
 
     return _obj;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Service", e); }
+  { throw spdoc_catch_exception("Service", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Service"); }
+  { throw spdoc_catch_all("Service"); }
 }
 
 ServiceConstSP Service::Make(
@@ -1959,13 +1959,13 @@ ServiceConstSP Service::Make(
     const std::vector<EnumConstSP>& importedEnums,
     bool sharedService,
     bool hasShutdown,
-    bool noLog,
+    bool noLogging,
     bool recording)
 {
     return ServiceConstSP(
         new Service(name, description, longName, ns, declSpec, version,
             modules, importedBaseClasses, importedEnums, sharedService,
-            hasShutdown, noLog, recording));
+            hasShutdown, noLogging, recording));
 }
 
 Service::Service(
@@ -1980,7 +1980,7 @@ Service::Service(
     const std::vector<EnumConstSP>& importedEnums,
     bool sharedService,
     bool hasShutdown,
-    bool noLog,
+    bool noLogging,
     bool recording)
     :
     spi::Object(true),
@@ -1995,14 +1995,14 @@ Service::Service(
     importedEnums(importedEnums),
     sharedService(sharedService),
     hasShutdown(hasShutdown),
-    noLog(noLog),
+    noLogging(noLogging),
     recording(recording)
 {}
 
 ServiceConstSP Service::CombineSharedServices(
     const std::vector<ServiceConstSP>& sharedServices) const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.Service.CombineSharedServices");
   try
   {
@@ -2015,9 +2015,9 @@ ServiceConstSP Service::CombineSharedServices(
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Service.CombineSharedServices", e); }
+  { throw spdoc_catch_exception("Service.CombineSharedServices", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Service.CombineSharedServices"); }
+  { throw spdoc_catch_all("Service.CombineSharedServices"); }
 }
 
 ServiceConstSP Service_Helper::CombineSharedServices(
@@ -2066,14 +2066,14 @@ ServiceConstSP Service_Helper::CombineSharedServices(
         self->importedEnums,
         false, // sharedService flag
         self->hasShutdown,
-        self->noLog,
+        self->noLogging,
         self->recording);
 }
 
 std::vector<std::string> Service::Summary(
     bool sort) const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.Service.Summary");
   try
   {
@@ -2086,9 +2086,9 @@ std::vector<std::string> Service::Summary(
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Service.Summary", e); }
+  { throw spdoc_catch_exception("Service.Summary", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Service.Summary"); }
+  { throw spdoc_catch_all("Service.Summary"); }
 }
 
 std::vector<std::string> Service_Helper::Summary(
@@ -2111,7 +2111,7 @@ std::vector<std::string> Service::combineSummaries(
     const std::vector<ServiceConstSP>& services,
     bool sort)
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.Service.combineSummaries");
   try
   {
@@ -2123,9 +2123,9 @@ std::vector<std::string> Service::combineSummaries(
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Service.combineSummaries", e); }
+  { throw spdoc_catch_exception("Service.combineSummaries", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Service.combineSummaries"); }
+  { throw spdoc_catch_all("Service.combineSummaries"); }
 }
 
 std::vector<std::string> Service_Helper::combineSummaries(
@@ -2171,7 +2171,7 @@ std::vector<std::string> Service_Helper::combineSummaries(
 
 std::vector<std::string> Service::getEnums() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.Service.getEnums");
   try
   {
@@ -2183,9 +2183,9 @@ std::vector<std::string> Service::getEnums() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Service.getEnums", e); }
+  { throw spdoc_catch_exception("Service.getEnums", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Service.getEnums"); }
+  { throw spdoc_catch_all("Service.getEnums"); }
 }
 
 std::vector<std::string> Service_Helper::getEnums(
@@ -2213,7 +2213,7 @@ std::vector<std::string> Service_Helper::getEnums(
 EnumConstSP Service::getEnum(
     const std::string& name) const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.Service.getEnum");
   try
   {
@@ -2225,9 +2225,9 @@ EnumConstSP Service::getEnum(
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Service.getEnum", e); }
+  { throw spdoc_catch_exception("Service.getEnum", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Service.getEnum"); }
+  { throw spdoc_catch_all("Service.getEnum"); }
 }
 
 EnumConstSP Service_Helper::getEnum(
@@ -2253,7 +2253,7 @@ EnumConstSP Service_Helper::getEnum(
 std::vector<std::string> Service::getEnumerands(
     const std::string& name) const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.Service.getEnumerands");
   try
   {
@@ -2266,9 +2266,9 @@ std::vector<std::string> Service::getEnumerands(
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Service.getEnumerands", e); }
+  { throw spdoc_catch_exception("Service.getEnumerands", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Service.getEnumerands"); }
+  { throw spdoc_catch_all("Service.getEnumerands"); }
 }
 
 std::vector<std::string> Service_Helper::getEnumerands(
@@ -2301,7 +2301,7 @@ std::vector<std::string> Service_Helper::getEnumerands(
 
 std::vector<std::string> Service::getClasses() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.Service.getClasses");
   try
   {
@@ -2314,9 +2314,9 @@ std::vector<std::string> Service::getClasses() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Service.getClasses", e); }
+  { throw spdoc_catch_exception("Service.getClasses", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Service.getClasses"); }
+  { throw spdoc_catch_all("Service.getClasses"); }
 }
 
 std::vector<std::string> Service_Helper::getClasses(
@@ -2344,7 +2344,7 @@ std::vector<std::string> Service_Helper::getClasses(
 ClassConstSP Service::getClass(
     const std::string& className) const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.Service.getClass");
   try
   {
@@ -2356,9 +2356,9 @@ ClassConstSP Service::getClass(
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Service.getClass", e); }
+  { throw spdoc_catch_exception("Service.getClass", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Service.getClass"); }
+  { throw spdoc_catch_all("Service.getClass"); }
 }
 
 ClassConstSP Service_Helper::getClass(
@@ -2387,7 +2387,7 @@ bool Service::isSubClass(
     const ClassConstSP& cls,
     const std::string& name) const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.Service.isSubClass");
   try
   {
@@ -2400,9 +2400,9 @@ bool Service::isSubClass(
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Service.isSubClass", e); }
+  { throw spdoc_catch_exception("Service.isSubClass", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Service.isSubClass"); }
+  { throw spdoc_catch_all("Service.isSubClass"); }
 }
 
 bool Service_Helper::isSubClass(
@@ -2439,7 +2439,7 @@ std::string Service::getPropertyClass(
     const std::string& baseClassName,
     const std::string& fieldName) const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.Service.getPropertyClass");
   try
   {
@@ -2452,9 +2452,9 @@ std::string Service::getPropertyClass(
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Service.getPropertyClass", e); }
+  { throw spdoc_catch_exception("Service.getPropertyClass", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Service.getPropertyClass"); }
+  { throw spdoc_catch_all("Service.getPropertyClass"); }
 }
 
 std::string Service_Helper::getPropertyClass(
@@ -2491,7 +2491,7 @@ std::string Service_Helper::getPropertyClass(
 
 std::vector<std::string> Service::getConstructs() const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.Service.getConstructs");
   try
   {
@@ -2504,9 +2504,9 @@ std::vector<std::string> Service::getConstructs() const
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Service.getConstructs", e); }
+  { throw spdoc_catch_exception("Service.getConstructs", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Service.getConstructs"); }
+  { throw spdoc_catch_all("Service.getConstructs"); }
 }
 
 std::vector<std::string> Service_Helper::getConstructs(
@@ -2530,7 +2530,7 @@ std::vector<std::string> Service_Helper::getConstructs(
 ConstructConstSP Service::getConstruct(
     const std::string& name) const
 {
-  bool isLogging = spdoc_begin_function();
+  spdoc_begin_function();
   SPI_PROFILE("spdoc.Service.getConstruct");
   try
   {
@@ -2542,9 +2542,9 @@ ConstructConstSP Service::getConstruct(
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "Service.getConstruct", e); }
+  { throw spdoc_catch_exception("Service.getConstruct", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "Service.getConstruct"); }
+  { throw spdoc_catch_all("Service.getConstruct"); }
 }
 
 ConstructConstSP Service_Helper::getConstruct(
@@ -2566,6 +2566,11 @@ std::string Service::shutdown() const
         return ns + "::" + name + "_shutdown";
 
     return std::string();
+}
+
+bool Service::hasLogging() const
+{
+    return !noLogging;
 }
 
 void Service::buildIndexEnums() const

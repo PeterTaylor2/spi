@@ -87,10 +87,9 @@ ReplayFunctionActionConstSP ReplayFunctionAction::New(
     const spi::MapObjectSP& output)
 {
   SPI_PROFILE("spi_replay.ReplayFunctionAction");
-  bool isLogging = replay_begin_function(true);
+  replay_begin_function();
   try
   {
-
     ReplayFunctionActionConstSP _obj = Make(inputs, output);
 
     replay_end_function();
@@ -98,9 +97,9 @@ ReplayFunctionActionConstSP ReplayFunctionAction::New(
     return _obj;
   }
   catch (std::exception& e)
-  { throw replay_catch_exception(isLogging, "ReplayFunctionAction", e); }
+  { throw replay_catch_exception("ReplayFunctionAction", e); }
   catch (...)
-  { throw replay_catch_all(isLogging, "ReplayFunctionAction"); }
+  { throw replay_catch_all("ReplayFunctionAction"); }
 }
 
 ReplayFunctionActionConstSP ReplayFunctionAction::Make(
@@ -207,10 +206,9 @@ ReplayObjectActionConstSP ReplayObjectAction::New(
     const spi::MapObjectSP& inputs)
 {
   SPI_PROFILE("spi_replay.ReplayObjectAction");
-  bool isLogging = replay_begin_function(true);
+  replay_begin_function();
   try
   {
-
     ReplayObjectActionConstSP _obj = Make(inputs);
 
     replay_end_function();
@@ -218,9 +216,9 @@ ReplayObjectActionConstSP ReplayObjectAction::New(
     return _obj;
   }
   catch (std::exception& e)
-  { throw replay_catch_exception(isLogging, "ReplayObjectAction", e); }
+  { throw replay_catch_exception("ReplayObjectAction", e); }
   catch (...)
-  { throw replay_catch_all(isLogging, "ReplayObjectAction"); }
+  { throw replay_catch_all("ReplayObjectAction"); }
 }
 
 ReplayObjectActionConstSP ReplayObjectAction::Make(
@@ -350,7 +348,7 @@ ReplayCodeGeneratorConstSP ReplayCodeGenerator::Wrap(const inner_type& inner)
 void ReplayCodeGenerator::GenerateFunction(
     const ReplayFunctionActionConstSP& action) const
 {
-  bool isLogging = replay_begin_function();
+  replay_begin_function();
   SPI_PROFILE("spi_replay.ReplayCodeGenerator.GenerateFunction");
   try
   {
@@ -368,9 +366,9 @@ void ReplayCodeGenerator::GenerateFunction(
     replay_end_function();
   }
   catch (std::exception& e)
-  { throw replay_catch_exception(isLogging, "ReplayCodeGenerator.GenerateFunction", e); }
+  { throw replay_catch_exception("ReplayCodeGenerator.GenerateFunction", e); }
   catch (...)
-  { throw replay_catch_all(isLogging, "ReplayCodeGenerator.GenerateFunction"); }
+  { throw replay_catch_all("ReplayCodeGenerator.GenerateFunction"); }
 }
 
 void ReplayCodeGenerator_Helper::GenerateFunction(
@@ -383,7 +381,7 @@ void ReplayCodeGenerator_Helper::GenerateFunction(
 void ReplayCodeGenerator::GenerateObject(
     const ReplayObjectActionConstSP& action) const
 {
-  bool isLogging = replay_begin_function();
+  replay_begin_function();
   SPI_PROFILE("spi_replay.ReplayCodeGenerator.GenerateObject");
   try
   {
@@ -401,9 +399,9 @@ void ReplayCodeGenerator::GenerateObject(
     replay_end_function();
   }
   catch (std::exception& e)
-  { throw replay_catch_exception(isLogging, "ReplayCodeGenerator.GenerateObject", e); }
+  { throw replay_catch_exception("ReplayCodeGenerator.GenerateObject", e); }
   catch (...)
-  { throw replay_catch_all(isLogging, "ReplayCodeGenerator.GenerateObject"); }
+  { throw replay_catch_all("ReplayCodeGenerator.GenerateObject"); }
 }
 
 void ReplayCodeGenerator_Helper::GenerateObject(
@@ -507,7 +505,7 @@ ReplayLog::ReplayLog(const inner_type& inner)
 void ReplayLog::generateCode(
     const ReplayCodeGeneratorConstSP& generator) const
 {
-  bool isLogging = replay_begin_function();
+  replay_begin_function();
   SPI_PROFILE("spi_replay.ReplayLog.generateCode");
   try
   {
@@ -525,9 +523,9 @@ void ReplayLog::generateCode(
     replay_end_function();
   }
   catch (std::exception& e)
-  { throw replay_catch_exception(isLogging, "ReplayLog.generateCode", e); }
+  { throw replay_catch_exception("ReplayLog.generateCode", e); }
   catch (...)
-  { throw replay_catch_all(isLogging, "ReplayLog.generateCode"); }
+  { throw replay_catch_all("ReplayLog.generateCode"); }
 }
 
 void ReplayLog_Helper::generateCode(
@@ -541,7 +539,7 @@ void ReplayLog_Helper::generateCode(
 ReplayLogConstSP ReplayLog::Read(
     const std::string& infilename)
 {
-  bool isLogging = replay_begin_function();
+  replay_begin_function();
   SPI_PROFILE("spi_replay.ReplayLog.Read");
   try
   {
@@ -554,9 +552,9 @@ ReplayLogConstSP ReplayLog::Read(
     return o_result;
   }
   catch (std::exception& e)
-  { throw replay_catch_exception(isLogging, "ReplayLog.Read", e); }
+  { throw replay_catch_exception("ReplayLog.Read", e); }
   catch (...)
-  { throw replay_catch_all(isLogging, "ReplayLog.Read"); }
+  { throw replay_catch_all("ReplayLog.Read"); }
 }
 
 spi_boost::intrusive_ptr< SPI_NAMESPACE::ReplayLog > ReplayLog_Helper::Read(

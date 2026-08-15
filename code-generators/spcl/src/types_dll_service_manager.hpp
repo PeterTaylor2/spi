@@ -41,14 +41,12 @@ using spi::SafeCopy;
 
 spi::Service* types_service();
 void types_check_permission();
-bool types_begin_function(bool noLogging=false);
+void types_begin_function();
 void types_end_function();
 std::runtime_error types_catch_exception(
-    bool isLogging,
     const char* name,
     std::exception& e);
 std::runtime_error types_catch_all(
-    bool isLogging,
     const char* name);
 
 TYPES_END_NAMESPACE

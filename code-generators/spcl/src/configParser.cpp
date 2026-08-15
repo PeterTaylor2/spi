@@ -958,7 +958,7 @@ FunctionConstSP parseFunction(
 
     if (functionDefaultOptions.size() == 0)
     {
-        functionDefaultOptions["noLog"]        = BoolConstant::Make(service->noLog());
+        functionDefaultOptions["noLog"]        = BoolConstant::Make(false);
         functionDefaultOptions["noConvert"]    = BoolConstant::Make(false);
         functionDefaultOptions["noRecord"]     = BoolConstant::Make(false);
         functionDefaultOptions["excelOptions"] = StringConstant::Make("");
@@ -2489,7 +2489,7 @@ void initClassStructOptions(
     const ServiceDefinitionConstSP& svc,
     bool wrapperClass)
 {
-    defaultOptions["noLog"] = BoolConstant::Make(svc->noLog());
+    defaultOptions["noLog"] = BoolConstant::Make(false);
     defaultOptions["noMake"] = BoolConstant::Make(svc->noClassMake());
     defaultOptions["objectName"] = StringConstant::Make("");
     defaultOptions["canPut"] = BoolConstant::Make(false);

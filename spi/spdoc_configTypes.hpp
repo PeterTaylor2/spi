@@ -969,7 +969,7 @@ public:
         const std::vector<EnumConstSP>& importedEnums = {},
         bool sharedService = false,
         bool hasShutdown = false,
-        bool noLog = false,
+        bool noLogging = false,
         bool recording = false);
 
     /** Use New when calling the constructor direct from the add-in level */
@@ -985,7 +985,7 @@ public:
         const std::vector<EnumConstSP>& importedEnums = {},
         bool sharedService = false,
         bool hasShutdown = false,
-        bool noLog = false,
+        bool noLogging = false,
         bool recording = false);
 
     /**
@@ -1125,7 +1125,7 @@ protected:
         const std::vector<EnumConstSP>& importedEnums,
         bool sharedService,
         bool hasShutdown,
-        bool noLog,
+        bool noLogging,
         bool recording);
 
 public:
@@ -1141,9 +1141,10 @@ public:
     const std::vector<EnumConstSP> importedEnums;
     const bool sharedService;
     const bool hasShutdown;
-    const bool noLog;
+    const bool noLogging;
     const bool recording;
     std::string shutdown() const;
+    bool hasLogging() const;
 
 private:
     friend class Service_Helper;

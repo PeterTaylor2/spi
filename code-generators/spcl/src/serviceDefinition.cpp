@@ -65,7 +65,7 @@ TypesLibraryConstSP TypesLibrary::Make(
     const std::vector<DataTypeConstSP>& publicDataTypes,
     const std::vector<ClassConstSP>& classes,
     const std::vector<EnumConstSP>& enums,
-    bool noLog,
+    bool noLogging,
     bool recording)
 {
     std::vector<DataTypeConstSP> definedDataTypes;
@@ -87,7 +87,7 @@ TypesLibraryConstSP TypesLibrary::Make(
 
     return TypesLibraryConstSP(
         new TypesLibrary(name, ns, version, lastModuleName, definedDataTypes, publicDataTypes, baseClasses, enums,
-            noLog, recording));
+            noLogging, recording));
 }
 
 TypesLibraryConstSP TypesLibrary::RemoveDuplicates(const std::vector<TypesLibraryConstSP>& tls) const
@@ -172,7 +172,7 @@ TypesLibraryConstSP TypesLibrary::RemoveDuplicates(const std::vector<TypesLibrar
     return TypesLibrary::Make(
         m_name, m_ns, m_version, m_lastModuleName,
         dataTypes, publicDataTypes, baseClasses, enums,
-        m_noLog, m_recording);
+        m_noLogging, m_recording);
 }
 
 TypesLibrary::TypesLibrary(
@@ -184,7 +184,7 @@ TypesLibrary::TypesLibrary(
     const std::vector<DataTypeConstSP>& publicDataTypes,
     const std::vector<ClassConstSP>& baseClasses,
     const std::vector<EnumConstSP>& enums,
-    bool noLog,
+    bool noLogging,
     bool recording)
     :
     m_name(name),
@@ -195,7 +195,7 @@ TypesLibrary::TypesLibrary(
     m_publicDataTypes(publicDataTypes),
     m_baseClasses(baseClasses),
     m_enums(enums),
-    m_noLog(noLog),
+    m_noLogging(noLogging),
     m_recording(recording)
 {}
 
@@ -261,9 +261,9 @@ const std::vector<EnumConstSP>& TypesLibrary::enums() const
     return m_enums;
 }
 
-bool TypesLibrary::noLog() const
+bool TypesLibrary::noLogging() const
 {
-    return m_noLog;
+    return m_noLogging;
 }
 
 bool TypesLibrary::recording() const
@@ -285,7 +285,7 @@ ServiceDefinitionSP ServiceDefinition::Make(
     const std::string& declSpec,
     const std::string& sharedPtr,
     const std::string& sharedPtrInclude,
-    bool noLog,
+    bool noLogging,
     bool useVersionedNamespace,
     const std::vector<std::string>& description,
     const std::string& helpFunc,
@@ -295,7 +295,7 @@ ServiceDefinitionSP ServiceDefinition::Make(
 {
     return ServiceDefinitionSP(new ServiceDefinition(
         name, dllName, longName, ns, version, declSpec, sharedPtr,
-        sharedPtrInclude, noLog, useVersionedNamespace, description,
+        sharedPtrInclude, noLogging, useVersionedNamespace, description,
         helpFunc, svoFileName, noClassMake, recording));
 }
 
@@ -308,7 +308,7 @@ ServiceDefinition::ServiceDefinition(
     const std::string& declSpec,
     const std::string& sharedPtr,
     const std::string& sharedPtrInclude,
-    bool noLog,
+    bool noLogging,
     bool useVersionedNamespace,
     const std::vector<std::string>& description,
     const std::string& helpFunc,
@@ -324,7 +324,7 @@ ServiceDefinition::ServiceDefinition(
     m_declSpec(declSpec),
     m_sharedPtr(sharedPtr),
     m_sharedPtrInclude(sharedPtrInclude),
-    m_noLog(noLog),
+    m_noLogging(noLogging),
     m_useVersionedNamespace(useVersionedNamespace),
     m_description(description),
     m_helpFunc(helpFunc),
@@ -382,7 +382,7 @@ TypesLibraryConstSP ServiceDefinition::getTypesLibrary() const
         m_publicDataTypes,
         m_classes,
         enums,
-        m_noLog,
+        m_noLogging,
         m_recording);
 }
 
@@ -510,7 +510,7 @@ void ServiceDefinition::addServiceLevelModule()
                 Attribute::Make({}, stringType, "name", 0, true, StringConstant::Make("")),
                 false) },
             Verbatim::Make("", 0, code),
-            true, // noLog
+            true, // noLogging
             true, // noConvert
             {}, // excel options
             0, // cache size
@@ -987,9 +987,14 @@ const std::string& ServiceDefinition::getTypeConvertersHeader() const
     return m_typeConvertersHeader;
 }
 
-bool ServiceDefinition::noLog() const
+bool ServiceDefinition::noLogging() const
 {
-    return m_noLog;
+    return m_noLogging;
+}
+
+bool ServiceDefinition::hasLogging() const
+{
+    return !m_noLogging;
 }
 
 bool ServiceDefinition::noClassMake() const
@@ -1061,7 +1066,7 @@ spdoc::ServiceConstSP ServiceDefinition::getDoc() const
     return spdoc::Service::Make(m_name, m_description, m_longName,
         m_namespace, m_declSpec, m_version.versionString(), moduleDocs,
         importedBaseClasses, importedEnums, isSharedService(),
-        hasShutdown, m_noLog, m_recording);
+        hasShutdown, m_noLogging, m_recording);
 }
 
 void ServiceDefinition::writeMakefileProperties(
@@ -1257,7 +1262,7 @@ void ServiceDefinition::writeServiceHeaders(
         << m_import << "\n"
         << "void " << m_name << "_stop_service();\n";
 
-    if (!m_noLog)
+    if (!m_noLogging)
     {
         ostr << "\n"
             << m_import << "\n"
@@ -1318,16 +1323,39 @@ void ServiceDefinition::writeServiceHeaders(
         << "using spi::SafeCopy;\n"
         << "\n"
         << "spi::Service* " << m_name << "_service();\n"
-        << "void " << m_name << "_check_permission();\n"
-        << "bool " << m_name << "_begin_function(bool noLogging=false);\n"
-        << "void " << m_name << "_end_function();\n"
-        << "std::runtime_error " << m_name << "_catch_exception(\n"
-        << "    bool isLogging,\n"
+        << "void " << m_name << "_check_permission();\n";
+
+    if (m_noLogging)
+    {
+        ostr2 << "void " << m_name << "_begin_function();\n";
+    }
+    else
+    {
+        ostr2 << "bool " << m_name << "_begin_function(bool noLogging=false);\n";
+    }
+
+    ostr2 << "void " << m_name << "_end_function();\n";
+
+    ostr2 << "std::runtime_error " << m_name << "_catch_exception(\n"
         << "    const char* name,\n"
-        << "    std::exception& e);\n"
-        << "std::runtime_error " << m_name << "_catch_all(\n"
-        << "    bool isLogging,\n"
-        << "    const char* name);\n";
+        << "    std::exception& e";
+
+    if (!m_noLogging)
+    {
+        ostr2 << ",\n    bool isLogging = false";
+    }
+
+    ostr2 << ");\n";
+
+    ostr2 << "std::runtime_error " << m_name << "_catch_all(\n"
+        << "    const char* name";
+
+    if (!m_noLogging)
+    {
+        ostr2 << ",\n    bool isLogging = false";
+    }
+
+    ostr2 << ");\n";
 
     if (m_startup)
     {
@@ -1448,10 +1476,15 @@ void ServiceDefinition::writeServiceSource(
     writeStartNamespace(ostr);
 
     ostr << "\n"
-         << "static char g_startup_directory[2048] = \"\";\n"
-         << "static spi::ServiceSP g_service;\n"
-         << "static const bool* g_is_logging = NULL;\n"
-         << "static spi::Date g_time_out;\n"
+        << "static char g_startup_directory[2048] = \"\";\n"
+        << "static spi::ServiceSP g_service;\n";
+
+    if (!m_noLogging)
+    {
+        ostr << "static const bool* g_is_logging = nullptr;\n";
+    }
+
+    ostr << "static spi::Date g_time_out;\n"
          << "static bool g_timed_out = false;\n"
          << "static std::string g_time_out_error;\n";
 
@@ -1524,7 +1557,11 @@ void ServiceDefinition::writeServiceSource(
             << "\", \"" << m_namespace << "\", \"" << m_version.versionString() << "\");\n";
     }
     ostr << "    svc->add_svo(\"" << m_svoFileName << "\");\n";
-    ostr << "    g_is_logging = svc->is_logging_flag();\n";
+
+    if (!m_noLogging)
+    {
+        ostr << "    g_is_logging = svc->is_logging_flag();\n";
+    }
 
     if (m_serviceInit)
     {
@@ -1589,76 +1626,111 @@ void ServiceDefinition::writeServiceSource(
          << "}\n";
 
     ostr << "\n"
-         << "spi::ServiceSP " << m_name << "_start_service()\n"
-         << "{\n"
-         << "    " << m_name << "_init();\n"
-         << "    g_service->start_up();\n"
-         << "    return g_service;\n"
-         << "}\n"
-         << "\n"
-         << "void " << m_name << "_stop_service()\n"
-         << "{\n"
-         << "    if (g_service)\n"
-         << "        g_service->shut_down();\n"
-         << "}\n"
-         << "\n"
-         << "spi::ServiceSP " << m_name << "_exported_service()\n"
-         << "{\n"
-         << "    " << m_name << "_init();\n"
-         << "    return g_service;\n"
-         << "}\n"
-         << "\n"
-         << "spi::Service* " << m_name << "_service()\n"
-         << "{\n"
-         << "    " << m_name << "_init();\n"
-         << "    return g_service.get();\n"
-         << "}\n"
-         << "\n"
-         << "const char* " << m_name << "_version()\n"
-         << "{\n"
-         << "    return \"" << m_version.versionString() << "\";\n"
-         << "}\n"
-         << "\n"
-         << "bool " << m_name << "_begin_function(bool noLogging)\n"
-         << "{\n"
-         << "    " << m_name << "_check_permission();\n"
-         << "    bool isLogging(false);\n"
-         << "    if (g_is_logging && *g_is_logging)\n"
-         << "    {\n"
-         << "        int log_level = spi::IncrementLogLevel();\n"
-         << "        isLogging = !noLogging && log_level == 0;\n"
-         << "    }\n"
-         << "    return isLogging;\n"
-         << "}\n"
-         << "\n"
-         << "void " << m_name << "_end_function()\n"
-         << "{\n"
-         << "    if (g_is_logging && *g_is_logging)\n"
-         << "        spi::DecrementLogLevel();\n"
-         << "}\n"
-         << "\n"
-         << "\n"
-         << "std::runtime_error " << m_name << "_catch_exception(bool isLogging, const char* name, std::exception& e)\n"
-         << "{\n"
-         << "    if (g_is_logging && *g_is_logging)\n"
-         << "        spi::DecrementLogLevel();\n"
-         << "    if (isLogging)\n"
-         << "        g_service->log_error(e);\n"
-         << "    return spi::RuntimeError(e, name);\n"
-         << "}\n"
-         << "\n"
-         << "std::runtime_error " << m_name << "_catch_all(bool isLogging, const char* name)\n"
-         << "{\n"
-         << "    if (g_is_logging && *g_is_logging)\n"
-         << "        spi::DecrementLogLevel();\n"
-         << "    std::runtime_error e(\"Unknown exception\");\n"
-         << "    if (isLogging)\n"
-         << "        g_service->log_error(e);\n"
-         << "    return spi::RuntimeError(e, name);\n"
-         << "}\n"
-         << "\n";
+        << "spi::ServiceSP " << m_name << "_start_service()\n"
+        << "{\n"
+        << "    " << m_name << "_init();\n"
+        << "    g_service->start_up();\n"
+        << "    return g_service;\n"
+        << "}\n"
+        << "\n"
+        << "void " << m_name << "_stop_service()\n"
+        << "{\n"
+        << "    if (g_service)\n"
+        << "        g_service->shut_down();\n"
+        << "}\n"
+        << "\n"
+        << "spi::ServiceSP " << m_name << "_exported_service()\n"
+        << "{\n"
+        << "    " << m_name << "_init();\n"
+        << "    return g_service;\n"
+        << "}\n"
+        << "\n"
+        << "spi::Service* " << m_name << "_service()\n"
+        << "{\n"
+        << "    " << m_name << "_init();\n"
+        << "    return g_service.get();\n"
+        << "}\n"
+        << "\n"
+        << "const char* " << m_name << "_version()\n"
+        << "{\n"
+        << "    return \"" << m_version.versionString() << "\";\n"
+        << "}\n"
+        << "\n";
 
-    if (!m_noLog)
+    if (m_noLogging)
+    {
+        ostr << "void " << m_name << "_begin_function()\n"
+            << "{\n"
+            << "    " << m_name << "_check_permission();\n"
+            << "}\n"
+            << "\n"
+            << "void " << m_name << "_end_function()\n"
+            << "{\n"
+            << "}\n"
+            << "\n"
+            << "\n";
+    }
+    else
+    {
+        ostr << "bool " << m_name << "_begin_function(bool noLogging)\n"
+            << "{\n"
+            << "    " << m_name << "_check_permission();\n"
+            << "    bool isLogging(false);\n"
+            << "    if (g_is_logging && *g_is_logging)\n"
+            << "    {\n"
+            << "        int log_level = spi::IncrementLogLevel();\n"
+            << "        isLogging = !noLogging && log_level == 0;\n"
+            << "    }\n"
+            << "    return isLogging;\n"
+            << "}\n"
+            << "\n"
+            << "void " << m_name << "_end_function()\n"
+            << "{\n"
+            << "    if (g_is_logging && *g_is_logging)\n"
+            << "        spi::DecrementLogLevel();\n"
+            << "}\n"
+            << "\n"
+            << "\n";
+    }
+
+    if (m_noLogging)
+    {
+        ostr << "std::runtime_error " << m_name << "_catch_exception(const char* name, std::exception& e)\n"
+            << "{\n"
+            << "    return spi::RuntimeError(e, name);\n"
+            << "}\n"
+            << "\n"
+            << "std::runtime_error " << m_name << "_catch_all(const char* name)\n"
+            << "{\n"
+            << "    std::runtime_error e(\"Unknown exception\");\n"
+            << "    return spi::RuntimeError(e, name);\n"
+            << "}\n"
+            << "\n";
+    }
+    else
+    {
+        ostr << "std::runtime_error " << m_name << "_catch_exception(const char* name, std::exception& e, bool isLogging)\n"
+            << "{\n"
+            << "    if (g_is_logging && *g_is_logging)\n"
+            << "        spi::DecrementLogLevel();\n"
+            << "    if (isLogging)\n"
+            << "        g_service->log_error(e);\n"
+            << "    return spi::RuntimeError(e, name);\n"
+            << "}\n"
+            << "\n"
+            << "std::runtime_error " << m_name << "_catch_all(const char* name, bool isLogging)\n"
+            << "{\n"
+            << "    if (g_is_logging && *g_is_logging)\n"
+            << "        spi::DecrementLogLevel();\n"
+            << "    std::runtime_error e(\"Unknown exception\");\n"
+            << "    if (isLogging)\n"
+            << "        g_service->log_error(e);\n"
+            << "    return spi::RuntimeError(e, name);\n"
+            << "}\n"
+            << "\n";
+    }
+    
+    if (!m_noLogging)
     {
         ostr << "void " << m_name << "_start_logging(const char* filename, const char* options, bool minimal)\n"
             << "{\n"

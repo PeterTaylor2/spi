@@ -248,32 +248,25 @@ std::string PythonService::writePydSourceFile(const std::string& dirname) const
             << "    PyObject* self, PyObject* args)\n"
             << "{\n"
             << "    return theService->ObjectCoerce(args);\n"
-            << "}\n"
-            //<< "\n"
-            //<< "PyObject* py_" << m_service->ns << "_object_get(\n"
-            //<< "    PyObject* self, PyObject* args)\n"
-            //<< "{\n"
-            //<< "    return theService->ObjectGet(args);\n"
-            //<< "}\n"
-            //<< "\n"
-            //<< "PyObject* py_" << m_service->ns << "_object_put(\n"
-            //<< "    PyObject* self, PyObject* args)\n"
-            //<< "{\n"
-            //<< "    return theService->ObjectPut(args);\n"
-            //<< "}\n"
-            << "\n"
-            << "PyObject* py_" << m_service->ns << "_start_logging(\n"
-            << "    PyObject* self, PyObject* args)\n"
-            << "{\n"
-            << "    return theService->StartLogging(args);\n"
-            << "}\n"
-            << "\n"
-            << "PyObject* py_" << m_service->ns << "_stop_logging(\n"
-            << "    PyObject*self, PyObject* args)\n"
-            << "{\n"
-            << "    return theService->StopLogging();\n"
-            << "}\n"
-            << "\n"
+            << "}\n";
+
+        if (m_service->hasLogging())
+        {
+            ostr << "\n"
+                << "PyObject* py_" << m_service->ns << "_start_logging(\n"
+                << "    PyObject* self, PyObject* args)\n"
+                << "{\n"
+                << "    return theService->StartLogging(args);\n"
+                << "}\n"
+                << "\n"
+                << "PyObject* py_" << m_service->ns << "_stop_logging(\n"
+                << "    PyObject*self, PyObject* args)\n"
+                << "{\n"
+                << "    return theService->StopLogging();\n"
+                << "}\n";
+        }
+
+        ostr << "\n"
             << "PyObject* py_" << m_service->ns << "_start_timing(\n"
             << "    PyObject* self, PyObject* args)\n"
             << "{\n"
@@ -387,18 +380,21 @@ std::string PythonService::writePydSourceFile(const std::string& dirname) const
                 << "\n";
         }
 
-        ostr << "    /* start_logging */\n"
-            << "    svc->AddFunction(\"start_logging\", py_" << m_service->ns
-            << "_start_logging,\n"
-            << "        \"start_logging(filename,options?,minimal?)\\n\\n\"\n"
-            << "        \"Start function logging - returns filename.\");\n"
-            << "\n"
-            << "    /* stop_logging */\n"
-            << "    svc->AddFunction(\"stop_logging\", py_" << m_service->ns
-            << "_stop_logging,\n"
-            << "        \"stop_logging()\\n\\nStops function logging\"\n"
-            << "        \" - returns whether logging was on previously.\");\n"
-            << "\n";
+        if (m_service->hasLogging())
+        {
+            ostr << "    /* start_logging */\n"
+                << "    svc->AddFunction(\"start_logging\", py_" << m_service->ns
+                << "_start_logging,\n"
+                << "        \"start_logging(filename,options?,minimal?)\\n\\n\"\n"
+                << "        \"Start function logging - returns filename.\");\n"
+                << "\n"
+                << "    /* stop_logging */\n"
+                << "    svc->AddFunction(\"stop_logging\", py_" << m_service->ns
+                << "_stop_logging,\n"
+                << "        \"stop_logging()\\n\\nStops function logging\"\n"
+                << "        \" - returns whether logging was on previously.\");\n"
+                << "\n";
+        }
 
         ostr << "    /* start_timing */\n"
             << "    svc->AddFunction(\"start_timing\", py_" << m_service->ns

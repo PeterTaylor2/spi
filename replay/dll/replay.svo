@@ -401,5 +401,5 @@ Service {
    }
   }
  }
- noLog = true
+ noLogging = true
 }

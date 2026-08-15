@@ -78,18 +78,6 @@ PyObject* py_spdoc_object_coerce(
     return theService->ObjectCoerce(args);
 }
 
-PyObject* py_spdoc_start_logging(
-    PyObject* self, PyObject* args)
-{
-    return theService->StartLogging(args);
-}
-
-PyObject* py_spdoc_stop_logging(
-    PyObject*self, PyObject* args)
-{
-    return theService->StopLogging();
-}
-
 PyObject* py_spdoc_start_timing(
     PyObject* self, PyObject* args)
 {
@@ -158,16 +146,6 @@ void initpy_spdoc(void)
     svc->AddFunction("object_put", spi_py_object_put,
         "object_put(obj,names[],value,...)\n\n"
         "Sets a value by name within an object.");
-
-    /* start_logging */
-    svc->AddFunction("start_logging", py_spdoc_start_logging,
-        "start_logging(filename,options?,minimal?)\n\n"
-        "Start function logging - returns filename.");
-
-    /* stop_logging */
-    svc->AddFunction("stop_logging", py_spdoc_stop_logging,
-        "stop_logging()\n\nStops function logging"
-        " - returns whether logging was on previously.");
 
     /* start_timing */
     svc->AddFunction("start_timing", py_spdoc_start_timing,

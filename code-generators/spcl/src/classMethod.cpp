@@ -484,7 +484,8 @@ void ClassMethod::implement(
         implementDeclaration(ostr, className);
 
         ostr << "{\n";
-        ostr << "  bool isLogging = " << svc->getName() << "_begin_function();\n";
+
+        bool hasLogging = writeFunctionBegin(ostr, svc, m_function->m_noLog);
 
         ostr << "  SPI_PROFILE(\"" << svc->getNamespace() << "." << classType->name()
             << "." << m_function->fullName() << "\");\n";
@@ -511,7 +512,7 @@ void ClassMethod::implement(
                 ostr, "_constructor", svc->getName(),
                 m_function->m_ns, className, m_function->m_name, inputs);
 
-            if (!m_function->m_noLog)
+            if (hasLogging)
             {
                 ostr << "\n"
                      << "    if (isLogging)\n"
@@ -520,7 +521,7 @@ void ClassMethod::implement(
             }
             ostr << "\n";
         }
-        else if (!m_function->m_noLog)
+        else if (hasLogging)
         {
             ostr << "    if (isLogging)\n"
                  << "    {\n";
@@ -549,7 +550,7 @@ void ClassMethod::implement(
             ostr, m_function->returns(),
             m_function->m_noConvert, inputs, m_function->m_outputs, caller, false);
 
-        if (!m_function->m_noLog)
+        if (hasLogging)
         {
             writeFunctionOutputLogging(
                 ostr, svc->getName(),
@@ -572,7 +573,8 @@ void ClassMethod::implement(
         }
 
         ostr << "  }\n";
-        writeFunctionCatchBlock(ostr, svc->getName(), m_function->m_name, className);
+
+        writeFunctionCatchBlock(ostr, hasLogging, svc->getName(), m_function->m_name, className);
 
         ostr << "}\n";
 
@@ -762,7 +764,7 @@ void ClassMethod::implementHelper(
         m_function->m_returnArrayDim, instanceType, svc,
         m_function->m_inputs, m_function->m_outputs);
 
-    if (!svc->noLog())
+    if (svc->hasLogging())
     {
         writeFunctionObjectType(
             ostr, m_function->m_ns, m_function->m_name, svc->getNamespace(), className);
@@ -782,7 +784,7 @@ void ClassMethod::implementRegistration(
     if (types && !m_function->neededByTypesLibrary())
         return;
 
-    if (!svc->noLog())
+    if (svc->hasLogging())
     {
         ostr << "    " << serviceName << "->add_object_type(&"
             << className << "_" << m_function->m_name

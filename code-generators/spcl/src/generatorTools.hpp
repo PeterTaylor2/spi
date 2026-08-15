@@ -285,8 +285,14 @@ void writeConstructorCatchBlock(
     GeneratedOutput&   ostr,
     const std::string& name);
 
+bool writeFunctionBegin(
+    GeneratedOutput& ostr,
+    const ServiceDefinitionConstSP& svc,
+    bool noLog); // function level parameter
+
 void writeFunctionCatchBlock(
     GeneratedOutput&   ostr,
+    bool hasLogging,
     const std::string& serviceName,
     const std::string& name,
     const std::string& className = std::string());

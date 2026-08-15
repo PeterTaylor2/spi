@@ -40,7 +40,7 @@
  namespace=types
  declSpec=SPI
  sharedPtrInclude=""
- noLog=True
+ noLogging=True
  sharedPtr="spi_boost::intrusive_ptr";
 // spDynamicCast="spi_boost::dynamic_pointer_cast";
 

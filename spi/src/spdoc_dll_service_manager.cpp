@@ -41,7 +41,6 @@ SPDOC_BEGIN_NAMESPACE
 
 static char g_startup_directory[2048] = "";
 static spi::ServiceSP g_service;
-static const bool* g_is_logging = NULL;
 static spi::Date g_time_out;
 static bool g_timed_out = false;
 static std::string g_time_out_error;
@@ -54,7 +53,6 @@ static spi::ServiceSP MakeService()
 {
     spi::ServiceSP svc = spi::Service::Make("spdoc", "spdoc", "1.0.0.0");
     svc->add_svo("spdoc.svo");
-    g_is_logging = svc->is_logging_flag();
 
     publicType_register_object_types(svc);
     constant_register_object_types(svc);
@@ -101,41 +99,24 @@ const char* spdoc_version()
     return "1.0.0.0";
 }
 
-bool spdoc_begin_function(bool noLogging)
+void spdoc_begin_function()
 {
     spdoc_check_permission();
-    bool isLogging(false);
-    if (g_is_logging && *g_is_logging)
-    {
-        int log_level = spi::IncrementLogLevel();
-        isLogging = !noLogging && log_level == 0;
-    }
-    return isLogging;
 }
 
 void spdoc_end_function()
 {
-    if (g_is_logging && *g_is_logging)
-        spi::DecrementLogLevel();
 }
 
 
-std::runtime_error spdoc_catch_exception(bool isLogging, const char* name, std::exception& e)
+std::runtime_error spdoc_catch_exception(const char* name, std::exception& e)
 {
-    if (g_is_logging && *g_is_logging)
-        spi::DecrementLogLevel();
-    if (isLogging)
-        g_service->log_error(e);
     return spi::RuntimeError(e, name);
 }
 
-std::runtime_error spdoc_catch_all(bool isLogging, const char* name)
+std::runtime_error spdoc_catch_all(const char* name)
 {
-    if (g_is_logging && *g_is_logging)
-        spi::DecrementLogLevel();
     std::runtime_error e("Unknown exception");
-    if (isLogging)
-        g_service->log_error(e);
     return spi::RuntimeError(e, name);
 }
 

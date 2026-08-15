@@ -620,17 +620,12 @@ void WrapperClass::implement(
 
             ostr << "  SPI_PROFILE(\"" << svc->getNamespace() << "." << getName(true, ".") << "\");\n";
 
-            // we simply call the Make function
-            ostr << "  bool isLogging = " << svc->getName() << "_begin_function(";
+            bool hasLogging = writeFunctionBegin(ostr, svc, m_noLog);
 
-            if (m_noLog)
-                ostr << "true";
-
-            ostr << ");\n"
-                << "  try\n"
+            ostr << "  try\n"
                 << "  {\n";
 
-            if (!m_noLog)
+            if (hasLogging)
             {
                 ostr << "    if (isLogging)\n"
                     << "    {\n";
@@ -642,11 +637,11 @@ void WrapperClass::implement(
                 ostr << "\n";
                 ostr << "        " << svc->getName()
                     << "_service()->log_inputs(_constructor);\n"
-                    << "    }\n";
+                    << "    }\n"
+                    << "\n";
             }
 
-            ostr << "\n"
-                << "    " << m_name << "ConstSP _obj = Make";
+            ostr << "    " << m_name << "ConstSP _obj = Make";
 
             if (attributes.size() > 0)
             {
@@ -658,7 +653,7 @@ void WrapperClass::implement(
             }
             ostr << ";\n";
 
-            if (!m_noLog)
+            if (hasLogging)
             {
                 writeFunctionOutputLogging(
                     ostr, svc->getName(), m_dataType, false, "_obj", {});
@@ -671,7 +666,7 @@ void WrapperClass::implement(
                 << "    return _obj;\n";
 
             ostr << "  }\n";
-            writeFunctionCatchBlock(ostr, svc->getName(), m_name);
+            writeFunctionCatchBlock(ostr, hasLogging, svc->getName(), m_name);
             ostr << "}\n\n";
         }
 
@@ -1381,7 +1376,7 @@ void WrapperClass::implementHelper(
             writeFunctionCaller(ostr, recording, m_ns, m_name, std::string(),
                 m_dataType, 0, DataTypeConstSP(), svc, AllAttributes());
 
-            if (!svc->noLog())
+            if (svc->hasLogging())
             {
                 writeFunctionObjectType(ostr, m_ns, m_name, svc->getNamespace());
             }
@@ -1410,7 +1405,7 @@ void WrapperClass::implementRegistration(
 
     if (!isAbstract() && !m_noMake)
     {
-        if (!svc->noLog())
+        if (svc->hasLogging())
         {
             ostr << "    " << serviceName << "->add_object_type(&" << m_name
                 << "_FunctionObjectType);\n";

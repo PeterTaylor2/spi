@@ -219,15 +219,19 @@ std::string CService::writePublicHeaderFile(const std::string& dirname,
 
         ostr << "\n"
             << m_import << "\n"
-            << "int " << m_service->ns << "_service_version(char** version);\n"
-            << "\n"
-            << m_import << "\n"
-            << "int " << m_service->ns << "_start_logging(\n"
-            << "    const char* filename,\n"
-            << "    const char* options);\n"
-            << "\n"
-            << m_import << "\n"
-            << "int " << m_service->ns << "_stop_logging();\n";
+            << "int " << m_service->ns << "_service_version(char** version);\n";
+
+        if (m_service->hasLogging())
+        {
+            ostr << "\n"
+                << m_import << "\n"
+                << "int " << m_service->ns << "_start_logging(\n"
+                << "    const char* filename,\n"
+                << "    const char* options);\n"
+                << "\n"
+                << m_import << "\n"
+                << "int " << m_service->ns << "_stop_logging();\n";
+        }
     }
 
     for (size_t i = 0; i < modules.size(); ++i)
@@ -386,51 +390,55 @@ std::string CService::writeSourceFile(const std::string& dirname) const
             << "    }\n"
             << "}\n";
 
-        ostr << "\n"
-            << "int " << m_service->ns << "_start_logging(\n"
-            << "    const char* filename,\n"
-            << "    const char* options)\n"
-            << "{\n"
-            << "    SPI_C_LOCK_GUARD;\n"
-            << "    try\n"
-            << "    {\n"
-            << "        if (!filename)\n"
-            << "        {\n"
-            << "            spi_Error_set_function(__FUNCTION__, \"NULL filename\");\n"
-            << "            return -1;\n"
-            << "        }\n"
-            << "        if (!g_service)\n"
-            << "        {\n"
-            << "            if (init_" << m_service->ns << "())\n"
-            << "                return -1;\n"
-            << "        }\n"
-            << "        SPI_POST_CONDITION(g_service);\n"
-            << "        g_service->start_logging(filename, options);\n"
-            << "        return 0;\n"
-            << "    }\n"
-            << "    catch (std::exception& e)\n"
-            << "    {\n"
-            << "        spi_Error_set_function(__FUNCTION__, e.what());\n"
-            << "        return -1;\n"
-            << "    }\n"
-            << "}\n";
+        if (m_service->hasLogging())
+        {
+            ostr << "\n"
+                << "int " << m_service->ns << "_start_logging(\n"
+                << "    const char* filename,\n"
+                << "    const char* options)\n"
+                << "{\n"
+                << "    SPI_C_LOCK_GUARD;\n"
+                << "    try\n"
+                << "    {\n"
+                << "        if (!filename)\n"
+                << "        {\n"
+                << "            spi_Error_set_function(__FUNCTION__, \"NULL filename\");\n"
+                << "            return -1;\n"
+                << "        }\n"
+                << "        if (!g_service)\n"
+                << "        {\n"
+                << "            if (init_" << m_service->ns << "())\n"
+                << "                return -1;\n"
+                << "        }\n"
+                << "        SPI_POST_CONDITION(g_service);\n"
+                << "        g_service->start_logging(filename, options);\n"
+                << "        return 0;\n"
+                << "    }\n"
+                << "    catch (std::exception& e)\n"
+                << "    {\n"
+                << "        spi_Error_set_function(__FUNCTION__, e.what());\n"
+                << "        return -1;\n"
+                << "    }\n"
+                << "}\n";
 
-        ostr << "\n"
-            << "int " << m_service->ns << "_stop_logging()\n"
-            << "{\n"
-            << "    SPI_C_LOCK_GUARD;\n"
-            << "    try\n"
-            << "    {\n"
-            << "        SPI_PRE_CONDITION(g_service);\n"
-            << "        g_service->stop_logging();\n"
-            << "        return 0;\n"
-            << "    }\n"
-            << "    catch (std::exception& e)\n"
-            << "    {\n"
-            << "        spi_Error_set_function(__FUNCTION__, e.what());\n"
-            << "        return -1;\n"
-            << "    }\n"
-            << "}\n";
+            ostr << "\n"
+                << "int " << m_service->ns << "_stop_logging()\n"
+                << "{\n"
+                << "    SPI_C_LOCK_GUARD;\n"
+                << "    try\n"
+                << "    {\n"
+                << "        SPI_PRE_CONDITION(g_service);\n"
+                << "        g_service->stop_logging();\n"
+                << "        return 0;\n"
+                << "    }\n"
+                << "    catch (std::exception& e)\n"
+                << "    {\n"
+                << "        spi_Error_set_function(__FUNCTION__, e.what());\n"
+                << "        return -1;\n"
+                << "    }\n"
+                << "}\n";
+        }
+
     }
 
     endSourceFile(ostr, filename);

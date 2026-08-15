@@ -908,7 +908,7 @@ public:
         const std::vector<DataTypeConstSP>& publicDataTypes,
         const std::vector<BaseClassConstSP>& baseClasses,
         const std::vector<EnumConstSP>& enums,
-        bool noLog,
+        bool noLogging,
         bool recording);
 
     /** Use New when calling the constructor direct from the add-in level */
@@ -921,7 +921,7 @@ public:
         const std::vector<DataTypeConstSP>& publicDataTypes,
         const std::vector<BaseClassConstSP>& baseClasses,
         const std::vector<EnumConstSP>& enums,
-        bool noLog,
+        bool noLogging,
         bool recording);
 
     typedef spi::ObjectSmartPtr<TypesLibrary> outer_type; 
@@ -953,7 +953,7 @@ private:
         const std::vector<DataTypeConstSP>& publicDataTypes,
         const std::vector<BaseClassConstSP>& baseClasses,
         const std::vector<EnumConstSP>& enums,
-        bool noLog,
+        bool noLogging,
         bool recording);
 
     /* private accessor methods */
@@ -965,7 +965,7 @@ private:
     std::vector<DataTypeConstSP> publicDataTypes() const;
     std::vector<BaseClassConstSP> baseClasses() const;
     std::vector<EnumConstSP> enums() const;
-    bool noLog() const;
+    bool noLogging() const;
     bool recording() const;
 
     /* shared pointer to implementation */

@@ -215,10 +215,9 @@ InputConverterStringFormatConstSP InputConverterStringFormat::New(
     const std::string& format)
 {
   SPI_PROFILE("types.InputConverterStringFormat");
-  bool isLogging = types_begin_function(true);
+  types_begin_function();
   try
   {
-
     InputConverterStringFormatConstSP _obj = Make(format);
 
     types_end_function();
@@ -226,9 +225,9 @@ InputConverterStringFormatConstSP InputConverterStringFormat::New(
     return _obj;
   }
   catch (std::exception& e)
-  { throw types_catch_exception(isLogging, "InputConverterStringFormat", e); }
+  { throw types_catch_exception("InputConverterStringFormat", e); }
   catch (...)
-  { throw types_catch_all(isLogging, "InputConverterStringFormat"); }
+  { throw types_catch_all("InputConverterStringFormat"); }
 }
 
 InputConverterStringFormatConstSP InputConverterStringFormat::Make(
@@ -317,10 +316,9 @@ InputConverterClassConstSP InputConverterClass::New(
     const std::string& format)
 {
   SPI_PROFILE("types.InputConverterClass");
-  bool isLogging = types_begin_function(true);
+  types_begin_function();
   try
   {
-
     InputConverterClassConstSP _obj = Make(format);
 
     types_end_function();
@@ -328,9 +326,9 @@ InputConverterClassConstSP InputConverterClass::New(
     return _obj;
   }
   catch (std::exception& e)
-  { throw types_catch_exception(isLogging, "InputConverterClass", e); }
+  { throw types_catch_exception("InputConverterClass", e); }
   catch (...)
-  { throw types_catch_all(isLogging, "InputConverterClass"); }
+  { throw types_catch_all("InputConverterClass"); }
 }
 
 InputConverterClassConstSP InputConverterClass::Make(
@@ -427,10 +425,9 @@ DataTypeConstSP DataType::New(
     bool ignored)
 {
   SPI_PROFILE("types.DataType");
-  bool isLogging = types_begin_function(true);
+  types_begin_function();
   try
   {
-
     DataTypeConstSP _obj = Make(name, nsService, cppName, outerType, innerType, innerRefType,
         publicType, objectName, isClosed, noDoc, convertIn, convertOut,
         copyInner, ignored);
@@ -440,9 +437,9 @@ DataTypeConstSP DataType::New(
     return _obj;
   }
   catch (std::exception& e)
-  { throw types_catch_exception(isLogging, "DataType", e); }
+  { throw types_catch_exception("DataType", e); }
   catch (...)
-  { throw types_catch_all(isLogging, "DataType"); }
+  { throw types_catch_all("DataType"); }
 }
 
 DataTypeConstSP DataType::Make(
@@ -671,10 +668,9 @@ AttributeConstSP Attribute::New(
     int arrayDim)
 {
   SPI_PROFILE("types.Attribute");
-  bool isLogging = types_begin_function(true);
+  types_begin_function();
   try
   {
-
     AttributeConstSP _obj = Make(dataType, name, arrayDim);
 
     types_end_function();
@@ -682,9 +678,9 @@ AttributeConstSP Attribute::New(
     return _obj;
   }
   catch (std::exception& e)
-  { throw types_catch_exception(isLogging, "Attribute", e); }
+  { throw types_catch_exception("Attribute", e); }
   catch (...)
-  { throw types_catch_all(isLogging, "Attribute"); }
+  { throw types_catch_all("Attribute"); }
 }
 
 AttributeConstSP Attribute::Make(
@@ -793,10 +789,9 @@ ClassPropertyConstSP ClassProperty::New(
     const AttributeConstSP& attribute)
 {
   SPI_PROFILE("types.ClassProperty");
-  bool isLogging = types_begin_function(true);
+  types_begin_function();
   try
   {
-
     ClassPropertyConstSP _obj = Make(attribute);
 
     types_end_function();
@@ -804,9 +799,9 @@ ClassPropertyConstSP ClassProperty::New(
     return _obj;
   }
   catch (std::exception& e)
-  { throw types_catch_exception(isLogging, "ClassProperty", e); }
+  { throw types_catch_exception("ClassProperty", e); }
   catch (...)
-  { throw types_catch_all(isLogging, "ClassProperty"); }
+  { throw types_catch_all("ClassProperty"); }
 }
 
 ClassPropertyConstSP ClassProperty::Make(
@@ -897,10 +892,9 @@ EnumerandConstSP Enumerand::New(
     const std::vector<std::string>& strings)
 {
   SPI_PROFILE("types.Enumerand");
-  bool isLogging = types_begin_function(true);
+  types_begin_function();
   try
   {
-
     EnumerandConstSP _obj = Make(code, strings);
 
     types_end_function();
@@ -908,9 +902,9 @@ EnumerandConstSP Enumerand::New(
     return _obj;
   }
   catch (std::exception& e)
-  { throw types_catch_exception(isLogging, "Enumerand", e); }
+  { throw types_catch_exception("Enumerand", e); }
   catch (...)
-  { throw types_catch_all(isLogging, "Enumerand"); }
+  { throw types_catch_all("Enumerand"); }
 }
 
 EnumerandConstSP Enumerand::Make(
@@ -1013,10 +1007,9 @@ EnumConstSP Enum::New(
     const std::vector<EnumerandConstSP>& enumerands)
 {
   SPI_PROFILE("types.Enum");
-  bool isLogging = types_begin_function(true);
+  types_begin_function();
   try
   {
-
     EnumConstSP _obj = Make(name, enumerands);
 
     types_end_function();
@@ -1024,9 +1017,9 @@ EnumConstSP Enum::New(
     return _obj;
   }
   catch (std::exception& e)
-  { throw types_catch_exception(isLogging, "Enum", e); }
+  { throw types_catch_exception("Enum", e); }
   catch (...)
-  { throw types_catch_all(isLogging, "Enum"); }
+  { throw types_catch_all("Enum"); }
 }
 
 EnumConstSP Enum::Make(
@@ -1194,10 +1187,9 @@ BaseStructConstSP BaseStruct::New(
     bool noLog)
 {
   SPI_PROFILE("types.BaseStruct");
-  bool isLogging = types_begin_function(true);
+  types_begin_function();
   try
   {
-
     BaseStructConstSP _obj = Make(description, name, ns, baseClass, noMake, objectName, canPut,
         noId, isVirtual, asValue, byValue, useAccessors, noLog);
 
@@ -1206,9 +1198,9 @@ BaseStructConstSP BaseStruct::New(
     return _obj;
   }
   catch (std::exception& e)
-  { throw types_catch_exception(isLogging, "BaseStruct", e); }
+  { throw types_catch_exception("BaseStruct", e); }
   catch (...)
-  { throw types_catch_all(isLogging, "BaseStruct"); }
+  { throw types_catch_all("BaseStruct"); }
 }
 
 BaseStructConstSP BaseStruct::Make(
@@ -1444,10 +1436,9 @@ InnerClassConstSP InnerClass::New(
     bool allowConst)
 {
   SPI_PROFILE("types.InnerClass");
-  bool isLogging = types_begin_function(true);
+  types_begin_function();
   try
   {
-
     InnerClassConstSP _obj = Make(typeName, ns, freeFunc, copyFunc, preDeclaration, sharedPtr,
         isShared, isConst, isOpen, isStruct, isCached, isTemplate, byValue,
         boolTest, allowConst);
@@ -1457,9 +1448,9 @@ InnerClassConstSP InnerClass::New(
     return _obj;
   }
   catch (std::exception& e)
-  { throw types_catch_exception(isLogging, "InnerClass", e); }
+  { throw types_catch_exception("InnerClass", e); }
   catch (...)
-  { throw types_catch_all(isLogging, "InnerClass"); }
+  { throw types_catch_all("InnerClass"); }
 }
 
 InnerClassConstSP InnerClass::Make(
@@ -1693,10 +1684,9 @@ BaseWrapperClassConstSP BaseWrapperClass::New(
     bool noLog)
 {
   SPI_PROFILE("types.BaseWrapperClass");
-  bool isLogging = types_begin_function(true);
+  types_begin_function();
   try
   {
-
     BaseWrapperClassConstSP _obj = Make(description, name, ns, innerClass, baseClass, isVirtual,
         noMake, objectName, isDelegate, canPut, noId, dataType, asValue,
         classProperties, noLog);
@@ -1706,9 +1696,9 @@ BaseWrapperClassConstSP BaseWrapperClass::New(
     return _obj;
   }
   catch (std::exception& e)
-  { throw types_catch_exception(isLogging, "BaseWrapperClass", e); }
+  { throw types_catch_exception("BaseWrapperClass", e); }
   catch (...)
-  { throw types_catch_all(isLogging, "BaseWrapperClass"); }
+  { throw types_catch_all("BaseWrapperClass"); }
 }
 
 BaseWrapperClassConstSP BaseWrapperClass::Make(
@@ -1993,25 +1983,24 @@ TypesLibraryConstSP TypesLibrary::New(
     const std::vector<DataTypeConstSP>& publicDataTypes,
     const std::vector<BaseClassConstSP>& baseClasses,
     const std::vector<EnumConstSP>& enums,
-    bool noLog,
+    bool noLogging,
     bool recording)
 {
   SPI_PROFILE("types.TypesLibrary");
-  bool isLogging = types_begin_function(true);
+  types_begin_function();
   try
   {
-
     TypesLibraryConstSP _obj = Make(name, ns, version, lastModuleName, dataTypes, publicDataTypes,
-        baseClasses, enums, noLog, recording);
+        baseClasses, enums, noLogging, recording);
 
     types_end_function();
 
     return _obj;
   }
   catch (std::exception& e)
-  { throw types_catch_exception(isLogging, "TypesLibrary", e); }
+  { throw types_catch_exception("TypesLibrary", e); }
   catch (...)
-  { throw types_catch_all(isLogging, "TypesLibrary"); }
+  { throw types_catch_all("TypesLibrary"); }
 }
 
 TypesLibraryConstSP TypesLibrary::Make(
@@ -2023,13 +2012,13 @@ TypesLibraryConstSP TypesLibrary::Make(
     const std::vector<DataTypeConstSP>& publicDataTypes,
     const std::vector<BaseClassConstSP>& baseClasses,
     const std::vector<EnumConstSP>& enums,
-    bool noLog,
+    bool noLogging,
     bool recording)
 {
   try
   {
     inner_type self = make_inner(name, ns, version, lastModuleName, dataTypes,
-        publicDataTypes, baseClasses, enums, noLog, recording);
+        publicDataTypes, baseClasses, enums, noLogging, recording);
     return Wrap(self);
   }
   catch (std::exception& e)
@@ -2047,7 +2036,7 @@ TypesLibrary::inner_type TypesLibrary::make_inner(
     const std::vector<DataTypeConstSP>& o_publicDataTypes,
     const std::vector<BaseClassConstSP>& o_baseClasses,
     const std::vector<EnumConstSP>& o_enums,
-    bool o_noLog,
+    bool o_noLogging,
     bool o_recording)
 {
     std::vector< spi_boost::intrusive_ptr< ::DataType const > > dataTypes;
@@ -2080,12 +2069,12 @@ TypesLibrary::inner_type TypesLibrary::make_inner(
     const std::string& ns = o_ns;
     const std::string& version = o_version;
     const std::string& lastModuleName = o_lastModuleName;
-    const bool& noLog = o_noLog;
+    const bool& noLogging = o_noLogging;
     const bool& recording = o_recording;
 
     ::TypesLibraryConstSP self = ::TypesLibrary::Make(
         name, ns, version, lastModuleName, dataTypes, publicDataTypes, baseClasses, enums,
-        noLog, recording);
+        noLogging, recording);
     return self;
 }
 
@@ -2222,11 +2211,11 @@ std::vector< spi_boost::intrusive_ptr< ::Enum const > > TypesLibrary_Helper::get
     return self->enums();
 }
 
-bool TypesLibrary::noLog() const
+bool TypesLibrary::noLogging() const
 {
     inner_type self = get_inner();
 
-    return self->noLog();
+    return self->noLogging();
 }
 
 bool TypesLibrary::recording() const

@@ -73,7 +73,7 @@ public:
         const std::vector<DataTypeConstSP>& publicDataTypes,
         const std::vector<ClassConstSP>& classes,
         const std::vector<EnumConstSP>& enums,
-        bool noLog = false,
+        bool noLogging = false,
         bool recording = false);
 
     // removes types which are already defined in one of the existing types libraries
@@ -89,7 +89,7 @@ public:
     const std::vector<ClassConstSP>& baseClasses() const;
     std::vector<InnerClassConstSP> baseInnerClasses() const;
     const std::vector<EnumConstSP>& enums() const;
-    bool noLog() const;
+    bool noLogging() const;
     bool recording() const;
 
 protected:
@@ -102,7 +102,7 @@ protected:
         const std::vector<DataTypeConstSP>& publicDataTypes,
         const std::vector<ClassConstSP>& classes,
         const std::vector<EnumConstSP>& enums,
-        bool noLog,
+        bool noLogging,
         bool recording);
 
 private:
@@ -115,7 +115,7 @@ private:
     std::vector<ClassConstSP>    m_baseClasses;
     std::vector<EnumConstSP>     m_enums;
 
-    bool m_noLog;
+    bool m_noLogging;
     bool m_recording;
 };
 
@@ -136,7 +136,7 @@ public:
         const std::string& declSpec,
         const std::string& sharedPtr,
         const std::string& sharedPtrInclude,
-        bool noLog,
+        bool noLogging,
         bool useVersionedNamespace,
         const std::vector<std::string>& description,
         const std::string& helpFunc,
@@ -187,7 +187,8 @@ public:
     const std::string& getDeclSpecHeader() const;
     const std::string& getSharedPtr() const;
     const std::string& getSharedPtrInclude() const;
-    bool noLog() const;
+    bool noLogging() const;
+    bool hasLogging() const;
     bool noClassMake() const;
     bool recording() const;
     bool useVersionedNamespace() const;
@@ -262,7 +263,7 @@ protected:
         const std::string& declSpec,
         const std::string& sharedPtr,
         const std::string& sharedPtrInclude,
-        bool noLog,
+        bool noLogging,
         bool useVersionedNamespace,
         const std::vector<std::string>& description,
         const std::string& helpFunc,
@@ -279,7 +280,7 @@ private:
     std::string m_declSpec;
     std::string m_sharedPtr;
     std::string m_sharedPtrInclude;
-    bool m_noLog;
+    bool m_noLogging;
     bool m_useVersionedNamespace;
     std::vector<std::string> m_description;
     std::string m_helpFunc;

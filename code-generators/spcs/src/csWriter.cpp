@@ -360,32 +360,35 @@ std::string CService::writeServiceFile(const std::string& dirname) const
 
         ostr << "}\n";
 
-        ostr << "\n"
-            << m_csDllImport << "\n"
-            << "private static extern int " << m_service->ns << "_start_logging(\n"
-            << "    string filename, string options);\n"
-            << "\n"
-            << "public static void start_logging(\n"
-            << "    System.String filename,\n"
-            << "    System.String options)\n"
-            << "{\n"
-            << "    if (" << m_service->ns << "_start_logging(filename, options) != 0)\n"
-            << "    {\n"
-            << "        throw spi.ErrorToException();\n"
-            << "    }\n"
-            << "}\n";
+        if (m_service->hasLogging())
+        {
+            ostr << "\n"
+                << m_csDllImport << "\n"
+                << "private static extern int " << m_service->ns << "_start_logging(\n"
+                << "    string filename, string options);\n"
+                << "\n"
+                << "public static void start_logging(\n"
+                << "    System.String filename,\n"
+                << "    System.String options)\n"
+                << "{\n"
+                << "    if (" << m_service->ns << "_start_logging(filename, options) != 0)\n"
+                << "    {\n"
+                << "        throw spi.ErrorToException();\n"
+                << "    }\n"
+                << "}\n";
 
-        ostr << "\n"
-            << m_csDllImport << "\n"
-            << "private static extern int " << m_service->ns << "_stop_logging();\n"
-            << "\n"
-            << "public static void stop_logging()\n"
-            << "{\n"
-            << "    if (" << m_service->ns << "_stop_logging() != 0)\n"
-            << "    {\n"
-            << "        throw spi.ErrorToException();\n"
-            << "    }\n"
-            << "}\n";
+            ostr << "\n"
+                << m_csDllImport << "\n"
+                << "private static extern int " << m_service->ns << "_stop_logging();\n"
+                << "\n"
+                << "public static void stop_logging()\n"
+                << "{\n"
+                << "    if (" << m_service->ns << "_stop_logging() != 0)\n"
+                << "    {\n"
+                << "        throw spi.ErrorToException();\n"
+                << "    }\n"
+                << "}\n";
+        }
 
         ostr << "\n"
             << m_spiImport << "\n"

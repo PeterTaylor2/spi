@@ -252,10 +252,20 @@ ExcelService::writeXllSourceFile(const std::string& dirname) const
             << "        \"" << m_options.helpFunc << "\","
             << " \"" << m_options.helpFuncList << "\","
             << " \"" << m_options.helpEnum << "\","
-            << " \"" << m_options.objectCoerce << "\","
-            << " \"" << m_options.startLogging << "\","
-            << " \"" << m_options.stopLogging << "\","
-            << "\n        "
+            << " \"" << m_options.objectCoerce << "\",";
+
+        if (m_service->noLogging)
+        {
+            ostr << " \"\","
+                << " \"\",";
+        }
+        else
+        {
+            ostr << " \"" << m_options.startLogging << "\","
+                << " \"" << m_options.stopLogging << "\",";
+        }
+            
+        ostr << "\n        "
             << "\"" << m_options.startTiming << "\","
             << " \"" << m_options.stopTiming << "\","
             << " \"" << m_options.clearTimings << "\","
@@ -524,20 +534,24 @@ ExcelService::writeXllSourceFile(const std::string& dirname) const
                 << "}\n";
         }
 
+        if (m_service->hasLogging())
+        {
+            ostr << "\n"
+                << m_import << "\n"
+                << "XLOPER12* xl_" << m_service->ns << "_start_logging(\n"
+                << "    XLOPER12* filename, XLOPER12* options, XLOPER12* minimal)\n"
+                << "{\n"
+                << "    return " << xlServiceName << "->StartLogging(filename, options, minimal);\n"
+                << "}\n"
+                << "\n"
+                << m_import << "\n"
+                << "XLOPER12* xl_" << m_service->ns << "_stop_logging()\n"
+                << "{\n"
+                << "    return " << xlServiceName << "->StopLogging();\n"
+                << "}\n";
+        }
+
         ostr << "\n"
-            << m_import << "\n"
-            << "XLOPER12* xl_" << m_service->ns << "_start_logging(\n"
-            << "    XLOPER12* filename, XLOPER12* options, XLOPER12* minimal)\n"
-            << "{\n"
-            << "    return " << xlServiceName << "->StartLogging(filename, options, minimal);\n"
-            << "}\n"
-            << "\n"
-            << m_import << "\n"
-            << "XLOPER12* xl_" << m_service->ns << "_stop_logging()\n"
-            << "{\n"
-            << "    return " << xlServiceName << "->StopLogging();\n"
-            << "}\n"
-            << "\n"
             << m_import << "\n"
             << "XLOPER12* xl_" << m_service->ns << "_start_timing()\n"
             << "{\n"
@@ -645,6 +659,7 @@ std::vector<std::string> ExcelService::translateVbaFiles(
         bool nsUpperCase = m_options.nsUpperCase;
         const std::string& sep = m_options.funcNameSep;
 
+        values["hasLogging"] = m_service->noLogging ? "FALSE" : "TRUE";
         values["startLoggingFunction"] = xlfunc(ns(), upperCase, nsUpperCase, sep, m_options.startLogging);
         values["stopLoggingFunction"] = xlfunc(ns(), upperCase, nsUpperCase, sep, m_options.stopLogging);
         values["setErrorPopups"] = xlfunc(ns(), upperCase, nsUpperCase, sep, m_options.setErrorPopups);

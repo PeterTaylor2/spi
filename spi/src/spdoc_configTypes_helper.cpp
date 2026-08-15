@@ -2202,11 +2202,12 @@ void Service::to_map(
     obj_map->SetInstanceVector<Enum const>("importedEnums", importedEnums, !public_only && (importedEnums.size() == 0));
     obj_map->SetBool("sharedService", sharedService, !public_only && (sharedService == false));
     obj_map->SetBool("hasShutdown", hasShutdown, !public_only && (hasShutdown == false));
-    obj_map->SetBool("noLog", noLog, !public_only && (noLog == false));
+    obj_map->SetBool("noLogging", noLogging, !public_only && (noLogging == false));
     obj_map->SetBool("recording", recording, !public_only && (recording == false));
     if (public_only)
     {
         obj_map->SetString("shutdown", shutdown());
+        obj_map->SetBool("hasLogging", hasLogging());
     }
 }
 
@@ -2236,14 +2237,14 @@ spi::ObjectConstSP Service::object_from_map(
         = obj_map->GetBool("sharedService", true, false);
     bool hasShutdown
         = obj_map->GetBool("hasShutdown", true, false);
-    bool noLog
-        = obj_map->GetBool("noLog", true, false);
+    bool noLogging
+        = obj_map->GetBool("noLogging", true, false);
     bool recording
         = obj_map->GetBool("recording", true, false);
 
     return new Service(name, description, longName, ns, declSpec, version,
         modules, importedBaseClasses, importedEnums, sharedService,
-        hasShutdown, noLog, recording);
+        hasShutdown, noLogging, recording);
 }
 
 SPI_IMPLEMENT_OBJECT_TYPE(Service, "Service", spdoc_service, false, 0);
@@ -2274,14 +2275,14 @@ spi::Value Service_caller(
         in_context->ValueToBool(in_values[9], true, false);
     bool hasShutdown =
         in_context->ValueToBool(in_values[10], true, false);
-    bool noLog =
+    bool noLogging =
         in_context->ValueToBool(in_values[11], true, false);
     bool recording =
         in_context->ValueToBool(in_values[12], true, false);
 
     const ServiceConstSP& o_result = spdoc::Service::New(name, description,
         longName, ns, declSpec, version, modules, importedBaseClasses,
-        importedEnums, sharedService, hasShutdown, noLog, recording);
+        importedEnums, sharedService, hasShutdown, noLogging, recording);
     return spi::ObjectConstSP(o_result);
 }
 
@@ -2300,7 +2301,7 @@ spi::FunctionCaller Service_FunctionCaller = {
         {"importedEnums", spi::ArgType::OBJECT, "Enum", true, false, false},
         {"sharedService", spi::ArgType::BOOL, "bool", false, true, false},
         {"hasShutdown", spi::ArgType::BOOL, "bool", false, true, false},
-        {"noLog", spi::ArgType::BOOL, "bool", false, true, false},
+        {"noLogging", spi::ArgType::BOOL, "bool", false, true, false},
         {"recording", spi::ArgType::BOOL, "bool", false, true, false}
     },
     Service_caller

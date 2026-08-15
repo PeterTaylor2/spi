@@ -1854,12 +1854,14 @@ static PyGetSetDef Service_properties[] = {
         (void*) "sharedService"},
     {"hasShutdown", (getter)(spi_py_object_getter), NULL, NULL,
         (void*) "hasShutdown"},
-    {"noLog", (getter)(spi_py_object_getter), NULL, NULL,
-        (void*) "noLog"},
+    {"noLogging", (getter)(spi_py_object_getter), NULL, NULL,
+        (void*) "noLogging"},
     {"recording", (getter)(spi_py_object_getter), NULL, NULL,
         (void*) "recording"},
     {"shutdown", (getter)(spi_py_object_getter), NULL, NULL,
         (void*) "shutdown"},
+    {"hasLogging", (getter)(spi_py_object_getter), NULL, NULL,
+        (void*) "hasLogging"},
     {NULL} // sentinel
 };
 
@@ -2243,7 +2245,7 @@ static PyTypeObject Service_PyObjectType = {
     0, /*tp_setattro*/
     0, /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT, /*tp_flags*/
-    "Defines a service.\n\n__init__(self, name, description=[], longName, ns, declSpec, version, modules=[], importedBaseClasses=[], importedEnums=[], sharedService=None, hasShutdown=None, noLog=None, recording=None)", /* tp_doc */
+    "Defines a service.\n\n__init__(self, name, description=[], longName, ns, declSpec, version, modules=[], importedBaseClasses=[], importedEnums=[], sharedService=None, hasShutdown=None, noLogging=None, recording=None)", /* tp_doc */
     0, /* tp_traverse */
     0, /* tp_clear */
     0, /* tp_richcompare */

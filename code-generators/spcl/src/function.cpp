@@ -363,11 +363,10 @@ void Function::implement(
             << "  }\n"
             << "\n";
     }
-    ostr << "  bool isLogging = " << svc->getName() << "_begin_function(";
-    if (m_noLog)
-        ostr << "true";
-    ostr << ");\n"
-         << "  try\n"
+
+    bool hasLogging = writeFunctionBegin(ostr, svc, m_noLog);
+
+    ostr <<"  try\n"
          << "  {\n";
 
     // we might want to create a Function object if we are logging
@@ -377,16 +376,16 @@ void Function::implement(
         writeFunctionConstructor(
             ostr, "_constructor", svc->getName(), m_ns, "", m_name, m_inputs);
 
-        if (!m_noLog)
+        if (hasLogging)
         {
             ostr << "\n"
                  << "    if (isLogging)\n"
                  << "        " << svc->getName()
-                 << "_service()->log_inputs(_constructor);\n";
+                 << "_service()->log_inputs(_constructor);\n"
+                 << "\n";
         }
-        ostr << "\n";
     }
-    else if (!m_noLog)
+    else if (hasLogging)
     {
         ostr << "    if (isLogging)\n"
              << "    {\n";
@@ -413,7 +412,7 @@ void Function::implement(
         ostr, returns(), m_noConvert,
         m_inputs, m_outputs, caller, false);
 
-    if (!m_noLog)
+    if (hasLogging)
     {
         writeFunctionOutputLogging(
             ostr, svc->getName(),
@@ -438,7 +437,7 @@ void Function::implement(
     }
 
     ostr << "  }\n";
-    writeFunctionCatchBlock(ostr, svc->getName(), m_name);
+    writeFunctionCatchBlock(ostr, hasLogging, svc->getName(), m_name);
     ostr << "}\n";
 
     if (m_outputs.size() > 0 && !m_returnType)
@@ -499,7 +498,7 @@ void Function::implementHelper(
         m_returnArrayDim, DataTypeConstSP(),
         svc, m_inputs, m_outputs);
 
-    if (!svc->noLog())
+    if (svc->hasLogging())
     {
         writeFunctionObjectType(
             ostr, m_ns, m_name, svc->getNamespace());
@@ -523,7 +522,7 @@ void Function::implementRegistration(
     if (types && !neededByTypesLibrary())
         return;
 
-    if (!svc->noLog())
+    if (svc->hasLogging())
     {
         ostr << "    " << serviceName << "->add_object_type(&" << m_name
             << "_FunctionObjectType);\n";

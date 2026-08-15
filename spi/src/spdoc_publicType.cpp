@@ -89,7 +89,7 @@ PublicType verifyPrimitiveTypeName(
     const std::string& typeName)
 {
   SPI_PROFILE("spdoc.verifyPrimitiveTypeName");
-  bool isLogging = spdoc_begin_function(true);
+  spdoc_begin_function();
   try
   {
     PublicType i_result = verifyPrimitiveTypeName_Helper(typeName);
@@ -99,9 +99,9 @@ PublicType verifyPrimitiveTypeName(
     return i_result;
   }
   catch (std::exception& e)
-  { throw spdoc_catch_exception(isLogging, "verifyPrimitiveTypeName", e); }
+  { throw spdoc_catch_exception("verifyPrimitiveTypeName", e); }
   catch (...)
-  { throw spdoc_catch_all(isLogging, "verifyPrimitiveTypeName"); }
+  { throw spdoc_catch_all("verifyPrimitiveTypeName"); }
 }
 
 PublicType verifyPrimitiveTypeName_Helper(

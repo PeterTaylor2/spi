@@ -35,7 +35,7 @@
     declSpec=SPI 
     sharedPtrInclude=""
     sharedPtr="spi_boost::shared_ptr" 
-    noLog=True;
+    noLogging=True;
 
 %export "publicType.cfg";
 %export "constant.cfg";

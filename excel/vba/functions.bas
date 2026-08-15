@@ -25,6 +25,7 @@ Option Base 0
 Private Const SERVICE_NAME As String = "$(serviceName)"
 Private Const FUNCTION_PREFIX As String = "$(ns)"
 Private Const XLL As String = "$(xll)"
+Private Const HAS_LOGGING As Boolean = $(hasLogging)
 Private Const START_LOGGING As String = "$(startLoggingFunction)"
 Private Const STOP_LOGGING As String = "$(stopLoggingFunction)"
 Private Const SET_ERROR_POPUPS As String = "$(setErrorPopups)"
@@ -36,10 +37,10 @@ Public Sub $(name)LoadXLL
     Dim myPath As String
     Dim curPath As String
 
-'
-' Add the directory which contains this workbook as the DLL directory
-' Then we can safely open the XLL and find all of its DLLs
-'
+    '
+    ' Add the directory which contains this workbook as the DLL directory
+    ' Then we can safely open the XLL and find all of its DLLs
+    '
     myPath = $(name)Utils.Dirname(ThisWorkbook.FullName)
     $(name)Utils.AddDLLPath (myPath)
     
@@ -48,7 +49,7 @@ Public Sub $(name)LoadXLL
 '
     Application.StatusBar = "Loading " & SERVICE_NAME & " addins..."
     If Not (Application.RegisterXLL(XLL)) Then
-        MsgBox ("Failed to load " + XLL)
+        MsgBox("Failed to load " + XLL)
     End If
     
     $(name)Utils.RemoveDLLPath
@@ -59,7 +60,7 @@ End Sub
 
 Public Sub $(name)UnloadXLL
 
-    Application.ExecuteExcel4Macro ("RETURN(UNREGISTER(""" + XLL + """))")
+    Application.ExecuteExcel4Macro("RETURN(UNREGISTER(""" + XLL + """))")
 
 End Sub
 
@@ -129,21 +130,25 @@ endofLoop:
     button.Caption = "&Object Viewer"
     button.OnAction = "$(name)LoadObjectViewer"
     button.BeginGroup = True
-    
-    Set button = myItems.Controls.Add(msoControlButton)
-    button.Caption = "&Start Logging..."
-    button.OnAction = "$(name)StartLogging"
-    button.BeginGroup = False
 
-    Set button = myItems.Controls.Add(msoControlButton)
-    button.Caption = "Start &Minimal Logging..."
-    button.OnAction = "$(name)StartMinimalLogging"
-    button.BeginGroup = False
+    If HAS_LOGGING Then
 
-    Set button = myItems.Controls.Add(msoControlButton)
-    button.Caption = "S&top Logging"
-    button.OnAction = "$(name)StopLogging"
-    button.BeginGroup = False
+        Set button = myItems.Controls.Add(msoControlButton)
+        button.Caption = "&Start Logging..."
+        button.OnAction = "$(name)StartLogging"
+        button.BeginGroup = False
+
+        Set button = myItems.Controls.Add(msoControlButton)
+        button.Caption = "Start &Minimal Logging..."
+        button.OnAction = "$(name)StartMinimalLogging"
+        button.BeginGroup = False
+
+        Set button = myItems.Controls.Add(msoControlButton)
+        button.Caption = "S&top Logging"
+        button.OnAction = "$(name)StopLogging"
+        button.BeginGroup = False
+
+    End If
     
     Set button = myItems.Controls.Add(msoControlButton)
     button.Caption = "&Pop-up Errors On"

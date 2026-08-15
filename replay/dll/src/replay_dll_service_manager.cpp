@@ -40,7 +40,6 @@ SPI_REPLAY_BEGIN_NAMESPACE
 
 static char g_startup_directory[2048] = "";
 static spi::ServiceSP g_service;
-static const bool* g_is_logging = NULL;
 static spi::Date g_time_out;
 static bool g_timed_out = false;
 static std::string g_time_out_error;
@@ -53,7 +52,6 @@ static spi::ServiceSP MakeService()
 {
     spi::ServiceSP svc = spi::Service::Make("replay", "spi_replay", "1.0.0.0");
     svc->add_svo("replay.svo");
-    g_is_logging = svc->is_logging_flag();
 
     map_register_object_types(svc);
     replay_register_object_types(svc);
@@ -99,41 +97,24 @@ const char* replay_version()
     return "1.0.0.0";
 }
 
-bool replay_begin_function(bool noLogging)
+void replay_begin_function()
 {
     replay_check_permission();
-    bool isLogging(false);
-    if (g_is_logging && *g_is_logging)
-    {
-        int log_level = spi::IncrementLogLevel();
-        isLogging = !noLogging && log_level == 0;
-    }
-    return isLogging;
 }
 
 void replay_end_function()
 {
-    if (g_is_logging && *g_is_logging)
-        spi::DecrementLogLevel();
 }
 
 
-std::runtime_error replay_catch_exception(bool isLogging, const char* name, std::exception& e)
+std::runtime_error replay_catch_exception(const char* name, std::exception& e)
 {
-    if (g_is_logging && *g_is_logging)
-        spi::DecrementLogLevel();
-    if (isLogging)
-        g_service->log_error(e);
     return spi::RuntimeError(e, name);
 }
 
-std::runtime_error replay_catch_all(bool isLogging, const char* name)
+std::runtime_error replay_catch_all(const char* name)
 {
-    if (g_is_logging && *g_is_logging)
-        spi::DecrementLogLevel();
     std::runtime_error e("Unknown exception");
-    if (isLogging)
-        g_service->log_error(e);
     return spi::RuntimeError(e, name);
 }
 

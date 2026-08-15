@@ -37,14 +37,12 @@ using spi::SafeCopy;
 
 spi::Service* replay_service();
 void replay_check_permission();
-bool replay_begin_function(bool noLogging=false);
+void replay_begin_function();
 void replay_end_function();
 std::runtime_error replay_catch_exception(
-    bool isLogging,
     const char* name,
     std::exception& e);
 std::runtime_error replay_catch_all(
-    bool isLogging,
     const char* name);
 
 SPI_REPLAY_END_NAMESPACE

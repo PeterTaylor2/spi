@@ -2014,8 +2014,32 @@ void writeConstructorCatchBlock(
          << " object:\\n\" << \"Unknown exception\"); }\n";
 }
 
+bool writeFunctionBegin(
+    GeneratedOutput& ostr,
+    const ServiceDefinitionConstSP& svc,
+    bool noLog) // function level parameter
+{
+    bool hasLogging = false;
+    if (svc->noLogging())
+    {
+        ostr << "  " << svc->getName() << "_begin_function();\n";
+    }
+    else if (noLog)
+    {
+        ostr << "  " << svc->getName() << "_begin_function(true);\n";
+    }
+    else
+    {
+        hasLogging = true;
+        ostr << "  bool isLogging = " << svc->getName() << "_begin_function();\n";
+    }
+
+    return hasLogging;
+}
+
 void writeFunctionCatchBlock(
     GeneratedOutput&   ostr,
+    bool hasLogging,
     const std::string& serviceName,
     const std::string& name,
     const std::string& className)
@@ -2029,10 +2053,12 @@ void writeFunctionCatchBlock(
     else
         fullName = name;
 
+    const char* isLogging = hasLogging ? ", isLogging" : "";
+
     ostr << "  catch (std::exception& e)\n"
          << "  { throw " << serviceName << "_catch_exception("
-         << "isLogging, \"" << fullName << "\", e); }\n"
+         << "\"" << fullName << "\", e" << isLogging << "); }\n"
          << "  catch (...)\n"
          << "  { throw " << serviceName << "_catch_all("
-         << "isLogging, \"" << fullName << "\"); }\n";
+         << "\"" << fullName << "\"" << isLogging << "); }\n";
 }

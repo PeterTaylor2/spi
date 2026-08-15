@@ -37,14 +37,12 @@ using spi::SafeCopy;
 
 spi::Service* spdoc_service();
 void spdoc_check_permission();
-bool spdoc_begin_function(bool noLogging=false);
+void spdoc_begin_function();
 void spdoc_end_function();
 std::runtime_error spdoc_catch_exception(
-    bool isLogging,
     const char* name,
     std::exception& e);
 std::runtime_error spdoc_catch_all(
-    bool isLogging,
     const char* name);
 
 SPDOC_END_NAMESPACE

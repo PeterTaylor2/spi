@@ -528,15 +528,12 @@ void Struct::implement(
             if (m_byValue)
                 noLog = true; // else how do we log the output?
 
-            ostr << "  bool isLogging = " << svc->getName() << "_begin_function(";
-            if (noLog)
-                ostr << "true";
+            bool hasLogging = writeFunctionBegin(ostr, svc, noLog);
 
-            ostr << ");\n"
-                << "  try\n"
+            ostr << "  try\n"
                 << "  {\n";
 
-            if (!noLog)
+            if (hasLogging)
             {
                 ostr << "    if (isLogging)\n"
                     << "    {\n";
@@ -564,7 +561,7 @@ void Struct::implement(
             }
             ostr << ";\n";
 
-            if (!noLog)
+            if (hasLogging)
             {
                 writeFunctionOutputLogging(
                     ostr, svc->getName(), m_dataType, false, "_obj", {});
@@ -577,7 +574,7 @@ void Struct::implement(
                 << "    return _obj;\n";
 
             ostr << "  }\n";
-            writeFunctionCatchBlock(ostr, svc->getName(), m_name);
+            writeFunctionCatchBlock(ostr, hasLogging, svc->getName(), m_name);
             ostr << "}\n\n";
         }
 
@@ -801,7 +798,7 @@ void Struct::implementHelper(
                 m_dataType, 0, DataTypeConstSP(),
                 svc, m_attributes);
 
-            if (!svc->noLog())
+            if (svc->hasLogging())
             {
                 writeFunctionObjectType(ostr, m_ns, m_name, svc->getNamespace());
             }
@@ -827,7 +824,7 @@ void Struct::implementRegistration(
 
     if (!isAbstract() && !m_noMake)
     {
-        if (!svc->noLog())
+        if (svc->hasLogging())
         {
             ostr << "    " << serviceName << "->add_object_type(&" << m_name
                 << "_FunctionObjectType);\n";
