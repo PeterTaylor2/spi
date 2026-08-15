@@ -2490,7 +2490,7 @@ void initClassStructOptions(
     bool wrapperClass)
 {
     defaultOptions["noLog"] = BoolConstant::Make(svc->noLog());
-    defaultOptions["noMake"] = BoolConstant::Make(false);
+    defaultOptions["noMake"] = BoolConstant::Make(svc->noClassMake());
     defaultOptions["objectName"] = StringConstant::Make("");
     defaultOptions["canPut"] = BoolConstant::Make(false);
     defaultOptions["noId"] = BoolConstant::Make(false);

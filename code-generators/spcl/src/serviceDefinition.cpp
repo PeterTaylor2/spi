@@ -271,12 +271,13 @@ ServiceDefinitionSP ServiceDefinition::Make(
     bool useVersionedNamespace,
     const std::vector<std::string>& description,
     const std::string& helpFunc,
-    const std::string& svoFileName)
+    const std::string& svoFileName,
+    bool noClassMake)
 {
     return ServiceDefinitionSP(new ServiceDefinition(
         name, dllName, longName, ns, version, declSpec, sharedPtr,
         sharedPtrInclude, noLog, useVersionedNamespace, description,
-        helpFunc, svoFileName));
+        helpFunc, svoFileName, noClassMake));
 }
 
 ServiceDefinition::ServiceDefinition(
@@ -292,7 +293,8 @@ ServiceDefinition::ServiceDefinition(
     bool useVersionedNamespace,
     const std::vector<std::string>& description,
     const std::string& helpFunc,
-    const std::string& svoFileName)
+    const std::string& svoFileName,
+    bool noClassMake)
     :
     m_name(name),
     m_dllName(dllName),
@@ -307,6 +309,7 @@ ServiceDefinition::ServiceDefinition(
     m_description(description),
     m_helpFunc(helpFunc),
     m_svoFileName(svoFileName),
+    m_noClassMake(noClassMake),
     m_dataTypes(),
     m_publicDataTypes(),
     m_classes(),
@@ -964,6 +967,11 @@ const std::string& ServiceDefinition::getTypeConvertersHeader() const
 bool ServiceDefinition::noLog() const
 {
     return m_noLog;
+}
+
+bool ServiceDefinition::noClassMake() const
+{
+    return m_noClassMake;
 }
 
 bool ServiceDefinition::useVersionedNamespace() const

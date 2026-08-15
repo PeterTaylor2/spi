@@ -131,7 +131,8 @@ public:
         bool useVersionedNamespace,
         const std::vector<std::string>& description,
         const std::string& helpFunc,
-        const std::string& svoFileName);
+        const std::string& svoFileName,
+        bool noClassMake);
 
     // add methods do not allow duplicates
     // get methods return empty rather than throw exception if missing
@@ -177,6 +178,7 @@ public:
     const std::string& getSharedPtr() const;
     const std::string& getSharedPtrInclude() const;
     bool noLog() const;
+    bool noClassMake() const;
     bool useVersionedNamespace() const;
     const std::string& getImport() const;
     const std::string& getTypeConvertersHeader() const;
@@ -253,7 +255,8 @@ protected:
         bool useVersionedNamespace,
         const std::vector<std::string>& description,
         const std::string& helpFunc,
-        const std::string& svoFileName);
+        const std::string& svoFileName,
+        bool noClassMake);
 
 private:
     std::string m_name;
@@ -269,6 +272,7 @@ private:
     std::vector<std::string> m_description;
     std::string m_helpFunc;
     std::string m_svoFileName;
+    bool m_noClassMake;
 
     std::vector<DataTypeConstSP>    m_dataTypes;
     std::vector<DataTypeConstSP>    m_publicDataTypes;

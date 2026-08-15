@@ -61,6 +61,7 @@ ServiceDefinitionSP serviceKeywordHandler(
     defaultOptions["sharedPtrInclude"] = StringConstant::Make("<boost/shared_ptr.hpp>");
     defaultOptions["baseService"] = StringConstant::Make("");
     defaultOptions["noLog"] = BoolConstant::Make(false);
+    defaultOptions["noClassMake"] = BoolConstant::Make(false);
     defaultOptions["useVersionedNamespace"] = BoolConstant::Make(false);
     defaultOptions["helpFunc"] = StringConstant::Make("");
     ParserOptions options = parseOptions(lexer, ";", defaultOptions, verbose);
@@ -93,7 +94,8 @@ ServiceDefinitionSP serviceKeywordHandler(
         options["useVersionedNamespace"]->getBool(),
         description,
         options["helpFunc"]->getString(),
-        svoFileName);
+        svoFileName,
+        options["noClassMake"]->getBool());
 
     if (baseService)
     {
