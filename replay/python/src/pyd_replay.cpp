@@ -173,8 +173,8 @@ void initpy_replay(void)
         "start_timing()\n\n"
         "Starts function timing.");
 
-    /* stop_logging */
-    svc->AddFunction("stop_timing", py_spi_replay_stop_logging,
+    /* stop_timing */
+    svc->AddFunction("stop_timing", py_spi_replay_stop_timing,
         "stop_timing()\n\nStops function timing"
         " - returns whether timing was on previously.");
 

@@ -406,9 +406,9 @@ std::string PythonService::writePydSourceFile(const std::string& dirname) const
             << "        \"start_timing()\\n\\n\"\n"
             << "        \"Starts function timing.\");\n"
             << "\n"
-            << "    /* stop_logging */\n"
+            << "    /* stop_timing */\n"
             << "    svc->AddFunction(\"stop_timing\", py_" << m_service->ns
-            << "_stop_logging,\n"
+            << "_stop_timing,\n"
             << "        \"stop_timing()\\n\\nStops function timing\"\n"
             << "        \" - returns whether timing was on previously.\");\n"
             << "\n"

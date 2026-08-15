@@ -174,8 +174,8 @@ void initpy_spdoc(void)
         "start_timing()\n\n"
         "Starts function timing.");
 
-    /* stop_logging */
-    svc->AddFunction("stop_timing", py_spdoc_stop_logging,
+    /* stop_timing */
+    svc->AddFunction("stop_timing", py_spdoc_stop_timing,
         "stop_timing()\n\nStops function timing"
         " - returns whether timing was on previously.");
 
