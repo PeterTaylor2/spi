@@ -1924,7 +1924,9 @@ ServiceConstSP Service::New(
     const std::vector<ClassConstSP>& importedBaseClasses,
     const std::vector<EnumConstSP>& importedEnums,
     bool sharedService,
-    bool hasShutdown)
+    bool hasShutdown,
+    bool noLog,
+    bool recording)
 {
   SPI_PROFILE("spdoc.Service");
   bool isLogging = spdoc_begin_function(true);
@@ -1932,7 +1934,8 @@ ServiceConstSP Service::New(
   {
 
     auto _obj = Make(name, description, longName, ns, declSpec, version, modules,
-        importedBaseClasses, importedEnums, sharedService, hasShutdown);
+        importedBaseClasses, importedEnums, sharedService, hasShutdown, noLog,
+        recording);
 
     spdoc_end_function();
 
@@ -1955,12 +1958,14 @@ ServiceConstSP Service::Make(
     const std::vector<ClassConstSP>& importedBaseClasses,
     const std::vector<EnumConstSP>& importedEnums,
     bool sharedService,
-    bool hasShutdown)
+    bool hasShutdown,
+    bool noLog,
+    bool recording)
 {
     return ServiceConstSP(
         new Service(name, description, longName, ns, declSpec, version,
             modules, importedBaseClasses, importedEnums, sharedService,
-            hasShutdown));
+            hasShutdown, noLog, recording));
 }
 
 Service::Service(
@@ -1974,7 +1979,9 @@ Service::Service(
     const std::vector<ClassConstSP>& importedBaseClasses,
     const std::vector<EnumConstSP>& importedEnums,
     bool sharedService,
-    bool hasShutdown)
+    bool hasShutdown,
+    bool noLog,
+    bool recording)
     :
     spi::Object(true),
     name(name),
@@ -1987,7 +1994,9 @@ Service::Service(
     importedBaseClasses(importedBaseClasses),
     importedEnums(importedEnums),
     sharedService(sharedService),
-    hasShutdown(hasShutdown)
+    hasShutdown(hasShutdown),
+    noLog(noLog),
+    recording(recording)
 {}
 
 ServiceConstSP Service::CombineSharedServices(
@@ -2056,7 +2065,9 @@ ServiceConstSP Service_Helper::CombineSharedServices(
         self->importedBaseClasses,
         self->importedEnums,
         false, // sharedService flag
-        self->hasShutdown);
+        self->hasShutdown,
+        self->noLog,
+        self->recording);
 }
 
 std::vector<std::string> Service::Summary(

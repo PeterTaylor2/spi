@@ -480,7 +480,7 @@ bool CService::writeBackup() const
 
 bool CService::recording() const
 {
-    return m_options.recording;
+    return m_service->recording;
 }
 
 /*

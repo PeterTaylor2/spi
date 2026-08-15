@@ -300,7 +300,8 @@ std::string InputConverterStringFormat::format() const
 {
     inner_type self = get_inner();
 
-return self->format(); }
+    return self->format();
+}
 
 spi::Value InputConverterStringFormat::as_value() const
 {
@@ -401,7 +402,8 @@ std::string InputConverterClass::format() const
 {
     inner_type self = get_inner();
 
-return self->format(); }
+    return self->format();
+}
 
 /*
 ****************************************************************************
@@ -882,7 +884,8 @@ AttributeConstSP ClassProperty::attribute() const
 spi_boost::intrusive_ptr< ::Attribute const > ClassProperty_Helper::get_attribute(const ClassProperty* o)
 {
     ClassProperty::inner_type self = o->get_inner();
-return self->attribute(); }
+    return self->attribute();
+}
 
 /*
 ****************************************************************************
@@ -1989,7 +1992,9 @@ TypesLibraryConstSP TypesLibrary::New(
     const std::vector<DataTypeConstSP>& dataTypes,
     const std::vector<DataTypeConstSP>& publicDataTypes,
     const std::vector<BaseClassConstSP>& baseClasses,
-    const std::vector<EnumConstSP>& enums)
+    const std::vector<EnumConstSP>& enums,
+    bool noLog,
+    bool recording)
 {
   SPI_PROFILE("types.TypesLibrary");
   bool isLogging = types_begin_function(true);
@@ -1997,7 +2002,7 @@ TypesLibraryConstSP TypesLibrary::New(
   {
 
     TypesLibraryConstSP _obj = Make(name, ns, version, lastModuleName, dataTypes, publicDataTypes,
-        baseClasses, enums);
+        baseClasses, enums, noLog, recording);
 
     types_end_function();
 
@@ -2017,12 +2022,14 @@ TypesLibraryConstSP TypesLibrary::Make(
     const std::vector<DataTypeConstSP>& dataTypes,
     const std::vector<DataTypeConstSP>& publicDataTypes,
     const std::vector<BaseClassConstSP>& baseClasses,
-    const std::vector<EnumConstSP>& enums)
+    const std::vector<EnumConstSP>& enums,
+    bool noLog,
+    bool recording)
 {
   try
   {
     inner_type self = make_inner(name, ns, version, lastModuleName, dataTypes,
-        publicDataTypes, baseClasses, enums);
+        publicDataTypes, baseClasses, enums, noLog, recording);
     return Wrap(self);
   }
   catch (std::exception& e)
@@ -2039,7 +2046,9 @@ TypesLibrary::inner_type TypesLibrary::make_inner(
     const std::vector<DataTypeConstSP>& o_dataTypes,
     const std::vector<DataTypeConstSP>& o_publicDataTypes,
     const std::vector<BaseClassConstSP>& o_baseClasses,
-    const std::vector<EnumConstSP>& o_enums)
+    const std::vector<EnumConstSP>& o_enums,
+    bool o_noLog,
+    bool o_recording)
 {
     std::vector< spi_boost::intrusive_ptr< ::DataType const > > dataTypes;
     std::vector< spi_boost::intrusive_ptr< ::DataType const > > publicDataTypes;
@@ -2071,9 +2080,12 @@ TypesLibrary::inner_type TypesLibrary::make_inner(
     const std::string& ns = o_ns;
     const std::string& version = o_version;
     const std::string& lastModuleName = o_lastModuleName;
+    const bool& noLog = o_noLog;
+    const bool& recording = o_recording;
 
     ::TypesLibraryConstSP self = ::TypesLibrary::Make(
-        name, ns, version, lastModuleName, dataTypes, publicDataTypes, baseClasses, enums);
+        name, ns, version, lastModuleName, dataTypes, publicDataTypes, baseClasses, enums,
+        noLog, recording);
     return self;
 }
 
@@ -2208,6 +2220,20 @@ std::vector< spi_boost::intrusive_ptr< ::Enum const > > TypesLibrary_Helper::get
 {
     TypesLibrary::inner_type self = o->get_inner();
     return self->enums();
+}
+
+bool TypesLibrary::noLog() const
+{
+    inner_type self = get_inner();
+
+    return self->noLog();
+}
+
+bool TypesLibrary::recording() const
+{
+    inner_type self = get_inner();
+
+    return self->recording();
 }
 
 TYPES_END_NAMESPACE

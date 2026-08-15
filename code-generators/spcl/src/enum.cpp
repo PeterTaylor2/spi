@@ -859,8 +859,7 @@ void Enum::implement(
 void Enum::implementHelper(
     GeneratedOutput& ostr,
     const ServiceDefinitionSP& svc,
-    bool types,
-    bool recording) const
+    bool types) const
 {
     if (m_bitmask)
     {

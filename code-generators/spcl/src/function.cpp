@@ -482,8 +482,7 @@ void Function::implement(
 void Function::implementHelper(
     GeneratedOutput& ostr,
     const ServiceDefinitionSP& svc,
-    bool types,
-    bool recording) const
+    bool types) const
 {
     // we put everything needed to run the function into the regular stream
     // we put everything else into the helper stream
@@ -493,8 +492,7 @@ void Function::implementHelper(
 
     bool noFunctor = m_noLog;
 
-    if (m_noRecord)
-        recording = false;
+    bool recording = m_noRecord ? false : svc->recording();
 
     writeFunctionCaller(
         ostr, recording, m_ns, std::string(), m_name, m_returnType,

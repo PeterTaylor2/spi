@@ -1217,13 +1217,13 @@ void WrapperClass::implement(
 void WrapperClass::implementHelper(
     GeneratedOutput& ostr,
     const ServiceDefinitionSP& svc,
-    bool types,
-    bool recording) const
+    bool types) const
 {
     writeStartCommentBlock(ostr);
     ostr << "* Implementation of " << m_name << "\n";
     writeEndCommentBlock(ostr);
 
+    bool recording = svc->recording();
     bool hasCoerceFrom = CoerceFrom::implement(ostr, m_name, svc, m_coerceFromVector);
     CoerceTo::implement(ostr, m_name, m_coerceToVector);
 

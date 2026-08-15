@@ -907,7 +907,9 @@ public:
         const std::vector<DataTypeConstSP>& dataTypes,
         const std::vector<DataTypeConstSP>& publicDataTypes,
         const std::vector<BaseClassConstSP>& baseClasses,
-        const std::vector<EnumConstSP>& enums);
+        const std::vector<EnumConstSP>& enums,
+        bool noLog,
+        bool recording);
 
     /** Use New when calling the constructor direct from the add-in level */
     static TypesLibraryConstSP New(
@@ -918,7 +920,9 @@ public:
         const std::vector<DataTypeConstSP>& dataTypes,
         const std::vector<DataTypeConstSP>& publicDataTypes,
         const std::vector<BaseClassConstSP>& baseClasses,
-        const std::vector<EnumConstSP>& enums);
+        const std::vector<EnumConstSP>& enums,
+        bool noLog,
+        bool recording);
 
     typedef spi::ObjectSmartPtr<TypesLibrary> outer_type; 
 
@@ -948,7 +952,9 @@ private:
         const std::vector<DataTypeConstSP>& dataTypes,
         const std::vector<DataTypeConstSP>& publicDataTypes,
         const std::vector<BaseClassConstSP>& baseClasses,
-        const std::vector<EnumConstSP>& enums);
+        const std::vector<EnumConstSP>& enums,
+        bool noLog,
+        bool recording);
 
     /* private accessor methods */
     std::string name() const;
@@ -959,6 +965,8 @@ private:
     std::vector<DataTypeConstSP> publicDataTypes() const;
     std::vector<BaseClassConstSP> baseClasses() const;
     std::vector<EnumConstSP> enums() const;
+    bool noLog() const;
+    bool recording() const;
 
     /* shared pointer to implementation */
     spi_boost::intrusive_ptr< ::TypesLibrary const > inner_value;

@@ -50,8 +50,7 @@ struct Options
         imports(),
         license(),
         writeBackup(),
-        satellites(),
-        recording()
+        satellites()
     {}
 
     bool noGeneratedCodeNotice;
@@ -59,7 +58,6 @@ struct Options
     std::string license;
     bool writeBackup;
     std::vector<std::string> satellites;
-    bool recording;
 };
 
 /**

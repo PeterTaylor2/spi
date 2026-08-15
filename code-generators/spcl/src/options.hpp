@@ -37,7 +37,6 @@ struct Options
     std::string outputDir;
     bool writeBackup;
     bool checkNonNull;
-    bool recording;
     bool textFormat;
 };
 

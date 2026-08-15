@@ -75,8 +75,7 @@ public:
 
     void implementHelper(GeneratedOutput& ostr,
         const ServiceDefinitionSP& svc,
-        bool types,
-        bool recording) const override;
+        bool types) const override;
 
     void implementRegistration(
         GeneratedOutput& ostr,

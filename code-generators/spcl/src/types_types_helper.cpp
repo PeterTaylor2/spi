@@ -1825,6 +1825,8 @@ void TypesLibrary::to_map(
     const std::vector<DataTypeConstSP>& publicDataTypes = this->publicDataTypes();
     const std::vector<BaseClassConstSP>& baseClasses = this->baseClasses();
     const std::vector<EnumConstSP>& enums = this->enums();
+    bool noLog = this->noLog();
+    bool recording = this->recording();
 
     if (!public_only)
     {
@@ -1836,6 +1838,8 @@ void TypesLibrary::to_map(
         obj_map->SetInstanceVector<DataType const>("publicDataTypes", publicDataTypes);
         obj_map->SetInstanceVector<BaseClass const>("baseClasses", baseClasses);
         obj_map->SetInstanceVector<Enum const>("enums", enums);
+        obj_map->SetBool("noLog", noLog);
+        obj_map->SetBool("recording", recording);
     }
 }
 
@@ -1859,9 +1863,13 @@ spi::ObjectConstSP TypesLibrary::object_from_map(
         = obj_map->GetInstanceVector<BaseClass const>("baseClasses", value_to_object);
     const std::vector<EnumConstSP>& enums
         = obj_map->GetInstanceVector<Enum const>("enums", value_to_object);
+    bool noLog
+        = obj_map->GetBool("noLog");
+    bool recording
+        = obj_map->GetBool("recording");
 
     return TypesLibrary::Make(name, ns, version, lastModuleName, dataTypes,
-        publicDataTypes, baseClasses, enums);
+        publicDataTypes, baseClasses, enums, noLog, recording);
 }
 
 SPI_IMPLEMENT_OBJECT_TYPE(TypesLibrary, "TypesLibrary", types_service, false, 0);
@@ -1886,16 +1894,20 @@ spi::Value TypesLibrary_caller(
         in_context->ValueToInstanceVector<BaseClass const>(in_values[6]);
     std::vector<EnumConstSP> enums =
         in_context->ValueToInstanceVector<Enum const>(in_values[7]);
+    bool noLog =
+        in_context->ValueToBool(in_values[8]);
+    bool recording =
+        in_context->ValueToBool(in_values[9]);
 
     const TypesLibraryConstSP& o_result = types::TypesLibrary::New(name, ns,
         version, lastModuleName, dataTypes, publicDataTypes, baseClasses,
-        enums);
+        enums, noLog, recording);
     return spi::ObjectConstSP(o_result);
 }
 
 spi::FunctionCaller TypesLibrary_FunctionCaller = {
     "TypesLibrary",
-    8,
+    10,
     {
         {"name", spi::ArgType::STRING, "string", false, false, false},
         {"ns", spi::ArgType::STRING, "string", false, false, false},
@@ -1904,7 +1916,9 @@ spi::FunctionCaller TypesLibrary_FunctionCaller = {
         {"dataTypes", spi::ArgType::OBJECT, "DataType", true, false, false},
         {"publicDataTypes", spi::ArgType::OBJECT, "DataType", true, false, false},
         {"baseClasses", spi::ArgType::OBJECT, "BaseClass", true, false, false},
-        {"enums", spi::ArgType::OBJECT, "Enum", true, false, false}
+        {"enums", spi::ArgType::OBJECT, "Enum", true, false, false},
+        {"noLog", spi::ArgType::BOOL, "bool", false, false, false},
+        {"recording", spi::ArgType::BOOL, "bool", false, false, false}
     },
     TypesLibrary_caller
 };

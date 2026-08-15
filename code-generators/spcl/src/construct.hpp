@@ -84,8 +84,7 @@ public:
     virtual void implementHelper(
         GeneratedOutput& ostr,
         const ServiceDefinitionSP& svc,
-        bool types,
-        bool recording) const;
+        bool types) const;
 
     virtual void implementRegistration(
         GeneratedOutput& ostr,

@@ -13,7 +13,7 @@ U_SPCL_OPTIONS=--noVerbatimLine --noHeaderSplit --licenseFile=../../GPL.h --text
 ifeq ($(DEBUG),1)
 U_SPCL_OPTIONS+=-w
 endif
-U_VCXPROJ_OPTIONS=-tcopy
+U_VCXPROJ_OPTIONS=-tcopy -I../src
 
 include $(U_SPI_HOME)/makefiles/spi/spcl.mk
 

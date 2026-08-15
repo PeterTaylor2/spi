@@ -64,7 +64,9 @@ TypesLibraryConstSP TypesLibrary::Make(
     const std::vector<DataTypeConstSP>& dataTypes,
     const std::vector<DataTypeConstSP>& publicDataTypes,
     const std::vector<ClassConstSP>& classes,
-    const std::vector<EnumConstSP>& enums)
+    const std::vector<EnumConstSP>& enums,
+    bool noLog,
+    bool recording)
 {
     std::vector<DataTypeConstSP> definedDataTypes;
     std::vector<ClassConstSP> baseClasses;
@@ -84,7 +86,8 @@ TypesLibraryConstSP TypesLibrary::Make(
     }
 
     return TypesLibraryConstSP(
-        new TypesLibrary(name, ns, version, lastModuleName, definedDataTypes, publicDataTypes, baseClasses, enums));
+        new TypesLibrary(name, ns, version, lastModuleName, definedDataTypes, publicDataTypes, baseClasses, enums,
+            noLog, recording));
 }
 
 TypesLibraryConstSP TypesLibrary::RemoveDuplicates(const std::vector<TypesLibraryConstSP>& tls) const
@@ -166,9 +169,10 @@ TypesLibraryConstSP TypesLibrary::RemoveDuplicates(const std::vector<TypesLibrar
         }
     }
 
-    return TypesLibraryConstSP(new TypesLibrary(
+    return TypesLibrary::Make(
         m_name, m_ns, m_version, m_lastModuleName,
-        dataTypes, publicDataTypes, baseClasses, enums));
+        dataTypes, publicDataTypes, baseClasses, enums,
+        m_noLog, m_recording);
 }
 
 TypesLibrary::TypesLibrary(
@@ -179,7 +183,9 @@ TypesLibrary::TypesLibrary(
     const std::vector<DataTypeConstSP>& dataTypes,
     const std::vector<DataTypeConstSP>& publicDataTypes,
     const std::vector<ClassConstSP>& baseClasses,
-    const std::vector<EnumConstSP>& enums)
+    const std::vector<EnumConstSP>& enums,
+    bool noLog,
+    bool recording)
     :
     m_name(name),
     m_ns(ns),
@@ -188,7 +194,9 @@ TypesLibrary::TypesLibrary(
     m_dataTypes(dataTypes),
     m_publicDataTypes(publicDataTypes),
     m_baseClasses(baseClasses),
-    m_enums(enums)
+    m_enums(enums),
+    m_noLog(noLog),
+    m_recording(recording)
 {}
 
 const std::string& TypesLibrary::name() const
@@ -253,6 +261,16 @@ const std::vector<EnumConstSP>& TypesLibrary::enums() const
     return m_enums;
 }
 
+bool TypesLibrary::noLog() const
+{
+    return m_noLog;
+}
+
+bool TypesLibrary::recording() const
+{
+    return m_recording;
+}
+
 /*
 ***************************************************************************
 ** Implementation of ServiceDefinition
@@ -272,12 +290,13 @@ ServiceDefinitionSP ServiceDefinition::Make(
     const std::vector<std::string>& description,
     const std::string& helpFunc,
     const std::string& svoFileName,
-    bool noClassMake)
+    bool noClassMake,
+    bool recording)
 {
     return ServiceDefinitionSP(new ServiceDefinition(
         name, dllName, longName, ns, version, declSpec, sharedPtr,
         sharedPtrInclude, noLog, useVersionedNamespace, description,
-        helpFunc, svoFileName, noClassMake));
+        helpFunc, svoFileName, noClassMake, recording));
 }
 
 ServiceDefinition::ServiceDefinition(
@@ -294,7 +313,8 @@ ServiceDefinition::ServiceDefinition(
     const std::vector<std::string>& description,
     const std::string& helpFunc,
     const std::string& svoFileName,
-    bool noClassMake)
+    bool noClassMake,
+    bool recording)
     :
     m_name(name),
     m_dllName(dllName),
@@ -310,6 +330,7 @@ ServiceDefinition::ServiceDefinition(
     m_helpFunc(helpFunc),
     m_svoFileName(svoFileName),
     m_noClassMake(noClassMake),
+    m_recording(recording),
     m_dataTypes(),
     m_publicDataTypes(),
     m_classes(),
@@ -360,7 +381,9 @@ TypesLibraryConstSP ServiceDefinition::getTypesLibrary() const
         m_dataTypes,
         m_publicDataTypes,
         m_classes,
-        enums);
+        enums,
+        m_noLog,
+        m_recording);
 }
 
 void ServiceDefinition::importTypesLibrary(const TypesLibraryConstSP& tl_in, bool publicImport)
@@ -974,6 +997,11 @@ bool ServiceDefinition::noClassMake() const
     return m_noClassMake;
 }
 
+bool ServiceDefinition::recording() const
+{
+    return m_recording;
+}
+
 bool ServiceDefinition::useVersionedNamespace() const
 {
     return m_useVersionedNamespace;
@@ -1032,7 +1060,8 @@ spdoc::ServiceConstSP ServiceDefinition::getDoc() const
 
     return spdoc::Service::Make(m_name, m_description, m_longName,
         m_namespace, m_declSpec, m_version.versionString(), moduleDocs,
-        importedBaseClasses, importedEnums, isSharedService(), hasShutdown);
+        importedBaseClasses, importedEnums, isSharedService(),
+        hasShutdown, m_noLog, m_recording);
 }
 
 void ServiceDefinition::writeMakefileProperties(

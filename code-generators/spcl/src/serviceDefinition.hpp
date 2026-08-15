@@ -72,7 +72,9 @@ public:
         const std::vector<DataTypeConstSP>& dataTypes,
         const std::vector<DataTypeConstSP>& publicDataTypes,
         const std::vector<ClassConstSP>& classes,
-        const std::vector<EnumConstSP>& enums);
+        const std::vector<EnumConstSP>& enums,
+        bool noLog = false,
+        bool recording = false);
 
     // removes types which are already defined in one of the existing types libraries
     // note that all the namespaces must be the same
@@ -87,6 +89,8 @@ public:
     const std::vector<ClassConstSP>& baseClasses() const;
     std::vector<InnerClassConstSP> baseInnerClasses() const;
     const std::vector<EnumConstSP>& enums() const;
+    bool noLog() const;
+    bool recording() const;
 
 protected:
     TypesLibrary(
@@ -97,7 +101,9 @@ protected:
         const std::vector<DataTypeConstSP>& dataTypes,
         const std::vector<DataTypeConstSP>& publicDataTypes,
         const std::vector<ClassConstSP>& classes,
-        const std::vector<EnumConstSP>& enums);
+        const std::vector<EnumConstSP>& enums,
+        bool noLog,
+        bool recording);
 
 private:
     std::string m_name;
@@ -108,6 +114,9 @@ private:
     std::vector<DataTypeConstSP> m_publicDataTypes;
     std::vector<ClassConstSP>    m_baseClasses;
     std::vector<EnumConstSP>     m_enums;
+
+    bool m_noLog;
+    bool m_recording;
 };
 
 /**
@@ -132,7 +141,8 @@ public:
         const std::vector<std::string>& description,
         const std::string& helpFunc,
         const std::string& svoFileName,
-        bool noClassMake);
+        bool noClassMake,
+        bool recording = false);
 
     // add methods do not allow duplicates
     // get methods return empty rather than throw exception if missing
@@ -179,6 +189,7 @@ public:
     const std::string& getSharedPtrInclude() const;
     bool noLog() const;
     bool noClassMake() const;
+    bool recording() const;
     bool useVersionedNamespace() const;
     const std::string& getImport() const;
     const std::string& getTypeConvertersHeader() const;
@@ -256,7 +267,8 @@ protected:
         const std::vector<std::string>& description,
         const std::string& helpFunc,
         const std::string& svoFileName,
-        bool noClassMake);
+        bool noClassMake,
+        bool recording);
 
 private:
     std::string m_name;
@@ -273,6 +285,7 @@ private:
     std::string m_helpFunc;
     std::string m_svoFileName;
     bool m_noClassMake;
+    bool m_recording;
 
     std::vector<DataTypeConstSP>    m_dataTypes;
     std::vector<DataTypeConstSP>    m_publicDataTypes;

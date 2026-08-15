@@ -416,7 +416,7 @@ void ModuleDefinition::writeHelperSource(
     nsman.startNamespace(ostr, m_moduleNamespace, 0);
 
     for (size_t i = 0; i < m_constructs.size(); ++i)
-        m_constructs[i]->implementHelper(ostr, svc, types, options.recording);
+        m_constructs[i]->implementHelper(ostr, svc, types);
 
     ostr << "\n"
          << "void " << m_name << "_register_object_types"

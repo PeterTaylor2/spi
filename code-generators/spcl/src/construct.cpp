@@ -74,8 +74,7 @@ void Construct::declareHelper(
 void Construct::implementHelper(
     GeneratedOutput& ostr,
     const ServiceDefinitionSP& svc,
-    bool types,
-    bool recording) const
+    bool types) const
 {}
 
 void Construct::implementRegistration(

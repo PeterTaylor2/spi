@@ -157,8 +157,7 @@ void MapClass::implement(
 void MapClass::implementHelper(
     GeneratedOutput& ostr,
     const ServiceDefinitionSP& svc,
-    bool types,
-    bool recording) const
+    bool types) const
 {
     ostr << "\n"
          << "SPI_IMPLEMENT_MAP_OBJECT_TYPE(" << m_name << ", \""
