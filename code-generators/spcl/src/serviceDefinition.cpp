@@ -444,6 +444,10 @@ void ServiceDefinition::importTypesLibrary(const TypesLibraryConstSP& tl_in, boo
         addPublicDataType(publicDataTypes[i]);
     }
 
+    if (tl->recording())
+    {
+        m_recording = true;
+    }
 }
 
 void ServiceDefinition::addModule(ModuleDefinitionSP& module)
