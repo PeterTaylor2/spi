@@ -448,6 +448,12 @@ void ServiceDefinition::importTypesLibrary(const TypesLibraryConstSP& tl_in, boo
     {
         m_recording = true;
     }
+
+    if (tl->ns() == m_namespace && tl->noLogging())
+    {
+        // i.e. we are a shared service
+        m_noLogging = true;
+    }
 }
 
 void ServiceDefinition::addModule(ModuleDefinitionSP& module)
