@@ -1,8 +1,4 @@
 /*
-
-    Sartorial Programming Interface (SPI) runtime libraries
-    Copyright (C) 2012-2023 Sartorial Programming Ltd.
-
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
     License as published by the Free Software Foundation; either
@@ -19,66 +15,34 @@
     USA
 
 */
+
 /*
 ***************************************************************************
-** ObjectMap.hpp
+** ObjectPutMap.hpp
 ***************************************************************************
-** Implements the IObjectMap.
+** Defines ObjectPutMap which is a private class used in ObjectPut.
 ***************************************************************************
 */
 
-#ifndef SPI_OBJECT_MAP_HPP
-#define SPI_OBJECT_MAP_HPP
+#include "ObjectPut.hpp"
 
-#include "IObjectMap.hpp"
-#include "Map.hpp"
+#include "../IObjectMap.hpp"
 
-#include <map>
-#include <istream>
-#include <ostream>
-
-#include "Service.hpp" // FIXME
-#include "ObjectRef.hpp" // FIXME
+#include <set>
 
 SPI_BEGIN_NAMESPACE
 
-SPI_DECLARE_RC_CLASS(Map);
-SPI_DECLARE_RC_CLASS(Service);
-SPI_DECLARE_RC_CLASS(ObjectRefCache);
-SPI_DECLARE_RC_CLASS(ObjectMap);
-
-class Value;
-
-/**
- * ObjectMap is a concrete implementation of IObjectMap to be used when
- * we need name/value pairs for an Object.
- */
-class SPI_IMPORT ObjectMap : public IObjectMap
+class ObjectPutMap : public IObjectMap
 {
 public:
-    /**
-     * this constructor should be used when we are going from object
-     * to map
-     *
-     * in principle the provided instance of Map will be empty although
-     * it will include the class name
-     *
-     * we can also use this constructor for going from map to object if
-     * the Map provided is not const
-     */
-    ObjectMap(const MapSP& m, bool noHiding=false);
+    ObjectPutMap(
+        IObjectMap* original,
+        const std::vector<std::string>& names,
+        const std::vector<Value>& values,
+        const InputContext* context);
 
-    /**
-     * this constructor should be used when we are going from map
-     * to object
-     *
-     * the provided instance of Map should be complete (and hence is
-     * declared as const) and inside the Map we will probably have Map
-     * representations of Object instead of pure objects
-     */
-    ObjectMap(const MapConstSP& m);
+    const std::vector<std::string> Unused() const;
 
-    // implementation of IObjectMap
     void SetChar(
         const char* name,
         char value,
@@ -208,7 +172,7 @@ public:
 
     void SetClassName(const std::string& className);
 
-    std::string ClassName() const;
+    std::string ClassName() const override;
 
     char GetChar(
         const char* name,
@@ -272,14 +236,14 @@ public:
     std::vector<DateTime> GetDateTimeVector(
         const char* name);
 
-    std::vector<Variant> GetVariantVector(
-        const char* name,
-        ValueToObject& mapToObject,
-        bool optional);
-
     std::vector<ObjectConstSP> GetObjectVector(
         const char* name,
         ObjectType* objectType,
+        ValueToObject& mapToObject,
+        bool optional);
+
+    std::vector<Variant> GetVariantVector(
+        const char* name,
         ValueToObject& mapToObject,
         bool optional);
 
@@ -307,7 +271,7 @@ public:
         ValueToObject& mapToObject,
         bool optional);
 
-    spi::MatrixData<Variant> GetVariantMatrix(
+    MatrixData<Variant> GetVariantMatrix(
         const char* name,
         ValueToObject& mapToObject,
         bool optional);
@@ -317,14 +281,14 @@ public:
     MapSP ExportMap();
 
 private:
-    // MapSP is used when we are doing Set... functions
-    // MapConstSP is used when we are doing Get... functions
-    MapSP      m_map;
-    MapConstSP m_constMap;
 
-    bool m_noHiding;
+    IObjectMap* original;
+    const InputContext* context;
+    std::map<std::string, Value> indexValues;
+    std::set<std::string> unusedNames;
+    std::vector<std::string> namesInOrder;
+
+    bool ModifiedValue(const std::string& name, Value& value);
 };
 
 SPI_END_NAMESPACE
-
-#endif

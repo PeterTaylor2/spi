@@ -1,0 +1,835 @@
+/*
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+    USA
+
+*/
+
+/*
+***************************************************************************
+** ObjectPutMap.cpp
+***************************************************************************
+** Implements ObjectPutMap which is a private class used in ObjectPut.
+***************************************************************************
+*/
+
+#include "ObjectPutMap.hpp"
+
+#include "../InputContext.hpp"
+#include "../StringUtil.hpp"
+
+SPI_BEGIN_NAMESPACE
+
+ObjectPutMap::ObjectPutMap(
+    IObjectMap*                     original,
+    const std::vector<std::string>& names,
+    const std::vector<Value>&       values,
+    const InputContext*             context)
+    :
+    original(original),
+    context(context),
+    indexValues(),
+    unusedNames(),
+    namesInOrder(names)
+{
+    if (names.size() != values.size())
+        throw RuntimeError("Array size mismatch: names, values");
+    size_t N = names.size();
+    for (size_t i = 0; i < N; ++i)
+    {
+        indexValues[names[i]] = values[i];
+        unusedNames.insert(names[i]);
+    }
+
+    // we must remove the original object_id as part of object_put
+    if (original->Exists("object_id"))
+        indexValues["object_id"] = Value("");
+}
+
+const std::vector<std::string> ObjectPutMap::Unused() const
+{
+    std::vector<std::string> unused(
+        unusedNames.begin(), unusedNames.end());
+    return unused;
+}
+
+void ObjectPutMap::SetChar(
+    const char* name,
+    char value,
+    bool hidden)
+{
+    SPI_NOT_IMPLEMENTED;
+}
+
+void ObjectPutMap::SetString(
+    const char* name,
+    const std::string& value,
+    bool hidden)
+{
+    SPI_NOT_IMPLEMENTED;
+}
+
+void ObjectPutMap::SetInt(
+    const char* name,
+    int value,
+    bool hidden)
+{
+    SPI_NOT_IMPLEMENTED;
+}
+
+void ObjectPutMap::SetBool(
+    const char* name,
+    bool value,
+    bool hidden)
+{
+    SPI_NOT_IMPLEMENTED;
+}
+
+void ObjectPutMap::SetDouble(
+    const char* name,
+    double value,
+    bool hidden)
+{
+    SPI_NOT_IMPLEMENTED;
+}
+
+void ObjectPutMap::SetDate(
+    const char* name,
+    Date value,
+    bool hidden)
+{
+    SPI_NOT_IMPLEMENTED;
+}
+
+void ObjectPutMap::SetDateTime(
+    const char* name,
+    DateTime value,
+    bool hidden)
+{
+    SPI_NOT_IMPLEMENTED;
+}
+
+void ObjectPutMap::SetObject(
+    const char* name,
+    const ObjectConstSP& value,
+    bool hidden)
+{
+    SPI_NOT_IMPLEMENTED;
+}
+
+void ObjectPutMap::SetVariant(
+    const char* name,
+    const Variant& value,
+    bool hidden)
+{
+    SPI_NOT_IMPLEMENTED;
+}
+
+void ObjectPutMap::SetStringVector(
+    const char* name,
+    const std::vector<std::string>& value,
+    bool hidden)
+{
+    SPI_NOT_IMPLEMENTED;
+}
+
+void ObjectPutMap::SetDoubleVector(
+    const char* name,
+    const std::vector<double>& value,
+    bool hidden)
+{
+    SPI_NOT_IMPLEMENTED;
+}
+
+void ObjectPutMap::SetIntVector(
+    const char* name,
+    const std::vector<int>& value,
+    bool hidden)
+{
+    SPI_NOT_IMPLEMENTED;
+}
+
+void ObjectPutMap::SetBoolVector(
+    const char* name,
+    const std::vector<bool>& value,
+    bool hidden)
+{
+    SPI_NOT_IMPLEMENTED;
+}
+
+void ObjectPutMap::SetDateVector(
+    const char* name,
+    const std::vector<Date>& value,
+    bool hidden)
+{
+    SPI_NOT_IMPLEMENTED;
+}
+
+void ObjectPutMap::SetDateTimeVector(
+    const char* name,
+    const std::vector<DateTime>& value,
+    bool hidden)
+{
+    SPI_NOT_IMPLEMENTED;
+}
+
+void ObjectPutMap::SetVariantVector(
+    const char* name,
+    const std::vector<Variant>& value,
+    bool hidden)
+{
+    SPI_NOT_IMPLEMENTED;
+}
+
+void ObjectPutMap::SetObjectVector(
+    const char* name,
+    const std::vector<ObjectConstSP>& value,
+    bool hidden)
+{
+    SPI_NOT_IMPLEMENTED;
+}
+
+void ObjectPutMap::SetBoolMatrix(
+    const char* name,
+    const MatrixData<bool>& value,
+    bool hidden)
+{
+    SPI_NOT_IMPLEMENTED;
+}
+
+void ObjectPutMap::SetIntMatrix(
+    const char* name,
+    const MatrixData<int>& value,
+    bool hidden)
+{
+    SPI_NOT_IMPLEMENTED;
+}
+
+void ObjectPutMap::SetDoubleMatrix(
+    const char* name,
+    const MatrixData<double>& value,
+    bool hidden)
+{
+    SPI_NOT_IMPLEMENTED;
+}
+
+void ObjectPutMap::SetStringMatrix(
+    const char* name,
+    const MatrixData<std::string>& value,
+    bool hidden)
+{
+    SPI_NOT_IMPLEMENTED;
+}
+
+void ObjectPutMap::SetDateMatrix(
+    const char* name,
+    const MatrixData<Date>& value,
+    bool hidden)
+{
+    SPI_NOT_IMPLEMENTED;
+}
+
+void ObjectPutMap::SetDateTimeMatrix(
+    const char* name,
+    const MatrixData<DateTime>& value,
+    bool hidden)
+{
+    SPI_NOT_IMPLEMENTED;
+}
+
+void ObjectPutMap::SetObjectMatrix(
+    const char* name,
+    const MatrixData<ObjectConstSP>& value,
+    bool hidden)
+{
+    SPI_NOT_IMPLEMENTED;
+}
+
+void ObjectPutMap::SetVariantMatrix(
+    const char* name,
+    const spi::MatrixData<Variant>& value,
+    bool hidden)
+{
+    SPI_NOT_IMPLEMENTED;
+}
+
+void ObjectPutMap::ImportMap(const Map* aMap)
+{
+    SPI_NOT_IMPLEMENTED;
+}
+
+void ObjectPutMap::SetClassName(const std::string& className)
+{
+    SPI_NOT_IMPLEMENTED;
+}
+
+std::string ObjectPutMap::ClassName() const
+{
+    return original->ClassName();
+}
+
+char ObjectPutMap::GetChar(
+    const char* name,
+    bool optional,
+    char defaultValue)
+{
+    try
+    {
+        Value value;
+        if (!ModifiedValue(name, value))
+            return original->GetChar(name, optional, defaultValue);
+        return context->ValueToChar(value, optional, defaultValue);
+    }
+    catch (std::exception& e)
+    {
+        SPI_THROW_RUNTIME_ERROR("ObjectPut for '" << name << "' failed: " << e.what())
+    }
+}
+
+std::string ObjectPutMap::GetString(
+    const char* name,
+    bool optional,
+    const char* defaultValue)
+{
+    try
+    {
+        Value value;
+        if (!ModifiedValue(name, value))
+            return original->GetString(name, optional, defaultValue);
+        return context->ValueToString(value, optional, defaultValue);
+    }
+    catch (std::exception& e)
+    {
+        SPI_THROW_RUNTIME_ERROR("ObjectPut for '" << name << "' failed: " << e.what())
+    }
+}
+
+int ObjectPutMap::GetInt(
+    const char* name,
+    bool optional,
+    int defaultValue)
+{
+    try
+    {
+        Value value;
+        if (!ModifiedValue(name, value))
+            return original->GetInt(name, optional, defaultValue);
+        return context->ValueToInt(value, optional, defaultValue);
+    }
+    catch (std::exception& e)
+    {
+        SPI_THROW_RUNTIME_ERROR("ObjectPut for '" << name << "' failed: " << e.what())
+    }
+}
+
+bool ObjectPutMap::GetBool(
+    const char* name,
+    bool optional,
+    bool defaultValue)
+{
+    try
+    {
+        Value value;
+        if (!ModifiedValue(name, value))
+            return original->GetBool(name, optional, defaultValue);
+        return context->ValueToBool(value, optional, defaultValue);
+    }
+    catch (std::exception& e)
+    {
+        SPI_THROW_RUNTIME_ERROR("ObjectPut for '" << name << "' failed: " << e.what())
+    }
+}
+
+double ObjectPutMap::GetDouble(
+    const char* name,
+    bool optional,
+    double defaultValue)
+{
+    try
+    {
+        Value value;
+        if (!ModifiedValue(name, value))
+            return original->GetDouble(name, optional, defaultValue);
+        return context->ValueToDouble(value, optional, defaultValue);
+    }
+    catch (std::exception& e)
+    {
+        SPI_THROW_RUNTIME_ERROR("ObjectPut for '" << name << "' failed: " << e.what())
+    }
+}
+
+Date ObjectPutMap::GetDate(
+    const char* name,
+    bool optional)
+{
+    try
+    {
+        Value value;
+        if (!ModifiedValue(name, value))
+            return original->GetDate(name, optional);
+        return context->ValueToDate(value, optional);
+    }
+    catch (std::exception& e)
+    {
+        SPI_THROW_RUNTIME_ERROR("ObjectPut for '" << name << "' failed: " << e.what())
+    }
+}
+
+DateTime ObjectPutMap::GetDateTime(
+    const char* name,
+    bool optional)
+{
+    try
+    {
+        Value value;
+        if (!ModifiedValue(name, value))
+            return original->GetDateTime(name, optional);
+        return context->ValueToDateTime(value, optional);
+    }
+    catch (std::exception& e)
+    {
+        SPI_THROW_RUNTIME_ERROR("ObjectPut for '" << name << "' failed: " << e.what())
+    }
+}
+
+ObjectConstSP ObjectPutMap::GetObject(
+    const char* name,
+    ObjectType* objectType,
+    ValueToObject& mapToObject,
+    bool optional)
+{
+    try
+    {
+        Value value;
+        if (!ModifiedValue(name, value))
+            return original->GetObject(
+                name, objectType, mapToObject, optional);
+        return context->ValueToObject(value, objectType, optional);
+    }
+    catch (std::exception& e)
+    {
+        SPI_THROW_RUNTIME_ERROR("ObjectPut for '" << name << "' failed: " << e.what())
+    }
+}
+
+Variant ObjectPutMap::GetVariant(
+    const char* name,
+    ValueToObject& mapToObject,
+    bool optional)
+{
+    SPI_NOT_IMPLEMENTED;
+}
+
+std::vector<std::string> ObjectPutMap::GetStringVector(
+    const char* name)
+{
+    try
+    {
+        Value value;
+        if (!ModifiedValue(name, value))
+            return original->GetStringVector(name);
+        return context->ValueToStringVector(value);
+    }
+    catch (std::exception& e)
+    {
+        SPI_THROW_RUNTIME_ERROR("ObjectPut for '" << name << "' failed: " << e.what())
+    }
+}
+
+std::vector<double> ObjectPutMap::GetDoubleVector(
+    const char* name)
+{
+    try
+    {
+        Value value;
+        if (!ModifiedValue(name, value))
+            return original->GetDoubleVector(name);
+        return context->ValueToDoubleVector(value);
+    }
+    catch (std::exception& e)
+    {
+        SPI_THROW_RUNTIME_ERROR("ObjectPut for '" << name << "' failed: " << e.what())
+    }
+}
+
+std::vector<int> ObjectPutMap::GetIntVector(
+    const char* name)
+{
+    try
+    {
+        Value value;
+        if (!ModifiedValue(name, value))
+            return original->GetIntVector(name);
+        return context->ValueToIntVector(value);
+    }
+    catch (std::exception& e)
+    {
+        SPI_THROW_RUNTIME_ERROR("ObjectPut for '" << name << "' failed: " << e.what())
+    }
+}
+
+std::vector<bool> ObjectPutMap::GetBoolVector(
+    const char* name)
+{
+    try
+    {
+        Value value;
+        if (!ModifiedValue(name, value))
+            return original->GetBoolVector(name);
+        return context->ValueToBoolVector(value);
+    }
+    catch (std::exception& e)
+    {
+        SPI_THROW_RUNTIME_ERROR("ObjectPut for '" << name << "' failed: " << e.what())
+    }
+}
+
+std::vector<Date> ObjectPutMap::GetDateVector(
+    const char* name)
+{
+    try
+    {
+        Value value;
+        if (!ModifiedValue(name, value))
+            return original->GetDateVector(name);
+        return context->ValueToDateVector(value);
+    }
+    catch (std::exception& e)
+    {
+        SPI_THROW_RUNTIME_ERROR("ObjectPut for '" << name << "' failed: " << e.what())
+    }
+}
+
+std::vector<DateTime> ObjectPutMap::GetDateTimeVector(
+    const char* name)
+{
+    try
+    {
+        Value value;
+        if (!ModifiedValue(name, value))
+            return original->GetDateTimeVector(name);
+        return context->ValueToDateTimeVector(value);
+    }
+    catch (std::exception& e)
+    {
+        SPI_THROW_RUNTIME_ERROR("ObjectPut for '" << name << "' failed: " << e.what())
+    }
+}
+
+std::vector<ObjectConstSP> ObjectPutMap::GetObjectVector(
+    const char* name,
+    ObjectType* objectType,
+    ValueToObject& mapToObject,
+    bool optional)
+{
+    try
+    {
+        Value value;
+        if (!ModifiedValue(name, value))
+            return original->GetObjectVector(
+                name, objectType, mapToObject, optional);
+        return context->ValueToObjectVector(value, objectType, optional);
+    }
+    catch (std::exception& e)
+    {
+        SPI_THROW_RUNTIME_ERROR("ObjectPut for '" << name << "' failed: " << e.what())
+    }
+}
+
+std::vector<Variant> ObjectPutMap::GetVariantVector(
+    const char* name,
+    ValueToObject& mapToObject,
+    bool optional)
+{
+    SPI_NOT_IMPLEMENTED;
+}
+
+MatrixData<bool> ObjectPutMap::GetBoolMatrix(
+    const char* name)
+{
+    try
+    {
+        Value value;
+        if (!ModifiedValue(name, value))
+            return original->GetBoolMatrix(name);
+        return context->ValueToBoolMatrix(value);
+    }
+    catch (std::exception& e)
+    {
+        SPI_THROW_RUNTIME_ERROR("ObjectPut for '" << name << "' failed: " << e.what())
+    }
+}
+
+MatrixData<int> ObjectPutMap::GetIntMatrix(
+    const char* name)
+{
+    try
+    {
+        Value value;
+        if (!ModifiedValue(name, value))
+            return original->GetIntMatrix(name);
+        return context->ValueToIntMatrix(value);
+    }
+    catch (std::exception& e)
+    {
+        SPI_THROW_RUNTIME_ERROR("ObjectPut for '" << name << "' failed: " << e.what())
+    }
+}
+
+MatrixData<double> ObjectPutMap::GetDoubleMatrix(
+    const char* name)
+{
+    try
+    {
+        Value value;
+        if (!ModifiedValue(name, value))
+            return original->GetDoubleMatrix(name);
+        return context->ValueToDoubleMatrix(value);
+    }
+    catch (std::exception& e)
+    {
+        SPI_THROW_RUNTIME_ERROR("ObjectPut for '" << name << "' failed: " << e.what())
+    }
+}
+
+MatrixData<std::string> ObjectPutMap::GetStringMatrix(
+    const char* name)
+{
+    try
+    {
+        Value value;
+        if (!ModifiedValue(name, value))
+            return original->GetStringMatrix(name);
+        return context->ValueToStringMatrix(value);
+    }
+    catch (std::exception& e)
+    {
+        SPI_THROW_RUNTIME_ERROR("ObjectPut for '" << name << "' failed: " << e.what())
+    }
+}
+
+MatrixData<Date> ObjectPutMap::GetDateMatrix(
+    const char* name)
+{
+    try
+    {
+        Value value;
+        if (!ModifiedValue(name, value))
+            return original->GetDateMatrix(name);
+        return context->ValueToDateMatrix(value);
+    }
+    catch (std::exception& e)
+    {
+        SPI_THROW_RUNTIME_ERROR("ObjectPut for '" << name << "' failed: " << e.what())
+    }
+}
+
+MatrixData<DateTime> ObjectPutMap::GetDateTimeMatrix(
+    const char* name)
+{
+    try
+    {
+        Value value;
+        if (!ModifiedValue(name, value))
+            return original->GetDateTimeMatrix(name);
+        return context->ValueToDateTimeMatrix(value);
+    }
+    catch (std::exception& e)
+    {
+        SPI_THROW_RUNTIME_ERROR("ObjectPut for '" << name << "' failed: " << e.what())
+    }
+}
+
+MatrixData<ObjectConstSP> ObjectPutMap::GetObjectMatrix(
+    const char* name,
+    ObjectType* objectType,
+    ValueToObject& mapToObject,
+    bool optional)
+{
+    try
+    {
+        Value value;
+        if (!ModifiedValue(name, value))
+            return original->GetObjectMatrix(
+                name, objectType, mapToObject, optional);
+        return context->ValueToObjectMatrix(value, objectType, optional);
+    }
+    catch (std::exception& e)
+    {
+        SPI_THROW_RUNTIME_ERROR("ObjectPut for '" << name << "' failed: " << e.what())
+    }
+}
+
+MatrixData<Variant> ObjectPutMap::GetVariantMatrix(
+    const char* name,
+    ValueToObject& mapToObject,
+    bool optional)
+{
+    SPI_NOT_IMPLEMENTED;
+}
+
+bool ObjectPutMap::Exists(const char* name)
+{
+    std::map<std::string, Value>::const_iterator iter = indexValues.find(name);
+    if (iter != indexValues.end())
+        return true;
+    return original->Exists(name);
+}
+
+MapSP ObjectPutMap::ExportMap()
+{
+    MapSP xm = original->ExportMap();
+
+    for(std::vector<std::string>::const_iterator iter = namesInOrder.begin();
+        iter != namesInOrder.end(); ++iter)
+    {
+        const std::string& name = *iter;
+
+        std::map<std::string,Value>::const_iterator pair = indexValues.find(name);
+        if (pair == indexValues.end())
+            throw RuntimeError("Mis-match between 'namesInOrder' and 'indexValues'");
+
+        const Value& value = pair->second;
+
+        std::vector<std::string> nameParts = spi_util::StringSplit(name, " ");
+        std::vector<std::string> parts;
+        for (size_t i = 0; i < nameParts.size(); ++i)
+        {
+            const std::string& part = spi_util::StringStrip(nameParts[i]);
+            if (part.length() > 0)
+                parts.push_back(part);
+        }
+
+        switch(parts.size())
+        {
+        case 2:
+            {
+                const std::string& dataType = spi_util::StringUpper(parts[0]);
+                const std::string& nm = parts[1];
+                switch(dataType[0])
+                {
+                case 'D':
+                    if (dataType == "DATE")
+                    {
+                        xm->SetValue(nm, context->ValueToDate(value, true));
+                        continue;
+                    }
+                    else if (dataType == "DOUBLE")
+                    {
+                        xm->SetValue(nm, context->ValueToDouble(value, true));
+                        continue;
+                    }
+                    else if (dataType == "DATETIME")
+                    {
+                        xm->SetValue(nm, context->ValueToDateTime(value, true));
+                        continue;
+                    }
+                    else if (dataType == "DATE[]")
+                    {
+                        xm->SetValue(nm, context->ValueToDateVector(value, true));
+                        continue;
+                    }
+                    else if (dataType == "DOUBLE[]")
+                    {
+                        xm->SetValue(nm, context->ValueToDoubleVector(value, true));
+                        continue;
+                    }
+                    else if (dataType == "DATETIME[]")
+                    {
+                        xm->SetValue(nm, context->ValueToDateTime(value, true));
+                        continue;
+                    }
+                    break;
+                case 'S':
+                    if (dataType == "STRING")
+                    {
+                        xm->SetValue(nm, context->ValueToString(value, true));
+                        continue;
+                    }
+                    else if (dataType == "STRING[]")
+                    {
+                        xm->SetValue(nm, context->ValueToStringVector(value, true));
+                        continue;
+                    }
+                    break;
+                case 'I':
+                    if (dataType == "INT")
+                    {
+                        xm->SetValue(nm, context->ValueToInt(value, true));
+                        continue;
+                    }
+                    else if (dataType == "INT[]")
+                    {
+                        xm->SetValue(nm, context->ValueToIntVector(value, true));
+                        continue;
+                    }
+                    break;
+                case 'B':
+                    if (dataType == "BOOL")
+                    {
+                        xm->SetValue(nm, context->ValueToBool(value, true));
+                        continue;
+                    }
+                    else if (dataType == "BOOL[]")
+                    {
+                        xm->SetValue(nm, context->ValueToBoolVector(value, true));
+                        continue;
+                    }
+                    break;
+                case 'O':
+                    if (dataType == "OBJECT")
+                    {
+                        xm->SetValue(nm, context->ValueToObject(value, NULL, true));
+                        continue;
+                    }
+                    else if (dataType == "OBJECT[]")
+                    {
+                        xm->SetValue(nm, context->ValueToObjectVector(value, NULL, true));
+                        continue;
+                    }
+                    break;
+                default:
+                    break;
+                }
+                throw RuntimeError("Unsupported dataType '%s'", dataType.c_str());
+            }
+            break;
+        case 1:
+            xm->SetValue(parts[0], value);
+            break;
+        case 0:
+            throw RuntimeError("Empty name '%s'", name.c_str());
+        default:
+            throw RuntimeError("Bad format name '%s'", name.c_str());
+        }
+    }
+    unusedNames.clear();
+
+    return xm;
+}
+
+bool ObjectPutMap::ModifiedValue(const std::string& name, Value& value)
+{
+    std::map<std::string,Value>::const_iterator iter =
+        indexValues.find(name);
+    if (iter == indexValues.end())
+        return false;
+
+    unusedNames.erase(name);
+    value = iter->second;
+    return true;
+}
+
+SPI_END_NAMESPACE

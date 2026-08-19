@@ -236,7 +236,7 @@ public:
 
     virtual void ImportMap(const Map* aMap) = 0;
     virtual void SetClassName(const std::string& classname) = 0;
-    virtual std::string ClassName() = 0;
+    virtual std::string ClassName() const = 0;
 
     virtual char GetChar(
         const char* name,

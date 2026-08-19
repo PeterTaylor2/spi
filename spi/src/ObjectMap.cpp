@@ -386,7 +386,7 @@ void ObjectMap::SetClassName(const std::string & className)
     m_map->SetClassName(className);
 }
 
-std::string ObjectMap::ClassName()
+std::string ObjectMap::ClassName() const
 {
     return m_constMap->ClassName();
 }
