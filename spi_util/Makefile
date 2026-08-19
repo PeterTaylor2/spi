@@ -51,7 +51,7 @@ endif
 include $(U_SPI_HOME)/makefiles/build/dll.mk
 
 rstrip:
-	@$(G_PYTHON) $(U_SPI_HOME)/makefiles/python3/rstrip.py $(U_SRC_DIR)/*.[ch]pp $(U_INC_DIR)/*.h*
+	@$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/rstrip.py $(U_SRC_DIR)/*.[ch]pp $(U_INC_DIR)/*.h*
 
 post_build: bin
 
