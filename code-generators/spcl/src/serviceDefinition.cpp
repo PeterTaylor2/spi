@@ -291,12 +291,15 @@ ServiceDefinitionSP ServiceDefinition::Make(
     const std::string& helpFunc,
     const std::string& svoFileName,
     bool noClassMake,
-    bool recording)
+    bool recording,
+    const std::string& functionMaker,
+    const std::string& functionSolver)
 {
     return ServiceDefinitionSP(new ServiceDefinition(
         name, dllName, longName, ns, version, declSpec, sharedPtr,
         sharedPtrInclude, noLogging, useVersionedNamespace, description,
-        helpFunc, svoFileName, noClassMake, recording));
+        helpFunc, svoFileName, noClassMake, recording,
+        functionMaker, functionSolver));
 }
 
 ServiceDefinition::ServiceDefinition(
@@ -314,7 +317,9 @@ ServiceDefinition::ServiceDefinition(
     const std::string& helpFunc,
     const std::string& svoFileName,
     bool noClassMake,
-    bool recording)
+    bool recording,
+    const std::string& functionMaker,
+    const std::string& functionSolver)
     :
     m_name(name),
     m_dllName(dllName),
@@ -331,6 +336,8 @@ ServiceDefinition::ServiceDefinition(
     m_svoFileName(svoFileName),
     m_noClassMake(noClassMake),
     m_recording(recording),
+    m_functionMaker(functionMaker),
+    m_functionSolver(functionSolver),
     m_dataTypes(),
     m_publicDataTypes(),
     m_classes(),
@@ -481,9 +488,12 @@ void ServiceDefinition::addModule(ModuleDefinitionSP& module)
 
 void ServiceDefinition::addServiceLevelModule()
 {
+    if (isSharedService())
+        return;
+
     std::vector<ConstructConstSP> constructs;
 
-    if (!m_helpFunc.empty() && !isSharedService())
+    if (!m_helpFunc.empty())
     {
         // a shared service does not have a service_doc function
         // essentially the HELP function is for the root of the shared services
@@ -528,6 +538,137 @@ void ServiceDefinition::addServiceLevelModule()
             true); // noRecord
 
         constructs.push_back(func);
+    }
+
+    if (!m_functionMaker.empty() && !m_functionSolver.empty())
+    {
+        // creates a function object
+        std::vector<std::string> description = {
+            "Creates a function object" };
+        std::vector<std::string> returnTypeDescription = {
+            "We create an object for the given name with the arguments provided"
+            "filled in the order defined." };
+
+        const DataTypeConstSP& objectType = getDataType("Object");
+        const DataTypeConstSP& stringType = getDataType("string");
+        const DataTypeConstSP& variantType = getDataType("Variant");
+
+        std::vector<std::string> makerCode = {
+            "    spi::FunctionSP func = spi::Function::MakeEmpty(",
+            "        " + m_name + "_service(), name.c_str());",
+            "" };
+
+        for (size_t i = 1; i <= 10; ++i)
+        {
+            makerCode.push_back(
+                spi_util::StringFormat("    func->add_input(arg%d);", i));
+        }
+
+        makerCode.push_back("");
+        makerCode.push_back("    return func;");
+        makerCode.push_back("}");
+
+        std::vector<FunctionAttributeConstSP> makerArgs;
+
+        makerArgs.push_back(FunctionAttribute::Make(
+            Attribute::Make({}, stringType, "name"), false));
+
+        for (size_t i = 1; i <= 10; ++i)
+        {
+            std::string name = spi_util::StringFormat("arg%d", i);
+            makerArgs.push_back(FunctionAttribute::Make(
+                Attribute::Make({}, variantType, name, 0, true), false));
+        }
+
+        FunctionConstSP maker = Function::Make(
+            description,
+            returnTypeDescription,
+            objectType,
+            0,
+            m_functionMaker,
+            "",
+            makerArgs,
+            Verbatim::Make("", 0, makerCode),
+            true, // noLogging
+            true, // noConvert
+            {}, // excel options
+            0, // cache size
+            false, // optional return type
+            true); // noRecord
+
+        constructs.push_back(maker);
+
+        // solves a function object
+        description = {
+            "Solves a function by changing on the inputs until the target is reached" };
+        returnTypeDescription = {
+            "The solution" };
+
+        std::vector<std::string> solverCode =
+        {
+            "    if (!spi::Function::IsInstance(func))",
+            "        SPI_THROW_RUNTIME_ERROR(\"Supplied func of type '\"",
+            "            << func->get_class_name() << \"' is not a function\");",
+            "",
+            "    spi::FunctionConstSP objFunc =",
+            "        spi_boost::dynamic_pointer_cast<spi::Function const>(func);",
+            "",
+            "    return objFunc->solve(name, target, guess, loBound, hiBound,",
+            "        maxIters, xAcc, fAcc, oname);",
+            "}"
+        };
+
+        std::vector<FunctionAttributeConstSP> solverArgs;
+        const DataTypeConstSP& doubleType = getDataType("double");
+        const DataTypeConstSP& intType = getDataType("int");
+
+        solverArgs.push_back(FunctionAttribute::Make(
+            Attribute::Make({}, objectType, "func"), false));
+
+        solverArgs.push_back(FunctionAttribute::Make(
+            Attribute::Make({}, stringType, "name"), false));
+
+        solverArgs.push_back(FunctionAttribute::Make(
+            Attribute::Make({}, doubleType, "target"), false));
+
+        solverArgs.push_back(FunctionAttribute::Make(
+            Attribute::Make({}, doubleType, "guess"), false));
+
+        solverArgs.push_back(FunctionAttribute::Make(
+            Attribute::Make({}, doubleType, "loBound"), false));
+
+        solverArgs.push_back(FunctionAttribute::Make(
+            Attribute::Make({}, doubleType, "hiBound"), false));
+
+        solverArgs.push_back(FunctionAttribute::Make(
+            Attribute::Make({}, intType, "maxIters"), false));
+
+        solverArgs.push_back(FunctionAttribute::Make(
+            Attribute::Make({}, doubleType, "xAcc"), false));
+
+        solverArgs.push_back(FunctionAttribute::Make(
+            Attribute::Make({}, doubleType, "fAcc"), false));
+
+        solverArgs.push_back(FunctionAttribute::Make(
+            Attribute::Make({}, stringType, "oname", 0, true), false));
+
+        FunctionConstSP solver = Function::Make(
+            description,
+            returnTypeDescription,
+            doubleType,
+            0,
+            m_functionSolver,
+            "",
+            solverArgs,
+            Verbatim::Make("", 0, solverCode),
+            true, // noLogging
+            true, // noConvert
+            {}, // excel options
+            0, // cache size
+            false, // optional return type
+            true); // noRecord
+
+        constructs.push_back(solver);
     }
 
     if (constructs.size() > 0)
@@ -767,6 +908,13 @@ void ServiceDefinition::VerifyAndComplete()
     m_declSpecHeader = spi::StringFormat("%s_dll_decl_spec.h", m_name.c_str());
     m_import = spi::StringFormat("%s_IMPORT", m_declSpec.c_str());
     m_typeConvertersHeader = spi::StringFormat("%s_dll_type_converters.hpp", m_name.c_str());
+
+    if ((m_functionSolver.empty() && !m_functionMaker.empty()) ||
+        (!m_functionSolver.empty() && m_functionMaker.empty()))
+    {
+        SPI_THROW_RUNTIME_ERROR("Either both functionSolver and functionMaker must be defined, "
+            "or neither functionSolver nor functionMaker must be defined");
+    }
 }
 
 void ServiceDefinition::addModuleToIndex(const ModuleDefinitionSP& module)

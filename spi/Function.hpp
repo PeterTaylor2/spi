@@ -63,6 +63,24 @@ public:
 
     Value call() const;
 
+    static FunctionSP MakeEmpty(
+        const Service* service, // cannot be the common service
+        const char* name);
+
+    void add_input(const spi::Variant& var);
+    void set_value(size_t pos, const spi::Value& value);
+
+    double solve(
+        const std::string& name,
+        double target,
+        double guess,
+        double loBound,
+        double hiBound,
+        int maxIters,
+        double xAcc,
+        double fAcc,
+        const std::string& oname) const;
+
     // implementation of Object interface
     // get_object_type could be a problem
     void to_map(IObjectMap* objectMap, bool publicOnly) const;

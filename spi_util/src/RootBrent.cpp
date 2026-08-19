@@ -28,7 +28,7 @@ BEGIN_ANONYMOUS_NAMESPACE
 
 #define ONE_PERCENT 0.01
 
-double CallFunction(const CFunction1& func, double x, double target)
+double CallFunction(const FunctionOfX& func, double x, double target)
 {
     try
     {
@@ -50,7 +50,7 @@ double CallFunction(const CFunction1& func, double x, double target)
 ***************************************************************************
 */
 double brentMethod(
-    const CFunction1& func,     // function to evaluate
+    const FunctionOfX& func,     // function to evaluate
     double      target,         // target
     int         numIterations,  // maximum number of iterations
     double      xAccuracy,      // x-accuracy tolerance
@@ -161,7 +161,7 @@ double brentMethod(
 ***************************************************************************
 */
 double secantMethod(
-    const CFunction1& func,     // function to evaluate
+    const FunctionOfX& func,     // function to evaluate
     double      target,         // target
     int         numIterations,  // maximum number of iterations
     double      xAccuracy,      // x-accuracy tolerance
@@ -274,12 +274,12 @@ double secantMethod(
 END_ANONYMOUS_NAMESPACE
 
 double RootFindBrent(
-    const CFunction1& func,
+    const FunctionOfX& func,
     double target,
+    double guess,
     double boundLo,
     double boundHi,
     int    numIterations,
-    double guess,
     double xAccuracy,
     double fAccuracy,
     double initialXStep,

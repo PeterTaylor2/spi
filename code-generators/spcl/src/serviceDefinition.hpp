@@ -142,7 +142,9 @@ public:
         const std::string& helpFunc,
         const std::string& svoFileName,
         bool noClassMake,
-        bool recording = false);
+        bool recording,
+        const std::string& functionMaker,
+        const std::string& functionSolver);
 
     // add methods do not allow duplicates
     // get methods return empty rather than throw exception if missing
@@ -269,7 +271,9 @@ protected:
         const std::string& helpFunc,
         const std::string& svoFileName,
         bool noClassMake,
-        bool recording);
+        bool recording,
+        const std::string& functionMaker,
+        const std::string& functionSolver);
 
 private:
     std::string m_name;
@@ -287,6 +291,8 @@ private:
     std::string m_svoFileName;
     bool m_noClassMake;
     bool m_recording;
+    std::string m_functionMaker;
+    std::string m_functionSolver;
 
     std::vector<DataTypeConstSP>    m_dataTypes;
     std::vector<DataTypeConstSP>    m_publicDataTypes;

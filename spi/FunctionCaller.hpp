@@ -23,6 +23,7 @@
 #define SPI_FUNCTION_CALLER_HPP
 
 #include "Value.hpp"
+#include "Variant.hpp"
 
 SPI_BEGIN_NAMESPACE
 
@@ -52,6 +53,8 @@ struct FuncArg
     bool              isOptional;
     bool              isPermutable;
     const char*       alias = nullptr;
+
+    spi::Value coerce(const spi::Variant& var) const;
 };
 
 struct FunctionCaller
@@ -62,6 +65,7 @@ struct FunctionCaller
     Value (*caller)(const InputContext* context,
         const std::vector<Value>& value);
 };
+
 
 SPI_END_NAMESPACE
 
