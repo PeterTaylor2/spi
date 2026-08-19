@@ -498,7 +498,7 @@ void Function::implementHelper(
         m_returnArrayDim, DataTypeConstSP(),
         svc, m_inputs, m_outputs);
 
-    if (svc->hasLogging())
+    if (svc->hasLogging() || m_cacheSize > 0)
     {
         writeFunctionObjectType(
             ostr, m_ns, m_name, svc->getNamespace());
@@ -522,7 +522,7 @@ void Function::implementRegistration(
     if (types && !neededByTypesLibrary())
         return;
 
-    if (svc->hasLogging())
+    if (svc->hasLogging() || m_cacheSize > 0)
     {
         ostr << "    " << serviceName << "->add_object_type(&" << m_name
             << "_FunctionObjectType);\n";

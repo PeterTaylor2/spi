@@ -784,7 +784,7 @@ void ClassMethod::implementRegistration(
     if (types && !m_function->neededByTypesLibrary())
         return;
 
-    if (svc->hasLogging())
+    if (svc->hasLogging() || m_function->m_cacheSize > 0)
     {
         ostr << "    " << serviceName << "->add_object_type(&"
             << className << "_" << m_function->m_name
