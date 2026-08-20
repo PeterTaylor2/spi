@@ -47,7 +47,7 @@ with the following optional arguments:
 
 \cline{1-3} \texttt{baseService} &  &  \\ 
 
-\cline{1-3} \texttt{noLog} & False & True or False \\ 
+\cline{1-3} \texttt{noLogging} & False & True or False \\ 
 
 \cline{1-3} \texttt{useVersionedNamespace} & False & True or False \\ 
 \cline{1-3}
@@ -68,7 +68,7 @@ If the inner library does not implemented shared pointers, or if it uses boost, 
 
 The \texttt{baseName} indicates that this service relies upon another service, and that objects created in the base service can be used in this service.
 
-Setting \texttt{noLog} to true will turn off the possibility of logging for this service.
+Setting \texttt{noLogging} to true will turn off the possibility of logging for this service.
 The code required to support logging is quite considerable, so you may wish to reduce the size of your library if you have no need for the logging feature.
 
 
