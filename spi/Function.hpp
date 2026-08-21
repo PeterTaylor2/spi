@@ -69,6 +69,9 @@ public:
 
     void add_input(const spi::Variant& var);
     void set_value(size_t pos, const spi::Value& value);
+    FunctionConstSP update_value(
+        const std::string& name,
+        const spi::Variant& var) const;
 
     double solve(
         const std::string& name,

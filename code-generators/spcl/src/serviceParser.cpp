@@ -67,6 +67,7 @@ ServiceDefinitionSP serviceKeywordHandler(
     defaultOptions["helpFunc"] = StringConstant::Make("");
     defaultOptions["functionMaker"] = StringConstant::Make("");
     defaultOptions["functionSolver"] = StringConstant::Make("");
+    defaultOptions["functionCaller"] = StringConstant::Make("");
     ParserOptions options = parseOptions(lexer, ";", defaultOptions, verbose);
     getTokenOfType(lexer, ';');
 
@@ -101,7 +102,8 @@ ServiceDefinitionSP serviceKeywordHandler(
         options["noClassMake"]->getBool(),
         options["recording"]->getBool(),
         options["functionMaker"]->getString(),
-        options["functionSolver"]->getString());
+        options["functionSolver"]->getString(),
+        options["functionCaller"]->getString());
 
     if (baseService)
     {

@@ -223,6 +223,41 @@ void Function::set_value(size_t pos, const spi::Value& value)
         m_inputs[pos] = value;
 }
 
+FunctionConstSP Function::update_value(
+    const std::string& name,
+    const spi::Variant& var) const
+{
+    bool found = false;
+    size_t pos;
+    for (size_t i = 0; i < m_caller->nbArgs; ++i)
+    {
+        if (strcmp(name.c_str(), m_caller->args[i].name) == 0)
+        {
+            found = true;
+            pos = i;
+            break;
+        }
+    }
+
+    if (!found)
+    {
+        SPI_THROW_RUNTIME_ERROR("name '" << name << "' is not an input to '"
+            << m_caller->name << "'");
+    }
+
+    // shallow copy this function so that we can amend one of its inputs
+    FunctionSP func(new Function(m_service, m_caller, m_inputs));
+
+    // we know the type of the input we are changing so we can coerce from
+    // Variant to Value, e.g. for a date in Excel
+    const FuncArg& arg = m_caller->args[pos];
+    spi::Value value = arg.coerce(var);
+
+    func->set_value(pos, value);
+
+    return func;
+}
+
 double Function::solve(
     const std::string& name,
     double target,
