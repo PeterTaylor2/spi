@@ -748,7 +748,7 @@ MapSP ObjectPutMap::ExportMap()
                     }
                     else if (dataType == "DATETIME[]")
                     {
-                        xm->SetValue(nm, context->ValueToDateTime(value, true));
+                        xm->SetValue(nm, context->ValueToDateTimeVector(value, true));
                         continue;
                     }
                     break;

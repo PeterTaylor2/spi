@@ -562,7 +562,7 @@ void ServiceDefinition::addServiceLevelModule()
             "        " + m_name + "_service(), name.c_str());",
             "" };
 
-        for (size_t i = 1; i <= 10; ++i)
+        for (size_t i = 1; i <= 30; ++i)
         {
             makerCode.push_back(
                 spi_util::StringFormat("    func->add_input(arg%d);", i));
@@ -577,7 +577,7 @@ void ServiceDefinition::addServiceLevelModule()
         makerArgs.push_back(FunctionAttribute::Make(
             Attribute::Make({}, stringType, "name"), false));
 
-        for (size_t i = 1; i <= 10; ++i)
+        for (size_t i = 1; i <= 30; ++i)
         {
             std::string name = spi_util::StringFormat("arg%d", i);
             makerArgs.push_back(FunctionAttribute::Make(
