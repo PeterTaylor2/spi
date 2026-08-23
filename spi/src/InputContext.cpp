@@ -546,7 +546,8 @@ int NoInputContext::ValueToInt(const Value& value,
     if (optional && value.isUndefined())
         return defaultValue;
 
-    return value.getInt();
+    const bool permissive = true;
+    return value.getInt(permissive);
 }
 
 double NoInputContext::ValueToDouble(const Value& value,
