@@ -125,9 +125,15 @@ void InputValues::AddValue(
     const FuncArg& arg,
     const Value&   value)
 {
-    if (arg.isArray)
+    if (arg.arrayDim > 0)
     {
         ValidateArray(m_name, value, arg);
+    }
+    else if (arg.argType == spi::ArgType::VARIANT)
+    {
+        // a Variant can be an array of Value - and of any type
+        // so no validation is necessary and we certainly won't
+        // crate a permutation
     }
     else if (arg.isPermutable && value.getType() == Value::ARRAY)
     {
@@ -167,7 +173,7 @@ InputValues::GetPermutation(
 
         try
         {
-            if (arg.isArray)
+            if (arg.arrayDim > 0)
             {
                 switch (value.getType())
                 {
@@ -190,10 +196,13 @@ InputValues::GetPermutation(
                     break;
                 }
             }
-            else if (value.getType() == Value::ARRAY)
+            else if (value.getType() == Value::ARRAY && arg.argType != spi::ArgType::VARIANT)
             {
                 // we assume that by construction that a scalar argument
                 // with a value of type array is a permutation
+                //
+                // however Variant's do not play by the same rule hence the
+                // second part of the test
                 Value item = value.getArray()->getItem(permutation);
                 inputs.push_back(item);
             }

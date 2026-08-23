@@ -49,7 +49,7 @@ struct FuncArg
     const char*       name;
     ArgType::Enum     argType;
     const char*       typeName;
-    bool              isArray;
+    int               arrayDim;
     bool              isOptional;
     bool              isPermutable;
     const char*       alias = nullptr;
