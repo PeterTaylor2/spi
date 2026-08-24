@@ -1494,7 +1494,7 @@ namespace SPI
                 self = in_self;
             }
 
-            public static IntPtr get_inner(SpiVariant v)
+            public static IntPtr get_inner(SpiVariant? v)
             {
                 if (v == null)
                     return IntPtr.Zero;

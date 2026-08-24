@@ -17,10 +17,10 @@ SPI_UTIL_NAMESPACE
 /**
  * Defines a function of one variable
  */
-class SPI_UTIL_IMPORT CFunction1
+class SPI_UTIL_IMPORT FunctionOfX
 {
 public:
-    virtual ~CFunction1() {}
+    virtual ~FunctionOfX() {}
     virtual double operator()(double x) const = 0;
 };
 
@@ -30,16 +30,16 @@ public:
  */
 SPI_UTIL_IMPORT
 double RootFindBrent(
-    const CFunction1& function,
-    double target,
-    double boundLo,
-    double boundHi,
+    const FunctionOfX& function,
+    double target, // we seek x such that function(x) = target
+    double guess, // initial guess of solution
+    double boundLo, // lower bound of solution
+    double boundHi, // upper bound of solution
     int    numIterations,
-    double guess,
-    double xAccuracy,
-    double fAccuracy,
-    double initialXStep = 0.0,
-    double initialFDeriv = 0.0);
+    double xAccuracy, // accuracy of x
+    double fAccuracy, // accuracy of f(x)
+    double initialXStep = 0.0, // optional - initial step
+    double initialFDeriv = 0.0); // optional - derivative at the guess
 
 SPI_UTIL_END_NAMESPACE
 

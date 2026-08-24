@@ -546,7 +546,8 @@ int NoInputContext::ValueToInt(const Value& value,
     if (optional && value.isUndefined())
         return defaultValue;
 
-    return value.getInt();
+    const bool permissive = true;
+    return value.getInt(permissive);
 }
 
 double NoInputContext::ValueToDouble(const Value& value,
@@ -677,10 +678,21 @@ Value HelpFunc(
         const FuncArg& arg = func->args[i];
         argNames.push_back(arg.name);
         argTypes.push_back(arg.typeName);
-        if (arg.isArray)
+        switch (arg.arrayDim)
+        {
+        case 2:
+            arrayTypes.push_back("matrix");
+            break;
+        case 1:
             arrayTypes.push_back("array");
-        else
+            break;
+        case 0:
             arrayTypes.push_back("scalar");
+            break;
+        default:
+            arrayTypes.push_back("unknown array dimensions");
+            break;
+        }
         ioTypes.push_back("input");
     }
 

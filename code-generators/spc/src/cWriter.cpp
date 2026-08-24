@@ -2288,7 +2288,7 @@ std::string CDataType::c_to_cpp(int arrayDim, const std::string& name) const
             return spi_util::StringFormat("spi::MapObjectSP((spi::MapObject*)(%s))",
                 name.c_str());
         case spdoc::PublicType::VARIANT:
-            return StringFormat("*((spi::Variant*)(%s))", name.c_str());
+            return StringFormat("%s ? *((spi::Variant*)(%s)) : spi::Variant()", name.c_str(), name.c_str());
         default:
             SPI_THROW_RUNTIME_ERROR("SCALAR " <<
                 spdoc::PublicType::to_string(publicType) << " not implemented");

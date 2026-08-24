@@ -165,7 +165,7 @@ spi::FunctionCaller verifyPrimitiveTypeName_FunctionCaller = {
     "verifyPrimitiveTypeName",
     1,
     {
-        {"typeName", spi::ArgType::STRING, "string", false, false, true}
+        {"typeName", spi::ArgType::STRING, "string", 0, false, true}
     },
     verifyPrimitiveTypeName_caller
 };

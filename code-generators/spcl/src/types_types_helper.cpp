@@ -347,7 +347,7 @@ spi::FunctionCaller InputConverterStringFormat_FunctionCaller = {
     "InputConverterStringFormat",
     1,
     {
-        {"format", spi::ArgType::STRING, "string", false, false, false}
+        {"format", spi::ArgType::STRING, "string", 0, false, false}
     },
     InputConverterStringFormat_caller
 };
@@ -446,7 +446,7 @@ spi::FunctionCaller InputConverterClass_FunctionCaller = {
     "InputConverterClass",
     1,
     {
-        {"format", spi::ArgType::STRING, "string", false, false, false}
+        {"format", spi::ArgType::STRING, "string", 0, false, false}
     },
     InputConverterClass_caller
 };
@@ -628,20 +628,20 @@ spi::FunctionCaller DataType_FunctionCaller = {
     "DataType",
     14,
     {
-        {"name", spi::ArgType::STRING, "string", false, false, false},
-        {"nsService", spi::ArgType::STRING, "string", false, true, false},
-        {"cppName", spi::ArgType::STRING, "string", false, false, false},
-        {"outerType", spi::ArgType::STRING, "string", false, false, false},
-        {"innerType", spi::ArgType::STRING, "string", false, true, false},
-        {"innerRefType", spi::ArgType::STRING, "string", false, true, false},
-        {"publicType", spi::ArgType::ENUM, "PublicType", false, false, false},
-        {"objectName", spi::ArgType::STRING, "string", false, true, false},
-        {"isClosed", spi::ArgType::BOOL, "bool", false, false, false},
-        {"noDoc", spi::ArgType::BOOL, "bool", false, false, false},
-        {"convertIn", spi::ArgType::OBJECT, "InputConverter", false, true, false},
-        {"convertOut", spi::ArgType::STRING, "string", false, true, false},
-        {"copyInner", spi::ArgType::STRING, "string", false, true, false},
-        {"ignored", spi::ArgType::BOOL, "bool", false, true, false}
+        {"name", spi::ArgType::STRING, "string", 0, false, false},
+        {"nsService", spi::ArgType::STRING, "string", 0, true, false},
+        {"cppName", spi::ArgType::STRING, "string", 0, false, false},
+        {"outerType", spi::ArgType::STRING, "string", 0, false, false},
+        {"innerType", spi::ArgType::STRING, "string", 0, true, false},
+        {"innerRefType", spi::ArgType::STRING, "string", 0, true, false},
+        {"publicType", spi::ArgType::ENUM, "PublicType", 0, false, false},
+        {"objectName", spi::ArgType::STRING, "string", 0, true, false},
+        {"isClosed", spi::ArgType::BOOL, "bool", 0, false, false},
+        {"noDoc", spi::ArgType::BOOL, "bool", 0, false, false},
+        {"convertIn", spi::ArgType::OBJECT, "InputConverter", 0, true, false},
+        {"convertOut", spi::ArgType::STRING, "string", 0, true, false},
+        {"copyInner", spi::ArgType::STRING, "string", 0, true, false},
+        {"ignored", spi::ArgType::BOOL, "bool", 0, true, false}
     },
     DataType_caller
 };
@@ -755,9 +755,9 @@ spi::FunctionCaller Attribute_FunctionCaller = {
     "Attribute",
     3,
     {
-        {"dataType", spi::ArgType::OBJECT, "DataType", false, false, false},
-        {"name", spi::ArgType::STRING, "string", false, false, false},
-        {"arrayDim", spi::ArgType::INT, "int", false, true, false}
+        {"dataType", spi::ArgType::OBJECT, "DataType", 0, false, false},
+        {"name", spi::ArgType::STRING, "string", 0, false, false},
+        {"arrayDim", spi::ArgType::INT, "int", 0, true, false}
     },
     Attribute_caller
 };
@@ -859,7 +859,7 @@ spi::FunctionCaller ClassProperty_FunctionCaller = {
     "ClassProperty",
     1,
     {
-        {"attribute", spi::ArgType::OBJECT, "Attribute", false, false, false}
+        {"attribute", spi::ArgType::OBJECT, "Attribute", 0, false, false}
     },
     ClassProperty_caller
 };
@@ -963,8 +963,8 @@ spi::FunctionCaller Enumerand_FunctionCaller = {
     "Enumerand",
     2,
     {
-        {"code", spi::ArgType::STRING, "string", false, false, false},
-        {"strings", spi::ArgType::STRING, "string", true, false, false}
+        {"code", spi::ArgType::STRING, "string", 0, false, false},
+        {"strings", spi::ArgType::STRING, "string", 1, false, false}
     },
     Enumerand_caller
 };
@@ -1068,8 +1068,8 @@ spi::FunctionCaller Enum_FunctionCaller = {
     "Enum",
     2,
     {
-        {"name", spi::ArgType::STRING, "string", false, false, false},
-        {"enumerands", spi::ArgType::OBJECT, "Enumerand", true, false, false}
+        {"name", spi::ArgType::STRING, "string", 0, false, false},
+        {"enumerands", spi::ArgType::OBJECT, "Enumerand", 1, false, false}
     },
     Enum_caller
 };
@@ -1332,19 +1332,19 @@ spi::FunctionCaller BaseStruct_FunctionCaller = {
     "BaseStruct",
     13,
     {
-        {"description", spi::ArgType::STRING, "string", true, false, false},
-        {"name", spi::ArgType::STRING, "string", false, false, false},
-        {"ns", spi::ArgType::STRING, "string", false, false, false},
-        {"baseClass", spi::ArgType::OBJECT, "BaseClass", false, true, false},
-        {"noMake", spi::ArgType::BOOL, "bool", false, false, false},
-        {"objectName", spi::ArgType::STRING, "string", false, true, false},
-        {"canPut", spi::ArgType::BOOL, "bool", false, true, false},
-        {"noId", spi::ArgType::BOOL, "bool", false, true, false},
-        {"isVirtual", spi::ArgType::BOOL, "bool", false, true, false},
-        {"asValue", spi::ArgType::BOOL, "bool", false, true, false},
-        {"byValue", spi::ArgType::BOOL, "bool", false, true, false},
-        {"useAccessors", spi::ArgType::BOOL, "bool", false, true, false},
-        {"noLog", spi::ArgType::BOOL, "bool", false, true, false}
+        {"description", spi::ArgType::STRING, "string", 1, false, false},
+        {"name", spi::ArgType::STRING, "string", 0, false, false},
+        {"ns", spi::ArgType::STRING, "string", 0, false, false},
+        {"baseClass", spi::ArgType::OBJECT, "BaseClass", 0, true, false},
+        {"noMake", spi::ArgType::BOOL, "bool", 0, false, false},
+        {"objectName", spi::ArgType::STRING, "string", 0, true, false},
+        {"canPut", spi::ArgType::BOOL, "bool", 0, true, false},
+        {"noId", spi::ArgType::BOOL, "bool", 0, true, false},
+        {"isVirtual", spi::ArgType::BOOL, "bool", 0, true, false},
+        {"asValue", spi::ArgType::BOOL, "bool", 0, true, false},
+        {"byValue", spi::ArgType::BOOL, "bool", 0, true, false},
+        {"useAccessors", spi::ArgType::BOOL, "bool", 0, true, false},
+        {"noLog", spi::ArgType::BOOL, "bool", 0, true, false}
     },
     BaseStruct_caller
 };
@@ -1533,21 +1533,21 @@ spi::FunctionCaller InnerClass_FunctionCaller = {
     "InnerClass",
     15,
     {
-        {"typeName", spi::ArgType::STRING, "string", false, false, false},
-        {"ns", spi::ArgType::STRING, "string", false, false, false},
-        {"freeFunc", spi::ArgType::STRING, "string", false, false, false},
-        {"copyFunc", spi::ArgType::STRING, "string", false, false, false},
-        {"preDeclaration", spi::ArgType::STRING, "string", false, false, false},
-        {"sharedPtr", spi::ArgType::STRING, "string", false, false, false},
-        {"isShared", spi::ArgType::BOOL, "bool", false, false, false},
-        {"isConst", spi::ArgType::BOOL, "bool", false, false, false},
-        {"isOpen", spi::ArgType::BOOL, "bool", false, false, false},
-        {"isStruct", spi::ArgType::BOOL, "bool", false, false, false},
-        {"isCached", spi::ArgType::BOOL, "bool", false, false, false},
-        {"isTemplate", spi::ArgType::BOOL, "bool", false, false, false},
-        {"byValue", spi::ArgType::BOOL, "bool", false, false, false},
-        {"boolTest", spi::ArgType::STRING, "string", false, true, false},
-        {"allowConst", spi::ArgType::BOOL, "bool", false, true, false}
+        {"typeName", spi::ArgType::STRING, "string", 0, false, false},
+        {"ns", spi::ArgType::STRING, "string", 0, false, false},
+        {"freeFunc", spi::ArgType::STRING, "string", 0, false, false},
+        {"copyFunc", spi::ArgType::STRING, "string", 0, false, false},
+        {"preDeclaration", spi::ArgType::STRING, "string", 0, false, false},
+        {"sharedPtr", spi::ArgType::STRING, "string", 0, false, false},
+        {"isShared", spi::ArgType::BOOL, "bool", 0, false, false},
+        {"isConst", spi::ArgType::BOOL, "bool", 0, false, false},
+        {"isOpen", spi::ArgType::BOOL, "bool", 0, false, false},
+        {"isStruct", spi::ArgType::BOOL, "bool", 0, false, false},
+        {"isCached", spi::ArgType::BOOL, "bool", 0, false, false},
+        {"isTemplate", spi::ArgType::BOOL, "bool", 0, false, false},
+        {"byValue", spi::ArgType::BOOL, "bool", 0, false, false},
+        {"boolTest", spi::ArgType::STRING, "string", 0, true, false},
+        {"allowConst", spi::ArgType::BOOL, "bool", 0, true, false}
     },
     InnerClass_caller
 };
@@ -1737,21 +1737,21 @@ spi::FunctionCaller BaseWrapperClass_FunctionCaller = {
     "BaseWrapperClass",
     15,
     {
-        {"description", spi::ArgType::STRING, "string", true, false, false},
-        {"name", spi::ArgType::STRING, "string", false, false, false},
-        {"ns", spi::ArgType::STRING, "string", false, false, false},
-        {"innerClass", spi::ArgType::OBJECT, "InnerClass", false, false, false},
-        {"baseClass", spi::ArgType::OBJECT, "BaseWrapperClass", false, true, false},
-        {"isVirtual", spi::ArgType::BOOL, "bool", false, false, false},
-        {"noMake", spi::ArgType::BOOL, "bool", false, false, false},
-        {"objectName", spi::ArgType::STRING, "string", false, true, false},
-        {"isDelegate", spi::ArgType::BOOL, "bool", false, false, false},
-        {"canPut", spi::ArgType::BOOL, "bool", false, true, false},
-        {"noId", spi::ArgType::BOOL, "bool", false, true, false},
-        {"dataType", spi::ArgType::OBJECT, "DataType", false, false, false},
-        {"asValue", spi::ArgType::BOOL, "bool", false, true, false},
-        {"classProperties", spi::ArgType::OBJECT, "ClassProperty", true, false, false},
-        {"noLog", spi::ArgType::BOOL, "bool", false, true, false}
+        {"description", spi::ArgType::STRING, "string", 1, false, false},
+        {"name", spi::ArgType::STRING, "string", 0, false, false},
+        {"ns", spi::ArgType::STRING, "string", 0, false, false},
+        {"innerClass", spi::ArgType::OBJECT, "InnerClass", 0, false, false},
+        {"baseClass", spi::ArgType::OBJECT, "BaseWrapperClass", 0, true, false},
+        {"isVirtual", spi::ArgType::BOOL, "bool", 0, false, false},
+        {"noMake", spi::ArgType::BOOL, "bool", 0, false, false},
+        {"objectName", spi::ArgType::STRING, "string", 0, true, false},
+        {"isDelegate", spi::ArgType::BOOL, "bool", 0, false, false},
+        {"canPut", spi::ArgType::BOOL, "bool", 0, true, false},
+        {"noId", spi::ArgType::BOOL, "bool", 0, true, false},
+        {"dataType", spi::ArgType::OBJECT, "DataType", 0, false, false},
+        {"asValue", spi::ArgType::BOOL, "bool", 0, true, false},
+        {"classProperties", spi::ArgType::OBJECT, "ClassProperty", 1, false, false},
+        {"noLog", spi::ArgType::BOOL, "bool", 0, true, false}
     },
     BaseWrapperClass_caller
 };
@@ -1909,16 +1909,16 @@ spi::FunctionCaller TypesLibrary_FunctionCaller = {
     "TypesLibrary",
     10,
     {
-        {"name", spi::ArgType::STRING, "string", false, false, false},
-        {"ns", spi::ArgType::STRING, "string", false, false, false},
-        {"version", spi::ArgType::STRING, "string", false, false, false},
-        {"lastModuleName", spi::ArgType::STRING, "string", false, false, false},
-        {"dataTypes", spi::ArgType::OBJECT, "DataType", true, false, false},
-        {"publicDataTypes", spi::ArgType::OBJECT, "DataType", true, false, false},
-        {"baseClasses", spi::ArgType::OBJECT, "BaseClass", true, false, false},
-        {"enums", spi::ArgType::OBJECT, "Enum", true, false, false},
-        {"noLogging", spi::ArgType::BOOL, "bool", false, false, false},
-        {"recording", spi::ArgType::BOOL, "bool", false, false, false}
+        {"name", spi::ArgType::STRING, "string", 0, false, false},
+        {"ns", spi::ArgType::STRING, "string", 0, false, false},
+        {"version", spi::ArgType::STRING, "string", 0, false, false},
+        {"lastModuleName", spi::ArgType::STRING, "string", 0, false, false},
+        {"dataTypes", spi::ArgType::OBJECT, "DataType", 1, false, false},
+        {"publicDataTypes", spi::ArgType::OBJECT, "DataType", 1, false, false},
+        {"baseClasses", spi::ArgType::OBJECT, "BaseClass", 1, false, false},
+        {"enums", spi::ArgType::OBJECT, "Enum", 1, false, false},
+        {"noLogging", spi::ArgType::BOOL, "bool", 0, false, false},
+        {"recording", spi::ArgType::BOOL, "bool", 0, false, false}
     },
     TypesLibrary_caller
 };

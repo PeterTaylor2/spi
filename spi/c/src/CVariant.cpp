@@ -73,9 +73,8 @@ spi_Variant* spi_Variant_new_DateTime(spi_DateTime dt)
     SPI_C_LOCK_GUARD;
     try
     {
-        SPI_THROW_RUNTIME_ERROR("Constructor of Variant from DateTime not supported");
-        //spi::Variant* var = new spi::Variant(spi::DateTime(dt));
-        //return (spi_Variant*)var;
+        spi::Variant* var = new spi::Variant(spi::DateTime(dt));
+        return (spi_Variant*)var;
     }
     catch (std::exception& e)
     {

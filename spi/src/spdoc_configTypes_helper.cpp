@@ -160,14 +160,14 @@ spi::FunctionCaller DataType_FunctionCaller = {
     "DataType",
     8,
     {
-        {"name", spi::ArgType::STRING, "string", false, false, false},
-        {"passByReference", spi::ArgType::BOOL, "bool", false, false, false},
-        {"refTypeName", spi::ArgType::STRING, "string", false, false, false},
-        {"valueTypeName", spi::ArgType::STRING, "string", false, false, false},
-        {"publicType", spi::ArgType::ENUM, "PublicType", false, false, false},
-        {"noDoc", spi::ArgType::BOOL, "bool", false, false, false},
-        {"nsService", spi::ArgType::STRING, "string", false, true, false},
-        {"objectAsValue", spi::ArgType::BOOL, "bool", false, true, false}
+        {"name", spi::ArgType::STRING, "string", 0, false, false},
+        {"passByReference", spi::ArgType::BOOL, "bool", 0, false, false},
+        {"refTypeName", spi::ArgType::STRING, "string", 0, false, false},
+        {"valueTypeName", spi::ArgType::STRING, "string", 0, false, false},
+        {"publicType", spi::ArgType::ENUM, "PublicType", 0, false, false},
+        {"noDoc", spi::ArgType::BOOL, "bool", 0, false, false},
+        {"nsService", spi::ArgType::STRING, "string", 0, true, false},
+        {"objectAsValue", spi::ArgType::BOOL, "bool", 0, true, false}
     },
     DataType_caller
 };
@@ -339,13 +339,13 @@ spi::FunctionCaller Attribute_FunctionCaller = {
     "Attribute",
     7,
     {
-        {"name", spi::ArgType::STRING, "string", false, false, false},
-        {"description", spi::ArgType::STRING, "string", true, false, false},
-        {"dataType", spi::ArgType::OBJECT, "DataType", false, false, false},
-        {"arrayDim", spi::ArgType::INT, "int", false, true, false},
-        {"isOptional", spi::ArgType::BOOL, "bool", false, true, false},
-        {"defaultValue", spi::ArgType::OBJECT, "Constant", false, true, false},
-        {"alias", spi::ArgType::STRING, "string", false, true, false}
+        {"name", spi::ArgType::STRING, "string", 0, false, false},
+        {"description", spi::ArgType::STRING, "string", 1, false, false},
+        {"dataType", spi::ArgType::OBJECT, "DataType", 0, false, false},
+        {"arrayDim", spi::ArgType::INT, "int", 0, true, false},
+        {"isOptional", spi::ArgType::BOOL, "bool", 0, true, false},
+        {"defaultValue", spi::ArgType::OBJECT, "Constant", 0, true, false},
+        {"alias", spi::ArgType::STRING, "string", 0, true, false}
     },
     Attribute_caller
 };
@@ -370,8 +370,8 @@ spi::FunctionCaller Attribute_encoding_FunctionCaller = {
     3,
     {
         {"self", spi::ArgType::OBJECT, "Attribute", false, false, false},
-        {"isOutput", spi::ArgType::BOOL, "bool", false, true, true},
-        {"showDefault", spi::ArgType::BOOL, "bool", false, true, true}
+        {"isOutput", spi::ArgType::BOOL, "bool", 0, true, true},
+        {"showDefault", spi::ArgType::BOOL, "bool", 0, true, true}
     },
     Attribute_encoding_caller
 };
@@ -518,14 +518,14 @@ spi::FunctionCaller ClassAttribute_FunctionCaller = {
     "ClassAttribute",
     8,
     {
-        {"name", spi::ArgType::STRING, "string", false, false, false},
-        {"description", spi::ArgType::STRING, "string", true, false, false},
-        {"dataType", spi::ArgType::OBJECT, "DataType", false, false, false},
-        {"arrayDim", spi::ArgType::INT, "int", false, true, false},
-        {"isOptional", spi::ArgType::BOOL, "bool", false, true, false},
-        {"defaultValue", spi::ArgType::OBJECT, "Constant", false, true, false},
-        {"accessible", spi::ArgType::BOOL, "bool", false, false, false},
-        {"accessor", spi::ArgType::STRING, "string", false, false, false}
+        {"name", spi::ArgType::STRING, "string", 0, false, false},
+        {"description", spi::ArgType::STRING, "string", 1, false, false},
+        {"dataType", spi::ArgType::OBJECT, "DataType", 0, false, false},
+        {"arrayDim", spi::ArgType::INT, "int", 0, true, false},
+        {"isOptional", spi::ArgType::BOOL, "bool", 0, true, false},
+        {"defaultValue", spi::ArgType::OBJECT, "Constant", 0, true, false},
+        {"accessible", spi::ArgType::BOOL, "bool", 0, false, false},
+        {"accessor", spi::ArgType::STRING, "string", 0, false, false}
     },
     ClassAttribute_caller
 };
@@ -548,7 +548,7 @@ spi::FunctionCaller ClassAttribute_encoding_FunctionCaller = {
     2,
     {
         {"self", spi::ArgType::OBJECT, "ClassAttribute", false, false, false},
-        {"showDefault", spi::ArgType::BOOL, "bool", false, true, true}
+        {"showDefault", spi::ArgType::BOOL, "bool", 0, true, true}
     },
     ClassAttribute_encoding_caller
 };
@@ -676,7 +676,7 @@ spi::FunctionCaller Construct_Summary_FunctionCaller = {
     2,
     {
         {"self", spi::ArgType::OBJECT, "Construct", false, false, false},
-        {"includeDescription", spi::ArgType::BOOL, "bool", false, true, false}
+        {"includeDescription", spi::ArgType::BOOL, "bool", 0, true, false}
     },
     Construct_Summary_caller
 };
@@ -788,10 +788,10 @@ spi::FunctionCaller SimpleType_FunctionCaller = {
     "SimpleType",
     4,
     {
-        {"name", spi::ArgType::STRING, "string", false, false, false},
-        {"description", spi::ArgType::STRING, "string", true, false, false},
-        {"typeName", spi::ArgType::STRING, "string", false, false, false},
-        {"noDoc", spi::ArgType::BOOL, "bool", false, true, false}
+        {"name", spi::ArgType::STRING, "string", 0, false, false},
+        {"description", spi::ArgType::STRING, "string", 1, false, false},
+        {"typeName", spi::ArgType::STRING, "string", 0, false, false},
+        {"noDoc", spi::ArgType::BOOL, "bool", 0, true, false}
     },
     SimpleType_caller
 };
@@ -930,15 +930,15 @@ spi::FunctionCaller Function_FunctionCaller = {
     "Function",
     9,
     {
-        {"name", spi::ArgType::STRING, "string", false, false, false},
-        {"description", spi::ArgType::STRING, "string", true, false, false},
-        {"returnTypeDescription", spi::ArgType::STRING, "string", true, false, false},
-        {"returnType", spi::ArgType::OBJECT, "DataType", false, false, false},
-        {"returnArrayDim", spi::ArgType::INT, "int", false, true, false},
-        {"inputs", spi::ArgType::OBJECT, "Attribute", true, false, false},
-        {"outputs", spi::ArgType::OBJECT, "Attribute", true, false, false},
-        {"excelOptions", spi::ArgType::STRING, "string", true, false, false},
-        {"optionalReturnType", spi::ArgType::BOOL, "bool", false, true, false}
+        {"name", spi::ArgType::STRING, "string", 0, false, false},
+        {"description", spi::ArgType::STRING, "string", 1, false, false},
+        {"returnTypeDescription", spi::ArgType::STRING, "string", 1, false, false},
+        {"returnType", spi::ArgType::OBJECT, "DataType", 0, false, false},
+        {"returnArrayDim", spi::ArgType::INT, "int", 0, true, false},
+        {"inputs", spi::ArgType::OBJECT, "Attribute", 1, false, false},
+        {"outputs", spi::ArgType::OBJECT, "Attribute", 1, false, false},
+        {"excelOptions", spi::ArgType::STRING, "string", 1, false, false},
+        {"optionalReturnType", spi::ArgType::BOOL, "bool", 0, true, false}
     },
     Function_caller
 };
@@ -1105,9 +1105,9 @@ spi::FunctionCaller Enumerand_FunctionCaller = {
     "Enumerand",
     3,
     {
-        {"code", spi::ArgType::STRING, "string", false, false, false},
-        {"strings", spi::ArgType::STRING, "string", true, false, false},
-        {"description", spi::ArgType::STRING, "string", true, false, false}
+        {"code", spi::ArgType::STRING, "string", 0, false, false},
+        {"strings", spi::ArgType::STRING, "string", 1, false, false},
+        {"description", spi::ArgType::STRING, "string", 1, false, false}
     },
     Enumerand_caller
 };
@@ -1208,8 +1208,8 @@ spi::FunctionCaller EnumConstructor_FunctionCaller = {
     "EnumConstructor",
     2,
     {
-        {"constructorType", spi::ArgType::ENUM, "PublicType", false, false, false},
-        {"description", spi::ArgType::STRING, "string", true, false, false}
+        {"constructorType", spi::ArgType::ENUM, "PublicType", 0, false, false},
+        {"description", spi::ArgType::STRING, "string", 1, false, false}
     },
     EnumConstructor_caller
 };
@@ -1326,11 +1326,11 @@ spi::FunctionCaller Enum_FunctionCaller = {
     "Enum",
     5,
     {
-        {"name", spi::ArgType::STRING, "string", false, false, false},
-        {"description", spi::ArgType::STRING, "string", true, false, false},
-        {"enumerands", spi::ArgType::OBJECT, "Enumerand", true, false, false},
-        {"constructors", spi::ArgType::OBJECT, "EnumConstructor", true, false, false},
-        {"isBitmask", spi::ArgType::BOOL, "bool", false, true, false}
+        {"name", spi::ArgType::STRING, "string", 0, false, false},
+        {"description", spi::ArgType::STRING, "string", 1, false, false},
+        {"enumerands", spi::ArgType::OBJECT, "Enumerand", 1, false, false},
+        {"constructors", spi::ArgType::OBJECT, "EnumConstructor", 1, false, false},
+        {"isBitmask", spi::ArgType::BOOL, "bool", 0, true, false}
     },
     Enum_caller
 };
@@ -1453,12 +1453,12 @@ spi::FunctionCaller ClassMethod_FunctionCaller = {
     "ClassMethod",
     6,
     {
-        {"function", spi::ArgType::OBJECT, "Function", false, false, false},
-        {"isConst", spi::ArgType::BOOL, "bool", false, false, false},
-        {"isVirtual", spi::ArgType::BOOL, "bool", false, true, false},
-        {"isStatic", spi::ArgType::BOOL, "bool", false, true, false},
-        {"isImplementation", spi::ArgType::BOOL, "bool", false, true, false},
-        {"implements", spi::ArgType::STRING, "string", false, true, false}
+        {"function", spi::ArgType::OBJECT, "Function", 0, false, false},
+        {"isConst", spi::ArgType::BOOL, "bool", 0, false, false},
+        {"isVirtual", spi::ArgType::BOOL, "bool", 0, true, false},
+        {"isStatic", spi::ArgType::BOOL, "bool", 0, true, false},
+        {"isImplementation", spi::ArgType::BOOL, "bool", 0, true, false},
+        {"implements", spi::ArgType::STRING, "string", 0, true, false}
     },
     ClassMethod_caller
 };
@@ -1482,7 +1482,7 @@ spi::FunctionCaller ClassMethod_Summary_FunctionCaller = {
     2,
     {
         {"self", spi::ArgType::OBJECT, "ClassMethod", false, false, false},
-        {"includeDescription", spi::ArgType::BOOL, "bool", false, true, false}
+        {"includeDescription", spi::ArgType::BOOL, "bool", 0, true, false}
     },
     ClassMethod_Summary_caller
 };
@@ -1584,8 +1584,8 @@ spi::FunctionCaller CoerceFrom_FunctionCaller = {
     "CoerceFrom",
     2,
     {
-        {"description", spi::ArgType::STRING, "string", true, false, false},
-        {"coerceFrom", spi::ArgType::OBJECT, "Attribute", false, false, false}
+        {"description", spi::ArgType::STRING, "string", 1, false, false},
+        {"coerceFrom", spi::ArgType::OBJECT, "Attribute", 0, false, false}
     },
     CoerceFrom_caller
 };
@@ -1609,7 +1609,7 @@ spi::FunctionCaller CoerceFrom_Summary_FunctionCaller = {
     2,
     {
         {"self", spi::ArgType::OBJECT, "CoerceFrom", false, false, false},
-        {"includeDescription", spi::ArgType::BOOL, "bool", false, true, false}
+        {"includeDescription", spi::ArgType::BOOL, "bool", 0, true, false}
     },
     CoerceFrom_Summary_caller
 };
@@ -1716,9 +1716,9 @@ spi::FunctionCaller CoerceTo_FunctionCaller = {
     "CoerceTo",
     3,
     {
-        {"description", spi::ArgType::STRING, "string", true, false, false},
-        {"className", spi::ArgType::STRING, "string", false, false, false},
-        {"classType", spi::ArgType::OBJECT, "DataType", false, false, false}
+        {"description", spi::ArgType::STRING, "string", 1, false, false},
+        {"className", spi::ArgType::STRING, "string", 0, false, false},
+        {"classType", spi::ArgType::OBJECT, "DataType", 0, false, false}
     },
     CoerceTo_caller
 };
@@ -1742,7 +1742,7 @@ spi::FunctionCaller CoerceTo_Summary_FunctionCaller = {
     2,
     {
         {"self", spi::ArgType::OBJECT, "CoerceTo", false, false, false},
-        {"includeDescription", spi::ArgType::BOOL, "bool", false, true, false}
+        {"includeDescription", spi::ArgType::BOOL, "bool", 0, true, false}
     },
     CoerceTo_Summary_caller
 };
@@ -1929,24 +1929,24 @@ spi::FunctionCaller Class_FunctionCaller = {
     "Class",
     18,
     {
-        {"name", spi::ArgType::STRING, "string", false, false, false},
-        {"ns", spi::ArgType::STRING, "string", false, true, false},
-        {"description", spi::ArgType::STRING, "string", true, false, false},
-        {"baseClassName", spi::ArgType::STRING, "string", false, true, false},
-        {"attributes", spi::ArgType::OBJECT, "ClassAttribute", true, false, false},
-        {"properties", spi::ArgType::OBJECT, "ClassAttribute", true, false, false},
-        {"methods", spi::ArgType::OBJECT, "ClassMethod", true, false, false},
-        {"coerceFrom", spi::ArgType::OBJECT, "CoerceFrom", true, false, false},
-        {"coerceTo", spi::ArgType::OBJECT, "CoerceTo", true, false, false},
-        {"isAbstract", spi::ArgType::BOOL, "bool", false, true, false},
-        {"noMake", spi::ArgType::BOOL, "bool", false, true, false},
-        {"objectName", spi::ArgType::STRING, "string", false, false, false},
-        {"dataType", spi::ArgType::OBJECT, "DataType", false, false, false},
-        {"isDelegate", spi::ArgType::BOOL, "bool", false, true, false},
-        {"canPut", spi::ArgType::BOOL, "bool", false, true, false},
-        {"hasDynamicAttributes", spi::ArgType::BOOL, "bool", false, true, false},
-        {"asValue", spi::ArgType::BOOL, "bool", false, true, false},
-        {"constructor", spi::ArgType::STRING, "string", false, true, false}
+        {"name", spi::ArgType::STRING, "string", 0, false, false},
+        {"ns", spi::ArgType::STRING, "string", 0, true, false},
+        {"description", spi::ArgType::STRING, "string", 1, false, false},
+        {"baseClassName", spi::ArgType::STRING, "string", 0, true, false},
+        {"attributes", spi::ArgType::OBJECT, "ClassAttribute", 1, false, false},
+        {"properties", spi::ArgType::OBJECT, "ClassAttribute", 1, false, false},
+        {"methods", spi::ArgType::OBJECT, "ClassMethod", 1, false, false},
+        {"coerceFrom", spi::ArgType::OBJECT, "CoerceFrom", 1, false, false},
+        {"coerceTo", spi::ArgType::OBJECT, "CoerceTo", 1, false, false},
+        {"isAbstract", spi::ArgType::BOOL, "bool", 0, true, false},
+        {"noMake", spi::ArgType::BOOL, "bool", 0, true, false},
+        {"objectName", spi::ArgType::STRING, "string", 0, false, false},
+        {"dataType", spi::ArgType::OBJECT, "DataType", 0, false, false},
+        {"isDelegate", spi::ArgType::BOOL, "bool", 0, true, false},
+        {"canPut", spi::ArgType::BOOL, "bool", 0, true, false},
+        {"hasDynamicAttributes", spi::ArgType::BOOL, "bool", 0, true, false},
+        {"asValue", spi::ArgType::BOOL, "bool", 0, true, false},
+        {"constructor", spi::ArgType::STRING, "string", 0, true, false}
     },
     Class_caller
 };
@@ -2098,10 +2098,10 @@ spi::FunctionCaller Module_FunctionCaller = {
     "Module",
     4,
     {
-        {"name", spi::ArgType::STRING, "string", false, false, false},
-        {"description", spi::ArgType::STRING, "string", true, false, false},
-        {"ns", spi::ArgType::STRING, "string", false, true, false},
-        {"constructs", spi::ArgType::OBJECT, "Construct", true, false, false}
+        {"name", spi::ArgType::STRING, "string", 0, false, false},
+        {"description", spi::ArgType::STRING, "string", 1, false, false},
+        {"ns", spi::ArgType::STRING, "string", 0, true, false},
+        {"constructs", spi::ArgType::OBJECT, "Construct", 1, false, false}
     },
     Module_caller
 };
@@ -2124,8 +2124,8 @@ spi::FunctionCaller Module_combineSummaries_FunctionCaller = {
     "Module.combineSummaries",
     2,
     {
-        {"modules", spi::ArgType::OBJECT, "Module", true, false, false},
-        {"sort", spi::ArgType::BOOL, "bool", false, false, false}
+        {"modules", spi::ArgType::OBJECT, "Module", 1, false, false},
+        {"sort", spi::ArgType::BOOL, "bool", 0, false, false}
     },
     Module_combineSummaries_caller
 };
@@ -2290,19 +2290,19 @@ spi::FunctionCaller Service_FunctionCaller = {
     "Service",
     13,
     {
-        {"name", spi::ArgType::STRING, "string", false, false, false},
-        {"description", spi::ArgType::STRING, "string", true, false, false},
-        {"longName", spi::ArgType::STRING, "string", false, false, false},
-        {"ns", spi::ArgType::STRING, "string", false, false, false},
-        {"declSpec", spi::ArgType::STRING, "string", false, false, false},
-        {"version", spi::ArgType::STRING, "string", false, false, false},
-        {"modules", spi::ArgType::OBJECT, "Module", true, false, false},
-        {"importedBaseClasses", spi::ArgType::OBJECT, "Class", true, false, false},
-        {"importedEnums", spi::ArgType::OBJECT, "Enum", true, false, false},
-        {"sharedService", spi::ArgType::BOOL, "bool", false, true, false},
-        {"hasShutdown", spi::ArgType::BOOL, "bool", false, true, false},
-        {"noLogging", spi::ArgType::BOOL, "bool", false, true, false},
-        {"recording", spi::ArgType::BOOL, "bool", false, true, false}
+        {"name", spi::ArgType::STRING, "string", 0, false, false},
+        {"description", spi::ArgType::STRING, "string", 1, false, false},
+        {"longName", spi::ArgType::STRING, "string", 0, false, false},
+        {"ns", spi::ArgType::STRING, "string", 0, false, false},
+        {"declSpec", spi::ArgType::STRING, "string", 0, false, false},
+        {"version", spi::ArgType::STRING, "string", 0, false, false},
+        {"modules", spi::ArgType::OBJECT, "Module", 1, false, false},
+        {"importedBaseClasses", spi::ArgType::OBJECT, "Class", 1, false, false},
+        {"importedEnums", spi::ArgType::OBJECT, "Enum", 1, false, false},
+        {"sharedService", spi::ArgType::BOOL, "bool", 0, true, false},
+        {"hasShutdown", spi::ArgType::BOOL, "bool", 0, true, false},
+        {"noLogging", spi::ArgType::BOOL, "bool", 0, true, false},
+        {"recording", spi::ArgType::BOOL, "bool", 0, true, false}
     },
     Service_caller
 };
@@ -2326,7 +2326,7 @@ spi::FunctionCaller Service_CombineSharedServices_FunctionCaller = {
     2,
     {
         {"self", spi::ArgType::OBJECT, "Service", false, false, false},
-        {"sharedServices", spi::ArgType::OBJECT, "Service", true, false, false}
+        {"sharedServices", spi::ArgType::OBJECT, "Service", 1, false, false}
     },
     Service_CombineSharedServices_caller
 };
@@ -2349,7 +2349,7 @@ spi::FunctionCaller Service_Summary_FunctionCaller = {
     2,
     {
         {"self", spi::ArgType::OBJECT, "Service", false, false, false},
-        {"sort", spi::ArgType::BOOL, "bool", false, false, false}
+        {"sort", spi::ArgType::BOOL, "bool", 0, false, false}
     },
     Service_Summary_caller
 };
@@ -2372,8 +2372,8 @@ spi::FunctionCaller Service_combineSummaries_FunctionCaller = {
     "Service.combineSummaries",
     2,
     {
-        {"services", spi::ArgType::OBJECT, "Service", true, false, false},
-        {"sort", spi::ArgType::BOOL, "bool", false, false, false}
+        {"services", spi::ArgType::OBJECT, "Service", 1, false, false},
+        {"sort", spi::ArgType::BOOL, "bool", 0, false, false}
     },
     Service_combineSummaries_caller
 };
@@ -2416,7 +2416,7 @@ spi::FunctionCaller Service_getEnum_FunctionCaller = {
     2,
     {
         {"self", spi::ArgType::OBJECT, "Service", false, false, false},
-        {"name", spi::ArgType::STRING, "string", false, false, true}
+        {"name", spi::ArgType::STRING, "string", 0, false, true}
     },
     Service_getEnum_caller
 };
@@ -2439,7 +2439,7 @@ spi::FunctionCaller Service_getEnumerands_FunctionCaller = {
     2,
     {
         {"self", spi::ArgType::OBJECT, "Service", false, false, false},
-        {"name", spi::ArgType::STRING, "string", false, false, false}
+        {"name", spi::ArgType::STRING, "string", 0, false, false}
     },
     Service_getEnumerands_caller
 };
@@ -2482,7 +2482,7 @@ spi::FunctionCaller Service_getClass_FunctionCaller = {
     2,
     {
         {"self", spi::ArgType::OBJECT, "Service", false, false, false},
-        {"className", spi::ArgType::STRING, "string", false, false, true}
+        {"className", spi::ArgType::STRING, "string", 0, false, true}
     },
     Service_getClass_caller
 };
@@ -2507,8 +2507,8 @@ spi::FunctionCaller Service_isSubClass_FunctionCaller = {
     3,
     {
         {"self", spi::ArgType::OBJECT, "Service", false, false, false},
-        {"cls", spi::ArgType::OBJECT, "Class", false, false, true},
-        {"name", spi::ArgType::STRING, "string", false, false, true}
+        {"cls", spi::ArgType::OBJECT, "Class", 0, false, true},
+        {"name", spi::ArgType::STRING, "string", 0, false, true}
     },
     Service_isSubClass_caller
 };
@@ -2534,8 +2534,8 @@ spi::FunctionCaller Service_getPropertyClass_FunctionCaller = {
     3,
     {
         {"self", spi::ArgType::OBJECT, "Service", false, false, false},
-        {"baseClassName", spi::ArgType::STRING, "string", false, false, true},
-        {"fieldName", spi::ArgType::STRING, "string", false, false, true}
+        {"baseClassName", spi::ArgType::STRING, "string", 0, false, true},
+        {"fieldName", spi::ArgType::STRING, "string", 0, false, true}
     },
     Service_getPropertyClass_caller
 };
@@ -2578,7 +2578,7 @@ spi::FunctionCaller Service_getConstruct_FunctionCaller = {
     2,
     {
         {"self", spi::ArgType::OBJECT, "Service", false, false, false},
-        {"name", spi::ArgType::STRING, "string", false, false, true}
+        {"name", spi::ArgType::STRING, "string", 0, false, true}
     },
     Service_getConstruct_caller
 };

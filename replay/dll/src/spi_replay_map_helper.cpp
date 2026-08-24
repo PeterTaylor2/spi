@@ -172,7 +172,7 @@ spi::FunctionCaller MapClassName_FunctionCaller = {
     "MapClassName",
     1,
     {
-        {"m", spi::ArgType::OBJECT, "Map", false, false, true}
+        {"m", spi::ArgType::OBJECT, "Map", 0, false, true}
     },
     MapClassName_caller
 };
@@ -192,7 +192,7 @@ spi::FunctionCaller MapFieldNames_FunctionCaller = {
     "MapFieldNames",
     1,
     {
-        {"m", spi::ArgType::OBJECT, "Map", false, false, false}
+        {"m", spi::ArgType::OBJECT, "Map", 0, false, false}
     },
     MapFieldNames_caller
 };
@@ -212,7 +212,7 @@ spi::FunctionCaller MapRef_FunctionCaller = {
     "MapRef",
     1,
     {
-        {"m", spi::ArgType::OBJECT, "Map", false, false, true}
+        {"m", spi::ArgType::OBJECT, "Map", 0, false, true}
     },
     MapRef_caller
 };
@@ -242,8 +242,8 @@ spi::FunctionCaller MapGetValue_FunctionCaller = {
     "MapGetValue",
     2,
     {
-        {"m", spi::ArgType::OBJECT, "Map", false, false, true},
-        {"name", spi::ArgType::STRING, "string", false, false, true}
+        {"m", spi::ArgType::OBJECT, "Map", 0, false, true},
+        {"name", spi::ArgType::STRING, "string", 0, false, true}
     },
     MapGetValue_caller
 };

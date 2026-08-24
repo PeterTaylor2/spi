@@ -65,6 +65,9 @@ ServiceDefinitionSP serviceKeywordHandler(
     defaultOptions["recording"] = BoolConstant::Make(false);
     defaultOptions["useVersionedNamespace"] = BoolConstant::Make(false);
     defaultOptions["helpFunc"] = StringConstant::Make("");
+    defaultOptions["functionMaker"] = StringConstant::Make("");
+    defaultOptions["functionSolver"] = StringConstant::Make("");
+    defaultOptions["functionCaller"] = StringConstant::Make("");
     ParserOptions options = parseOptions(lexer, ";", defaultOptions, verbose);
     getTokenOfType(lexer, ';');
 
@@ -97,7 +100,10 @@ ServiceDefinitionSP serviceKeywordHandler(
         options["helpFunc"]->getString(),
         svoFileName,
         options["noClassMake"]->getBool(),
-        options["recording"]->getBool());
+        options["recording"]->getBool(),
+        options["functionMaker"]->getString(),
+        options["functionSolver"]->getString(),
+        options["functionCaller"]->getString());
 
     if (baseService)
     {

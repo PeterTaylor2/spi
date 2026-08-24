@@ -291,12 +291,16 @@ ServiceDefinitionSP ServiceDefinition::Make(
     const std::string& helpFunc,
     const std::string& svoFileName,
     bool noClassMake,
-    bool recording)
+    bool recording,
+    const std::string& functionMaker,
+    const std::string& functionSolver,
+    const std::string& functionCaller)
 {
     return ServiceDefinitionSP(new ServiceDefinition(
         name, dllName, longName, ns, version, declSpec, sharedPtr,
         sharedPtrInclude, noLogging, useVersionedNamespace, description,
-        helpFunc, svoFileName, noClassMake, recording));
+        helpFunc, svoFileName, noClassMake, recording,
+        functionMaker, functionSolver, functionCaller));
 }
 
 ServiceDefinition::ServiceDefinition(
@@ -314,7 +318,10 @@ ServiceDefinition::ServiceDefinition(
     const std::string& helpFunc,
     const std::string& svoFileName,
     bool noClassMake,
-    bool recording)
+    bool recording,
+    const std::string& functionMaker,
+    const std::string& functionSolver,
+    const std::string& functionCaller)
     :
     m_name(name),
     m_dllName(dllName),
@@ -331,6 +338,9 @@ ServiceDefinition::ServiceDefinition(
     m_svoFileName(svoFileName),
     m_noClassMake(noClassMake),
     m_recording(recording),
+    m_functionMaker(functionMaker),
+    m_functionSolver(functionSolver),
+    m_functionCaller(functionCaller),
     m_dataTypes(),
     m_publicDataTypes(),
     m_classes(),
@@ -481,9 +491,12 @@ void ServiceDefinition::addModule(ModuleDefinitionSP& module)
 
 void ServiceDefinition::addServiceLevelModule()
 {
+    if (isSharedService())
+        return;
+
     std::vector<ConstructConstSP> constructs;
 
-    if (!m_helpFunc.empty() && !isSharedService())
+    if (!m_helpFunc.empty())
     {
         // a shared service does not have a service_doc function
         // essentially the HELP function is for the root of the shared services
@@ -529,6 +542,205 @@ void ServiceDefinition::addServiceLevelModule()
 
         constructs.push_back(func);
     }
+
+    const DataTypeConstSP& objectType = getDataType("Object");
+    const DataTypeConstSP& stringType = getDataType("string");
+    const DataTypeConstSP& variantType = getDataType("Variant");
+    const DataTypeConstSP& doubleType = getDataType("double");
+    const DataTypeConstSP& intType = getDataType("int");
+
+    if (!m_functionMaker.empty())
+    {
+        std::vector<std::string> description = {
+            "Creates a function object" };
+        std::vector<std::string> returnTypeDescription = {
+            "We create an object for the given name with the arguments provided"
+            "filled in the order defined." };
+
+        std::vector<std::string> makerCode = {
+            "    spi::FunctionSP func = spi::Function::MakeEmpty(",
+            "        " + m_name + "_service(), name.c_str());",
+            "" };
+
+        for (size_t i = 1; i <= 30; ++i)
+        {
+            makerCode.push_back(
+                spi_util::StringFormat("    func->add_input(arg%d);", i));
+        }
+
+        makerCode.push_back("");
+        makerCode.push_back("    return func;");
+        makerCode.push_back("}");
+
+        std::vector<FunctionAttributeConstSP> makerArgs;
+
+        makerArgs.push_back(FunctionAttribute::Make(
+            Attribute::Make({}, stringType, "name"), false));
+
+        for (size_t i = 1; i <= 30; ++i)
+        {
+            std::string name = spi_util::StringFormat("arg%d", i);
+            makerArgs.push_back(FunctionAttribute::Make(
+                Attribute::Make({}, variantType, name, 0, true), false));
+        }
+
+        FunctionConstSP maker = Function::Make(
+            description,
+            returnTypeDescription,
+            objectType,
+            0,
+            m_functionMaker,
+            "",
+            makerArgs,
+            Verbatim::Make("", 0, makerCode),
+            true, // noLogging
+            true, // noConvert
+            {}, // excel options
+            0, // cache size
+            false, // optional return type
+            true); // noRecord
+
+        constructs.push_back(maker);
+    }
+
+    if (!m_functionSolver.empty())
+    {
+        SPI_PRE_CONDITION(!m_functionMaker.empty());
+
+        // solves a function object
+        std::vector<std::string> description = {
+            "Solves a function by changing on the inputs until the target is reached" };
+        std::vector<std::string> returnTypeDescription = {
+            "The solution" };
+
+        std::vector<std::string> solverCode =
+        {
+            "    if (!spi::Function::IsInstance(func))",
+            "        SPI_THROW_RUNTIME_ERROR(\"Supplied func of type '\"",
+            "            << func->get_class_name() << \"' is not a function\");",
+            "",
+            "    spi::FunctionConstSP objFunc =",
+            "        spi_boost::dynamic_pointer_cast<spi::Function const>(func);",
+            "",
+            "    return objFunc->solve(name, target, guess, loBound, hiBound,",
+            "        maxIters, xAcc, fAcc, oname);",
+            "}"
+        };
+
+        std::vector<FunctionAttributeConstSP> solverArgs;
+
+        solverArgs.push_back(FunctionAttribute::Make(
+            Attribute::Make({}, objectType, "func"), false));
+
+        solverArgs.push_back(FunctionAttribute::Make(
+            Attribute::Make({}, stringType, "name"), false));
+
+        solverArgs.push_back(FunctionAttribute::Make(
+            Attribute::Make({}, doubleType, "target"), false));
+
+        solverArgs.push_back(FunctionAttribute::Make(
+            Attribute::Make({}, doubleType, "guess"), false));
+
+        solverArgs.push_back(FunctionAttribute::Make(
+            Attribute::Make({}, doubleType, "loBound"), false));
+
+        solverArgs.push_back(FunctionAttribute::Make(
+            Attribute::Make({}, doubleType, "hiBound"), false));
+
+        solverArgs.push_back(FunctionAttribute::Make(
+            Attribute::Make({}, intType, "maxIters"), false));
+
+        solverArgs.push_back(FunctionAttribute::Make(
+            Attribute::Make({}, doubleType, "xAcc"), false));
+
+        solverArgs.push_back(FunctionAttribute::Make(
+            Attribute::Make({}, doubleType, "fAcc"), false));
+
+        solverArgs.push_back(FunctionAttribute::Make(
+            Attribute::Make({}, stringType, "oname", 0, true), false));
+
+        FunctionConstSP solver = Function::Make(
+            description,
+            returnTypeDescription,
+            doubleType,
+            0,
+            m_functionSolver,
+            "",
+            solverArgs,
+            Verbatim::Make("", 0, solverCode),
+            true, // noLogging
+            true, // noConvert
+            {}, // excel options
+            0, // cache size
+            false, // optional return type
+            true); // noRecord
+
+        constructs.push_back(solver);
+    }
+
+    if (!m_functionCaller.empty())
+    {
+        SPI_PRE_CONDITION(!m_functionMaker.empty());
+
+        // solves a function object
+        std::vector<std::string> description = {
+            "Calls a function. Optionally you can override one of the inputs" };
+        std::vector<std::string> returnTypeDescription = {
+            "The result of calling the function" };
+
+        std::vector<std::string> callerCode =
+        {
+            "    if (!spi::Function::IsInstance(func))",
+            "        SPI_THROW_RUNTIME_ERROR(\"Supplied func of type '\"",
+            "            << func->get_class_name() << \"' is not a function\");",
+            "",
+            "    spi::FunctionConstSP objFunc =",
+            "        spi_boost::dynamic_pointer_cast<spi::Function const>(func);",
+            "",
+            "    if (!name.empty())",
+            "    {",
+            "        objFunc = objFunc->update_value(name, var);",
+            "    }",
+            ""
+            "    spi::Value value = objFunc->call();",
+            "",
+            "    return value;",
+            "}"
+        };
+
+        std::vector<FunctionAttributeConstSP> callerArgs;
+
+        callerArgs.push_back(FunctionAttribute::Make(
+            Attribute::Make({}, objectType, "func"), false));
+
+        callerArgs.push_back(FunctionAttribute::Make(
+            Attribute::Make({"Define name if you want to override one of the values"},
+                stringType, "name", 0, true), false));
+
+        callerArgs.push_back(FunctionAttribute::Make(
+            Attribute::Make({"The override value for name"}, 
+                variantType, "var", 0, true), false));
+
+        FunctionConstSP caller = Function::Make(
+            description,
+            returnTypeDescription,
+            variantType,
+            0,
+            m_functionCaller,
+            "",
+            callerArgs,
+            Verbatim::Make("", 0, callerCode),
+            true, // noLogging
+            true, // noConvert
+            {}, // excel options
+            0, // cache size
+            false, // optional return type
+            true); // noRecord
+
+        constructs.push_back(caller);
+    }
+
+
 
     if (constructs.size() > 0)
     {
@@ -767,6 +979,14 @@ void ServiceDefinition::VerifyAndComplete()
     m_declSpecHeader = spi::StringFormat("%s_dll_decl_spec.h", m_name.c_str());
     m_import = spi::StringFormat("%s_IMPORT", m_declSpec.c_str());
     m_typeConvertersHeader = spi::StringFormat("%s_dll_type_converters.hpp", m_name.c_str());
+
+    if (m_functionMaker.empty())
+    {
+        if (!m_functionSolver.empty())
+            SPI_THROW_RUNTIME_ERROR("functionSolver required but no functionMaker");
+        if (!m_functionCaller.empty())
+            SPI_THROW_RUNTIME_ERROR("functionCaller required but no functionMaker");
+    }
 }
 
 void ServiceDefinition::addModuleToIndex(const ModuleDefinitionSP& module)

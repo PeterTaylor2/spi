@@ -166,6 +166,7 @@ void WriteDefaultValue(
     case spdoc::PublicType::CLASS:
     case spdoc::PublicType::OBJECT:
     case spdoc::PublicType::MAP:
+    case spdoc::PublicType::VARIANT:
         ostr << "null";
         break;
     case spdoc::PublicType::DATE:
@@ -2360,6 +2361,8 @@ std::string CDataType::csType(int arrayDim, bool isOptional, bool inputArg) cons
         break;
     case spdoc::PublicType::VARIANT:
         scalarType = "spi.SpiVariant";
+        if (isOptional)
+            scalarType += nullable;
         break;
     default:
         SPI_THROW_RUNTIME_ERROR("Scalars not implemented for " <<

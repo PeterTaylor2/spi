@@ -218,8 +218,8 @@ spi::FunctionCaller ReplayFunctionAction_FunctionCaller = {
     "ReplayFunctionAction",
     2,
     {
-        {"inputs", spi::ArgType::OBJECT, "Map", false, false, false},
-        {"output", spi::ArgType::OBJECT, "Map", false, false, false}
+        {"inputs", spi::ArgType::OBJECT, "Map", 0, false, false},
+        {"output", spi::ArgType::OBJECT, "Map", 0, false, false}
     },
     ReplayFunctionAction_caller
 };
@@ -318,7 +318,7 @@ spi::FunctionCaller ReplayObjectAction_FunctionCaller = {
     "ReplayObjectAction",
     1,
     {
-        {"inputs", spi::ArgType::OBJECT, "Map", false, false, false}
+        {"inputs", spi::ArgType::OBJECT, "Map", 0, false, false}
     },
     ReplayObjectAction_caller
 };
@@ -427,7 +427,7 @@ spi::FunctionCaller ReplayCodeGenerator_GenerateFunction_FunctionCaller = {
     2,
     {
         {"self", spi::ArgType::OBJECT, "ReplayCodeGenerator", false, false, false},
-        {"action", spi::ArgType::OBJECT, "ReplayFunctionAction", false, false, true}
+        {"action", spi::ArgType::OBJECT, "ReplayFunctionAction", 0, false, true}
     },
     ReplayCodeGenerator_GenerateFunction_caller
 };
@@ -450,7 +450,7 @@ spi::FunctionCaller ReplayCodeGenerator_GenerateObject_FunctionCaller = {
     2,
     {
         {"self", spi::ArgType::OBJECT, "ReplayCodeGenerator", false, false, false},
-        {"action", spi::ArgType::OBJECT, "ReplayObjectAction", false, false, true}
+        {"action", spi::ArgType::OBJECT, "ReplayObjectAction", 0, false, true}
     },
     ReplayCodeGenerator_GenerateObject_caller
 };
@@ -551,7 +551,7 @@ spi::FunctionCaller ReplayLog_generateCode_FunctionCaller = {
     2,
     {
         {"self", spi::ArgType::OBJECT, "ReplayLog", false, false, false},
-        {"generator", spi::ArgType::OBJECT, "ReplayCodeGenerator", false, false, true}
+        {"generator", spi::ArgType::OBJECT, "ReplayCodeGenerator", 0, false, true}
     },
     ReplayLog_generateCode_caller
 };
@@ -571,7 +571,7 @@ spi::FunctionCaller ReplayLog_Read_FunctionCaller = {
     "ReplayLog.Read",
     1,
     {
-        {"infilename", spi::ArgType::STRING, "string", false, false, true}
+        {"infilename", spi::ArgType::STRING, "string", 0, false, true}
     },
     ReplayLog_Read_caller
 };

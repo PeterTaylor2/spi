@@ -87,7 +87,6 @@ void writeFunctionArg(
     const std::string&     name        = arg->name();
     int                    arrayDim    = arg->arrayDim();
     bool                   isOptional  = arg->isOptional() || arrayDim > 0;
-    //bool                   isArray     = arg->isArray();
 
     if (arrayDim > 0)
     {
@@ -1610,7 +1609,7 @@ void writeFunctionCaller(
         bool isOptional   = arg->isOptional();
         bool isPermutable = arrayDim == 0 && functionIsPermutable;
 
-        ostr << ", " << (arrayDim > 0 ? "true" : "false")
+        ostr << ", " << arrayDim
              << ", " << (isOptional ? "true" : "false")
              << ", " << (isPermutable ? "true" : "false");
 

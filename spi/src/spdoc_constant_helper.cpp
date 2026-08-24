@@ -387,7 +387,7 @@ spi::FunctionCaller IntConstant_FunctionCaller = {
     "IntConstant",
     1,
     {
-        {"value", spi::ArgType::INT, "int", false, false, false}
+        {"value", spi::ArgType::INT, "int", 0, false, false}
     },
     IntConstant_caller
 };
@@ -483,7 +483,7 @@ spi::FunctionCaller DateConstant_FunctionCaller = {
     "DateConstant",
     1,
     {
-        {"value", spi::ArgType::DATE, "date", false, false, false}
+        {"value", spi::ArgType::DATE, "date", 0, false, false}
     },
     DateConstant_caller
 };
@@ -580,7 +580,7 @@ spi::FunctionCaller DateTimeConstant_FunctionCaller = {
     "DateTimeConstant",
     1,
     {
-        {"value", spi::ArgType::DATETIME, "datetime", false, false, false}
+        {"value", spi::ArgType::DATETIME, "datetime", 0, false, false}
     },
     DateTimeConstant_caller
 };
@@ -676,7 +676,7 @@ spi::FunctionCaller DoubleConstant_FunctionCaller = {
     "DoubleConstant",
     1,
     {
-        {"value", spi::ArgType::DOUBLE, "double", false, false, false}
+        {"value", spi::ArgType::DOUBLE, "double", 0, false, false}
     },
     DoubleConstant_caller
 };
@@ -772,7 +772,7 @@ spi::FunctionCaller CharConstant_FunctionCaller = {
     "CharConstant",
     1,
     {
-        {"value", spi::ArgType::CHAR, "char", false, false, false}
+        {"value", spi::ArgType::CHAR, "char", 0, false, false}
     },
     CharConstant_caller
 };
@@ -868,7 +868,7 @@ spi::FunctionCaller StringConstant_FunctionCaller = {
     "StringConstant",
     1,
     {
-        {"value", spi::ArgType::STRING, "string", false, false, false}
+        {"value", spi::ArgType::STRING, "string", 0, false, false}
     },
     StringConstant_caller
 };
@@ -964,7 +964,7 @@ spi::FunctionCaller BoolConstant_FunctionCaller = {
     "BoolConstant",
     1,
     {
-        {"value", spi::ArgType::BOOL, "bool", false, false, false}
+        {"value", spi::ArgType::BOOL, "bool", 0, false, false}
     },
     BoolConstant_caller
 };
