@@ -72,7 +72,7 @@ struct Options
         objectList("object_list"),
         objectClassName("object_class_name"),
         objectSHA("object_sha"),
-        xlTargetVersion(4)
+        xlTargetVersion(12)
     {
         verify();
     }
