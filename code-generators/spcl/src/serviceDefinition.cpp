@@ -538,7 +538,8 @@ void ServiceDefinition::addServiceLevelModule()
             {}, // excel options
             0, // cache size
             false, // optional return type
-            true); // noRecord
+            true, // noRecord
+            false); // noExport
 
         constructs.push_back(func);
     }
@@ -598,7 +599,8 @@ void ServiceDefinition::addServiceLevelModule()
             {}, // excel options
             0, // cache size
             false, // optional return type
-            true); // noRecord
+            true, // noRecord
+            false); // noExport
 
         constructs.push_back(maker);
     }
@@ -673,7 +675,8 @@ void ServiceDefinition::addServiceLevelModule()
             {}, // excel options
             0, // cache size
             false, // optional return type
-            true); // noRecord
+            true, // noRecord
+            false); // noExport
 
         constructs.push_back(solver);
     }
@@ -735,7 +738,8 @@ void ServiceDefinition::addServiceLevelModule()
             {}, // excel options
             0, // cache size
             false, // optional return type
-            true); // noRecord
+            true, // noRecord
+            false); // noExport
 
         constructs.push_back(caller);
     }
