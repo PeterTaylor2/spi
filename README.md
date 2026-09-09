@@ -60,6 +60,8 @@ work). Visual Studio projects can be generated from the makefiles, and then manu
 solution file. Most of the code over the years has been developed within Visual Studio - currently VS17 (2022)
 and VS18 (2026) are fully supported.
 
+To check that your makefiles set-up is correct you can use the simple builds in the makefiles/test directory.
+
 ## Versions of interface languages supported
 
 We support Excel versions 4, 12 and 15, although the Excel4 code has not been tested for a while.

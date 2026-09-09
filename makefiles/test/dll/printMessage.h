@@ -12,9 +12,17 @@
 #define DLLIMPORT __declspec(dllimport)
 #endif
 
+#elif defined(__GNUC__)
+
+#ifdef DLLEXPORT
+#define DLLIMPORT __attribute__((visibility("default")))
+#else
+#define DLLIMPORT
+#endif
+
 #else
 
-/* not microsoft compiler */
+/* neither microsoft compiler nor gcc/g++ */
 #define DLLIMPORT
 
 #endif 
