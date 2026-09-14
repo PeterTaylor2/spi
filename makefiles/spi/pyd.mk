@@ -141,16 +141,16 @@ G_DLL_EXT:=$(G_DEBUG_EXT).dll
 endif
 
 U_DEP_LIBS:=\
-$(U_DLL_DIR)/$(G_BUILD_DIR)/lib$(U_SERVICE_DLL).so\
+$(U_DLL_DIR)/$(G_BUILD_DIR)/lib$(U_SERVICE_DLL)$(G_DLL_EXT)\
 $(U_DEP_LIBS)\
-$(I_SPI_RUNTIME_BIN_DIR)/py$(G_PY_VERSION)/lib$(SPI_DLL)-py$(G_PY_VERSION).so\
-$(I_SPI_RUNTIME_BIN_DIR)/lib$(SPI_DLL).so\
-$(I_SPI_RUNTIME_BIN_DIR)/lib$(SPI_UTIL_DLL).so\
+$(I_SPI_RUNTIME_BIN_DIR)/py$(G_PY_VERSION)/lib$(SPI_DLL)-py$(G_PY_VERSION)$(G_DLL_EXT)\
+$(I_SPI_RUNTIME_BIN_DIR)/lib$(SPI_DLL)$(G_DLL_EXT)\
+$(I_SPI_RUNTIME_BIN_DIR)/lib$(SPI_UTIL_DLL)$(G_DLL_EXT)\
 $(I_SPI_RUNTIME_BIN_DIR)/libspi_boost$(G_LIB_EXT)
 
 ifdef G_CYGWIN
 U_LIBS:=\
-$(U_DLL_DIR)/$(G_BUILD_DIR)/lib$(U_SERVICE_DLL).so\
+$(U_DLL_DIR)/$(G_BUILD_DIR)/lib$(U_SERVICE_DLL)$(G_DLL_EXT)\
 $(U_LIBS)\
 $(I_SPI_RUNTIME_BIN_DIR)/py$(G_PY_VERSION)/lib$(SPI_DLL)-py$(G_PY_VERSION).so\
 $(I_SPI_RUNTIME_BIN_DIR)/lib$(SPI_DLL).so\
@@ -169,18 +169,21 @@ endif
 
 G_DLL_PFX=
 
-G_SPI_DLLS:=lib$(SPI_DLL).so lib$(SPI_UTIL_DLL).so lib$(SPI_DLL)-py$(G_PY_VERSION).so
-G_INSTALL_DLL_EXT:=.so
-G_INSTALL_PYD_EXT:=.so
+G_SPI_DLLS:=lib$(SPI_DLL)$(G_DLL_EXT) lib$(SPI_UTIL_DLL)$(G_DLL_EXT) lib$(SPI_DLL)-py$(G_PY_VERSION)$(G_DLL_EXT)
+G_INSTALL_DLL_EXT:=$(G_DLL_EXT)
 G_INSTALL_DLL_PFX:=lib
+
+# for the mac we use .so for the actual extension
+# so this should be correct for linux and macos
+
+G_INSTALL_PYD_EXT:=.so
 G_INSTALL_PYD_PFX:=
 
-ifeq ($(G_PLATFORM),macos64)
+# we need to define this after defining the DLLs needed
+# this definition will ensure that dll.mk will build .so
+# file instead of .dylib file (for the mac)
 
-G_DLL_EXT:=.so
-G_INSTALL_PYD_EXT:=.so
-
-endif
+G_DLL_EXT:=$(G_DEBUG_EXT).so
 
 endif
 

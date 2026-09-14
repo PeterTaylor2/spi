@@ -214,6 +214,7 @@ std::string ComputerName(bool fullyQualified)
         throw RuntimeError("gethostname failed with code %d", rc);
     }
 
+#ifndef __clang__
     if (fullyQualified)
     {
         struct hostent h2;
@@ -237,6 +238,7 @@ std::string ComputerName(bool fullyQualified)
         return std::string(h2.h_name);
     }
     else
+#endif
     {
         return std::string(&hostName[0]);
     }

@@ -28,6 +28,8 @@
 #include "DeclSpec.h"
 #include "RefCounter.hpp"
 
+#include <string>
+
 SPI_BEGIN_NAMESPACE
 
 SPI_DECLARE_RC_CLASS(String);

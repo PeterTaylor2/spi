@@ -89,7 +89,11 @@ spi::Value FuncArg::coerce(const spi::Variant& var) const
             case ArgType::OBJECT:
                 return context->ValueToObjectVector(value, ot, isOptional);
             case ArgType::VARIANT:
+#ifndef __clang__
                 return context->ValueToVariantVector(value, isOptional);
+#else
+                SPI_THROW_RUNTIME_ERROR("program bug - cannot implement this conversion for __clang__");
+#endif
             }
             break;
         case 0:
@@ -134,3 +138,4 @@ spi::Value FuncArg::coerce(const spi::Variant& var) const
 }
 
 SPI_END_NAMESPACE
+

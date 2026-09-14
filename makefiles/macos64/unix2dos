@@ -1,0 +1,25 @@
+#!/bin/bash
+#
+# unix2dos - Convert Unix (LF) line endings to DOS (CRLF) in place,
+# keeping a .bak backup of each original file. Written for macOS's BSD sed.
+#
+# Usage: ./unix2dos file1 [file2 file3 ...]
+
+if [ "$#" -eq 0 ]; then
+    echo "Usage: $0 file1 [file2 file3 ...]"
+    exit 1
+fi
+
+for file in "$@"; do
+    if [ ! -f "$file" ]; then
+        echo "Skipping '$file': not a regular file or does not exist"
+        continue
+    fi
+
+    # Normalize first (strip any existing \r) then add \r before every \n.
+    # This avoids doubling up \r\r\n on files that are already partially CRLF.
+    sed -i '.bak' -e $'s/\r$//' -e $'s/$/\r/' "$file"
+
+    echo "Converted: $file (backup saved as $file.bak)"
+done
+
