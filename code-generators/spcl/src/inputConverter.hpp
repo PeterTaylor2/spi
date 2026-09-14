@@ -18,7 +18,7 @@
 
 */
 #ifndef INPUT_CONVERTER_HPP
-#define INPUT_CONVERTER_CPP
+#define INPUT_CONVERTER_HPP
 
 /*
 ***************************************************************************
@@ -29,6 +29,7 @@
 */
 
 #include <spi/RefCounter.hpp>
+#include <string>
 
 SPI_DECLARE_RC_CLASS(InputConverter);
 SPI_DECLARE_RC_CLASS(InputConverterStringFormat);

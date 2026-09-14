@@ -19,7 +19,7 @@
 
 */
 #ifndef SPI_UTIL_UDP_UPLOAD_HPP
-#define SPI_UTIL_UDL_UPLOAD_HPP
+#define SPI_UTIL_UDP_UPLOAD_HPP
 
 #include "DeclSpec.h"
 #include "Namespace.hpp"

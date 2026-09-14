@@ -46,239 +46,239 @@ public:
     void SetChar(
         const char* name,
         char value,
-        bool hidden);
+        bool hidden) override;
 
     void SetString(
         const char* name,
         const std::string& value,
-        bool hidden);
+        bool hidden) override;
 
     void SetInt(
         const char* name,
         int value,
-        bool hidden);
+        bool hidden) override;
 
     void SetBool(
         const char* name,
         bool value,
-        bool hidden);
+        bool hidden) override;
 
     void SetDouble(
         const char* name,
         double value,
-        bool hidden);
+        bool hidden) override;
 
     void SetDate(
         const char* name,
         Date value,
-        bool hidden);
+        bool hidden) override;
 
     void SetDateTime(
         const char* name,
         DateTime value,
-        bool hidden);
+        bool hidden) override;
 
     void SetObject(
         const char* name,
         const ObjectConstSP& value,
-        bool hidden);
+        bool hidden) override;
 
     void SetVariant(
         const char* name,
         const Variant& value,
-        bool hidden);
+        bool hidden) override;
 
     void SetStringVector(
         const char* name,
         const std::vector<std::string>& value,
-        bool hidden);
+        bool hidden) override;
 
     void SetDoubleVector(
         const char* name,
         const std::vector<double>& value,
-        bool hidden);
+        bool hidden) override;
 
     void SetIntVector(
         const char* name,
         const std::vector<int>& value,
-        bool hidden);
+        bool hidden) override;
 
     void SetBoolVector(
         const char* name,
         const std::vector<bool>& value,
-        bool hidden);
+        bool hidden) override;
 
     void SetDateVector(
         const char* name,
         const std::vector<Date>& value,
-        bool hidden);
+        bool hidden) override;
 
     void SetDateTimeVector(
         const char* name,
         const std::vector<DateTime>& value,
-        bool hidden);
+        bool hidden) override;
 
     void SetVariantVector(
         const char* name,
         const std::vector<Variant>& value,
-        bool hidden);
+        bool hidden) override;
 
     void SetObjectVector(
         const char* name,
         const std::vector<ObjectConstSP>& value,
-        bool hidden);
+        bool hidden) override;
 
     void SetBoolMatrix(
         const char* name,
         const MatrixData<bool>& value,
-        bool hidden);
+        bool hidden) override;
 
     void SetIntMatrix(
         const char* name,
         const MatrixData<int>& value,
-        bool hidden);
+        bool hidden) override;
 
     void SetDoubleMatrix(
         const char* name,
         const MatrixData<double>& value,
-        bool hidden);
+        bool hidden) override;
 
     void SetStringMatrix(
         const char* name,
         const MatrixData<std::string>& value,
-        bool hidden);
+        bool hidden) override;
 
     void SetDateMatrix(
         const char* name,
         const MatrixData<Date>& value,
-        bool hidden);
+        bool hidden) override;
 
     void SetDateTimeMatrix(
         const char* name,
         const MatrixData<DateTime>& value,
-        bool hidden);
+        bool hidden) override;
 
     void SetObjectMatrix(
         const char* name,
         const MatrixData<ObjectConstSP>& value,
-        bool hidden);
+        bool hidden) override;
 
     void SetVariantMatrix(
         const char* name,
         const spi::MatrixData<Variant>& value,
-        bool hidden);
+        bool hidden) override;
 
-    void ImportMap(const Map* aMap);
+    void ImportMap(const Map* aMap) override;
 
-    void SetClassName(const std::string& className);
+    void SetClassName(const std::string& className) override;
 
     std::string ClassName() const override;
 
     char GetChar(
         const char* name,
         bool optional,
-        char defaultValue);
+        char defaultValue) override;
 
     std::string GetString(
         const char* name,
         bool optional,
-        const char* defaultValue);
+        const char* defaultValue) override;
 
     int GetInt(
         const char* name,
         bool optional,
-        int defaultValue);
+        int defaultValue) override;
 
     bool GetBool(
         const char* name,
         bool optional,
-        bool defaultValue);
+        bool defaultValue) override;
 
     double GetDouble(
         const char* name,
         bool optional,
-        double defaultValue);
+        double defaultValue) override;
 
     Date GetDate(
         const char* name,
-        bool optional);
+        bool optional) override;
 
     DateTime GetDateTime(
         const char* name,
-        bool optional);
+        bool optional) override;
 
     ObjectConstSP GetObject(
         const char* name,
         ObjectType* objectType,
         ValueToObject& mapToObject,
-        bool optional);
+        bool optional) override;
 
     Variant GetVariant(
         const char* name,
         ValueToObject& mapToObject,
-        bool optional);
+        bool optional) override;
 
     std::vector<std::string> GetStringVector(
-        const char* name);
+        const char* name) override;
 
     std::vector<double> GetDoubleVector(
-        const char* name);
+        const char* name) override;
 
     std::vector<int> GetIntVector(
-        const char* name);
+        const char* name) override;
 
     std::vector<bool> GetBoolVector(
-        const char* name);
+        const char* name) override;
 
     std::vector<Date> GetDateVector(
-        const char* name);
+        const char* name) override;
 
     std::vector<DateTime> GetDateTimeVector(
-        const char* name);
+        const char* name) override;
 
     std::vector<ObjectConstSP> GetObjectVector(
         const char* name,
         ObjectType* objectType,
         ValueToObject& mapToObject,
-        bool optional);
+        bool optional) override;
 
     std::vector<Variant> GetVariantVector(
         const char* name,
         ValueToObject& mapToObject,
-        bool optional);
+        bool optional) override;
 
     MatrixData<bool> GetBoolMatrix(
-        const char* name);
+        const char* name) override;
 
     MatrixData<int> GetIntMatrix(
-        const char* name);
+        const char* name) override;
 
     MatrixData<double> GetDoubleMatrix(
-        const char* name);
+        const char* name) override;
 
     MatrixData<std::string> GetStringMatrix(
-        const char* name);
+        const char* name) override;
 
     MatrixData<Date> GetDateMatrix(
-        const char* name);
+        const char* name) override;
 
     MatrixData<DateTime> GetDateTimeMatrix(
-        const char* name);
+        const char* name) override;
 
     MatrixData<ObjectConstSP> GetObjectMatrix(
         const char* name,
         ObjectType* objectType,
         ValueToObject& mapToObject,
-        bool optional);
+        bool optional) override;
 
     MatrixData<Variant> GetVariantMatrix(
         const char* name,
         ValueToObject& mapToObject,
-        bool optional);
+        bool optional) override;
 
-    bool Exists(const char* name);
+    bool Exists(const char* name) override;
 
-    MapSP ExportMap();
+    MapSP ExportMap() override;
 
 private:
 

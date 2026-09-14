@@ -20,7 +20,7 @@
 */
 
 #ifndef SPI_UTIL_MUTEX_LOCK_HPP
-#define SPI_UTIL_MUTEX_LOCK_CPP
+#define SPI_UTIL_MUTEX_LOCK_HPP
 
 #include "DeclSpec.h"
 #include "Namespace.hpp"

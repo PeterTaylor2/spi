@@ -53,6 +53,7 @@
 #ifndef SPI_VALUE_HPP
 #define SPI_VALUE_HPP
 
+#include <string>
 #include <vector>
 
 #include "DeclSpec.h"
