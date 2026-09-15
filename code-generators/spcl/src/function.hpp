@@ -75,13 +75,13 @@ public:
     // implementation of Construct
     void declare(GeneratedOutput& ostr,
                  const ServiceDefinitionSP& svc,
-                 bool types) const;
+                 bool types) const override;
 
-    bool declareInClasses() const;
+    bool declareInClasses() const override;
 
     void declareHelper(GeneratedOutput& ostr,
                        const ServiceDefinitionSP& svc,
-                       bool types) const;
+                       bool types) const override;
 
     void implement(GeneratedOutput& ostr,
                    const ServiceDefinitionSP& svc,
@@ -100,7 +100,7 @@ public:
         bool types) const override;
 
     const char* type() const;
-    spdoc::ConstructConstSP getDoc() const;
+    spdoc::ConstructConstSP getDoc() const override;
 
 protected:
     Function(

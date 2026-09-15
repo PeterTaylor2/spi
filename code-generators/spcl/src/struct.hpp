@@ -88,21 +88,21 @@ public:
 
     // re-implementation of Construct
     int preDeclare(GeneratedOutput& ostr,
-                   const ServiceDefinitionSP& svc) const;
+                   const ServiceDefinitionSP& svc) const override;
 
     void declareClassFunctions(GeneratedOutput& ostr,
-        const ServiceDefinitionSP& svc) const;
+        const ServiceDefinitionSP& svc) const override;
 
     // implementation of construct
     void declare(GeneratedOutput& ostr,
                  const ServiceDefinitionSP& svc,
-                 bool types) const;
+                 bool types) const override;
 
-    bool declareInClasses() const;
+    bool declareInClasses() const override;
 
     void declareHelper(GeneratedOutput& ostr,
                        const ServiceDefinitionSP& svc,
-                       bool types) const;
+                       bool types) const override;
 
     void implement(GeneratedOutput& ostr,
         const ServiceDefinitionSP& svc,
@@ -119,20 +119,20 @@ public:
         bool types) const override;
 
     const char* type() const;
-    spdoc::ConstructConstSP getDoc() const;
+    spdoc::ConstructConstSP getDoc() const override;
 
     // re-implementation of Class
-    std::string getName(bool includeNamespace, const char* sep) const;
-    std::string getObjectName() const;
-    bool isAbstract() const;
-    bool isWrapperClass() const;
-    bool isDelegate() const;
-    bool isVirtualMethod(const std::string& methodName) const;
-    bool hasNonConstMethods() const;
-    const DataTypeConstSP& getDataType(const ServiceDefinitionSP& svc, bool ignored) const;
-    ClassConstSP getBaseClass() const;
-    std::vector<CoerceFromConstSP> getCoerceFrom() const;
-    std::vector<AttributeConstSP> AllAttributes() const;
+    std::string getName(bool includeNamespace, const char* sep) const override;
+    std::string getObjectName() const override;
+    bool isAbstract() const override;
+    bool isWrapperClass() const override;
+    bool isDelegate() const override;
+    bool isVirtualMethod(const std::string& methodName) const override;
+    bool hasNonConstMethods() const override;
+    const DataTypeConstSP& getDataType(const ServiceDefinitionSP& svc, bool ignored) const override;
+    ClassConstSP getBaseClass() const override;
+    std::vector<CoerceFromConstSP> getCoerceFrom() const override;
+    std::vector<AttributeConstSP> AllAttributes() const override;
 
 protected:
     Struct(
@@ -208,7 +208,7 @@ public:
     bool noId() const { return m_noId; }
     bool isVirtual() const { return m_isVirtual; }
     bool asValue() const { return m_asValue; }
-    bool byValue() const { return m_byValue; }
+    bool byValue() const override { return m_byValue; }
     bool useAccessors() const { return m_useAccessors; }
     bool incomplete() const { return m_incomplete; }
     bool noLog() const { return m_noLog; }

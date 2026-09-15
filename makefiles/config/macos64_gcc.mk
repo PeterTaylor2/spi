@@ -32,7 +32,7 @@ G_LIB=ar rv $@
 # debug or optimised code
 I_SYS_LIBS=-lc -lm -ldl -lpthread
 
-G_MACOS64_GCC_WARNINGS?=-Wall -Wno-unused-value -Wno-deprecated -Wno-unused-variable -Wno-write-strings -Wno-sequence-point -Werror -Wno-inconsistent-missing-override
+G_MACOS64_GCC_WARNINGS?=-Wall -Wno-unused-value -Wno-deprecated -Wno-unused-variable -Wno-write-strings -Wno-sequence-point -Werror
 
 G_MACOS_VISIBILITY?=-fvisibility=hidden
 G_MACOS64_GCC_M64?=-m64
