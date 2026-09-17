@@ -16,6 +16,8 @@ gzlib.$(G_OBJ)\
 gzread.$(G_OBJ)\
 gzwrite.$(G_OBJ)
 
+U_CFLAGS+=-DZ_PREFIX
+
 G_MACOS64_GCC_WARNINGS+=-Wno-shift-negative-value
 
 include $(U_SPI_HOME)/makefiles/build/lib.mk
