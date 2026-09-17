@@ -19,13 +19,13 @@ include $(U_MAKEFILES)/config/linux64_gcc.mk
 I_DEFINES = $(U_DEFINES) $(U_DEBUG_CFLAGS) $(U_LINUX64_DEBUG_CFLAGS)
 I_CFLAGS = -pthread $(G_LINUX64_GCC_M64) $(G_LINUX64_GCC_WARNINGS) -ggdb3 -c -fPIC -pipe $(G_LINUX_VISIBILITY) $(I_DEFINES)
 
-G_CFLAGS = $(I_CFLAGS) $(U_LINUX64_CFLAGS)
-G_CPPFLAGS = $(I_CFLAGS) $(U_LINUX64_CPPFLAGS)
+G_CFLAGS = $(I_CFLAGS) $(U_LINUX64_CFLAGS) $(G_LINUX64_SANITIZER_FLAGS)
+G_CPPFLAGS = $(I_CFLAGS) $(U_LINUX64_CPPFLAGS) $(G_LINUX64_SANITIZER_FLAGS)
 
 ############################################################################
 # Linker flags 
 ############################################################################
-G_DEBUG_LFLAGS = 
+G_DEBUG_LFLAGS = $(G_LINUX64_SANITIZER_FLAGS)
 I_LFLAGS = -m64 -o $@ $(G_DEBUG_LFLAGS) $(U_LINUX64_DEBUG_LFLAGS) -Wl,-rpath,. -z defs
 I_DLL_LFLAGS = -shared $(G_LINKMAP_SPEC)
 G_DLL_LFLAGS = $(I_LFLAGS) $(I_DLL_LFLAGS)
