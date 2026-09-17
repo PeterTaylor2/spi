@@ -28,7 +28,7 @@ endif
 ifneq ($(G_PLATFORM),win32)
 ifeq ($(DEBUG),0)
 ifeq ($(G_PLATFORM),macos64)
-	strip -u $(I_TARGET)
+	strip -x $(I_TARGET)
 else
 	@strip $(I_TARGET)
 endif
