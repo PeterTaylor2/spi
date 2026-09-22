@@ -59,3 +59,7 @@ $(I_CS_TARGET): $(I_CS_SOURCE) $(I_SPCS)
 
 clean::
 	rm -f $(I_CS_TARGET)
+
+help:: $(I_SPCS)
+	$(I_SPCS) --help
+

@@ -58,3 +58,6 @@ $(I_PYTHON_TARGET): $(I_PYTHON_SOURCE) $(I_SPPY)
 
 clean::
 	rm -f $(I_PYTHON_TARGET)
+
+help:: $(I_SPPY)
+	$(I_SPPY) --help

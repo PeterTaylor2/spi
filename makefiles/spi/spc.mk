@@ -66,3 +66,7 @@ $(I_C_TARGET): $(I_C_SOURCE) $(I_SPC)
 
 clean::
 	rm -f $(I_C_TARGET)
+
+help:: $(I_SPC)
+	$(I_SPC) --help
+

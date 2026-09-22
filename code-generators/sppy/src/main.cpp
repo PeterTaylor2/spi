@@ -122,7 +122,7 @@ int main(int argc, char* argv[])
     std::string dirname;
 
     std::string exe("SPPY");
-    const char* longOptions = "noImporter noGeneratedCodeNotice lowerCase lowerCaseMethod"
+    const char* longOptions = "help noImporter noGeneratedCodeNotice lowerCase lowerCaseMethod"
         " objectCoerce helpFuncList keywords fastCall license licenseFile= backup"
         " textFormat";
 
@@ -130,13 +130,46 @@ int main(int argc, char* argv[])
 
     try
     {
-        spi_util::CommandLine commandLine(argc, argv, "wv", longOptions);
+        std::vector<spi_util::CommandLineOption> clOptions = {
+            { "help", "h", "Print this help message and exit"},
+            { "noImporter", "", "Do not generate (and hence don't overwrite) the importer script with the name <ns>.py\n"
+                "where <ns> is the namespace of the library\n"},
+            { "keywords", "", "Support keyword arguments to functions"},
+            { "lowerCase", "", "Convert all function names to lower-case"},
+            { "lowerCaseMethod", "", "Convert all member function names to lower-case"},
+            { "objectCoerce", "", "Provides a service level object_coerce function. Note that each class already supports\n"
+                "a Coerce method so the service level object_coerce function is not really needed."},
+            { "helpFuncList", "", "Provides a service level help_func_list function. Not really necessary in the Python\n"
+                "context since there are so many standard Python methods of gathering this information"},
+            { "fastcall", "", "An attempt to use a faster method of calling functions - didn't seem to make any difference.\n"
+                "hence we don't particularly recommend using this option since we haven't tested it fully."},
+            { "textFormat", "", "Not sure what this means"},
+            { "backup", "", "Creates a backup file (original name with .bak appended) whenever a file is changed."},
+            { "noGeneratedCodeNotice", "", "Do not print the generated code notice at the top of each file in the generated code\n"
+                "In addition we also trigger noVerbatimLine option"},
+            { "license", "", "Prints the license for SPCS."},
+            { "licenseFile", "", "This is the name of a file which contains the license for your code.\n"
+                "The file will be read and the contents included near the top of the generated files.", true},
+            { "", "w", "Waits at the start - the purpose is to allow a debugger to be attached"},
+            { "", "v", "Verbose - shows some details of the parser"},
+        };
+
+        spi_util::CommandLine commandLine(argc, argv, "hwv", longOptions);
         exe = spi_util::path::basename(commandLine.exeName);
 
         std::string opt;
         std::string val;
         while (commandLine.getOption(opt,val))
         {
+            if (opt == "-h" || opt == "--help")
+            {
+                spi_util::CommandLineOption::PrintHelp(
+                    stdout,
+                    exe.c_str(),
+                    "infile outfile dirname",
+                    clOptions);
+                return 0;
+            }
             if (opt == "-w")
             {
                 waitAtStart = true;

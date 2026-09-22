@@ -24,11 +24,13 @@
 #include "StringUtil.hpp"
 
 #include <string.h>
+#include <sstream>
 
 #define BEGIN_ANONYMOUS_NAMESPACE namespace {
 #define END_ANONYMOUS_NAMESPACE }
 
 SPI_UTIL_NAMESPACE
+
 
 BEGIN_ANONYMOUS_NAMESPACE
 
@@ -260,42 +262,213 @@ std::string CommandLine::toString()
     return oss.str();
 }
 
+/***************************************************************************
+ * Implementation of CommandLineOption - probably a better API than just
+ * CommandLine but we want to re-use the existing code rather than re-write
+ * and accidentally break it.
+ ***************************************************************************/
+CommandLineOption::CommandLineOption(
+    const char* longName,
+    const char* shortName,
+    const char* help,
+    bool hasValue,
+    const char* valueName)
+    :
+    m_longName(longName),
+    m_shortName(shortName),
+    m_help(help),
+    m_hasValue(hasValue),
+    m_valueName()
+{
+    if (m_longName.empty())
+    {
+        m_hasLong = false;
+    }
+    else
+    {
+        m_hasLong = true;
+        m_longName = StringStrip(m_longName);
 
-//CommandLine ParseCommandLine(
-//    int argc,
-//    char* argv[],
-//    const char* shortOptions,
-//    const char* longOptions)
-//{
-//    SPI_UTIL_PRE_CONDITION(argc >= 1);
-//
-//    CommandLine out;
-//
-//    out.exeName = argv[0];
-//    int n = 1;
-//
-//    std::string optSep = "-";
-//
-//    std::vector<std::string> longOptionVector = StringSplit(longOptions, ' ');
-//
-//    while (n < argc)
-//    {
-//        std::string arg = argv[n];
-//        if (arg[0] != '-')
-//            break;
-//
-//        n = processOption(out, arg, n, argc, argv, shortOptions,
-//                          longOptionVector);
-//    }
-//
-//    // remaining parameters returned as args
-//    while (n < argc)
-//    {
-//        out.args.push_back(argv[n]);
-//        ++n;
-//    }
-//
-//    return out;
-//}
+        if (m_longName.length() == 0)
+        {
+            m_hasLong = false;
+        }
+        else
+        {
+            if (m_longName.find(' ') != std::string::npos)
+            {
+                SPI_UTIL_THROW_RUNTIME_ERROR("Long option name '" << m_longName
+                    << "' cannot contain spaces");
+            }
+        }
+    }
+
+    if (m_shortName.empty())
+    {
+        m_hasShort = false;
+    }
+    else
+    {
+        if (m_shortName.length() != 1)
+            SPI_UTIL_THROW_RUNTIME_ERROR("Short option name '" << m_shortName
+                << "' should have length 1");
+
+        m_hasShort = true;
+    }
+
+    if (m_hasValue)
+    {
+        if (!valueName)
+        {
+            m_valueName = m_longName;
+        }
+        else
+        {
+            m_valueName = valueName;
+        }
+    }
+}
+
+CommandLine CommandLineOption::FromVector(
+    int argc,
+    char* argv[],
+    const std::vector<CommandLineOption>& options)
+{
+    std::ostringstream shortOptions;
+    std::ostringstream longOptions;
+
+    bool hasLongOptions = false;
+    for (auto opt = options.begin(); opt != options.end(); ++opt)
+    {
+        if (opt->m_hasLong)
+        {
+            if (!hasLongOptions)
+            {
+                longOptions << " ";
+                hasLongOptions = true;
+            }
+            longOptions << "--" << opt->m_longName;
+            if (opt->m_hasValue)
+                longOptions << "=";
+        }
+        else if (opt->m_hasShort)
+        {
+            shortOptions << opt->m_shortName;
+            if (opt->m_hasValue)
+                shortOptions << "=";
+        }
+    }
+
+    std::string sOptions = shortOptions.str();
+    std::string lOptions = longOptions.str();
+
+    return CommandLine(argc, argv, sOptions.c_str(), lOptions.c_str());
+}
+
+void CommandLineOption::PrintHelp(
+    FILE* fp,
+    const char* exeName,
+    const char* args,
+    const std::vector<CommandLineOption>& options)
+{
+    PrintUsage(fp, exeName, args, options);
+
+    fprintf(fp, "Help:\n");
+
+    for (auto opt = options.begin(); opt != options.end(); ++opt)
+    {
+        if (!opt->m_hasLong && !opt->m_hasShort)
+            continue;
+
+        fprintf(fp, "\t");
+        if (opt->m_hasShort)
+        {
+            fprintf(fp, "-%c", opt->m_shortName[0]);
+            if (opt->m_hasValue)
+            {
+                fprintf(fp, " <%s>", opt->m_valueName.c_str());
+            }
+        }
+        if (opt->m_hasLong)
+        {
+            if (opt->m_hasShort)
+                fprintf(fp, " or ");
+
+            fprintf(fp, "--%s", opt->m_longName.c_str());
+            if (opt->m_hasValue)
+            {
+                fprintf(fp, " = <%s>", opt->m_valueName.c_str());
+            }
+        }
+        fprintf(fp, "\n");
+
+        std::vector<std::string> helpLines = StringSplit(opt->m_help, "\n");
+        for (auto iter = helpLines.begin(); iter != helpLines.end(); ++iter)
+        {
+            if (iter->empty())
+                continue;
+            if (*iter == ":")
+            {
+                fprintf(fp, "\n");
+            }
+            else
+            {
+                fprintf(fp, "\t\t%s\n", iter->c_str());
+            }
+
+        }
+    }
+}
+
+void CommandLineOption::PrintUsage(
+    FILE* fp,
+    const char* exeName,
+    const char* args,
+    const std::vector<CommandLineOption>& options)
+{
+    fprintf(fp, "\nUSAGE: %s", exeName);
+
+    bool hasLongOptions = false;
+    for (auto opt = options.begin(); opt != options.end(); ++opt)
+    {
+        if (opt->m_hasLong)
+        {
+            hasLongOptions = true;
+        }
+        else if (opt->m_hasValue)
+        {
+            fprintf(fp, " [-%c %s]", opt->m_shortName[0], opt->m_valueName.c_str());
+        }
+        else
+        {
+            fprintf(fp, " [-%c]", opt->m_shortName[0]);
+        }
+    }
+    if (hasLongOptions)
+    {
+        fprintf(fp, " [longOptions]");
+    }
+    fprintf(fp, " %s\n", args);
+
+    if (hasLongOptions)
+    {
+        fprintf(fp, "where longOptions can be as follows:\n");
+        for (auto opt = options.begin(); opt != options.end(); ++opt)
+        {
+            if (!opt->m_hasLong)
+                continue;
+
+            fprintf(fp, "\t--%s", opt->m_longName.c_str());
+            if (opt->m_hasValue)
+            {
+                fprintf(fp, "=<%s>", opt->m_valueName.c_str());
+            }
+            fprintf(fp, "\n");
+        }
+    }
+    fprintf(fp, "\n");
+    fflush(fp);
+}
 
 SPI_UTIL_END_NAMESPACE
+

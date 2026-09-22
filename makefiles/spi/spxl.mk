@@ -72,3 +72,5 @@ endif
 clean::
 	rm -f $(I_EXCEL_TARGET)
 
+help:: $(I_SPXL)
+	$(I_SPXL) --help

@@ -122,6 +122,9 @@ clean:
 	rm -f $(U_SERVICE).svo tex/*.tex $(U_SERVICE_DOC).pdf
 	@rm -f *.aux *.bbl *.blg *.dvi *.log *.out *.toc
 
+help:: $(I_SPTEX)
+	$(I_SPTEX) --help
+
 ###########################################################################
 # visual studio project files
 ###########################################################################
@@ -133,4 +136,5 @@ v17.vcxproj:
 
 v18.vcxproj:
 	@$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/makeVcproj18Config.py $(U_VCXPROJ_OPTIONS) -b $(G_CYGWIN_BIN) -t doc $(U_VCPROJ).v18.vcxproj $(U_VCPROJ) $(U_CONFIG_DIR) $(U_SERVICE_DOC).pdf
+
 
