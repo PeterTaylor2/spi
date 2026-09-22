@@ -79,6 +79,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "code generators", "code gen
 	ProjectSection(SolutionItems) = preProject
 		code-generators\GPL.h = code-generators\GPL.h
 		code-generators\LICENSE = code-generators\LICENSE
+		code-generators\README.md = code-generators\README.md
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spcl-exe", "code-generators\spcl\spcl-exe.v16.vcxproj", "{0EAC096E-915B-11E9-AD4E-34E12D458C69}"
