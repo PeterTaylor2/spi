@@ -16,6 +16,8 @@ gzlib.$(G_OBJ)\
 gzread.$(G_OBJ)\
 gzwrite.$(G_OBJ)
 
+U_CFLAGS+=-DZ_PREFIX
+
 include $(U_SPI_HOME)/makefiles/build/lib.mk
 
 
