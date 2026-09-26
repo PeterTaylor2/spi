@@ -27,7 +27,7 @@
 #
 ############################################################################
 
-.PHONY: code-cs clean-code-cs
+.PHONY: code-cs clean-code-cs help-cs
 
 I_CS_SRC:=$(U_CS_DIR)
 I_CS_TARGET:=$(U_CS_DIR)/$(U_SERVICE).svo
@@ -60,6 +60,6 @@ $(I_CS_TARGET): $(I_CS_SOURCE) $(I_SPCS)
 clean::
 	rm -f $(I_CS_TARGET)
 
-help:: $(I_SPCS)
+help-cs:: $(I_SPCS)
 	$(I_SPCS) --help
 

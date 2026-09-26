@@ -26,7 +26,7 @@
 #
 ############################################################################
 
-.PHONY: code-python clean-code-python
+.PHONY: code-python clean-code-python help-python
 
 I_PYTHON_SRC:=$(U_PYTHON_DIR)/src
 I_PYTHON_TARGET:=$(U_PYTHON_DIR)/$(U_SERVICE).svo
@@ -59,5 +59,5 @@ $(I_PYTHON_TARGET): $(I_PYTHON_SOURCE) $(I_SPPY)
 clean::
 	rm -f $(I_PYTHON_TARGET)
 
-help:: $(I_SPPY)
+help-python:: $(I_SPPY)
 	$(I_SPPY) --help
