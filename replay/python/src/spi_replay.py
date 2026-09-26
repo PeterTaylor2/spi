@@ -10,9 +10,9 @@ try:
     os.chdir(dn)
 
     if os.path.basename(fn).startswith("__init__.py"):
-        from .py_spi_replay import *
+        from .py_replay import *
     else:
-        from py_spi_replay import *
+        from py_replay import *
 finally: os.chdir(cwd)
 
 del(os)
