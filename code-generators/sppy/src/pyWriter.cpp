@@ -960,6 +960,8 @@ void PythonModule::implementClass(
     std::string pythonDelegateClassName;
     if (cls->isDelegate)
     {
+        bool recording = service->service()->recording;
+
         std::ostringstream oss;
         oss << makeNamespaceSep(module->ns, "_") << cls->name
             << "_python_delegate";
@@ -1074,8 +1076,14 @@ void PythonModule::implementClass(
             //    ostr << " const";
 
             ostr << "\n"
-                 << "    {\n"
-                 << "        spi::PyInterpreterLock lock;\n"
+                 << "    {\n";
+
+            if (recording)
+            {
+                ostr << "        spi::AddRecord(delegate_class_name() + \"." << methodName << "\");\n";
+            }
+
+            ostr << "        spi::PyInterpreterLock lock;\n"
                  << "        PyObjectSP the_method = spi::pyoShare(PyObject_GetAttrString(self, "
                  << "\"" << methodName << "\"));\n"
                  << "\n"
@@ -1148,20 +1156,38 @@ void PythonModule::implementClass(
         ostr << "\n"
              << "private:\n"
              << "    PyObject* self;\n"
-             << "    spi::ObjectTypeSP py_object_type;\n"
-             << "\n"
+             << "    spi::ObjectTypeSP py_object_type;\n";
+
+        if (recording)
+        {
+            ostr << "\n"
+                << "    std::string delegate_class_name() const\n"
+                << "    {\n"
+                << "        static const std::string g_className(\"" << service->ns() << "." << classname << "\");\n"
+                << "        return g_className + \"<\" + py_object_type->get_class_name() + \">\";\n"
+                << "    }\n";
+        }
+
+        ostr << "\n"
              << "    " << pythonDelegateClassName << "(PyObject* pyo) : self(pyo), py_object_type()\n"
              << "    {\n"
              << "        if (!self)\n"
              << "            throw std::runtime_error(\"Attempt to wrap NULL pointer in '"
              << pythonDelegateClassName
              << "'\");\n"
-             << "        py_object_type = spi::PythonService::FindRegisteredPythonClass(Py_TYPE(self));\n"
-             << "        Py_INCREF(self);\n"
+             << "        py_object_type = spi::PythonService::FindRegisteredPythonClass(Py_TYPE(self));\n";
+
+        if (recording)
+        {
+            ostr << "        spi::AddRecord(delegate_class_name());\n";
+        }
+
+        ostr << "        Py_INCREF(self);\n"
              << "    }\n"
              << "\n"
              << "};\n"
              << "\n";
+
 
         //ostr << pythonDelegateClassName << "::outer_type\n"
         //     << pythonDelegateClassName << "::Coerce(const spi::ObjectConstSP& o)\n"

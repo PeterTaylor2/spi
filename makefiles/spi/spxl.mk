@@ -26,7 +26,7 @@
 #
 ############################################################################
 
-.PHONY: code-excel clean-code-excel
+.PHONY: code-excel clean-code-excel help-excel
 
 I_EXCEL_TARGET:=$(U_EXCEL_DIR)/$(U_SERVICE).svo
 I_EXCEL_SOURCE:=$(U_CONFIG_DIR)/$(U_SERVICE).svo
@@ -72,5 +72,5 @@ endif
 clean::
 	rm -f $(I_EXCEL_TARGET)
 
-help:: $(I_SPXL)
+help-excel:: $(I_SPXL)
 	$(I_SPXL) --help

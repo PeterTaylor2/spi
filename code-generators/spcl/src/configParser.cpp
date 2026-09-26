@@ -964,6 +964,7 @@ FunctionConstSP parseFunction(
         functionDefaultOptions["excelOptions"] = StringConstant::Make("");
         functionDefaultOptions["ignore"]       = BoolConstant::Make(false);
         functionDefaultOptions["cache"]        = IntConstant::Make(0);
+        functionDefaultOptions["noExport"]     = BoolConstant::Make(false);
     }
     if (methodDefaultOptions.size() == 0)
     {
@@ -983,6 +984,7 @@ FunctionConstSP parseFunction(
     }
     bool ignore = getOption(options, "ignore")->getBool();
     bool noRecord = getOption(options, "noRecord")->getBool();
+    bool noExport = getOption(options, "noExport")->getBool();
 
     // at the end of the function we either have some code started by '{'
     // or the function is not implemented indicated by ;
@@ -1028,7 +1030,8 @@ FunctionConstSP parseFunction(
         excelOptions,
         getOption(options, "cache")->getInt(),
         optionalReturnType,
-        noRecord);
+        noRecord,
+        noExport);
 
     if (func->hasIgnored())
     {
@@ -1111,7 +1114,8 @@ FunctionConstSP parseFunction(
             methodFunctionExcelOptions,
             0, // caching done at lower level
             optionalReturnType,
-            noRecord); 
+            noRecord,
+            noExport);
 
         // cannot add directly to module because then the constructs
         // are not defined in the correct order since cls at this point
@@ -1730,7 +1734,8 @@ void enumKeywordHandler(
                     noExcelOptions,
                     0, // cacheSize
                     false, // optionalReturnType
-                    true); // noRecord
+                    true, // noRecord
+                    false); // noExport
 
                 module->addConstruct(func);
             }
@@ -1768,7 +1773,8 @@ void enumKeywordHandler(
                     noExcelOptions,
                     0, // cacheSize
                     false, // optionalReturnType
-                    true); // noRecord
+                    true, // noRecord
+                    false); // noExport
 
                 module->addConstruct(func);
             }
@@ -1803,7 +1809,8 @@ void enumKeywordHandler(
                     noExcelOptions,
                     0, // cacheSize
                     false, // optionalReturnType
-                    true); // noRecord
+                    true, // noRecord
+                    false); // noExport
 
                 module->addConstruct(func);
             }
@@ -2574,7 +2581,8 @@ void addConstructorFunction(
         excelOptions,
         constructorCache,
         optionalReturnType,
-        false); // noRecord
+        false, // noRecord
+        false); // noExport
 
     module->addConstruct(func);
 }

@@ -27,7 +27,7 @@
 #
 ############################################################################
 
-.PHONY: code-c clean-code-c
+.PHONY: code-c clean-code-c help-c
 
 I_C_SRC:=$(U_C_DIR)
 I_C_TARGET:=$(U_C_DIR)/$(U_SERVICE).svo
@@ -67,6 +67,6 @@ $(I_C_TARGET): $(I_C_SOURCE) $(I_SPC)
 clean::
 	rm -f $(I_C_TARGET)
 
-help:: $(I_SPC)
+help-c:: $(I_SPC)
 	$(I_SPC) --help
 
