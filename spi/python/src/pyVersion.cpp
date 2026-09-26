@@ -63,6 +63,34 @@ std::string pyType_GetName(PyTypeObject* pyType)
 #endif
 }
 
+std::string pyo_base_class_name(PyObject* pyo)
+{
+#ifdef Py_LIMITED_API
+    PyTypeObject* pyType = Py_TYPE(pyo);
+    PyObject* pyBase = PyObject_GetAttrString((PyObject*)pyType, "__base__");
+    if (!pyBase)
+        throw PyException();
+
+    PyObject* pyModule = PyObject_GetAttrString(pyBase, "__module__");
+    if (!pyModule)
+        throw PyException();
+
+    std::string moduleName = pyoToString(pyModule); // pyModule is expected to be a string
+    std::string shortName = pyType_GetName((PyTypeObject*)pyBase);
+
+    std::string name = (moduleName != "builtins")
+        ? moduleName + "." + shortName
+        : shortName;
+
+    PYO_DECREF(pyModule);
+    PYO_DECREF(pyBase);
+
+    return name;
+#else
+    return pyType_GetName(pyo->ob_type->tp_base);
+#endif
+}
+
 double pyFloat_AsDouble(PyObject* pyo)
 {
     double d = PyFloat_AsDouble(pyo);

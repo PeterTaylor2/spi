@@ -53,6 +53,7 @@ SPI_BEGIN_NAMESPACE
 
 std::string pyo_typename(PyObject* pyo);
 std::string pyType_GetName(PyTypeObject* pyType);
+std::string pyo_base_class_name(PyObject* pyo);
 
 double pyFloat_AsDouble(PyObject* pyo);
 

@@ -288,9 +288,10 @@ void PythonService::AddDelegateClass(
 
 ObjectConstSP PythonService::ConstructDelegate(PyObject* pyo) const
 {
-    PyTypeObject* pyBaseClass = Py_TYPE(pyo);
-    SPI_POST_CONDITION(pyBaseClass);
-    std::string baseClassName = pyType_GetName(pyBaseClass);
+    std::string className = pyo_typename(pyo);
+    std::string baseClassName = pyo_base_class_name(pyo);
+
+    //std::cout << "ConstructDelegate " << className << "(" << baseClassName << ")" << std::endl;
 
     DelegateObjectConstructor* constructor;
 
@@ -301,9 +302,10 @@ ObjectConstSP PythonService::ConstructDelegate(PyObject* pyo) const
         // must be a sub-type of the Python equivalent of Object
         // however it might not be direct sub-class
         PyTypeObject* pyObjectType = SpiPyObjectType();
-        if (!PyType_IsSubtype(pyo->ob_type, pyObjectType))
+        PyTypeObject* pyType = Py_TYPE(pyo);
+        if (!PyType_IsSubtype(pyType, pyObjectType))
         {
-            SPI_THROW_RUNTIME_ERROR(pyo_typename(pyo) << " is not a sub-class of " << pyo_typename(pyo));
+            SPI_THROW_RUNTIME_ERROR(pyType_GetName(pyType) << " is not a sub-class of " << pyType_GetName(pyObjectType));
         }
         constructor = Object_python_delegate::Constructor;
     }
