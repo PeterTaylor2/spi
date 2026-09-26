@@ -89,6 +89,7 @@ U_FORCE_REBUILD+=$(U_SPI_HOME)/makefiles/version.mk
 U_TARGET?=py_$(U_SERVICE)
 U_VCPROJ?=$(U_SERVICE)-$(notdir $(CURDIR))
 U_CFLAGS+=-DPY_$(U_DECLSPEC)_EXPORT
+U_CFLAGS+=$(G_PY_LIMITED_API_CFLAGS)
 U_DEBUG_CFLAGS+=-DSPI_DEBUG
 
 ############################################################################

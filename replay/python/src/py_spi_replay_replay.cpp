@@ -66,52 +66,33 @@ PyObject* py_spi_replay_ReplayAction_Coerce(PyObject* self, PyObject* args)
     PyObject* pyo = get_python_service()->ObjectCoerce("ReplayAction", args);
     return pyo;
 }
-static PyMethodDef ReplayAction_methods[] = {
-    {"Coerce", (PyCFunction)py_spi_replay_ReplayAction_Coerce, METH_VARARGS | METH_STATIC,
-        "Coerce ReplayAction from arbitrary value"},
-    {NULL, NULL, 0, NULL} // sentinel
-};
 
-static PyTypeObject ReplayAction_PyObjectType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    "spi_replay.ReplayAction", /*tp_name*/
-    sizeof(SpiPyObject), /*tp_basicsize*/
-    0, /*tp_itemsize*/
-    (destructor)spi_py_object_dealloc, /*tp_dealloc*/
-    0, /*tp_print*/
-    0, /*tp_getattr*/
-    0, /*tp_setattr*/
-    0, /*tp_compare*/
-    0, /*tp_repr*/
-    0, /*tp_as_number*/
-    0, /*tp_as_sequence*/
-    0, /*tp_as_mapping*/
-    0, /*tp_hash */
-    0, /*tp_call*/
-    0, /*tp_str*/
-    0, /*tp_getattro*/
-    0, /*tp_setattro*/
-    0, /*tp_as_buffer*/
-    Py_TPFLAGS_DEFAULT, /*tp_flags*/
-    "", /* tp_doc */
-    0, /* tp_traverse */
-    0, /* tp_clear */
-    0, /* tp_richcompare */
-    0, /* tp_weaklistoffset */
-    0, /* tp_iter */
-    0, /* tp_iternext */
-    ReplayAction_methods, /* tp_methods */
-    0, /* tp_members */
-    0, /* tp_getset */
-    0, /* tp_base */
-    0, /* tp_dict */
-    0, /* tp_descr_get */
-    0, /* tp_descr_set */
-    0, /* tp_dictoffset */
-    (initproc)py_spi_replay_ReplayAction_init, /* tp_init */
-    0, /* tp_alloc */
-    PyType_GenericNew, /* tp_new */
-};
+static PyTypeObject* ReplayAction_PyObjectType()
+{
+    static PyTypeObject* typeObject = NULL;
+    if (typeObject)
+        return typeObject;
+
+    static PyMethodDef methods[] =
+    {
+        {"Coerce", (PyCFunction)py_spi_replay_ReplayAction_Coerce, METH_VARARGS | METH_STATIC,
+            "Coerce ReplayAction from arbitrary value"},
+        {NULL, NULL, 0, NULL} // sentinel
+    };
+
+    typeObject = spi::pyMakeTypeObject(
+        "spi_replay.ReplayAction",
+        0,
+        methods,
+        true,
+        "",
+        nullptr,
+        Py_tp_init, (void*)py_spi_replay_ReplayAction_init,
+        0);
+
+    return typeObject;
+}
+
 
 static int py_spi_replay_ReplayFunctionAction_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
@@ -141,65 +122,47 @@ static int py_spi_replay_ReplayFunctionAction_init(SpiPyObject* self, PyObject* 
     }
 }
 
-static PyGetSetDef ReplayFunctionAction_properties[] = {
-    {"inputs", (getter)(spi_py_object_getter), NULL, NULL,
-        (void*) "inputs"},
-    {"output", (getter)(spi_py_object_getter), NULL, NULL,
-        (void*) "output"},
-    {NULL} // sentinel
-};
-
 PyObject* py_spi_replay_ReplayFunctionAction_Coerce(PyObject* self, PyObject* args)
 {
     PyObject* pyo = get_python_service()->ObjectCoerce("ReplayFunctionAction", args);
     return pyo;
 }
-static PyMethodDef ReplayFunctionAction_methods[] = {
-    {"Coerce", (PyCFunction)py_spi_replay_ReplayFunctionAction_Coerce, METH_VARARGS | METH_STATIC,
-        "Coerce ReplayFunctionAction from arbitrary value"},
-    {NULL, NULL, 0, NULL} // sentinel
-};
 
-static PyTypeObject ReplayFunctionAction_PyObjectType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    "spi_replay.ReplayFunctionAction", /*tp_name*/
-    sizeof(SpiPyObject), /*tp_basicsize*/
-    0, /*tp_itemsize*/
-    (destructor)spi_py_object_dealloc, /*tp_dealloc*/
-    0, /*tp_print*/
-    0, /*tp_getattr*/
-    0, /*tp_setattr*/
-    0, /*tp_compare*/
-    0, /*tp_repr*/
-    0, /*tp_as_number*/
-    0, /*tp_as_sequence*/
-    0, /*tp_as_mapping*/
-    0, /*tp_hash */
-    0, /*tp_call*/
-    0, /*tp_str*/
-    0, /*tp_getattro*/
-    0, /*tp_setattro*/
-    0, /*tp_as_buffer*/
-    Py_TPFLAGS_DEFAULT, /*tp_flags*/
-    "__init__(self, inputs, output)", /* tp_doc */
-    0, /* tp_traverse */
-    0, /* tp_clear */
-    0, /* tp_richcompare */
-    0, /* tp_weaklistoffset */
-    0, /* tp_iter */
-    0, /* tp_iternext */
-    ReplayFunctionAction_methods, /* tp_methods */
-    0, /* tp_members */
-    ReplayFunctionAction_properties, /* tp_getset */
-    0, /* tp_base */
-    0, /* tp_dict */
-    0, /* tp_descr_get */
-    0, /* tp_descr_set */
-    0, /* tp_dictoffset */
-    (initproc)py_spi_replay_ReplayFunctionAction_init, /* tp_init */
-    0, /* tp_alloc */
-    PyType_GenericNew, /* tp_new */
-};
+static PyTypeObject* ReplayFunctionAction_PyObjectType()
+{
+    static PyTypeObject* typeObject = NULL;
+    if (typeObject)
+        return typeObject;
+
+    static PyGetSetDef properties[] =
+    {
+        {"inputs", (getter)(spi_py_object_getter), NULL, NULL,
+            (void*) "inputs"},
+        {"output", (getter)(spi_py_object_getter), NULL, NULL,
+            (void*) "output"},
+        {NULL} // sentinel
+    };
+
+    static PyMethodDef methods[] =
+    {
+        {"Coerce", (PyCFunction)py_spi_replay_ReplayFunctionAction_Coerce, METH_VARARGS | METH_STATIC,
+            "Coerce ReplayFunctionAction from arbitrary value"},
+        {NULL, NULL, 0, NULL} // sentinel
+    };
+
+    typeObject = spi::pyMakeTypeObject(
+        "spi_replay.ReplayFunctionAction",
+        properties,
+        methods,
+        false,
+        "__init__(self, inputs, output)",
+        "ReplayAction",
+        Py_tp_init, (void*)py_spi_replay_ReplayFunctionAction_init,
+        0);
+
+    return typeObject;
+}
+
 
 static int py_spi_replay_ReplayObjectAction_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
@@ -229,63 +192,45 @@ static int py_spi_replay_ReplayObjectAction_init(SpiPyObject* self, PyObject* ar
     }
 }
 
-static PyGetSetDef ReplayObjectAction_properties[] = {
-    {"inputs", (getter)(spi_py_object_getter), NULL, NULL,
-        (void*) "inputs"},
-    {NULL} // sentinel
-};
-
 PyObject* py_spi_replay_ReplayObjectAction_Coerce(PyObject* self, PyObject* args)
 {
     PyObject* pyo = get_python_service()->ObjectCoerce("ReplayObjectAction", args);
     return pyo;
 }
-static PyMethodDef ReplayObjectAction_methods[] = {
-    {"Coerce", (PyCFunction)py_spi_replay_ReplayObjectAction_Coerce, METH_VARARGS | METH_STATIC,
-        "Coerce ReplayObjectAction from arbitrary value"},
-    {NULL, NULL, 0, NULL} // sentinel
-};
 
-static PyTypeObject ReplayObjectAction_PyObjectType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    "spi_replay.ReplayObjectAction", /*tp_name*/
-    sizeof(SpiPyObject), /*tp_basicsize*/
-    0, /*tp_itemsize*/
-    (destructor)spi_py_object_dealloc, /*tp_dealloc*/
-    0, /*tp_print*/
-    0, /*tp_getattr*/
-    0, /*tp_setattr*/
-    0, /*tp_compare*/
-    0, /*tp_repr*/
-    0, /*tp_as_number*/
-    0, /*tp_as_sequence*/
-    0, /*tp_as_mapping*/
-    0, /*tp_hash */
-    0, /*tp_call*/
-    0, /*tp_str*/
-    0, /*tp_getattro*/
-    0, /*tp_setattro*/
-    0, /*tp_as_buffer*/
-    Py_TPFLAGS_DEFAULT, /*tp_flags*/
-    "__init__(self, inputs)", /* tp_doc */
-    0, /* tp_traverse */
-    0, /* tp_clear */
-    0, /* tp_richcompare */
-    0, /* tp_weaklistoffset */
-    0, /* tp_iter */
-    0, /* tp_iternext */
-    ReplayObjectAction_methods, /* tp_methods */
-    0, /* tp_members */
-    ReplayObjectAction_properties, /* tp_getset */
-    0, /* tp_base */
-    0, /* tp_dict */
-    0, /* tp_descr_get */
-    0, /* tp_descr_set */
-    0, /* tp_dictoffset */
-    (initproc)py_spi_replay_ReplayObjectAction_init, /* tp_init */
-    0, /* tp_alloc */
-    PyType_GenericNew, /* tp_new */
-};
+static PyTypeObject* ReplayObjectAction_PyObjectType()
+{
+    static PyTypeObject* typeObject = NULL;
+    if (typeObject)
+        return typeObject;
+
+    static PyGetSetDef properties[] =
+    {
+        {"inputs", (getter)(spi_py_object_getter), NULL, NULL,
+            (void*) "inputs"},
+        {NULL} // sentinel
+    };
+
+    static PyMethodDef methods[] =
+    {
+        {"Coerce", (PyCFunction)py_spi_replay_ReplayObjectAction_Coerce, METH_VARARGS | METH_STATIC,
+            "Coerce ReplayObjectAction from arbitrary value"},
+        {NULL, NULL, 0, NULL} // sentinel
+    };
+
+    typeObject = spi::pyMakeTypeObject(
+        "spi_replay.ReplayObjectAction",
+        properties,
+        methods,
+        false,
+        "__init__(self, inputs)",
+        "ReplayAction",
+        Py_tp_init, (void*)py_spi_replay_ReplayObjectAction_init,
+        0);
+
+    return typeObject;
+}
+
 
 SPI_DECLARE_OBJECT_CLASS(ReplayCodeGenerator_python_delegate);
 
@@ -454,56 +399,37 @@ PyObject* py_spi_replay_ReplayCodeGenerator_GenerateObject(PyObject* self, PyObj
         return spi::pyExceptionHandler("Unknown exception");
     }
 }
-static PyMethodDef ReplayCodeGenerator_methods[] = {
-    {"Coerce", (PyCFunction)py_spi_replay_ReplayCodeGenerator_Coerce, METH_VARARGS | METH_STATIC,
-        "Coerce ReplayCodeGenerator from arbitrary value"},
-    {"GenerateFunction", (PyCFunction)py_spi_replay_ReplayCodeGenerator_GenerateFunction, METH_VARARGS | METH_KEYWORDS,
-        "GenerateFunction(self, action)"},
-    {"GenerateObject", (PyCFunction)py_spi_replay_ReplayCodeGenerator_GenerateObject, METH_VARARGS | METH_KEYWORDS,
-        "GenerateObject(self, action)"},
-    {NULL, NULL, 0, NULL} // sentinel
-};
 
-static PyTypeObject ReplayCodeGenerator_PyObjectType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    "spi_replay.ReplayCodeGenerator", /*tp_name*/
-    sizeof(SpiPyObject), /*tp_basicsize*/
-    0, /*tp_itemsize*/
-    (destructor)spi_py_object_dealloc, /*tp_dealloc*/
-    0, /*tp_print*/
-    0, /*tp_getattr*/
-    0, /*tp_setattr*/
-    0, /*tp_compare*/
-    0, /*tp_repr*/
-    0, /*tp_as_number*/
-    0, /*tp_as_sequence*/
-    0, /*tp_as_mapping*/
-    0, /*tp_hash */
-    0, /*tp_call*/
-    0, /*tp_str*/
-    0, /*tp_getattro*/
-    0, /*tp_setattro*/
-    0, /*tp_as_buffer*/
-    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, /*tp_flags*/
-    "", /* tp_doc */
-    0, /* tp_traverse */
-    0, /* tp_clear */
-    0, /* tp_richcompare */
-    0, /* tp_weaklistoffset */
-    0, /* tp_iter */
-    0, /* tp_iternext */
-    ReplayCodeGenerator_methods, /* tp_methods */
-    0, /* tp_members */
-    0, /* tp_getset */
-    0, /* tp_base */
-    0, /* tp_dict */
-    0, /* tp_descr_get */
-    0, /* tp_descr_set */
-    0, /* tp_dictoffset */
-    (initproc)py_spi_replay_ReplayCodeGenerator_init, /* tp_init */
-    0, /* tp_alloc */
-    PyType_GenericNew, /* tp_new */
-};
+static PyTypeObject* ReplayCodeGenerator_PyObjectType()
+{
+    static PyTypeObject* typeObject = NULL;
+    if (typeObject)
+        return typeObject;
+
+    static PyMethodDef methods[] =
+    {
+        {"Coerce", (PyCFunction)py_spi_replay_ReplayCodeGenerator_Coerce, METH_VARARGS | METH_STATIC,
+            "Coerce ReplayCodeGenerator from arbitrary value"},
+        {"GenerateFunction", (PyCFunction)py_spi_replay_ReplayCodeGenerator_GenerateFunction, METH_VARARGS | METH_KEYWORDS,
+            "GenerateFunction(self, action)"},
+        {"GenerateObject", (PyCFunction)py_spi_replay_ReplayCodeGenerator_GenerateObject, METH_VARARGS | METH_KEYWORDS,
+            "GenerateObject(self, action)"},
+        {NULL, NULL, 0, NULL} // sentinel
+    };
+
+    typeObject = spi::pyMakeTypeObject(
+        "spi_replay.ReplayCodeGenerator",
+        0,
+        methods,
+        true,
+        "",
+        nullptr,
+        Py_tp_init, (void*)py_spi_replay_ReplayCodeGenerator_init,
+        0);
+
+    return typeObject;
+}
+
 
 static int py_spi_replay_ReplayLog_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
@@ -526,12 +452,6 @@ static int py_spi_replay_ReplayLog_init(SpiPyObject* self, PyObject* args, PyObj
         return -1;
     }
 }
-
-static PyGetSetDef ReplayLog_properties[] = {
-    {"items", (getter)(spi_py_object_getter), NULL, NULL,
-        (void*) "items"},
-    {NULL} // sentinel
-};
 
 PyObject* py_spi_replay_ReplayLog_Coerce(PyObject* self, PyObject* args)
 {
@@ -592,76 +512,64 @@ PyObject* py_spi_replay_ReplayLog_Read(PyObject* self, PyObject* args, PyObject*
         return spi::pyExceptionHandler("Unknown exception");
     }
 }
-static PyMethodDef ReplayLog_methods[] = {
-    {"Coerce", (PyCFunction)py_spi_replay_ReplayLog_Coerce, METH_VARARGS | METH_STATIC,
-        "Coerce ReplayLog from arbitrary value"},
-    {"generateCode", (PyCFunction)py_spi_replay_ReplayLog_generateCode, METH_VARARGS | METH_KEYWORDS,
-        "generateCode(self, generator)"},
-    {"Read", (PyCFunction)py_spi_replay_ReplayLog_Read, METH_VARARGS | METH_KEYWORDS | METH_STATIC,
-        "Read(infilename)"},
-    {NULL, NULL, 0, NULL} // sentinel
-};
 
-static PyTypeObject ReplayLog_PyObjectType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    "spi_replay.ReplayLog", /*tp_name*/
-    sizeof(SpiPyObject), /*tp_basicsize*/
-    0, /*tp_itemsize*/
-    (destructor)spi_py_object_dealloc, /*tp_dealloc*/
-    0, /*tp_print*/
-    0, /*tp_getattr*/
-    0, /*tp_setattr*/
-    0, /*tp_compare*/
-    0, /*tp_repr*/
-    0, /*tp_as_number*/
-    0, /*tp_as_sequence*/
-    0, /*tp_as_mapping*/
-    0, /*tp_hash */
-    0, /*tp_call*/
-    0, /*tp_str*/
-    0, /*tp_getattro*/
-    0, /*tp_setattro*/
-    0, /*tp_as_buffer*/
-    Py_TPFLAGS_DEFAULT, /*tp_flags*/
-    "", /* tp_doc */
-    0, /* tp_traverse */
-    0, /* tp_clear */
-    0, /* tp_richcompare */
-    0, /* tp_weaklistoffset */
-    0, /* tp_iter */
-    0, /* tp_iternext */
-    ReplayLog_methods, /* tp_methods */
-    0, /* tp_members */
-    ReplayLog_properties, /* tp_getset */
-    0, /* tp_base */
-    0, /* tp_dict */
-    0, /* tp_descr_get */
-    0, /* tp_descr_set */
-    0, /* tp_dictoffset */
-    (initproc)py_spi_replay_ReplayLog_init, /* tp_init */
-    0, /* tp_alloc */
-    PyType_GenericNew, /* tp_new */
-};
+static PyTypeObject* ReplayLog_PyObjectType()
+{
+    static PyTypeObject* typeObject = NULL;
+    if (typeObject)
+        return typeObject;
+
+    static PyGetSetDef properties[] =
+    {
+        {"items", (getter)(spi_py_object_getter), NULL, NULL,
+            (void*) "items"},
+        {NULL} // sentinel
+    };
+
+    static PyMethodDef methods[] =
+    {
+        {"Coerce", (PyCFunction)py_spi_replay_ReplayLog_Coerce, METH_VARARGS | METH_STATIC,
+            "Coerce ReplayLog from arbitrary value"},
+        {"generateCode", (PyCFunction)py_spi_replay_ReplayLog_generateCode, METH_VARARGS | METH_KEYWORDS,
+            "generateCode(self, generator)"},
+        {"Read", (PyCFunction)py_spi_replay_ReplayLog_Read, METH_VARARGS | METH_KEYWORDS | METH_STATIC,
+            "Read(infilename)"},
+        {NULL, NULL, 0, NULL} // sentinel
+    };
+
+    typeObject = spi::pyMakeTypeObject(
+        "spi_replay.ReplayLog",
+        properties,
+        methods,
+        false,
+        "",
+        nullptr,
+        Py_tp_init, (void*)py_spi_replay_ReplayLog_init,
+        0);
+
+    return typeObject;
+}
+
 
 void py_spi_replay_replay_update_functions(spi::PythonService* svc)
 {
     svc->SetNamespace("");
 
     svc->AddClass("ReplayAction", "ReplayAction",
-        &ReplayAction_PyObjectType);
+        ReplayAction_PyObjectType());
 
     svc->AddClass("ReplayFunctionAction", "ReplayFunctionAction",
-        &ReplayFunctionAction_PyObjectType, "ReplayAction");
+        ReplayFunctionAction_PyObjectType());
 
     svc->AddClass("ReplayObjectAction", "ReplayObjectAction",
-        &ReplayObjectAction_PyObjectType, "ReplayAction");
+        ReplayObjectAction_PyObjectType());
 
     svc->AddClass("ReplayCodeGenerator", "ReplayCodeGenerator",
-        &ReplayCodeGenerator_PyObjectType);
+        ReplayCodeGenerator_PyObjectType());
 
     svc->AddDelegateClass("ReplayCodeGenerator", ReplayCodeGenerator_python_delegate::Constructor);
 
     svc->AddClass("ReplayLog", "ReplayLog",
-        &ReplayLog_PyObjectType);
+        ReplayLog_PyObjectType());
 }
 

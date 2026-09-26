@@ -33,6 +33,10 @@ G_DLL_LFLAGS = $(I_LFLAGS) $(I_DLL_LFLAGS)
 G_DLL_LFLAGS += -rpath @loader_path
 G_EXE_LFLAGS = $(I_LFLAGS) 
 
+ifdef U_PYTHON_BUILD
+I_LFLAGS+=-undefined dynamic_lookup
+endif
+
 ############################################################################
 # Standard system libraries 
 ############################################################################

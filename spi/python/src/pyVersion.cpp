@@ -19,23 +19,58 @@
     USA
 
 */
+
+#include "pyVersion.hpp"
+
+#include "../pyUtil.hpp"
+#include "../pyInput.hpp"
+
+#include <spi/Map.hpp>
+
 /*
 ***************************************************************************
-** py2to3.hpp
+** pyVersion.cpp
 **
-** Compatibility layer for Python2 and Python3
+** Compatibility layer for Python2 and Python3 and the Py_LIMITED_API
 ***************************************************************************
 */
 
-#ifndef SPI_PY2TO3_HPP
-#define SPI_PY2TO3_HPP
+SPI_BEGIN_NAMESPACE
 
-#if PY_MAJOR_VERSION >= 3
-#define PyInt_Check PyLong_Check
-#define PyInt_AS_LONG PyLong_AS_LONG
-#define PyInt_AsLong PyLong_AsLong
-#define PyInt_FromLong PyLong_FromLong
-#define PyNumber_Int PyNumber_Long
+std::string pyo_typename(PyObject* pyo)
+{
+#ifdef Py_LIMITED_API
+    return pyType_GetName(Py_TYPE(pyo));
+#else
+    return pyType_GetName(pyo->ob_type);
 #endif
+}
 
+std::string pyType_GetName(PyTypeObject* pyType)
+{
+#ifdef Py_LIMITED_API
+    PyObject* pyName = PyType_GetName(pyType);   // new reference, holds a str
+    if (!pyName)
+        throw PyException();
+
+    std::string name = pyoToString(pyName);
+
+    PYO_DECREF(pyName);
+
+    return name;
+#else
+    return std::string(pyType->tp_name);
 #endif
+}
+
+double pyFloat_AsDouble(PyObject* pyo)
+{
+    double d = PyFloat_AsDouble(pyo);
+    if (d == -1.0 && PyErr_Occurred())
+    {
+        throw PyException();
+    }
+    return d;
+}
+
+SPI_END_NAMESPACE

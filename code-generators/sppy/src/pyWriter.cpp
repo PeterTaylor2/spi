@@ -1241,75 +1241,6 @@ void PythonModule::implementClass(
         docStrings.push_back(oss.str());
     }
 
-    bool hasProperties = false;
-    for (size_t i = 0; i < cls->attributes.size(); ++i)
-    {
-        const spdoc::ClassAttributeConstSP& attr = cls->attributes[i];
-        if (!attr->accessible)
-            continue;
-
-        if (!hasProperties)
-        {
-            hasProperties = true;
-            ostr << "\n"
-                 << "static PyGetSetDef " << cTypename << "_properties[] = {\n";
-        }
-        std::string docString = GetFirstParagraph(attr->description);
-        ostr << "    {\"" << attr->name
-             << "\", (getter)(spi_py_object_getter), ";
-
-        if (cls->canPut)
-        {
-            ostr << "(setter)(spi_py_object_setter),";
-        }
-        else
-        {
-            ostr << "NULL,";
-        }
-
-        if (docString.empty())
-        {
-            ostr << " NULL,\n";
-        }
-        else
-        {
-            ostr << "\n        \"" << spi::StringEscape(docString.c_str())
-                 << "\",\n";
-        }
-        ostr << "        (void*) \"" << attr->name << "\"},\n";
-    }
-    for (size_t i = 0; i < cls->properties.size(); ++i)
-    {
-        const spdoc::ClassAttributeConstSP& prop = cls->properties[i];
-        SPI_PRE_CONDITION(prop->accessible);
-
-        if (!hasProperties)
-        {
-            hasProperties = true;
-            ostr << "\n"
-                 << "static PyGetSetDef " << cTypename << "_properties[] = {\n";
-        }
-        std::string docString = GetFirstParagraph(prop->description);
-        ostr << "    {\"" << prop->name
-             << "\", (getter)(spi_py_object_getter), NULL,";
-
-        if (docString.empty())
-        {
-            ostr << " NULL,\n";
-        }
-        else
-        {
-            ostr << "\n        \"" << spi::StringEscape(docString.c_str())
-                 << "\",\n";
-        }
-        ostr << "        (void*) \"" << prop->name << "\"},\n";
-    }
-    if (hasProperties)
-    {
-        ostr << "    {NULL} // sentinel\n"
-             << "};\n";
-    }
-
     ostr << "\n"
          << "PyObject* py_" << service->ns() << "_"
          << makeNamespaceSep(module->ns, "_") << cls->name << "_Coerce"
@@ -1393,71 +1324,6 @@ void PythonModule::implementClass(
     std::string docString = spi::StringStrip(
         spi::StringJoin("\n", docStrings));
 
-    ostr << "static PyMethodDef " << cTypename << "_methods[] = {\n";
-
-    ostr << "    {\"Coerce\", (PyCFunction)"
-         << "py_" << service->ns() << "_" << makeNamespaceSep(module->ns, "_")
-         << cls->name << "_Coerce" << ", METH_VARARGS | METH_STATIC,\n"
-         << "        \"Coerce " << cls->name << " from arbitrary value\"},\n";
-
-    for (size_t i = 0; i < cls->methods.size(); ++i)
-    {
-        const spdoc::ClassMethodConstSP& method = cls->methods[i];
-        if (method->isImplementation)
-            continue;
-
-        std::string funcName = classMethods[method->function->name];
-
-        std::string docString;
-        std::vector<std::string> docStrings;
-        std::vector<std::string> args;
-
-        if (!method->isStatic)
-            args.push_back("self");
-        for (size_t i = 0; i < method->function->inputs.size(); ++i)
-        {
-            const spdoc::AttributeConstSP& arg = method->function->inputs[i];
-            std::string name = arg->name;
-            if (arg->isArray())
-                name += "=[]";
-            else if (arg->isOptional)
-                name += "=None";
-            args.push_back(name);
-        }
-
-        std::stringstream oss;
-        oss << method->function->name << "(" << spi::StringJoin(", ", args)
-            << ")";
-
-        docStrings.push_back(oss.str());
-        docStrings.push_back("");
-        docStrings.push_back(
-            GetFirstParagraph(method->function->description));
-
-        std::string methodName = method->function->name;
-        if (service->options.lowerCaseMethod)
-            methodName = spi_util::StringLower(methodName);
-
-        docString = spi::StringStrip(spi::StringJoin("\n", docStrings));
-        ostr << "    {\"" << methodName << "\", (PyCFunction)" << funcName << ", ";
-
-        if (service->options.fastCall)
-            ostr << "METH_FASTCALL";
-        else
-            ostr << "METH_VARARGS";
-
-        if (service->options.keywords)
-            ostr << " | METH_KEYWORDS";
-
-        if (method->isStatic)
-            ostr << " | METH_STATIC";
-
-        ostr << ",\n        \"" << spi::StringEscape(docString.c_str())
-             << "\"},\n";
-    }
-    ostr << "    {NULL, NULL, 0, NULL} // sentinel\n"
-         << "};\n";
-
     // bool canSubclass = false;
 
     // note that spi_py_object_getattro calls PyObject_GenericGetAttr first
@@ -1466,6 +1332,7 @@ void PythonModule::implementClass(
         "(getattrofunc)spi_py_object_getattro"
         : "0";
 
+#if false
     ostr << "\n"
          << "static PyTypeObject " << cTypename << "_PyObjectType = {\n"
          << "    PyVarObject_HEAD_INIT(NULL, 0)\n"
@@ -1529,7 +1396,205 @@ void PythonModule::implementClass(
          << "    0, /* tp_alloc */\n"
          << "    PyType_GenericNew, /* tp_new */\n"
          << "};\n";
+#else
 
+    ostr << "\n"
+        << "static PyTypeObject* " << cTypename << "_PyObjectType()\n"
+        << "{\n"
+        << "    static PyTypeObject* typeObject = NULL;\n"
+        << "    if (typeObject)\n"
+        << "        return typeObject;\n";
+
+    bool hasProperties = false;
+    for (size_t i = 0; i < cls->attributes.size(); ++i)
+    {
+        const spdoc::ClassAttributeConstSP& attr = cls->attributes[i];
+        if (!attr->accessible)
+            continue;
+
+        if (!hasProperties)
+        {
+            hasProperties = true;
+            ostr << "\n"
+                << "    static PyGetSetDef properties[] =\n"
+                << "    {\n";
+        }
+        std::string docString = GetFirstParagraph(attr->description);
+        ostr << "        {\"" << attr->name
+            << "\", (getter)(spi_py_object_getter), ";
+
+        if (cls->canPut)
+        {
+            ostr << "(setter)(spi_py_object_setter),";
+        }
+        else
+        {
+            ostr << "NULL,";
+        }
+
+        if (docString.empty())
+        {
+            ostr << " NULL,\n";
+        }
+        else
+        {
+            ostr << "\n            \"" << spi::StringEscape(docString.c_str())
+                << "\",\n";
+        }
+        ostr << "            (void*) \"" << attr->name << "\"},\n";
+    }
+    for (size_t i = 0; i < cls->properties.size(); ++i)
+    {
+        const spdoc::ClassAttributeConstSP& prop = cls->properties[i];
+        SPI_PRE_CONDITION(prop->accessible);
+
+        if (!hasProperties)
+        {
+            hasProperties = true;
+            ostr << "\n"
+                << "    static PyGetSetDef properties[] =\n"
+                << "    {\n";
+        }
+        std::string docString = GetFirstParagraph(prop->description);
+        ostr << "        {\"" << prop->name
+            << "\", (getter)(spi_py_object_getter), NULL,";
+
+        if (docString.empty())
+        {
+            ostr << " NULL,\n";
+        }
+        else
+        {
+            ostr << "\n            \"" << spi::StringEscape(docString.c_str())
+                << "\",\n";
+        }
+        ostr << "            (void*) \"" << prop->name << "\"},\n";
+    }
+    if (hasProperties)
+    {
+        ostr << "        {NULL} // sentinel\n"
+            << "    };\n";
+    }
+
+    ostr << "\n"
+        << "    static PyMethodDef methods[] =\n"
+        << "    {\n";
+
+    ostr << "        {\"Coerce\", (PyCFunction)"
+         << "py_" << service->ns() << "_" << makeNamespaceSep(module->ns, "_")
+         << cls->name << "_Coerce" << ", METH_VARARGS | METH_STATIC,\n"
+         << "            \"Coerce " << cls->name << " from arbitrary value\"},\n";
+
+    for (size_t i = 0; i < cls->methods.size(); ++i)
+    {
+        const spdoc::ClassMethodConstSP& method = cls->methods[i];
+        if (method->isImplementation)
+            continue;
+
+        std::string funcName = classMethods[method->function->name];
+
+        std::string docString;
+        std::vector<std::string> docStrings;
+        std::vector<std::string> args;
+
+        if (!method->isStatic)
+            args.push_back("self");
+        for (size_t i = 0; i < method->function->inputs.size(); ++i)
+        {
+            const spdoc::AttributeConstSP& arg = method->function->inputs[i];
+            std::string name = arg->name;
+            if (arg->isArray())
+                name += "=[]";
+            else if (arg->isOptional)
+                name += "=None";
+            args.push_back(name);
+        }
+
+        std::stringstream oss;
+        oss << method->function->name << "(" << spi::StringJoin(", ", args)
+            << ")";
+
+        docStrings.push_back(oss.str());
+        docStrings.push_back("");
+        docStrings.push_back(
+            GetFirstParagraph(method->function->description));
+
+        std::string methodName = method->function->name;
+        if (service->options.lowerCaseMethod)
+            methodName = spi_util::StringLower(methodName);
+
+        docString = spi::StringStrip(spi::StringJoin("\n", docStrings));
+        ostr << "        {\"" << methodName << "\", (PyCFunction)" << funcName << ", ";
+
+        if (service->options.fastCall)
+            ostr << "METH_FASTCALL";
+        else
+            ostr << "METH_VARARGS";
+
+        if (service->options.keywords)
+            ostr << " | METH_KEYWORDS";
+
+        if (method->isStatic)
+            ostr << " | METH_STATIC";
+
+        ostr << ",\n            \"" << spi::StringEscape(docString.c_str())
+             << "\"},\n";
+    }
+    ostr << "        {NULL, NULL, 0, NULL} // sentinel\n"
+        << "    };\n"
+        << "\n";
+
+    ostr << "    typeObject = spi::pyMakeTypeObject(\n"
+        << "        \"" << service->ns() << "." << classname << "\",\n";
+
+    if (hasProperties)
+    {
+        ostr << "        properties,\n";
+    }
+    else
+    {
+        ostr << "        0,\n";
+    }
+
+    ostr << "        methods,\n"
+        << "        " << (cls->isAbstract ? "true" : "false") << ",\n"
+        << "        \"" << spi::StringEscape(docString.c_str()) << "\",\n";
+
+    if (!cls->baseClassName.empty())
+    {
+        // need to use ObjectName() for base class instead of Name()
+        // since we index the class using ObjectName()
+        // hence we have to get the base class instead of just using baseClassName
+        spdoc::ClassConstSP baseClass = service->service()->getClass(cls->baseClassName);
+
+        std::ostringstream bcs;
+
+        // since we addClass using the service->ns surely we must use it here as well???
+        // bcs << service->ns() << ".";
+        if (!baseClass->ns.empty())
+        {
+            bcs << baseClass->ns << ".";
+        }
+        bcs << baseClass->ObjectName();
+
+        ostr << "        \"" << bcs.str() << "\",\n";
+    }
+    else
+    {
+        ostr << "        nullptr,\n";
+    }
+
+    ostr << "        Py_tp_init, (void*)py_" << cTypenameFull << "_init,\n";
+
+    if (cls->hasDynamicAttributes)
+        ostr << "        Py_tp_getattro, (void*)spi_py_object_getattro,\n";
+
+    ostr << "        0);\n\n"
+        << "    return typeObject;\n"
+        << "}\n"
+        << "\n";
+
+#endif
 }
 
 void PythonModule::registerClass(
@@ -1540,21 +1605,8 @@ void PythonModule::registerClass(
          << "    svc->AddClass(\"" << makeNamespaceSep(module->ns, ".")
          << cls->name << "\", \"" << makeNamespaceSep(module->ns, ".")
          << cls->ObjectName() << "\",\n"
-         << "        &" << makeNamespaceSep(module->ns, "_")
-         << cls->name << "_PyObjectType";
-
-    if (!cls->baseClassName.empty())
-    {
-        // need to use ObjectName() for base class instead of Name()
-        // since we index the class using ObjectName()
-        // hence we have to get the base class instead of just using baseClassName
-        spdoc::ClassConstSP baseClass = service->service()->getClass(cls->baseClassName);
-        const std::string& ns = baseClass->ns;
-        ostr << ", \"";
-        if (!ns.empty())
-            ostr << ns << ".";
-        ostr << baseClass->ObjectName() << "\"";
-    }
+         << "        " << makeNamespaceSep(module->ns, "_")
+         << cls->name << "_PyObjectType()";
 
     ostr << ");\n";
 

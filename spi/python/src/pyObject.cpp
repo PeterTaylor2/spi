@@ -27,22 +27,16 @@
 ***************************************************************************
 */
 
-#include <spi/python/pyObject.h>
-#include <spi/python/pyObject.hpp>
+#include "../pyObject.h"
+#include "../pyObject.hpp"
 
-#include <spi/python/pyValue.hpp>
-#include <spi/python/pyUtil.hpp>
-#include <spi/python/pyOutput.hpp>
-#include <spi/python/pyService.hpp>
-#include <spi/Map.hpp>
-#include <spi/Value.hpp>
-#include <spi/Object.hpp>
+#include "../pyOutput.hpp"
+#include "../pyService.hpp"
+#include "../pyInput.hpp"
+
+#include "pyVersion.hpp"
+
 #include <spi/ObjectPut.hpp>
-#include <spi/ObjectHelper.hpp>
-#include <spi/InputContext.hpp>
-
-#include "py2to3.hpp"
-#include "pyInput.hpp"
 
 /*
 ***************************************************************************
@@ -250,7 +244,7 @@ PyObject* spi_py_object_set_meta_data(SpiPyObject* self, PyObject* args)
         self->obj->get_meta_data()->SetClassName("Map"); // just in case
 
         PyObject* out = (PyObject*)self; // support a fluent interface
-        Py_INCREF(out);
+        spi::PYO_INCREF(out);
         return out;
     }
     catch (spi::PyException&)
@@ -308,7 +302,7 @@ void investigate_null_object(PyObject* pyo)
             PyObjectSP value(PyObject_GetAttr(pyo, name.get()));
             std::string sname = spi::pyoToString(name.get());
             int is_method = PyMethod_Check(value.get());
-            printf("dir: %s = %s (%d)\n", sname.c_str(), value->ob_type->tp_name,
+            printf("dir: %s = %s (%d)\n", sname.c_str(), spi::pyo_typename(value.get()).c_str(),
                 is_method);
         }
     }
@@ -478,7 +472,7 @@ static PyObject* spi_py_object_reduce(SpiPyObject* self)
         PyTuple_SetItem(out, 1, args);
 
         // all other python references have been stolen by PyTuple_SetItem
-        Py_DECREF(module);
+        spi::PYO_DECREF(module);
 
         return out;
     }
@@ -520,9 +514,9 @@ static PyObject* spi_py_object_as_value(SpiPyObject* self)
     }
 }
 
-PyTypeObject* SpiPyObjectType(/*const char* ns*/)
+PyTypeObject* SpiPyObjectType()
 {
-    static char* className = "spi.Object";
+    static PyTypeObject* typeObject = NULL;
     static PyGetSetDef properties[] = {
         {(char*)"typename", (getter)spi_py_object_getter, NULL,
             (char*)"The typename of the Object.",
@@ -533,15 +527,6 @@ PyTypeObject* SpiPyObjectType(/*const char* ns*/)
         {NULL}
     };
 
-    // note the initial implementation used &PyType_Type but only for python3
-    // when we moved to using PyVarObject_HEAD_INIT we lost this feature
-    static PyTypeObject typeObject = {
-        PyVarObject_HEAD_INIT(NULL, 0)
-        "IObject",
-        sizeof(SpiPyObject),
-        0,
-        (destructor)spi_py_object_dealloc
-    };
     static PyMethodDef methods[] = {
         {"to_string", (PyCFunction)spi_py_object_to_string, METH_VARARGS,
             "to_string(self, format=None, options=None, meta_data=None, merge_meta_data=False)\n\n"
@@ -596,28 +581,21 @@ PyTypeObject* SpiPyObjectType(/*const char* ns*/)
         {NULL}  /* Sentinel */
     };
 
-    static bool initialised = false;
-
-    if (!initialised)
+    if (typeObject)
     {
-#if PY_MAJOR_VERSION > 3 || (PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION >= 9)
-        Py_SET_TYPE(&typeObject, &PyType_Type);
-#else
-        Py_TYPE(&typeObject)  = &PyType_Type;
-#endif
-        typeObject.tp_name    = className;
-        typeObject.tp_flags   = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE;
-        typeObject.tp_methods = methods;
-        typeObject.tp_getset  = properties;
-        typeObject.tp_new     = PyType_GenericNew;
-
-        if (PyType_Ready(&typeObject) < 0)
-            return NULL;
-
-        initialised = true;
+        return typeObject;
     }
 
-    return &typeObject;
+    typeObject = spi::pyMakeTypeObject(
+        "spi.Object",
+        properties,
+        methods,
+        true,
+        nullptr, // docString
+        nullptr, // baseClassName
+        0);
+
+    return typeObject;
 }
 
 SPI_BEGIN_NAMESPACE
@@ -676,6 +654,118 @@ ObjectConstSP spiPyObjectGetObject(SpiPyObject* pyo)
         (PyObject*)pyo);
 
     return obj;
+}
+
+PyTypeObject* pyMakeTypeObject(
+    const char* className,
+    PyGetSetDef properties[],
+    PyMethodDef methods[],
+    bool isBaseClass,
+    const char* docString,
+    const char* baseClassName,
+    int slot_type,
+    ...)
+{
+    va_list argptr;
+    va_start(argptr, slot_type);
+
+    PyTypeObject* tp_base = nullptr;
+    if (baseClassName)
+    {
+        try
+        {
+            tp_base = PythonService::FindCommonClass(baseClassName);
+        }
+        catch (std::exception& e)
+        {
+            std::cerr << "Could not find '" << baseClassName << "': " << e.what() << std::endl;
+            tp_base = nullptr;
+        }
+    }
+    else if (strcmp(className, "spi.Object") == 0)
+    {
+        tp_base = nullptr; // spi.Object cannot be a sub-class of SpiPyObjectType()
+    }
+    else
+    {
+        tp_base = SpiPyObjectType();
+    }
+
+    std::vector<PyType_Slot> slots;
+    slots.reserve(10);
+
+    slots.push_back({ Py_tp_dealloc, (void*)spi_py_object_dealloc });
+    slots.push_back({ Py_tp_new,     (void*)PyType_GenericNew } );
+
+    if (tp_base)
+    {
+        slots.push_back({ Py_tp_base, (void*)tp_base });
+    }
+
+    if (methods)
+    {
+        slots.push_back({ Py_tp_methods,  (void*)methods });
+    }
+
+    if (properties)
+    {
+        slots.push_back({ Py_tp_getset,   (void*)properties });
+    }
+
+    if (docString)
+    {
+        slots.push_back({ Py_tp_doc, (void*)docString });
+    }
+
+    while (slot_type > 0)
+    {
+        void* slot = va_arg(argptr, void*);
+        slots.push_back({ slot_type, slot });
+        slot_type = va_arg(argptr, int);
+    }
+
+    va_end(argptr);
+
+    slots.push_back({ 0, NULL }); // sentinel
+
+    unsigned int flags = Py_TPFLAGS_DEFAULT;
+    if (isBaseClass)
+    {
+        flags |= Py_TPFLAGS_BASETYPE;
+    }
+
+    PyType_Spec spec = 
+    {
+        className,
+        sizeof(SpiPyObject),
+        0,
+        flags,
+        slots.data()
+    };
+
+    PyTypeObject* typeObject = (PyTypeObject*)PyType_FromSpec(&spec);
+
+    if (!typeObject)
+    {
+        PyErr_Print();
+        throw PyException();
+    }
+    return typeObject;
+}
+
+std::string pyTypeObjectDoc(PyTypeObject* typeObject)
+{
+    static PyObject* pydoc = PyImport_ImportModule("pydoc");
+    static PyObject* render_fn = PyObject_GetAttrString(pydoc, "render_doc");
+
+    PyObject* doc_str = PyObject_CallFunctionObjArgs(
+        render_fn, typeObject, NULL);
+
+    std::string doc = pyoToString(doc_str);
+
+    PYO_DECREF(doc_str);
+
+    return doc;
 }
 
 SPI_END_NAMESPACE

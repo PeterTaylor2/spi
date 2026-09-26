@@ -52,8 +52,21 @@ G_PY_VERSION=39
 endif
 endif
 
+# G_PY_VERSION = 3-abi indicates that we are using the Py_LIMITED_API
+# we limit this to 3.12 or above 
+
+ifeq ($(G_PY_VERSION),3-abi)
+
+G_PYTHON_INCLUDES=-I$(U_SPI_HOME)/python/include/py312
+G_PYTHON_LIBS=$(U_SPI_HOME)/python/x64/lib/python3.lib
+G_PY_LIMITED_API_CFLAGS:=-DPy_LIMITED_API=0x030C0000
+
+else
+
 G_PYTHON_INCLUDES=-I$(U_SPI_HOME)/python/include/py$(G_PY_VERSION)
 G_PYTHON_LIBS=$(U_SPI_HOME)/python/x64/lib/python$(G_PY_VERSION)$(G_DEBUG_EXT).lib
+
+endif
 
 SITE_PYTHON=G_WIN64_PYTHON$(G_PY_VERSION)
 ifdef $(SITE_PYTHON)

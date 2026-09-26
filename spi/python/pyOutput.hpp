@@ -183,7 +183,7 @@ PyObject* pyoMakeArray(
     if (!pyo)
         throw PyException();
     for (int i = 0; i < size; ++i)
-        PyList_SET_ITEM(pyo.get(), i, MakeScalar(values[i]));
+        PyList_SetItem(pyo.get(), i, MakeScalar(values[i]));
     return pyoRelease(pyo);
 }
 
@@ -202,7 +202,7 @@ PyObject* pyoMakeArray(
     if (!pyo)
         throw PyException();
     for (int i = 0; i < size; ++i)
-        PyList_SET_ITEM(pyo.get(), i, MakeScalar(values[i]));
+        PyList_SetItem(pyo.get(), i, MakeScalar(values[i]));
     return pyoRelease(pyo);
 }
 
@@ -227,10 +227,10 @@ PyObject* pyoMakeMatrix(
         PyObjectSP pyr = pyoShare(PyList_New((int)nc));
         for (size_t c = 0; c < nc; ++c)
         {
-            PyList_SET_ITEM(pyr.get(), c, MakeScalar(values[i]));
+            PyList_SetItem(pyr.get(), c, MakeScalar(values[i]));
             ++i;
         }
-        PyList_SET_ITEM(pyo.get(), r, pyoRelease(pyr));
+        PyList_SetItem(pyo.get(), r, pyoRelease(pyr));
     }
     return pyoRelease(pyo);
 }
@@ -256,10 +256,10 @@ PyObject* pyoMakeMatrix(
         PyObjectSP pyr = pyoShare(PyList_New((int)nc));
         for (size_t c = 0; c < nc; ++c)
         {
-            PyList_SET_ITEM(pyr.get(), c, MakeScalar(values[i]));
+            PyList_SetItem(pyr.get(), c, MakeScalar(values[i]));
             ++i;
         }
-        PyList_SET_ITEM(pyo.get(), r, pyoRelease(pyr));
+        PyList_SetItem(pyo.get(), r, pyoRelease(pyr));
     }
     return pyoRelease(pyo);
 }

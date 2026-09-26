@@ -36,7 +36,7 @@
 #ifndef SPI_PYVALUE_HPP
 #define SPI_PYVALUE_HPP
 
-#include "Python.h"
+#include <Python.h>
 
 #include "pyUtil.hpp"
 #include <spi/Value.hpp>

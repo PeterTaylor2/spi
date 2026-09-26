@@ -27,9 +27,12 @@
 ***************************************************************************
 */
 
-#include "pyUtil.hpp"
-#include "pyObject.h"
-#include "pyInput.hpp"
+#include "../pyUtil.hpp"
+#include "../pyInput.hpp"
+
+#include "pyVersion.hpp"
+
+#include <spi/Map.hpp>
 
 SPI_BEGIN_NAMESPACE
 
@@ -159,8 +162,15 @@ void pyGetCaller(std::string* filename, int* lineno)
         {
             // PyFrame_GetCode returns a new reference and cannot return NULL
             PyCodeObject* code = PyFrame_GetCode(frame);
+
+#ifdef Py_LIMITED_API
+            PyObject* co_filename = PyObject_GetAttrString((PyObject*)code, "co_filename");  // new reference
+            *filename = pyoToString(co_filename);
+            PYO_DECREF(co_filename);
+#else
             *filename = pyoToString(code->co_filename);
-            Py_DECREF(code);
+#endif
+            PYO_DECREF(code);
         }
         else
         {

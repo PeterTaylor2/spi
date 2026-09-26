@@ -32,13 +32,7 @@
 
 #include "pyObject.h"
 
-#include "pyUtil.hpp"
-#include "pyValue.hpp"
-#include "pyOutput.hpp"
-
-#include "../Value.hpp"
-#include "../Object.hpp"
-#include "../IObjectMap.hpp"
+#include <spi/IObjectMap.hpp>
 
 SPI_BEGIN_NAMESPACE
 

@@ -27,18 +27,16 @@
 ***************************************************************************
 */
 
-#include <spi/python/pyInput.hpp>
-#include <spi/python/pyUtil.hpp>
-#include <spi/python/pyDate.hpp>
-#include <spi/python/pyObject.h>
-#include <spi/python/pyService.hpp>
-#include <spi/python/pyObject.hpp>
+#include "../pyInput.hpp"
+
+#include "../pyUtil.hpp"
+#include "../pyDate.hpp"
+#include "../pyObject.hpp"
 
 #include <spi_util/Utils.hpp>
-#include <spi/StringUtil.hpp>
 #include <spi/RuntimeError.hpp>
 
-#include "py2to3.hpp"
+#include "pyVersion.hpp"
 
 SPI_BEGIN_NAMESPACE
 
@@ -56,11 +54,11 @@ std::vector<T> pyoToVector(
         PySequence_Fast(pyo, "Not a sequence"));
     if (!pyoArray)
         throw PyException();
-    Py_ssize_t size = PySequence_Fast_GET_SIZE(pyoArray.get());
+    Py_ssize_t size = PySequence_Size(pyoArray.get());
     std::vector<T> out;
     for (Py_ssize_t i = 0; i < size; ++i)
     {
-        PyObject* item = PySequence_Fast_GET_ITEM(pyoArray.get(), i);
+        PyObject* item = PySequence_GetItem(pyoArray.get(), i);
         out.push_back(ToScalar(item));
     }
     return out;
@@ -76,11 +74,11 @@ std::vector<T> pyoToVector(
         PySequence_Fast(pyo, "Not a sequence"));
     if (!pyoArray)
         throw PyException();
-    Py_ssize_t size = PySequence_Fast_GET_SIZE(pyoArray.get());
+    Py_ssize_t size = PySequence_Size(pyoArray.get());
     std::vector<T> out;
     for (Py_ssize_t i = 0; i < size; ++i)
     {
-        PyObject* item = PySequence_Fast_GET_ITEM(pyoArray.get(), i);
+        PyObject* item = PySequence_GetItem(pyoArray.get(), i);
         out.push_back(ToScalar(item, ot));
     }
     return out;
@@ -101,7 +99,7 @@ bool pyoToBool(PyObject* pyo)
         return (PyInt_AS_LONG(pyo)) != 0;
 
     PyErr_Format(PyExc_TypeError, "Cannot convert %s to bool",
-                 pyo->ob_type->tp_name);
+                 pyo_typename(pyo));
     throw PyException();
 }
 
@@ -187,7 +185,7 @@ double pyoToDouble(PyObject* pyo)
     if (!float_pyo)
         throw PyException();
 
-    return PyFloat_AS_DOUBLE(float_pyo.get());
+    return pyFloat_AsDouble(float_pyo.get());
 }
 
 std::vector<double> pyoToDoubleVector(PyObject* pyo)
@@ -204,12 +202,36 @@ bool pyoIsString(PyObject* pyo)
         return true;
     return false;
 #else
+
+#ifdef Py_LIMITED_API
+
+    if (PyUnicode_Check(pyo))
+    {
+        Py_ssize_t size;
+        const char* str = PyUnicode_AsUTF8AndSize(pyo, &size);
+
+        // note that str is cached within the pyo itself
+        // so that when we convert to string there is no extra cost
+
+        if (str)
+            return true;
+
+        PyErr_Clear();
+        return false;
+    }
+
+#else
+
     if (PyUnicode_Check(pyo) && PyUnicode_IS_READY(pyo))
     {
         int kind = PyUnicode_KIND(pyo);
         return kind == PyUnicode_1BYTE_KIND;
     }
+
+#endif
+
     return false;
+
 #endif
 }
 
@@ -236,12 +258,32 @@ std::string pyoToString(PyObject* pyo)
         throw PyException();
     }
 
+#ifdef Py_LIMITED_API
+
+    {
+        Py_ssize_t size;
+        const char* str = PyUnicode_AsUTF8AndSize(pyo, &size);
+
+        // note that str is cached within the pyo itself
+
+        if (str)
+            return std::string(str);
+
+        throw PyException();
+    }
+
+#else
+
     // pyoIsString guarantees that PyUnicode_DATA returns 1-byte array
+
     void* str = PyUnicode_DATA(pyo);
     if (!str)
         throw PyException();
 
     return std::string((const char*)str);
+
+#endif
+
 #endif
 }
 
@@ -322,7 +364,7 @@ Date pyoToDate(PyObject* pyo)
     }
 
     PyErr_Format(PyExc_TypeError, "%s: Cannot convert %s to Date",
-                 __FUNCTION__, pyo->ob_type->tp_name);
+                 __FUNCTION__, pyo_typename(pyo));
     throw PyException();
 }
 
@@ -359,10 +401,10 @@ ObjectConstSP pyoToObject(PyObject* pyo, ObjectType* ot)
         }
     }
 
-    const char* srcName = pyo->ob_type->tp_name;
+    const std::string srcName = pyo_typename(pyo);
     const char* dstName = ot ? ot->get_class_name() : "Object";
     PyErr_Format(PyExc_TypeError, "Cannot convert %s to %s",
-                 srcName, dstName);
+                 srcName.c_str(), dstName);
     throw PyException();
 }
 

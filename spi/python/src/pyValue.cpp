@@ -27,22 +27,20 @@
 ***************************************************************************
 */
 
-#include <spi/python/pyValue.hpp>
-#include <spi/python/pyUtil.hpp>
-#include <spi/python/pyInput.hpp>
-#include <spi/python/pyOutput.hpp>
-#include <spi/python/pyDate.hpp>
-#include <spi/python/pyService.hpp>
-#include <spi/python/pyObject.hpp>
-#include <spi/python/pyObjectMap.hpp>
+#include "../pyValue.hpp"
 
-#include <spi/python/pyObject.h>
+#include "../pyInput.hpp"
+#include "../pyOutput.hpp"
+#include "../pyDate.hpp"
+#include "../pyService.hpp"
+#include "../pyObject.hpp"
+#include "../pyObjectMap.hpp"
 
-#include <spi/Array.hpp>
 #include <spi/ObjectMap.hpp>
+#include <spi/MapObject.hpp>
 #include <spi_util/Utils.hpp>
 
-#include "py2to3.hpp"
+#include "pyVersion.hpp"
 
 SPI_BEGIN_NAMESPACE
 
@@ -155,7 +153,7 @@ Value pyoToValue(PyObject* pyo)
         if (!tmp)
             throw PyException();
         spi::Value value(PyString_AsString(tmp));
-        Py_DECREF(tmp);
+        PYO_DECREF(tmp);
         return value;
     }
 #endif
@@ -224,12 +222,12 @@ Value pyoToValue(PyObject* pyo)
         // this method returns -1.0 on failure so need to test for errors
         //
         // PyErr_Occurred returns a borrowed reference - hence only need
-        // to test its output for NULL and do need to Py_DECREF non-NULLs
+        // to test its output for NULL and do need to PYO_DECREF non-NULLs
         if (PyErr_Occurred() == NULL)
             return v;
         PyErr_Format(PyExc_TypeError,
                      "Cannot convert python type '%s' to value",
-                     pyo->ob_type->tp_name);
+                     pyo_typename(pyo));
         throw PyException();
     }
 }
@@ -473,9 +471,9 @@ PyObjectSP pyTupleFromValueVector(
     {
         PyObject* pyo = pyoFromValue(values[i]);
         SPI_POST_CONDITION(pyo != NULL);
-        // PyTuple_SET_ITEM steals a reference to pyo
+        // PyType_SetItem steals a reference to pyo
         // which means that we no longer need to care about pyo
-        PyTuple_SET_ITEM(pyTuple, i, pyo);
+        PyTuple_SetItem(pyTuple, i, pyo);
     }
     return output;
 }

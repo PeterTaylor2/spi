@@ -2,6 +2,7 @@ target:
 
 U_SPI_HOME=..
 U_HAS_ALL_TARGET=1
+U_PYTHON_BUILD=1
 
 include $(U_SPI_HOME)/makefiles/config/config.mk
 include $(U_SPI_HOME)/makefiles/version.mk
@@ -68,6 +69,7 @@ endif
 
 U_FORCE_REBUILD+=Makefile
 U_CFLAGS+=-DSPI_PY_EXPORT
+U_CFLAGS+=$(G_PY_LIMITED_API_CFLAGS)
 
 U_BUILD_SUFFIX=-py$(G_PY_VERSION)
 

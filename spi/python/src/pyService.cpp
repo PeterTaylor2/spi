@@ -19,16 +19,16 @@
     USA
 
 */
-#include "pyService.hpp"
+#include "../pyService.hpp"
 
-#include "pyUtil.hpp"
-#include "pyInput.hpp"
-#include "pyOutput.hpp"
-#include "pyValue.hpp"
-#include "pyObject.h"
-#include "pyObjectMap.hpp"
+#include "../pyInput.hpp"
+#include "../pyOutput.hpp"
+#include "../pyObjectMap.hpp"
+#include "../pyObject.hpp"
 
-#include <spi_util/FileUtil.hpp>
+#include "pyVersion.hpp"
+
+#include <spi/StringUtil.hpp>
 
 /*
 ***************************************************************************
@@ -108,7 +108,7 @@ private:
 
         py_object_type = PythonService::FindRegisteredPythonClass(Py_TYPE(self));
 
-        Py_INCREF(self);
+        PYO_INCREF(self);
     }
 
 };
@@ -215,39 +215,31 @@ void PythonService::AddFunction(
 void PythonService::AddClass(
     const std::string& name,
     const std::string& objectName,
-    PyTypeObject* pyo,
-    const char* baseClassName)
+    PyTypeObject* typeObject)
 {
     if (m_indexClasses.count(objectName) > 0)
         SPI_THROW_RUNTIME_ERROR("Duplicate object name " << objectName);
 
-    if (baseClassName)
+    if (PyType_Ready(typeObject) < 0)
     {
-        // we can sub-class from another module
-        // hence we must look in the common service for the base class
-        pyo->tp_base = FindCommonClass(baseClassName);
-    }
-    else
-    {
-        pyo->tp_base = m_baseObjectType;
-    }
-
-    if (PyType_Ready(pyo) < 0)
+        PyErr_Print();
         throw spi::PyException();
+    }
 
-    m_indexClasses[objectName] = pyoShare((PyObject*)pyo, true);
+    m_indexClasses[objectName] = pyoShare((PyObject*)typeObject, true);
     if (m_currentNamespace)
     {
-        m_currentNamespace->m_classes.push_back(PythonClass(name, objectName, pyo));
+        m_currentNamespace->m_classes.push_back(PythonClass(name, objectName, typeObject));
     }
     else
     {
-        m_classes.push_back(PythonClass(name, objectName, pyo));
+        m_classes.push_back(PythonClass(name, objectName, typeObject));
     }
     if (!IsCommonService())
     {
-        AddCommonClass(objectName, pyo);
+        AddCommonClass(objectName, typeObject);
     }
+
 }
 
 PyTypeObject* PythonService::FindCommonClass(
@@ -296,9 +288,9 @@ void PythonService::AddDelegateClass(
 
 ObjectConstSP PythonService::ConstructDelegate(PyObject* pyo) const
 {
-    PyTypeObject* pyBaseClass = pyo->ob_type->tp_base;
+    PyTypeObject* pyBaseClass = Py_TYPE(pyo);
     SPI_POST_CONDITION(pyBaseClass);
-    std::string baseClassName = pyBaseClass->tp_name;
+    std::string baseClassName = pyType_GetName(pyBaseClass);
 
     DelegateObjectConstructor* constructor;
 
@@ -311,7 +303,7 @@ ObjectConstSP PythonService::ConstructDelegate(PyObject* pyo) const
         PyTypeObject* pyObjectType = SpiPyObjectType();
         if (!PyType_IsSubtype(pyo->ob_type, pyObjectType))
         {
-            SPI_THROW_RUNTIME_ERROR(pyo->ob_type->tp_name << " is not a sub-class of " << pyObjectType->tp_name);
+            SPI_THROW_RUNTIME_ERROR(pyo_typename(pyo) << " is not a sub-class of " << pyo_typename(pyo));
         }
         constructor = Object_python_delegate::Constructor;
     }
@@ -424,7 +416,7 @@ ObjectConstSP PythonService::PythonMakeFromMap(
 
     PyObjectSP method = pyoShare(PyObject_GetAttrString((PyObject*)pyType, "from_dict"));
     if (!method)
-        SPI_THROW_RUNTIME_ERROR("from_dict not implemented in " << pyType->tp_name);
+        SPI_THROW_RUNTIME_ERROR("from_dict not implemented in " << pyType_GetName(pyType));
 
     PyObjectSP dict = pyObjectMapToDict(m, v2o);
     PyObjectSP args = pyoShare(PyTuple_New(1));
@@ -474,7 +466,7 @@ void PythonService::RegisterPythonClass(PyObject* args)
     
     PyTypeObject* pyType = (PyTypeObject*)vargs[0];
     if (className.empty())
-        className = StringFormat("py.%s", pyType->tp_name);
+        className = StringFormat("py.%s", pyType_GetName(pyType));
 
     RegisterPythonClassDetails(className, pyType);
 }
@@ -489,7 +481,7 @@ ObjectTypeSP PythonService::FindRegisteredPythonClass(PyTypeObject * pto)
         // this means that you won't be able to de-serialize this type if you 
         // didn't register it explicitly and haven't used any instances of
         // this type before attempting to de-serialize
-        std::string className = StringFormat("py.%s", pto->tp_name);
+        std::string className = StringFormat("py.%s", pyType_GetName(pto));
         return RegisterPythonClassDetails(className, pto);
     }
 
@@ -505,7 +497,7 @@ ObjectTypeSP PythonService::RegisterPythonClassDetails(
 
     if (!PyType_IsSubtype(pyType, pyTypeRoot))
     {
-        SPI_THROW_RUNTIME_ERROR(pyType->tp_name << " is not a sub-class of " << pyTypeRoot->tp_name);
+        SPI_THROW_RUNTIME_ERROR(pyType_GetName(pyType) << " is not a sub-class of " << pyType_GetName(pyTypeRoot));
     }
 
     // normally ObjectType's are static data for each generated class
@@ -590,7 +582,7 @@ void PythonService::RegisterFunctions()
     m_module = Py_InitModule3(m_moduleName, &m_functions[0], NULL);
 #endif
 
-    Py_INCREF(m_baseObjectType);
+    PYO_INCREF(m_baseObjectType);
     PyModule_AddObject(m_module, "Object", (PyObject*)m_baseObjectType);
 
     size_t nbClasses = m_classes.size();
@@ -598,7 +590,7 @@ void PythonService::RegisterFunctions()
     {
         const std::string& className = m_classes[i].m_name;
         PyTypeObject* typeObject     = m_classes[i].m_pto;
-        Py_INCREF(typeObject);
+        PYO_INCREF(typeObject);
         PyModule_AddObject(
             m_module, className.c_str(), (PyObject*)(typeObject));
     }
@@ -634,12 +626,12 @@ void PythonService::RegisterFunctions()
             SPI_POST_CONDITION(splitClassName.size() == 2);
             SPI_POST_CONDITION(splitClassName[0] == pns.m_ns);
 
-            Py_INCREF(typeObject);
+            PYO_INCREF(typeObject);
             PyModule_AddObject(
                 module, splitClassName[1].c_str(), (PyObject*)(typeObject));
         }
 
-        Py_INCREF(module);
+        PYO_INCREF(module);
         PyModule_AddObject(m_module, pns.m_ns, module);
     }
 }
@@ -658,7 +650,7 @@ PyObject* PythonService::MakeObjectOfType(const Value& value)
     if (p)
     {
         PyObject* self = (PyObject*)p;
-        Py_INCREF(self);
+        PYO_INCREF(self);
         return self;
     }
 
@@ -1049,52 +1041,24 @@ PythonService* PythonService::CommonService()
 {
     static bool init = false;
     static PythonService theService("", Service::CommonService());
-    static PyTypeObject MapObject_PyObjectType =
-    {
-        PyVarObject_HEAD_INIT(NULL, 0)
-        "Map", /*tp_name*/
-        sizeof(SpiPyObject), /*tp_basicsize*/
-        0, /*tp_itemsize*/
-        (destructor)spi_py_object_dealloc, /*tp_dealloc*/
-        0, /*tp_print*/
-        0, /*tp_getattr*/
-        (setattrfunc)spi_py_object_map_setter, /*tp_setattr*/
-        0, /*tp_compare*/
-        0, /*tp_repr*/
-        0, /*tp_as_number*/
-        0, /*tp_as_sequence*/
-        0, /*tp_as_mapping*/
-        0, /*tp_hash */
-        0, /*tp_call*/
-        0, /*tp_str*/
-        (getattrofunc)spi_py_object_getattro, /*tp_getattro*/
-        0, /*tp_setattro*/
-        0, /*tp_as_buffer*/
-        Py_TPFLAGS_DEFAULT, /*tp_flags*/
-        "Name/value pairs without a specific class.", /* tp_doc */
-        0, /* tp_traverse */
-        0, /* tp_clear */
-        0, /* tp_richcompare */
-        0, /* tp_weaklistoffset */
-        0, /* tp_iter */
-        0, /* tp_iternext */
-        0, /* tp_methods */
-        0, /* tp_members */
-        0, /* tp_getset */
-        0, /* tp_base */
-        0, /* tp_dict */
-        0, /* tp_descr_get */
-        0, /* tp_descr_set */
-        0, /* tp_dictoffset */
-        0, /* tp_init */
-        0, /* tp_alloc */
-        PyType_GenericNew, /* tp_new */
-    };
+
+    static PyTypeObject* MapObject_PyObjectType = pyMakeTypeObject(
+        "Map",
+        0, // properties
+        0, // methods
+        false, // canSubClass
+        "Name/value pairs without a specific class.", // docString
+        nullptr, // baseClassName
+        Py_tp_setattr,
+        (void*)spi_py_object_map_setter,
+        Py_tp_getattro,
+        (void*)spi_py_object_getattro,
+        0);
 
     if (!init)
     {
         init = true;
-        theService.AddClass("Map", "Map", &MapObject_PyObjectType);
+        theService.AddClass("Map", "Map", MapObject_PyObjectType);
     }
 
     return &theService;

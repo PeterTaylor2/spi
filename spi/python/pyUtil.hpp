@@ -37,7 +37,7 @@
 #define SPI_PYUTIL_HPP
 
 #include "DeclSpec.h"
-#include "Python.h"
+#include <Python.h>
 
 #ifdef _MSC_VER
 namespace spi_boost {
@@ -48,16 +48,8 @@ namespace spi_boost {
 }
 #endif
 
-
 #include <spi/RefCounter.hpp>
-#include <spi/Date.hpp>
-#include <spi/Map.hpp>
 #include <spi/Object.hpp>
-
-#include <exception>
-#include <string>
-#include <vector>
-
 
 typedef spi_boost::intrusive_ptr<PyObject> PyObjectSP;
 

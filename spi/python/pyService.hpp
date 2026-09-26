@@ -32,12 +32,11 @@
 */
 
 #include "DeclSpec.h"
-#include <spi/Service.hpp>
-#include <spi/spdoc_configTypes.hpp>
-#include <vector>
-#include <string>
 
-#include "Python.h"
+#include <spi_util/ClockUtil.hpp>
+#include <spi/Service.hpp>
+
+#include <Python.h>
 
 #include "pyValue.hpp"
 
@@ -130,8 +129,7 @@ public:
     void AddClass(
         const std::string& name,
         const std::string& objectName,
-        PyTypeObject* pyo,
-        const char* baseClassName=0);
+        PyTypeObject* typeObject);
     void AddDelegateClass(
         const std::string& name,
         DelegateObjectConstructor* constructor);
@@ -185,11 +183,13 @@ private:
         const std::string& objectName,
         PyTypeObject* pyo);
 
-    static PyTypeObject* FindCommonClass(const std::string& objectName);
     static std::map<PyTypeObject*, ObjectTypeSP> g_indexPythonObjectType;
 #if PY_MAJOR_VERSION >= 3
     PyModuleDef m_moduleDef;
 #endif
+
+public:
+    static PyTypeObject* FindCommonClass(const std::string& objectName);
 };
 
 class SPI_PY_IMPORT PythonTimer

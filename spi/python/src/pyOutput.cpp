@@ -27,18 +27,17 @@
 ***************************************************************************
 */
 
-#include <spi/python/pyOutput.hpp>
-#include <spi/python/pyDate.hpp>
-#include <spi/python/pyObject.h>
-#include <spi/python/pyValue.hpp>
-#include <spi/python/pyService.hpp>
+#include "../pyOutput.hpp"
+#include "../pyDate.hpp"
+#include "../pyObject.hpp"
+#include "../pyService.hpp"
+
+#include "pyVersion.hpp"
 
 #include <spi_util/Utils.hpp>
 
-#include <spi/Variant.hpp>
 #include <spi/MapObject.hpp>
-#include <spi/MatrixData.hpp>
-#include "py2to3.hpp"
+#include <spi/Variant.hpp>
 
 SPI_BEGIN_NAMESPACE
 
@@ -53,7 +52,7 @@ PyObject* pyoFromBool(bool value)
 {
     PyObject* pyo = value ? Py_True : Py_False;
 
-    Py_INCREF(pyo);
+    PYO_INCREF(pyo);
     return pyo;
 }
 
@@ -134,10 +133,20 @@ PyObject* pyoFromString(const std::string& str)
 #if PY_MAJOR_VERSION < 3
     return PyString_FromString(str.c_str());
 #else
+
+#ifdef Py_LIMITED_API
+
+    return PyUnicode_FromStringAndSize(str.c_str(), str.length());
+
+#else
+
     return PyUnicode_FromKindAndData(
         PyUnicode_1BYTE_KIND,
         str.c_str(),
         str.length());
+
+#endif
+
 #endif
 }
 
@@ -252,10 +261,10 @@ PyObject* pyoFromMap(const MapConstSP& m)
                 throw PyException();
             for (int j = 0; j < cols; ++j)
             {
-                PyList_SET_ITEM(pyc.get(), j, pyoFromValue(data[k]));
+                PyList_SetItem(pyc.get(), j, pyoFromValue(data[k]));
                 ++k;
             }
-            PyList_SET_ITEM(pyo.get(), i, pyoRelease(pyc));
+            PyList_SetItem(pyo.get(), i, pyoRelease(pyc));
         }
         return pyoRelease(pyo);
     }

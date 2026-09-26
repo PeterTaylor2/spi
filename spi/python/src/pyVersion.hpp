@@ -19,48 +19,56 @@
     USA
 
 */
-#ifndef SPI_PY_OBJECT_HPP
-#define SPI_PY_OBJECT_HPP
-
 /*
 ***************************************************************************
-** pyObject.hpp
+** pyVersion.hpp
 **
-** Python equivalent to spi::Object
+** Compatibility layer for Python2 and Python3 and the Py_LIMITED_API
 ***************************************************************************
 */
 
-#include "pyObject.h"
+#ifndef SPI_PY_VERSION_HPP
+#define SPI_PY_VERSION_HPP
 
-#include <spi/InputValues.hpp>
+#include <spi/Namespace.hpp>
+
+#include <Python.h>
+#include <string>
+
+#if PY_MAJOR_VERSION >= 3
+#define PyInt_Check PyLong_Check
+#define PyInt_AS_LONG PyLong_AS_LONG
+#define PyInt_AsLong PyLong_AsLong
+#define PyInt_FromLong PyLong_FromLong
+#define PyNumber_Int PyNumber_Long
+#endif
+
+#ifdef Py_LIMITED_API
+
+#define PyMethod_Check PyCallable_Check
+
+#endif
 
 SPI_BEGIN_NAMESPACE
 
-SPI_PY_IMPORT
-const Object* pyInitConstObject(
-    PyObject* args, PyObject* kwargs, FunctionCaller* func, ObjectType* type);
+std::string pyo_typename(PyObject* pyo);
+std::string pyType_GetName(PyTypeObject* pyType);
 
-SPI_PY_IMPORT
-const Object* pyInitConstObject(
-    PyObject* args, FunctionCaller* func, ObjectType* type);
+double pyFloat_AsDouble(PyObject* pyo);
 
-ObjectConstSP spiPyObjectGetObject(SpiPyObject* pyo);
+template <typename T>
+static inline void PYO_INCREF(T* op)
+{
+    Py_INCREF(reinterpret_cast<PyObject*>(op));
+}
 
-SPI_PY_IMPORT
-PyTypeObject* pyMakeTypeObject(
-    const char* className,
-    PyGetSetDef properties[],
-    PyMethodDef methods[],
-    bool canSubClass,
-    const char* docString,
-    const char* baseClassName,
-    int slot,
-    ...);
-
-SPI_PY_IMPORT
-std::string pyTypeObjectDoc(PyTypeObject* typeObject);
-
+template <typename T>
+static inline void PYO_DECREF(T* op)
+{
+    Py_DECREF(reinterpret_cast<PyObject*>(op));
+}
 
 SPI_END_NAMESPACE
+
 
 #endif

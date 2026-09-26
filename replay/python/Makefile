@@ -1,6 +1,8 @@
 pyd:
 
 U_SPI_HOME=../..
+U_PYTHON_BUILD=1
+
 include $(U_SPI_HOME)/makefiles/config/config.mk
 
 U_INSTALL_FILES=$(G_SPI_DLLS)\

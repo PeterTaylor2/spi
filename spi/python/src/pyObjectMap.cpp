@@ -27,20 +27,16 @@
 ***************************************************************************
 */
 
-#include <spi/python/pyObjectMap.hpp>
-#include <spi/python/pyObject.h>
-#include <spi/python/pyObject.hpp>
-#include <spi/python/pyInput.hpp>
+#include "../pyObjectMap.hpp"
 
-#include <spi/python/pyValue.hpp>
-#include <spi/python/pyUtil.hpp>
-#include <spi/python/pyOutput.hpp>
-#include <spi/python/pyService.hpp>
+#include "../pyInput.hpp"
+#include "../pyOutput.hpp"
+#include "../pyService.hpp"
+
+#include "pyVersion.hpp"
+
 #include <spi/Value.hpp>
-#include <spi/Object.hpp>
-#include <spi/ObjectPut.hpp>
 #include <spi/ObjectHelper.hpp>
-#include <spi/InputContext.hpp>
 
 SPI_BEGIN_NAMESPACE
 
@@ -84,7 +80,7 @@ PyObjectSP pyObjectMapToDict(
         PyObject* pyo = pyoFromValue(value);
 
         PyDict_SetItemString(dict, name.c_str(), pyo);
-        Py_DECREF(pyo);
+        PYO_DECREF(pyo);
     }
 
     return output;

@@ -43,17 +43,9 @@
 #ifndef SPI_PYINPUT_HPP
 #define SPI_PYINPUT_HPP
 
-#include "Python.h"
+#include <Python.h>
 
-#include "pyUtil.hpp"
-
-#include <spi/Date.hpp>
 #include <spi/Object.hpp>
-#include <spi/Value.hpp>
-#include <spi/Map.hpp>
-
-#include <string>
-#include <vector>
 
 SPI_BEGIN_NAMESPACE
 

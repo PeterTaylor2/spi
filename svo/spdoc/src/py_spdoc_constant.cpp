@@ -309,70 +309,51 @@ PyObject* py_spdoc_Constant_getBool(PyObject* self, PyObject* args, PyObject* kw
         return spi::pyExceptionHandler("Unknown exception");
     }
 }
-static PyMethodDef Constant_methods[] = {
-    {"Coerce", (PyCFunction)py_spdoc_Constant_Coerce, METH_VARARGS | METH_STATIC,
-        "Coerce Constant from arbitrary value"},
-    {"typeName", (PyCFunction)py_spdoc_Constant_typeName, METH_VARARGS | METH_KEYWORDS,
-        "typeName(self)\n\nreturns the data type name for the scalar"},
-    {"docString", (PyCFunction)py_spdoc_Constant_docString, METH_VARARGS | METH_KEYWORDS,
-        "docString(self)\n\nreturns the string which should appear in documentation"},
-    {"getInt", (PyCFunction)py_spdoc_Constant_getInt, METH_VARARGS | METH_KEYWORDS,
-        "getInt(self)\n\nreturns the integer value (where applicable) for the scalar"},
-    {"getDate", (PyCFunction)py_spdoc_Constant_getDate, METH_VARARGS | METH_KEYWORDS,
-        "getDate(self)\n\nreturns the date value (where applicable) for the scalar"},
-    {"getDateTime", (PyCFunction)py_spdoc_Constant_getDateTime, METH_VARARGS | METH_KEYWORDS,
-        "getDateTime(self)\n\nreturns the date time value (where applicable) for the scalar"},
-    {"getDouble", (PyCFunction)py_spdoc_Constant_getDouble, METH_VARARGS | METH_KEYWORDS,
-        "getDouble(self)\n\nreturns the double value (where applicable) for the scalar"},
-    {"getChar", (PyCFunction)py_spdoc_Constant_getChar, METH_VARARGS | METH_KEYWORDS,
-        "getChar(self)\n\nreturns the char value (where applicable) for the scalar"},
-    {"getString", (PyCFunction)py_spdoc_Constant_getString, METH_VARARGS | METH_KEYWORDS,
-        "getString(self)\n\nreturns the string value (where applicable) for the scalar"},
-    {"getBool", (PyCFunction)py_spdoc_Constant_getBool, METH_VARARGS | METH_KEYWORDS,
-        "getBool(self)\n\nreturns the bool value (where applicable) for the scalar"},
-    {NULL, NULL, 0, NULL} // sentinel
-};
 
-static PyTypeObject Constant_PyObjectType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    "spdoc.Constant", /*tp_name*/
-    sizeof(SpiPyObject), /*tp_basicsize*/
-    0, /*tp_itemsize*/
-    (destructor)spi_py_object_dealloc, /*tp_dealloc*/
-    0, /*tp_print*/
-    0, /*tp_getattr*/
-    0, /*tp_setattr*/
-    0, /*tp_compare*/
-    0, /*tp_repr*/
-    0, /*tp_as_number*/
-    0, /*tp_as_sequence*/
-    0, /*tp_as_mapping*/
-    0, /*tp_hash */
-    0, /*tp_call*/
-    0, /*tp_str*/
-    0, /*tp_getattro*/
-    0, /*tp_setattro*/
-    0, /*tp_as_buffer*/
-    Py_TPFLAGS_DEFAULT, /*tp_flags*/
-    "Interface class defining a constant scalar value.", /* tp_doc */
-    0, /* tp_traverse */
-    0, /* tp_clear */
-    0, /* tp_richcompare */
-    0, /* tp_weaklistoffset */
-    0, /* tp_iter */
-    0, /* tp_iternext */
-    Constant_methods, /* tp_methods */
-    0, /* tp_members */
-    0, /* tp_getset */
-    0, /* tp_base */
-    0, /* tp_dict */
-    0, /* tp_descr_get */
-    0, /* tp_descr_set */
-    0, /* tp_dictoffset */
-    (initproc)py_spdoc_Constant_init, /* tp_init */
-    0, /* tp_alloc */
-    PyType_GenericNew, /* tp_new */
-};
+static PyTypeObject* Constant_PyObjectType()
+{
+    static PyTypeObject* typeObject = NULL;
+    if (typeObject)
+        return typeObject;
+
+    static PyMethodDef methods[] =
+    {
+        {"Coerce", (PyCFunction)py_spdoc_Constant_Coerce, METH_VARARGS | METH_STATIC,
+            "Coerce Constant from arbitrary value"},
+        {"typeName", (PyCFunction)py_spdoc_Constant_typeName, METH_VARARGS | METH_KEYWORDS,
+            "typeName(self)\n\nreturns the data type name for the scalar"},
+        {"docString", (PyCFunction)py_spdoc_Constant_docString, METH_VARARGS | METH_KEYWORDS,
+            "docString(self)\n\nreturns the string which should appear in documentation"},
+        {"getInt", (PyCFunction)py_spdoc_Constant_getInt, METH_VARARGS | METH_KEYWORDS,
+            "getInt(self)\n\nreturns the integer value (where applicable) for the scalar"},
+        {"getDate", (PyCFunction)py_spdoc_Constant_getDate, METH_VARARGS | METH_KEYWORDS,
+            "getDate(self)\n\nreturns the date value (where applicable) for the scalar"},
+        {"getDateTime", (PyCFunction)py_spdoc_Constant_getDateTime, METH_VARARGS | METH_KEYWORDS,
+            "getDateTime(self)\n\nreturns the date time value (where applicable) for the scalar"},
+        {"getDouble", (PyCFunction)py_spdoc_Constant_getDouble, METH_VARARGS | METH_KEYWORDS,
+            "getDouble(self)\n\nreturns the double value (where applicable) for the scalar"},
+        {"getChar", (PyCFunction)py_spdoc_Constant_getChar, METH_VARARGS | METH_KEYWORDS,
+            "getChar(self)\n\nreturns the char value (where applicable) for the scalar"},
+        {"getString", (PyCFunction)py_spdoc_Constant_getString, METH_VARARGS | METH_KEYWORDS,
+            "getString(self)\n\nreturns the string value (where applicable) for the scalar"},
+        {"getBool", (PyCFunction)py_spdoc_Constant_getBool, METH_VARARGS | METH_KEYWORDS,
+            "getBool(self)\n\nreturns the bool value (where applicable) for the scalar"},
+        {NULL, NULL, 0, NULL} // sentinel
+    };
+
+    typeObject = spi::pyMakeTypeObject(
+        "spdoc.Constant",
+        0,
+        methods,
+        true,
+        "Interface class defining a constant scalar value.",
+        nullptr,
+        Py_tp_init, (void*)py_spdoc_Constant_init,
+        0);
+
+    return typeObject;
+}
+
 
 static int py_spdoc_IntConstant_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
@@ -402,64 +383,46 @@ static int py_spdoc_IntConstant_init(SpiPyObject* self, PyObject* args, PyObject
     }
 }
 
-static PyGetSetDef IntConstant_properties[] = {
-    {"value", (getter)(spi_py_object_getter), NULL,
-        "integer value",
-        (void*) "value"},
-    {NULL} // sentinel
-};
-
 PyObject* py_spdoc_IntConstant_Coerce(PyObject* self, PyObject* args)
 {
     PyObject* pyo = get_python_service()->ObjectCoerce("IntConstant", args);
     return pyo;
 }
-static PyMethodDef IntConstant_methods[] = {
-    {"Coerce", (PyCFunction)py_spdoc_IntConstant_Coerce, METH_VARARGS | METH_STATIC,
-        "Coerce IntConstant from arbitrary value"},
-    {NULL, NULL, 0, NULL} // sentinel
-};
 
-static PyTypeObject IntConstant_PyObjectType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    "spdoc.IntConstant", /*tp_name*/
-    sizeof(SpiPyObject), /*tp_basicsize*/
-    0, /*tp_itemsize*/
-    (destructor)spi_py_object_dealloc, /*tp_dealloc*/
-    0, /*tp_print*/
-    0, /*tp_getattr*/
-    0, /*tp_setattr*/
-    0, /*tp_compare*/
-    0, /*tp_repr*/
-    0, /*tp_as_number*/
-    0, /*tp_as_sequence*/
-    0, /*tp_as_mapping*/
-    0, /*tp_hash */
-    0, /*tp_call*/
-    0, /*tp_str*/
-    0, /*tp_getattro*/
-    0, /*tp_setattro*/
-    0, /*tp_as_buffer*/
-    Py_TPFLAGS_DEFAULT, /*tp_flags*/
-    "Integer constant defined in the configuration file.\n\n__init__(self, value)", /* tp_doc */
-    0, /* tp_traverse */
-    0, /* tp_clear */
-    0, /* tp_richcompare */
-    0, /* tp_weaklistoffset */
-    0, /* tp_iter */
-    0, /* tp_iternext */
-    IntConstant_methods, /* tp_methods */
-    0, /* tp_members */
-    IntConstant_properties, /* tp_getset */
-    0, /* tp_base */
-    0, /* tp_dict */
-    0, /* tp_descr_get */
-    0, /* tp_descr_set */
-    0, /* tp_dictoffset */
-    (initproc)py_spdoc_IntConstant_init, /* tp_init */
-    0, /* tp_alloc */
-    PyType_GenericNew, /* tp_new */
-};
+static PyTypeObject* IntConstant_PyObjectType()
+{
+    static PyTypeObject* typeObject = NULL;
+    if (typeObject)
+        return typeObject;
+
+    static PyGetSetDef properties[] =
+    {
+        {"value", (getter)(spi_py_object_getter), NULL,
+            "integer value",
+            (void*) "value"},
+        {NULL} // sentinel
+    };
+
+    static PyMethodDef methods[] =
+    {
+        {"Coerce", (PyCFunction)py_spdoc_IntConstant_Coerce, METH_VARARGS | METH_STATIC,
+            "Coerce IntConstant from arbitrary value"},
+        {NULL, NULL, 0, NULL} // sentinel
+    };
+
+    typeObject = spi::pyMakeTypeObject(
+        "spdoc.IntConstant",
+        properties,
+        methods,
+        false,
+        "Integer constant defined in the configuration file.\n\n__init__(self, value)",
+        "Constant",
+        Py_tp_init, (void*)py_spdoc_IntConstant_init,
+        0);
+
+    return typeObject;
+}
+
 
 static int py_spdoc_DateConstant_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
@@ -489,64 +452,46 @@ static int py_spdoc_DateConstant_init(SpiPyObject* self, PyObject* args, PyObjec
     }
 }
 
-static PyGetSetDef DateConstant_properties[] = {
-    {"value", (getter)(spi_py_object_getter), NULL,
-        "date value",
-        (void*) "value"},
-    {NULL} // sentinel
-};
-
 PyObject* py_spdoc_DateConstant_Coerce(PyObject* self, PyObject* args)
 {
     PyObject* pyo = get_python_service()->ObjectCoerce("DateConstant", args);
     return pyo;
 }
-static PyMethodDef DateConstant_methods[] = {
-    {"Coerce", (PyCFunction)py_spdoc_DateConstant_Coerce, METH_VARARGS | METH_STATIC,
-        "Coerce DateConstant from arbitrary value"},
-    {NULL, NULL, 0, NULL} // sentinel
-};
 
-static PyTypeObject DateConstant_PyObjectType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    "spdoc.DateConstant", /*tp_name*/
-    sizeof(SpiPyObject), /*tp_basicsize*/
-    0, /*tp_itemsize*/
-    (destructor)spi_py_object_dealloc, /*tp_dealloc*/
-    0, /*tp_print*/
-    0, /*tp_getattr*/
-    0, /*tp_setattr*/
-    0, /*tp_compare*/
-    0, /*tp_repr*/
-    0, /*tp_as_number*/
-    0, /*tp_as_sequence*/
-    0, /*tp_as_mapping*/
-    0, /*tp_hash */
-    0, /*tp_call*/
-    0, /*tp_str*/
-    0, /*tp_getattro*/
-    0, /*tp_setattro*/
-    0, /*tp_as_buffer*/
-    Py_TPFLAGS_DEFAULT, /*tp_flags*/
-    "Date constant defined in the configuration file.\n\n__init__(self, value)", /* tp_doc */
-    0, /* tp_traverse */
-    0, /* tp_clear */
-    0, /* tp_richcompare */
-    0, /* tp_weaklistoffset */
-    0, /* tp_iter */
-    0, /* tp_iternext */
-    DateConstant_methods, /* tp_methods */
-    0, /* tp_members */
-    DateConstant_properties, /* tp_getset */
-    0, /* tp_base */
-    0, /* tp_dict */
-    0, /* tp_descr_get */
-    0, /* tp_descr_set */
-    0, /* tp_dictoffset */
-    (initproc)py_spdoc_DateConstant_init, /* tp_init */
-    0, /* tp_alloc */
-    PyType_GenericNew, /* tp_new */
-};
+static PyTypeObject* DateConstant_PyObjectType()
+{
+    static PyTypeObject* typeObject = NULL;
+    if (typeObject)
+        return typeObject;
+
+    static PyGetSetDef properties[] =
+    {
+        {"value", (getter)(spi_py_object_getter), NULL,
+            "date value",
+            (void*) "value"},
+        {NULL} // sentinel
+    };
+
+    static PyMethodDef methods[] =
+    {
+        {"Coerce", (PyCFunction)py_spdoc_DateConstant_Coerce, METH_VARARGS | METH_STATIC,
+            "Coerce DateConstant from arbitrary value"},
+        {NULL, NULL, 0, NULL} // sentinel
+    };
+
+    typeObject = spi::pyMakeTypeObject(
+        "spdoc.DateConstant",
+        properties,
+        methods,
+        false,
+        "Date constant defined in the configuration file.\n\n__init__(self, value)",
+        "Constant",
+        Py_tp_init, (void*)py_spdoc_DateConstant_init,
+        0);
+
+    return typeObject;
+}
+
 
 static int py_spdoc_DateTimeConstant_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
@@ -576,64 +521,46 @@ static int py_spdoc_DateTimeConstant_init(SpiPyObject* self, PyObject* args, PyO
     }
 }
 
-static PyGetSetDef DateTimeConstant_properties[] = {
-    {"value", (getter)(spi_py_object_getter), NULL,
-        "datetime value",
-        (void*) "value"},
-    {NULL} // sentinel
-};
-
 PyObject* py_spdoc_DateTimeConstant_Coerce(PyObject* self, PyObject* args)
 {
     PyObject* pyo = get_python_service()->ObjectCoerce("DateTimeConstant", args);
     return pyo;
 }
-static PyMethodDef DateTimeConstant_methods[] = {
-    {"Coerce", (PyCFunction)py_spdoc_DateTimeConstant_Coerce, METH_VARARGS | METH_STATIC,
-        "Coerce DateTimeConstant from arbitrary value"},
-    {NULL, NULL, 0, NULL} // sentinel
-};
 
-static PyTypeObject DateTimeConstant_PyObjectType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    "spdoc.DateTimeConstant", /*tp_name*/
-    sizeof(SpiPyObject), /*tp_basicsize*/
-    0, /*tp_itemsize*/
-    (destructor)spi_py_object_dealloc, /*tp_dealloc*/
-    0, /*tp_print*/
-    0, /*tp_getattr*/
-    0, /*tp_setattr*/
-    0, /*tp_compare*/
-    0, /*tp_repr*/
-    0, /*tp_as_number*/
-    0, /*tp_as_sequence*/
-    0, /*tp_as_mapping*/
-    0, /*tp_hash */
-    0, /*tp_call*/
-    0, /*tp_str*/
-    0, /*tp_getattro*/
-    0, /*tp_setattro*/
-    0, /*tp_as_buffer*/
-    Py_TPFLAGS_DEFAULT, /*tp_flags*/
-    "DateTime constant defined in the configuration file.\n\n__init__(self, value)", /* tp_doc */
-    0, /* tp_traverse */
-    0, /* tp_clear */
-    0, /* tp_richcompare */
-    0, /* tp_weaklistoffset */
-    0, /* tp_iter */
-    0, /* tp_iternext */
-    DateTimeConstant_methods, /* tp_methods */
-    0, /* tp_members */
-    DateTimeConstant_properties, /* tp_getset */
-    0, /* tp_base */
-    0, /* tp_dict */
-    0, /* tp_descr_get */
-    0, /* tp_descr_set */
-    0, /* tp_dictoffset */
-    (initproc)py_spdoc_DateTimeConstant_init, /* tp_init */
-    0, /* tp_alloc */
-    PyType_GenericNew, /* tp_new */
-};
+static PyTypeObject* DateTimeConstant_PyObjectType()
+{
+    static PyTypeObject* typeObject = NULL;
+    if (typeObject)
+        return typeObject;
+
+    static PyGetSetDef properties[] =
+    {
+        {"value", (getter)(spi_py_object_getter), NULL,
+            "datetime value",
+            (void*) "value"},
+        {NULL} // sentinel
+    };
+
+    static PyMethodDef methods[] =
+    {
+        {"Coerce", (PyCFunction)py_spdoc_DateTimeConstant_Coerce, METH_VARARGS | METH_STATIC,
+            "Coerce DateTimeConstant from arbitrary value"},
+        {NULL, NULL, 0, NULL} // sentinel
+    };
+
+    typeObject = spi::pyMakeTypeObject(
+        "spdoc.DateTimeConstant",
+        properties,
+        methods,
+        false,
+        "DateTime constant defined in the configuration file.\n\n__init__(self, value)",
+        "Constant",
+        Py_tp_init, (void*)py_spdoc_DateTimeConstant_init,
+        0);
+
+    return typeObject;
+}
+
 
 static int py_spdoc_DoubleConstant_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
@@ -663,64 +590,46 @@ static int py_spdoc_DoubleConstant_init(SpiPyObject* self, PyObject* args, PyObj
     }
 }
 
-static PyGetSetDef DoubleConstant_properties[] = {
-    {"value", (getter)(spi_py_object_getter), NULL,
-        "double value",
-        (void*) "value"},
-    {NULL} // sentinel
-};
-
 PyObject* py_spdoc_DoubleConstant_Coerce(PyObject* self, PyObject* args)
 {
     PyObject* pyo = get_python_service()->ObjectCoerce("DoubleConstant", args);
     return pyo;
 }
-static PyMethodDef DoubleConstant_methods[] = {
-    {"Coerce", (PyCFunction)py_spdoc_DoubleConstant_Coerce, METH_VARARGS | METH_STATIC,
-        "Coerce DoubleConstant from arbitrary value"},
-    {NULL, NULL, 0, NULL} // sentinel
-};
 
-static PyTypeObject DoubleConstant_PyObjectType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    "spdoc.DoubleConstant", /*tp_name*/
-    sizeof(SpiPyObject), /*tp_basicsize*/
-    0, /*tp_itemsize*/
-    (destructor)spi_py_object_dealloc, /*tp_dealloc*/
-    0, /*tp_print*/
-    0, /*tp_getattr*/
-    0, /*tp_setattr*/
-    0, /*tp_compare*/
-    0, /*tp_repr*/
-    0, /*tp_as_number*/
-    0, /*tp_as_sequence*/
-    0, /*tp_as_mapping*/
-    0, /*tp_hash */
-    0, /*tp_call*/
-    0, /*tp_str*/
-    0, /*tp_getattro*/
-    0, /*tp_setattro*/
-    0, /*tp_as_buffer*/
-    Py_TPFLAGS_DEFAULT, /*tp_flags*/
-    "Double constant defined in the configuration file.\n\n__init__(self, value)", /* tp_doc */
-    0, /* tp_traverse */
-    0, /* tp_clear */
-    0, /* tp_richcompare */
-    0, /* tp_weaklistoffset */
-    0, /* tp_iter */
-    0, /* tp_iternext */
-    DoubleConstant_methods, /* tp_methods */
-    0, /* tp_members */
-    DoubleConstant_properties, /* tp_getset */
-    0, /* tp_base */
-    0, /* tp_dict */
-    0, /* tp_descr_get */
-    0, /* tp_descr_set */
-    0, /* tp_dictoffset */
-    (initproc)py_spdoc_DoubleConstant_init, /* tp_init */
-    0, /* tp_alloc */
-    PyType_GenericNew, /* tp_new */
-};
+static PyTypeObject* DoubleConstant_PyObjectType()
+{
+    static PyTypeObject* typeObject = NULL;
+    if (typeObject)
+        return typeObject;
+
+    static PyGetSetDef properties[] =
+    {
+        {"value", (getter)(spi_py_object_getter), NULL,
+            "double value",
+            (void*) "value"},
+        {NULL} // sentinel
+    };
+
+    static PyMethodDef methods[] =
+    {
+        {"Coerce", (PyCFunction)py_spdoc_DoubleConstant_Coerce, METH_VARARGS | METH_STATIC,
+            "Coerce DoubleConstant from arbitrary value"},
+        {NULL, NULL, 0, NULL} // sentinel
+    };
+
+    typeObject = spi::pyMakeTypeObject(
+        "spdoc.DoubleConstant",
+        properties,
+        methods,
+        false,
+        "Double constant defined in the configuration file.\n\n__init__(self, value)",
+        "Constant",
+        Py_tp_init, (void*)py_spdoc_DoubleConstant_init,
+        0);
+
+    return typeObject;
+}
+
 
 static int py_spdoc_CharConstant_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
@@ -750,64 +659,46 @@ static int py_spdoc_CharConstant_init(SpiPyObject* self, PyObject* args, PyObjec
     }
 }
 
-static PyGetSetDef CharConstant_properties[] = {
-    {"value", (getter)(spi_py_object_getter), NULL,
-        "char value",
-        (void*) "value"},
-    {NULL} // sentinel
-};
-
 PyObject* py_spdoc_CharConstant_Coerce(PyObject* self, PyObject* args)
 {
     PyObject* pyo = get_python_service()->ObjectCoerce("CharConstant", args);
     return pyo;
 }
-static PyMethodDef CharConstant_methods[] = {
-    {"Coerce", (PyCFunction)py_spdoc_CharConstant_Coerce, METH_VARARGS | METH_STATIC,
-        "Coerce CharConstant from arbitrary value"},
-    {NULL, NULL, 0, NULL} // sentinel
-};
 
-static PyTypeObject CharConstant_PyObjectType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    "spdoc.CharConstant", /*tp_name*/
-    sizeof(SpiPyObject), /*tp_basicsize*/
-    0, /*tp_itemsize*/
-    (destructor)spi_py_object_dealloc, /*tp_dealloc*/
-    0, /*tp_print*/
-    0, /*tp_getattr*/
-    0, /*tp_setattr*/
-    0, /*tp_compare*/
-    0, /*tp_repr*/
-    0, /*tp_as_number*/
-    0, /*tp_as_sequence*/
-    0, /*tp_as_mapping*/
-    0, /*tp_hash */
-    0, /*tp_call*/
-    0, /*tp_str*/
-    0, /*tp_getattro*/
-    0, /*tp_setattro*/
-    0, /*tp_as_buffer*/
-    Py_TPFLAGS_DEFAULT, /*tp_flags*/
-    "Character constant defined in the configuration file.\n\n__init__(self, value)", /* tp_doc */
-    0, /* tp_traverse */
-    0, /* tp_clear */
-    0, /* tp_richcompare */
-    0, /* tp_weaklistoffset */
-    0, /* tp_iter */
-    0, /* tp_iternext */
-    CharConstant_methods, /* tp_methods */
-    0, /* tp_members */
-    CharConstant_properties, /* tp_getset */
-    0, /* tp_base */
-    0, /* tp_dict */
-    0, /* tp_descr_get */
-    0, /* tp_descr_set */
-    0, /* tp_dictoffset */
-    (initproc)py_spdoc_CharConstant_init, /* tp_init */
-    0, /* tp_alloc */
-    PyType_GenericNew, /* tp_new */
-};
+static PyTypeObject* CharConstant_PyObjectType()
+{
+    static PyTypeObject* typeObject = NULL;
+    if (typeObject)
+        return typeObject;
+
+    static PyGetSetDef properties[] =
+    {
+        {"value", (getter)(spi_py_object_getter), NULL,
+            "char value",
+            (void*) "value"},
+        {NULL} // sentinel
+    };
+
+    static PyMethodDef methods[] =
+    {
+        {"Coerce", (PyCFunction)py_spdoc_CharConstant_Coerce, METH_VARARGS | METH_STATIC,
+            "Coerce CharConstant from arbitrary value"},
+        {NULL, NULL, 0, NULL} // sentinel
+    };
+
+    typeObject = spi::pyMakeTypeObject(
+        "spdoc.CharConstant",
+        properties,
+        methods,
+        false,
+        "Character constant defined in the configuration file.\n\n__init__(self, value)",
+        "Constant",
+        Py_tp_init, (void*)py_spdoc_CharConstant_init,
+        0);
+
+    return typeObject;
+}
+
 
 static int py_spdoc_StringConstant_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
@@ -837,64 +728,46 @@ static int py_spdoc_StringConstant_init(SpiPyObject* self, PyObject* args, PyObj
     }
 }
 
-static PyGetSetDef StringConstant_properties[] = {
-    {"value", (getter)(spi_py_object_getter), NULL,
-        "string value",
-        (void*) "value"},
-    {NULL} // sentinel
-};
-
 PyObject* py_spdoc_StringConstant_Coerce(PyObject* self, PyObject* args)
 {
     PyObject* pyo = get_python_service()->ObjectCoerce("StringConstant", args);
     return pyo;
 }
-static PyMethodDef StringConstant_methods[] = {
-    {"Coerce", (PyCFunction)py_spdoc_StringConstant_Coerce, METH_VARARGS | METH_STATIC,
-        "Coerce StringConstant from arbitrary value"},
-    {NULL, NULL, 0, NULL} // sentinel
-};
 
-static PyTypeObject StringConstant_PyObjectType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    "spdoc.StringConstant", /*tp_name*/
-    sizeof(SpiPyObject), /*tp_basicsize*/
-    0, /*tp_itemsize*/
-    (destructor)spi_py_object_dealloc, /*tp_dealloc*/
-    0, /*tp_print*/
-    0, /*tp_getattr*/
-    0, /*tp_setattr*/
-    0, /*tp_compare*/
-    0, /*tp_repr*/
-    0, /*tp_as_number*/
-    0, /*tp_as_sequence*/
-    0, /*tp_as_mapping*/
-    0, /*tp_hash */
-    0, /*tp_call*/
-    0, /*tp_str*/
-    0, /*tp_getattro*/
-    0, /*tp_setattro*/
-    0, /*tp_as_buffer*/
-    Py_TPFLAGS_DEFAULT, /*tp_flags*/
-    "String constant defined in the configuration file.\n\n__init__(self, value)", /* tp_doc */
-    0, /* tp_traverse */
-    0, /* tp_clear */
-    0, /* tp_richcompare */
-    0, /* tp_weaklistoffset */
-    0, /* tp_iter */
-    0, /* tp_iternext */
-    StringConstant_methods, /* tp_methods */
-    0, /* tp_members */
-    StringConstant_properties, /* tp_getset */
-    0, /* tp_base */
-    0, /* tp_dict */
-    0, /* tp_descr_get */
-    0, /* tp_descr_set */
-    0, /* tp_dictoffset */
-    (initproc)py_spdoc_StringConstant_init, /* tp_init */
-    0, /* tp_alloc */
-    PyType_GenericNew, /* tp_new */
-};
+static PyTypeObject* StringConstant_PyObjectType()
+{
+    static PyTypeObject* typeObject = NULL;
+    if (typeObject)
+        return typeObject;
+
+    static PyGetSetDef properties[] =
+    {
+        {"value", (getter)(spi_py_object_getter), NULL,
+            "string value",
+            (void*) "value"},
+        {NULL} // sentinel
+    };
+
+    static PyMethodDef methods[] =
+    {
+        {"Coerce", (PyCFunction)py_spdoc_StringConstant_Coerce, METH_VARARGS | METH_STATIC,
+            "Coerce StringConstant from arbitrary value"},
+        {NULL, NULL, 0, NULL} // sentinel
+    };
+
+    typeObject = spi::pyMakeTypeObject(
+        "spdoc.StringConstant",
+        properties,
+        methods,
+        false,
+        "String constant defined in the configuration file.\n\n__init__(self, value)",
+        "Constant",
+        Py_tp_init, (void*)py_spdoc_StringConstant_init,
+        0);
+
+    return typeObject;
+}
+
 
 static int py_spdoc_BoolConstant_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
@@ -924,64 +797,46 @@ static int py_spdoc_BoolConstant_init(SpiPyObject* self, PyObject* args, PyObjec
     }
 }
 
-static PyGetSetDef BoolConstant_properties[] = {
-    {"value", (getter)(spi_py_object_getter), NULL,
-        "bool value",
-        (void*) "value"},
-    {NULL} // sentinel
-};
-
 PyObject* py_spdoc_BoolConstant_Coerce(PyObject* self, PyObject* args)
 {
     PyObject* pyo = get_python_service()->ObjectCoerce("BoolConstant", args);
     return pyo;
 }
-static PyMethodDef BoolConstant_methods[] = {
-    {"Coerce", (PyCFunction)py_spdoc_BoolConstant_Coerce, METH_VARARGS | METH_STATIC,
-        "Coerce BoolConstant from arbitrary value"},
-    {NULL, NULL, 0, NULL} // sentinel
-};
 
-static PyTypeObject BoolConstant_PyObjectType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    "spdoc.BoolConstant", /*tp_name*/
-    sizeof(SpiPyObject), /*tp_basicsize*/
-    0, /*tp_itemsize*/
-    (destructor)spi_py_object_dealloc, /*tp_dealloc*/
-    0, /*tp_print*/
-    0, /*tp_getattr*/
-    0, /*tp_setattr*/
-    0, /*tp_compare*/
-    0, /*tp_repr*/
-    0, /*tp_as_number*/
-    0, /*tp_as_sequence*/
-    0, /*tp_as_mapping*/
-    0, /*tp_hash */
-    0, /*tp_call*/
-    0, /*tp_str*/
-    0, /*tp_getattro*/
-    0, /*tp_setattro*/
-    0, /*tp_as_buffer*/
-    Py_TPFLAGS_DEFAULT, /*tp_flags*/
-    "Bool constant defined in the configuration file.\n\n__init__(self, value)", /* tp_doc */
-    0, /* tp_traverse */
-    0, /* tp_clear */
-    0, /* tp_richcompare */
-    0, /* tp_weaklistoffset */
-    0, /* tp_iter */
-    0, /* tp_iternext */
-    BoolConstant_methods, /* tp_methods */
-    0, /* tp_members */
-    BoolConstant_properties, /* tp_getset */
-    0, /* tp_base */
-    0, /* tp_dict */
-    0, /* tp_descr_get */
-    0, /* tp_descr_set */
-    0, /* tp_dictoffset */
-    (initproc)py_spdoc_BoolConstant_init, /* tp_init */
-    0, /* tp_alloc */
-    PyType_GenericNew, /* tp_new */
-};
+static PyTypeObject* BoolConstant_PyObjectType()
+{
+    static PyTypeObject* typeObject = NULL;
+    if (typeObject)
+        return typeObject;
+
+    static PyGetSetDef properties[] =
+    {
+        {"value", (getter)(spi_py_object_getter), NULL,
+            "bool value",
+            (void*) "value"},
+        {NULL} // sentinel
+    };
+
+    static PyMethodDef methods[] =
+    {
+        {"Coerce", (PyCFunction)py_spdoc_BoolConstant_Coerce, METH_VARARGS | METH_STATIC,
+            "Coerce BoolConstant from arbitrary value"},
+        {NULL, NULL, 0, NULL} // sentinel
+    };
+
+    typeObject = spi::pyMakeTypeObject(
+        "spdoc.BoolConstant",
+        properties,
+        methods,
+        false,
+        "Bool constant defined in the configuration file.\n\n__init__(self, value)",
+        "Constant",
+        Py_tp_init, (void*)py_spdoc_BoolConstant_init,
+        0);
+
+    return typeObject;
+}
+
 
 static int py_spdoc_UndefinedConstant_init(SpiPyObject* self, PyObject* args, PyObject* kwargs)
 {
@@ -1016,82 +871,63 @@ PyObject* py_spdoc_UndefinedConstant_Coerce(PyObject* self, PyObject* args)
     PyObject* pyo = get_python_service()->ObjectCoerce("UndefinedConstant", args);
     return pyo;
 }
-static PyMethodDef UndefinedConstant_methods[] = {
-    {"Coerce", (PyCFunction)py_spdoc_UndefinedConstant_Coerce, METH_VARARGS | METH_STATIC,
-        "Coerce UndefinedConstant from arbitrary value"},
-    {NULL, NULL, 0, NULL} // sentinel
-};
 
-static PyTypeObject UndefinedConstant_PyObjectType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    "spdoc.UndefinedConstant", /*tp_name*/
-    sizeof(SpiPyObject), /*tp_basicsize*/
-    0, /*tp_itemsize*/
-    (destructor)spi_py_object_dealloc, /*tp_dealloc*/
-    0, /*tp_print*/
-    0, /*tp_getattr*/
-    0, /*tp_setattr*/
-    0, /*tp_compare*/
-    0, /*tp_repr*/
-    0, /*tp_as_number*/
-    0, /*tp_as_sequence*/
-    0, /*tp_as_mapping*/
-    0, /*tp_hash */
-    0, /*tp_call*/
-    0, /*tp_str*/
-    0, /*tp_getattro*/
-    0, /*tp_setattro*/
-    0, /*tp_as_buffer*/
-    Py_TPFLAGS_DEFAULT, /*tp_flags*/
-    "__init__(self)", /* tp_doc */
-    0, /* tp_traverse */
-    0, /* tp_clear */
-    0, /* tp_richcompare */
-    0, /* tp_weaklistoffset */
-    0, /* tp_iter */
-    0, /* tp_iternext */
-    UndefinedConstant_methods, /* tp_methods */
-    0, /* tp_members */
-    0, /* tp_getset */
-    0, /* tp_base */
-    0, /* tp_dict */
-    0, /* tp_descr_get */
-    0, /* tp_descr_set */
-    0, /* tp_dictoffset */
-    (initproc)py_spdoc_UndefinedConstant_init, /* tp_init */
-    0, /* tp_alloc */
-    PyType_GenericNew, /* tp_new */
-};
+static PyTypeObject* UndefinedConstant_PyObjectType()
+{
+    static PyTypeObject* typeObject = NULL;
+    if (typeObject)
+        return typeObject;
+
+    static PyMethodDef methods[] =
+    {
+        {"Coerce", (PyCFunction)py_spdoc_UndefinedConstant_Coerce, METH_VARARGS | METH_STATIC,
+            "Coerce UndefinedConstant from arbitrary value"},
+        {NULL, NULL, 0, NULL} // sentinel
+    };
+
+    typeObject = spi::pyMakeTypeObject(
+        "spdoc.UndefinedConstant",
+        0,
+        methods,
+        false,
+        "__init__(self)",
+        "Constant",
+        Py_tp_init, (void*)py_spdoc_UndefinedConstant_init,
+        0);
+
+    return typeObject;
+}
+
 
 void py_spdoc_constant_update_functions(spi::PythonService* svc)
 {
     svc->SetNamespace("");
 
     svc->AddClass("Constant", "Constant",
-        &Constant_PyObjectType);
+        Constant_PyObjectType());
 
     svc->AddClass("IntConstant", "IntConstant",
-        &IntConstant_PyObjectType, "Constant");
+        IntConstant_PyObjectType());
 
     svc->AddClass("DateConstant", "DateConstant",
-        &DateConstant_PyObjectType, "Constant");
+        DateConstant_PyObjectType());
 
     svc->AddClass("DateTimeConstant", "DateTimeConstant",
-        &DateTimeConstant_PyObjectType, "Constant");
+        DateTimeConstant_PyObjectType());
 
     svc->AddClass("DoubleConstant", "DoubleConstant",
-        &DoubleConstant_PyObjectType, "Constant");
+        DoubleConstant_PyObjectType());
 
     svc->AddClass("CharConstant", "CharConstant",
-        &CharConstant_PyObjectType, "Constant");
+        CharConstant_PyObjectType());
 
     svc->AddClass("StringConstant", "StringConstant",
-        &StringConstant_PyObjectType, "Constant");
+        StringConstant_PyObjectType());
 
     svc->AddClass("BoolConstant", "BoolConstant",
-        &BoolConstant_PyObjectType, "Constant");
+        BoolConstant_PyObjectType());
 
     svc->AddClass("UndefinedConstant", "UndefinedConstant",
-        &UndefinedConstant_PyObjectType, "Constant");
+        UndefinedConstant_PyObjectType());
 }
 
