@@ -59,12 +59,13 @@ FunctionConstSP Function::Make(
     const std::vector<std::string>&      excelOptions,
     int                                  cacheSize,
     bool                                 optionalReturnType,
-    bool                                 noRecord)
+    bool                                 noRecord,
+    bool                                 noExport)
 {
     return new Function(description, returnTypeDescription, returnType,
         returnArrayDim, name, ns, args,
         implementation, noLog, noConvert, excelOptions, cacheSize,
-        optionalReturnType, noRecord);
+        optionalReturnType, noRecord, noExport);
 }
 
 Function::Function(
@@ -81,7 +82,8 @@ Function::Function(
     const std::vector<std::string>& excelOptions,
     int                                  cacheSize,
     bool                                 optionalReturnType,
-    bool                                 noRecord)
+    bool                                 noRecord,
+    bool                                 noExport)
     :
     m_description(description),
     m_returnTypeDescription(returnTypeDescription),
@@ -98,7 +100,8 @@ Function::Function(
     m_cacheSize(cacheSize),
     m_hasIgnored(),
     m_optionalReturnType(optionalReturnType),
-    m_noRecord(noRecord)
+    m_noRecord(noRecord),
+    m_noExport(noExport)
 {
     SPI_PRE_CONDITION(cacheSize >= 0);
 
@@ -538,6 +541,9 @@ const char* Function::type() const
 
 spdoc::ConstructConstSP Function::getDoc() const
 {
+    if (m_noExport)
+        return spdoc::ConstructConstSP();
+
     if (!m_doc)
     {
         std::vector<spdoc::AttributeConstSP> docInputs;
