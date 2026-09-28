@@ -2,6 +2,7 @@ target:
 
 U_SPI_HOME=..
 U_HAS_ALL_TARGET=1
+U_PYTHON_BUILD=1
 
 include $(U_SPI_HOME)/makefiles/config/config.mk
 include $(U_SPI_HOME)/makefiles/version.mk
