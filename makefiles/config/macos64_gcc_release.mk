@@ -28,6 +28,10 @@ G_OPTIMIZE_LFLAGS =
 I_LFLAGS = $(G_MACOS64_GCC_M64) -o$@ $(G_OPTIMIZE_LFLAGS) $(U_MACOS64_RELEASE_LFLAGS)
 I_DLL_LFLAGS = -dynamiclib $(G_LINKMAP_SPEC)
 
+ifdef U_PYTHON_BUILD
+I_LFLAGS+=-undefined dynamic_lookup
+endif
+
 G_DLL_LFLAGS = $(I_LFLAGS) $(I_DLL_LFLAGS)
 G_DLL_LFLAGS += -rpath @loader_path
 G_EXE_LFLAGS = $(I_LFLAGS) 

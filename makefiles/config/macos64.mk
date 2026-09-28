@@ -16,8 +16,8 @@ ifdef PY_VERSION
 G_PY_VERSION=$(PY_VERSION)
 G_PY_VERSIONS=$(PY_VERSION)
 else
-ifdef G_LINUX64_PY_VERSION
-G_PY_VERSION=$(G_LINUX64_PY_VERSION)
+ifdef G_MACOS64_PY_VERSION
+G_PY_VERSION=$(G_MACOS64_PY_VERSION)
 else
 G_PY_VERSION=3.14
 endif
@@ -29,10 +29,11 @@ G_PYTHON_FRAMEWORK_VERSION=/Library/Frameworks/Python.framework/Versions/$(G_PY_
 
 G_PYTHON=$(G_PYTHON_FRAMEWORK_VERSION)/bin/python$(G_PY_VERSION)
 G_PYTHON_INCLUDES=-I$(G_PYTHON_FRAMEWORK_VERSION)/include/python$(G_PY_VERSION)
-G_PYTHON_LIBS=$(G_PYTHON_FRAMEWORK_VERSION)/lib/libpython$(G_PY_VERSION).dylib
+
+# we should not define G_PYTHON_LIBS since we will be using -undefined dynamic_lookup for python builds
 
 # common build parameters for building 64-bit libraries and applications
-# on linux64
+# on macos64
 
 G_CURL_LIBS=-L/usr/lib -lcurl
 
