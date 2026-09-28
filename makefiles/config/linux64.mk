@@ -8,7 +8,7 @@ G_EXTLIBS_HOME=$(U_SPI_HOME)/3rdParty
 ifdef G_LINUX64_PY_VERSIONS
 G_PY_VERSIONS=$(G_LINUX64_PY_VERSIONS)
 else
-G_PY_VERSIONS=3.9
+G_PY_VERSIONS=3.12
 endif
 
 ifdef PY_VERSION
@@ -18,7 +18,7 @@ else
 ifdef G_LINUX64_PY_VERSION
 G_PY_VERSION=$(G_LINUX64_PY_VERSION)
 else
-G_PY_VERSION=3.9
+G_PY_VERSION=3.12
 endif
 endif
 
@@ -50,8 +50,9 @@ else
 G_PYTHON=/usr/bin/python$(G_PY_VERSION)
 G_PYTHON_INCLUDES=-I/usr/include/python$(G_PY_VERSION)
 
+# due to the way that python shared libraries resolve their symbols
+# at runtime it is actually harmful to define G_PYTHON_LIBS
 endif
-
 
 G_CURL_LIBS=-L/usr/lib/x86_64-linux-gnu -lcurl
 
