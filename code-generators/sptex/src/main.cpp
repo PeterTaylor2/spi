@@ -109,17 +109,38 @@ int main(int argc, char* argv[])
 
     Options getOptions;
     std::string exe("SPTEX");
-    const char* longOptions = "license writeIncludes backup";
+    const char* longOptions = "help import license writeIncludes backup";
 
     try
     {
-        spi_util::CommandLine commandLine(argc, argv, "wvi=S=", longOptions);
+        std::vector<spi_util::CommandLineOption> clOptions = {
+            { "help", "h", "Print this help message and exit"},
+            { "import", "i", "You can define one or more imports. The import files will be used to define types\n"
+                "used by this service but created by one of the imported services (higher-level services).\n"},
+            { "writeIncludes", "", "Writes the location of the corresponding header file for any function or class."},
+            { "backup", "", "Creates a backup file (original name with .bak appended) whenever a file is changed." },
+            { "license", "", "Prints the license for SPTEX."},
+            { "", "S", "Writes a summary file.", true, "sfilename"},
+            { "", "w", "Waits at the start - the purpose is to allow a debugger to be attached"},
+            { "", "v", "Verbose - this appears to have no effect"},
+        };
+
+        spi_util::CommandLine commandLine(argc, argv, "hwvi=S=", longOptions);
         exe = spi_util::path::basename(commandLine.exeName);
 
         std::string opt;
         std::string val;
         while (commandLine.getOption(opt,val))
         {
+            if (opt == "-h" || opt == "--help")
+            {
+                spi_util::CommandLineOption::PrintHelp(
+                    stdout,
+                    exe.c_str(),
+                    "infile outfile dirname",
+                    clOptions);
+                return 0;
+            }
             if (opt == "-w")
             {
                 waitAtStart = true;

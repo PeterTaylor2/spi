@@ -55,12 +55,13 @@ For commercial use SPI has been used to develop the analytical libraries used by
 ## Building the software
 
 The software is built using makefiles - OK - I am admit it is old-fashioned. However these makefiles will work for
-Windows, Linux and possibly even for Apple/Mac (it is a long time since I tried to compile on an Apple/Mac but it did
-work). Visual Studio projects can be generated from the makefiles, and then manually combined into a Visual Studio
+Windows, Linux and even for Apple/Mac (we have recently revived the support for MacOS). Visual Studio projects can be generated from the makefiles, and then manually combined into a Visual Studio
 solution file. Most of the code over the years has been developed within Visual Studio - currently VS17 (2022)
 and VS18 (2026) are fully supported.
 
 To check that your makefiles set-up is correct you can use the simple builds in the makefiles/test directory.
+
+For more information see the README.md file in the makefiles directory.
 
 ## Versions of interface languages supported
 
@@ -75,11 +76,14 @@ We support both 32-bit and 64-bit versions of Python, but we have stopped bundli
 after version 310.
 On Linux we have successfully used versions 3.9 and 3.12 of Python.
 For Linux we will use the Python header files and libraries provided by the operating system.
+On MacOS we have successfully used versions 3.14 of Python.
 
 We do not use the ABI-compatible versions of Python for Python3. This is because we need to use the Python datetime
 class which does not fall under the ABI-compatible framework (as far as I can tell).
+We have seen some suggestions for how to get around this problem, but we
+have not yet investigated these suggestions.
 
-For C# development we build a C-DLL in either 32-bit or 64-bit which can be used by P/INVOKE (platform invoke) by C#
+For C# development we build a C-DLL (usually in 64-bit) which can be used by P/INVOKE (platform invoke) by C#
 code. The plan would be to deliver the C# code to an application written using C# and allow that application to decide
 which framework to use for building the application. Hence we believe there is no particular restriction on the
 version for the C# build.
@@ -98,19 +102,21 @@ Contributions would be invited for the following areas:
 
 1. New interface languages, e.g. Java is one language we have considered supporting.
 2. Completion of the user guide - it is partly done but needs some extra work.
+3. An ambitious project would be to build the library to create WASM code. Then
+   potentially we could create applications directly available to a web-interface.
 
 ## History
 
 This product has been developed for over 14 years. Previously it was developed under the auspices of the company
 Sartorial Programming Ltd. This company has now been closed down and as part of the closing down process it was agreed
-with one of its clients to publish the code as open source.
+with its main client to publish the code as open source.
 
 Hence the initial version of the repository is the code as of the time that the company was closed down.
 
 Note that the name Sartorial Programming is a play on my surname - the company had no relationship to any other
 company with the name of Sartorial.
 
-The main developments happened in the years 2012-2014. Subsequently development has been slower but has been
+The beating heart of the code was developed in the years 2012-2014. Subsequently development has been slower but has been
 focussed on the development of the analytics library for the hedge fund that I mentioned.
 As of 2014 the project was sufficiently complete to allow for the development of some Bridge applications (in addition
 to being a software developer I am also a very keen Bridge player who has represented my country at the game).

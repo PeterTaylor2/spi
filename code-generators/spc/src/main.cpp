@@ -132,16 +132,41 @@ int main(int argc, char* argv[])
 
     Options options;
 
-    const char* longOptions = "noGeneratedCodeNotice license licenseFile= backup";
+    const char* longOptions = "help import satellite noGeneratedCodeNotice license licenseFile= backup";
     try
     {
-        spi_util::CommandLine commandLine(argc, argv, "wvi=s=", longOptions);
+        std::vector<spi_util::CommandLineOption> clOptions = {
+            { "help", "h", "Print this help message and exit"},
+            { "import", "i", "You can define one or more imports. We will then include the c_dll_<import>.hpp file for\n"
+                "any higher level product (with distinct namespace) that this project relies upon.\n", true},
+            { "satellite", "s", "You can define one or more satellites. Satellites are products with the same\n"
+                "namespace, but you need to be able to define a common start-up routine and shutdown routine.\n", true},
+            { "noGeneratedCodeNotice", "", "Do not print the generated code notice at the top of each file in the generated code\n"
+                "In addition we also trigger noVerbatimLine option"},
+            { "license", "", "Prints the license for SPCL."},
+            { "licenseFile", "", "This is the name of a file which contains the license for your code.\n"
+                "The file will be read and the contents included near the top of the generated files.", true},
+            { "backup", "", "Creates a backup file (original name with .bak appended) whenever a file is changed."},
+            { "", "w", "Waits at the start - the purpose is to allow a debugger to be attached"},
+            { "", "v", "Verbose - shows some details of the parser"}
+        };
+
+        spi_util::CommandLine commandLine(argc, argv, "hwvi=s=", longOptions);
         exe = spi_util::path::basename(commandLine.exeName);
 
         std::string opt;
         std::string val;
         while (commandLine.getOption(opt,val))
         {
+            if (opt == "-h" || opt == "--help")
+            {
+                spi_util::CommandLineOption::PrintHelp(
+                    stdout,
+                    exe.c_str(),
+                    "infile outfile dirname",
+                    clOptions);
+                return 0;
+            }
             if (opt == "-w")
             {
                 waitAtStart = true;
@@ -150,11 +175,11 @@ int main(int argc, char* argv[])
             {
                 verbose = true;
             }
-            else if (opt == "-i")
+            else if (opt == "-i" || opt == "--import")
             {
                 options.imports.push_back(val);
             }
-            else if (opt == "-s")
+            else if (opt == "-s" || opt == "--satellite")
             {
                 options.satellites.push_back(val);
             }

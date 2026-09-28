@@ -61,6 +61,12 @@ static void print_standard_usage(FILE* fp, const std::string& exe, const char* l
     }
 }
 
+static void print_help(FILE* fp, const char* exeName, const char* args,
+    const std::vector<spi_util::CommandLineOption>& clOptions)
+{
+    spi_util::CommandLineOption::PrintHelp(fp, exeName, args, clOptions);
+}
+
 static void print_doc_usage(FILE* fp, const std::string& exe)
 {
     fprintf(fp, "Usage: %s [-d] (texoutfile)\n", exe.c_str());
@@ -126,19 +132,70 @@ int main(int argc, char* argv[])
     std::string version;
 
     std::string exe("SPCL");
-    const char* longOptions = "allHeader noVerbatimLine noHeaderSplit noTidyup"
+    const char* longOptions = "help allHeader noVerbatimLine noHeaderSplit noTidyup"
         " noGeneratedCodeNotice sortSummary version= optionalArgs license outputDir="
         " sessionLogging licenseFile= backup checkNonNull textFormat";
 
+
     try
     {
-        spi_util::CommandLine commandLine(argc, argv, "wt=vdc=CS=", longOptions);
+        std::vector<spi_util::CommandLineOption> clOptions = {
+            { "help", "h", "Print this help message and exit"},
+            { "allHeader", "", "Setting this flag means that we create a header file which includes all the other header files.\n"
+                "This might be easier to use but will increase the dependencies."},
+            { "noVerbatimLine", "", "Do not print the #line directives in the generated code"},
+            { "noHeaderSplit", "", "By default you get a header file for the classes defined by a module and a separate\n"
+                "header file for the functions. This can help reduce the dependencies when compiling.\n"
+                "Setting noHeaderSplit reverses this behaviour - the two header files are combined into one."},
+            { "noTidyup", "", "By default after generating the code then any files in the generated code directory\n"
+                "which were not created by the generator will be removed. Setting noTidyup reverses this behaviour."},
+            { "noGeneratedCodeNotice", "", "Do not print the generated code notice at the top of each file in the generated code\n"
+                "In addition we also trigger noVerbatimLine option"},
+            { "sortSummary", "", "If the summary file is requested (-S option) then the contents will be sorted."},
+            { "version", "", "Usually the version number is defined in the .svc file. If you don't define it in that file, then the\n"
+                "default value is 1.0.0.0. By using the --version option you are changing the default value.\n"
+                "The value defined in the .svc object (if set) still takes precedence.\n", true},
+            { "optionalArgs", "", "In the C++ code generated support optional arguments."},
+            { "license", "", "Prints the license for SPCL."},
+            { "outputDir", "", "Defines the output directory where we will write the binaries.\n"
+                "In the makefiles this is defined as U_OUTPUT_DIR and there is a default location\n"
+                "defined in the makefile fragments defined by SPI.", true},
+            { "sessionLogging", "", "Insert session logging commands into the generated code"},
+            { "licenseFile", "", "This is the name of a file which contains the license for your code.\n"
+                "The file will be read and the contents included near the top of the generated files.", true},
+            { "backup", "", "Creates a backup file (original name with .bak appended) whenever a file is changed."},
+            { "checkNonNull", "", "Will add checks that an output object is not null.\n"
+                "Having set this flag you can avoid the check by marking the output as optional.\n"
+                "Ideally this should be the default behaviour (i.e. checkNonNull) but for backward\n"
+                "compatibility we kept the previous behaviour since it might break too much code to\n"
+                "add this check to existing generated code.\n"},
+            { "textFormat", "", "Do we write the generated files in text format (specific to the platform).\n"
+                "If undefined, then the files will be written with Unix line endings."},
+            { "", "w", "Waits at the start - the purpose is to allow a debugger to be attached"},
+            { "", "t", "Generate types only code. What this does is that it generates code only for the\n"
+                "class definitions. Functions and class methods are not included.\n"
+                "The code is generated in the directory defined by the option. The\n"
+                "regular code is generated at the same time.", true, "tdirname"},
+            { "", "v", "Verbose - shows some details of the parser"},
+            { "", "d", "Generate the autodoc - only one argument - the output file which should end with .tex"},
+            //{ "", "c", "c++ mode - obsolete feature", true, "cdirname"},
+            //{ "", "C", "Generate low-level timing while generating the code"},
+            { "", "S", "Creates a summary file of the contents of the service", true, "sfilename"}
+        };
+
+        spi_util::CommandLine commandLine(argc, argv, "hwt=vdS=", longOptions);
         exe = spi_util::path::basename(commandLine.exeName);
 
         std::string opt;
         std::string val;
         while (commandLine.getOption(opt,val))
         {
+            if (opt == "--help" || opt == "-h")
+            {
+                print_help(stdout, exe.c_str(), "infile outfile dirname", clOptions);
+
+                return 0;
+            }
             if (opt == "-w")
             {
                 waitAtStart = true;
@@ -156,11 +213,11 @@ int main(int argc, char* argv[])
             {
                 doc = true;
             }
-            else if (opt == "-c")
-            {
-                cpp = true;
-                cdirname = val;
-            }
+            //else if (opt == "-c")
+            //{
+            //    cpp = true;
+            //    cdirname = val;
+            //}
             else if (opt == "--noVerbatimLine")
             {
                 options.noVerbatimLine = true;
@@ -190,10 +247,10 @@ int main(int argc, char* argv[])
             {
                 version = val;
             }
-            else if (opt == "-C")
-            {
-                clockEvents = true;
-            }
+            //else if (opt == "-C")
+            //{
+            //    clockEvents = true;
+            //}
             else if (opt == "-S")
             {
                 sfilename = val;
