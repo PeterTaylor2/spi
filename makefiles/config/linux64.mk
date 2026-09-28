@@ -50,9 +50,10 @@ else
 G_PYTHON=/usr/bin/python$(G_PY_VERSION)
 G_PYTHON_INCLUDES=-I/usr/include/python$(G_PY_VERSION)
 
+endif
+
 # due to the way that python shared libraries resolve their symbols
 # at runtime it is actually harmful to define G_PYTHON_LIBS
-endif
 
 G_CURL_LIBS=-L/usr/lib/x86_64-linux-gnu -lcurl
 
