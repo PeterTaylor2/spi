@@ -26,7 +26,12 @@ G_CPPFLAGS = $(I_CFLAGS) $(U_LINUX64_CPPFLAGS)
 # Linker flags 
 ############################################################################
 G_DEBUG_LFLAGS = 
-I_LFLAGS = -m64 -o $@ $(G_DEBUG_LFLAGS) $(U_LINUX64_DEBUG_LFLAGS) -Wl,-rpath,. -z defs
+I_LFLAGS = -m64 -o $@ $(G_DEBUG_LFLAGS) $(U_LINUX64_DEBUG_LFLAGS) -Wl,-rpath,.
+
+ifndef U_PYTHON_BUILD
+I_FLAGS += -z defs
+endif
+
 I_DLL_LFLAGS = -shared $(G_LINKMAP_SPEC)
 G_DLL_LFLAGS = $(I_LFLAGS) $(I_DLL_LFLAGS)
 G_EXE_LFLAGS = $(I_LFLAGS) 
