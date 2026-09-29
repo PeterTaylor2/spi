@@ -1,4 +1,4 @@
-Attribute VB_Name = "$(ns)Functions"
+Attribute VB_Name = "$(name)Functions"
 Option Explicit
 Option Base 0
 

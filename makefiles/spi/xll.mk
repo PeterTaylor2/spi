@@ -61,7 +61,7 @@ U_FORCE_REBUILD+=$(U_SPI_HOME)/makefiles/version.mk
 ###########################################################################
 # the following values depend on properties.mk but can be overridden
 ###########################################################################
-U_TARGET?=$(U_SERVICE_NAMESPACE)
+U_TARGET?=$(U_SERVICE)
 U_VCPROJ?=$(U_SERVICE)-$(notdir $(CURDIR))
 U_CFLAGS+=-DXL_$(U_DECLSPEC)_EXPORT
 U_VCPROJ_OPTIONS+=-s"*.bas" -s"*.frm"
@@ -90,7 +90,7 @@ U_SRC_DIR:=src
 U_INC_DIR:=.
 U_INCLUDES+=-Isrc -I$(U_SPI_HOME) -I$(U_DLL_DIR)
 ifndef U_XLADDIN_TARGET
-U_XLADDIN_TARGET:=$(U_TARGET).xlam
+U_XLADDIN_TARGET:=$(U_SERVICE).xlam
 endif
 
 include $(U_SPI_HOME)/makefiles/spi/base_service.mk
@@ -201,7 +201,7 @@ endif
 
 ifdef U_USE_EXCEL_INSTALL
 
-I_INSTALL_TARGET_DIR=$(abspath $(APPDATA))/Microsoft/Addins/$(U_SERVICE_NAMESPACE)
+I_INSTALL_TARGET_DIR=$(abspath $(APPDATA))/Microsoft/Addins/$(U_SERVICE)
 
 I_INSTALL_FILES=\
 $(U_OUTPUT_DIR)/$(G_XL_ABI)/$(U_TARGET).xll\
