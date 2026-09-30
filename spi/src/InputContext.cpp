@@ -33,6 +33,7 @@
 #include "MapObject.hpp"
 #include "InputValues.hpp"
 #include "SHA.hpp"
+#include "ObjectMake.hpp"
 
 #include "ExcelInputContext.hpp"
 #include "PythonInputContext.hpp"
@@ -1171,6 +1172,100 @@ Value ObjectPut(
 
     ObjectConstSP modifiedObject = ObjectPut(object, newNames, newValues, context);
     return Value(modifiedObject);
+}
+
+SPI_IMPORT Value ObjectMake(
+    const Value& in_className,
+    const Value& in_names,
+    const Value& v1,
+    const Value& v2,
+    const Value& v3,
+    const Value& v4,
+    const Value& v5,
+    const Value& v6,
+    const Value& v7,
+    const Value& v8,
+    const Value& v9,
+    const Value& v10,
+    const Value& v11,
+    const Value& v12,
+    const Value& v13,
+    const Value& v14,
+    const Value& v15,
+    const Value& v16,
+    const Value& v17,
+    const Value& v18,
+    const Value& v19,
+    const Value& v20,
+    const Value& v21,
+    const Value& v22,
+    const Value& v23,
+    const Value& v24,
+    const Value& v25,
+    const Value& v26,
+    const Value& v27,
+    const Value& v28,
+    const Value& v29,
+    const Value& v30,
+    const Value& v31,
+    const Value& v32,
+    const Value& v33,
+    const Value& v34,
+    const Value& v35,
+    const Value& v36,
+    const Value& v37,
+    const Value& v38,
+    const Value& v39,
+    const Value& v40,
+    const Value& v41,
+    const Value& v42,
+    const Value& v43,
+    const Value& v44,
+    const Value& v45,
+    const Value& v46,
+    const Value& v47,
+    const Value& v48,
+    const Value& v49,
+    const Value& v50,
+    const InputContext* context)
+{
+    std::string className = in_className.getString();
+    std::vector<std::string> names = in_names.getStringVector(false);
+
+    Value values[50] = { v1, v2, v3, v4, v5, v6, v7, v8, v9, v10,
+        v11, v12, v13, v14, v15, v16, v17, v18, v19, v20,
+        v21, v22, v23, v24, v25, v26, v27, v28, v29, v30,
+        v31, v32, v33, v34, v35, v36, v37, v38, v39, v40,
+        v41, v42, v43, v44, v45, v46, v47, v48, v49, v50 };
+
+    size_t numNames = names.size();
+
+    if (numNames > 50)
+        throw RuntimeError("More than 50 names provided");
+
+    std::vector<std::string> newNames;
+    std::vector<Value> newValues;
+
+    for (size_t i = 0; i < numNames; ++i)
+    {
+        const std::string& name = names[i];
+        const Value& value = values[i];
+
+        if (name.empty())
+        {
+            if (!value.isUndefined())
+            {
+                throw RuntimeError("No name for v%d", (int)i + 1);
+            }
+            continue;
+        }
+
+        newNames.push_back(names[i]);
+        newValues.push_back(values[i]);
+    }
+
+    ObjectConstSP obj = ObjectMake(className, newNames, newValues, context);
+    return Value(obj);
 }
 
 Value ObjectPutMetaData(
