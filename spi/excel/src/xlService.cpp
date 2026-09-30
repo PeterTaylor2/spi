@@ -205,6 +205,7 @@ void ExcelService::RegisterStandardFunctions(const std::string& xll,
     const std::string& objectList, 
     const std::string& objectClassName, 
     const std::string& objectSHA,
+    const std::string& objectMake,
     bool noPrefixObjectFuncs) 
 {
     std::vector<std::string> args;
@@ -323,6 +324,89 @@ void ExcelService::RegisterStandardFunctions(const std::string& xll,
             "Get individual fields from an object (or the list of all fields)",
             help);
     }
+
+    if (!objectMake.empty())
+    {
+        std::string regFunc = m_upperCase ? StringUpper(objectMake) : objectMake;
+        args.clear();
+        help.clear();
+        args.push_back("className");
+        help.push_back("Name of the class to be created");
+        args.push_back("baseName?");
+        help.push_back("Base name of object handle string");
+        args.push_back("names[]");
+        help.push_back("List of field names to be added - can include type specification.");
+        args.push_back("v1");
+        help.push_back("Value to be added for corresponding name");
+        args.push_back("v2");
+        args.push_back("v3");
+        args.push_back("v4");
+        args.push_back("v5");
+        args.push_back("v6");
+        args.push_back("v7");
+        args.push_back("v8");
+        args.push_back("v9");
+        args.push_back("v10");
+        args.push_back("v11");
+        args.push_back("v12");
+        args.push_back("v13");
+        args.push_back("v14");
+        args.push_back("v15");
+        args.push_back("v16");
+        args.push_back("v17");
+        args.push_back("v18");
+        args.push_back("v19");
+        args.push_back("v20");
+        args.push_back("v21");
+        args.push_back("v22");
+        args.push_back("v23");
+        args.push_back("v24");
+        args.push_back("v25");
+        args.push_back("v16");
+        args.push_back("v17");
+        args.push_back("v18");
+        args.push_back("v19");
+        args.push_back("v20");
+        args.push_back("v21");
+        args.push_back("v22");
+        args.push_back("v23");
+        args.push_back("v24");
+        args.push_back("v25");
+        args.push_back("v26");
+        args.push_back("v27");
+        args.push_back("v28");
+        args.push_back("v29");
+        args.push_back("v30");
+        args.push_back("v31");
+        args.push_back("v32");
+        args.push_back("v33");
+        args.push_back("v34");
+        args.push_back("v35");
+        args.push_back("v36");
+        args.push_back("v37");
+        args.push_back("v38");
+        args.push_back("v39");
+        args.push_back("v40");
+        args.push_back("v41");
+        args.push_back("v42");
+        args.push_back("v43");
+        args.push_back("v44");
+        args.push_back("v45");
+        args.push_back("v46");
+        args.push_back("v47");
+        args.push_back("v48");
+        args.push_back("v49");
+        args.push_back("v50");
+        RegisterFunction(
+            xll,
+            StringFormat("xl_%s_object_make", ns.c_str()),
+            noPrefixObjectFuncs ? regFunc : StringFormat("%s%s%s", nsReg.c_str(), m_sep, regFunc.c_str()),
+            nsReg,
+            args,
+            "Creates a new object from up to 50 attributes for a class with a given className",
+            help);
+    }
+
 
     if (!objectPut.empty())
     {
@@ -1496,6 +1580,58 @@ XLOPER12* ExcelService::ObjectGet(XLOPER12* xl_handle, XLOPER12* xl_name)
         return xloper12InputError();
     }
     catch (std::exception &e)
+    {
+        return ErrorHandler12(e.what());
+    }
+    return xloper12Output(xlo);
+}
+
+XLOPER12* ExcelService::ObjectMake(XLOPER12* baseName, XLOPER12* className, XLOPER12* names,
+    XLOPER12* v1, XLOPER12* v2, XLOPER12* v3, XLOPER12* v4, XLOPER12* v5,
+    XLOPER12* v6, XLOPER12* v7, XLOPER12* v8, XLOPER12* v9, XLOPER12* v10,
+    XLOPER12* v11, XLOPER12* v12, XLOPER12* v13, XLOPER12* v14, XLOPER12* v15,
+    XLOPER12* v16, XLOPER12* v17, XLOPER12* v18, XLOPER12* v19, XLOPER12* v20,
+    XLOPER12* v21, XLOPER12* v22, XLOPER12* v23, XLOPER12* v24, XLOPER12* v25,
+    XLOPER12* v26, XLOPER12* v27, XLOPER12* v28, XLOPER12* v29, XLOPER12* v30,
+    XLOPER12* v31, XLOPER12* v32, XLOPER12* v33, XLOPER12* v34, XLOPER12* v35,
+    XLOPER12* v36, XLOPER12* v37, XLOPER12* v38, XLOPER12* v39, XLOPER12* v40,
+    XLOPER12* v41, XLOPER12* v42, XLOPER12* v43, XLOPER12* v44, XLOPER12* v45,
+    XLOPER12* v46, XLOPER12* v47, XLOPER12* v48, XLOPER12* v49, XLOPER12* v50)
+{
+    XLOPER12* xlo = NULL;
+
+    try
+    {
+        Value output = spi::ObjectMake(
+            xloper12ToValue(className),
+            xloper12ToValue(names),
+            xloper12ToValue(v1), xloper12ToValue(v2), xloper12ToValue(v3),
+            xloper12ToValue(v4), xloper12ToValue(v5), xloper12ToValue(v6),
+            xloper12ToValue(v7), xloper12ToValue(v8), xloper12ToValue(v9),
+            xloper12ToValue(v10), xloper12ToValue(v11), xloper12ToValue(v12),
+            xloper12ToValue(v13), xloper12ToValue(v14), xloper12ToValue(v15),
+            xloper12ToValue(v16), xloper12ToValue(v17), xloper12ToValue(v18),
+            xloper12ToValue(v19), xloper12ToValue(v20), xloper12ToValue(v21),
+            xloper12ToValue(v22), xloper12ToValue(v23), xloper12ToValue(v24),
+            xloper12ToValue(v25), xloper12ToValue(v26), xloper12ToValue(v27),
+            xloper12ToValue(v28), xloper12ToValue(v29), xloper12ToValue(v30),
+            xloper12ToValue(v31), xloper12ToValue(v32), xloper12ToValue(v33),
+            xloper12ToValue(v34), xloper12ToValue(v35), xloper12ToValue(v36),
+            xloper12ToValue(v37), xloper12ToValue(v38), xloper12ToValue(v39),
+            xloper12ToValue(v40), xloper12ToValue(v41), xloper12ToValue(v42),
+            xloper12ToValue(v43), xloper12ToValue(v44), xloper12ToValue(v45),
+            xloper12ToValue(v46), xloper12ToValue(v47), xloper12ToValue(v48),
+            xloper12ToValue(v49), xloper12ToValue(v50),
+            getInputContext());
+
+        xlo = xloper12MakeFromValue(output, false, 1,
+            xloper12ToValue(baseName), mandatoryBaseName());
+    }
+    catch (ExcelInputError&)
+    {
+        return xloper12InputError();
+    }
+    catch (std::exception& e)
     {
         return ErrorHandler12(e.what());
     }
