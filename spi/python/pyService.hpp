@@ -110,6 +110,7 @@ public:
     PyObject* ObjectToString(PyObject* self, PyObject* args);
     PyObject* ObjectToFile(PyObject* self, PyObject* args);
     PyObject* ObjectGet(PyObject* args);
+    PyObject* ObjectMake(PyObject* args);
     PyObject* ObjectPut(PyObject* args);
     PyObject* ObjectPutMetaData(PyObject* self, PyObject* args);
     // we need two version of ObjectCoerce

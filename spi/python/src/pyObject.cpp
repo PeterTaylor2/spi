@@ -219,6 +219,24 @@ PyObject* spi_py_object_get (PyObject* self, PyObject* args)
     }
 }
 
+PyObject* spi_py_object_make(PyObject* self, PyObject* args)
+{
+    try
+    {
+        spi::PythonService* svc = spi::PythonService::CommonService();
+
+        return svc->ObjectMake(args);
+    }
+    catch (spi::PyException&)
+    {
+        return NULL;
+    }
+    catch (std::exception& e)
+    {
+        return spi::pyExceptionHandler(e.what());
+    }
+}
+
 PyObject* spi_py_object_put (PyObject* self, PyObject* args)
 {
     try

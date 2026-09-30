@@ -70,6 +70,9 @@ extern "C"
     PyObject* spi_py_object_get(PyObject* self, PyObject* args);
 
     SPI_PY_IMPORT
+    PyObject* spi_py_object_make(PyObject* self, PyObject* args);
+
+    SPI_PY_IMPORT
     PyObject* spi_py_object_put(PyObject* self, PyObject* args);
 
     SPI_PY_IMPORT
