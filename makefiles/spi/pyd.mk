@@ -247,12 +247,12 @@ dll: $(addprefix $(U_OUTPUT_DIR)/$(G_PY_ABI)/,$(notdir $(U_DLLS)))
 
 $(U_OUTPUT_DIR)/$(G_PY_ABI)/%$(G_INSTALL_DLL_EXT): $(I_SPI_RUNTIME_BIN_DIR)/py$(G_PY_VERSION)/%$(G_INSTALL_DLL_EXT)
 	@mkdir -p $(U_OUTPUT_DIR)/$(G_PY_ABI)
-	cp -f $< $(U_OUTPUT_DIR)/$(G_PY_ABI)
+	ln -f $< $(U_OUTPUT_DIR)/$(G_PY_ABI)
 
 
 $(U_OUTPUT_DIR)/$(G_PY_ABI)/$(U_TARGET)$(G_INSTALL_PYD_EXT): $(G_BUILD_DIR)-py$(G_PY_VERSION)/$(U_TARGET)$(G_INSTALL_PYD_EXT)
 	@mkdir -p $(U_OUTPUT_DIR)/$(G_PY_ABI)
-	cp -f $< $(U_OUTPUT_DIR)/$(G_PY_ABI)
+	ln -f $< $(U_OUTPUT_DIR)/$(G_PY_ABI)
 
 endif
 

@@ -50,7 +50,7 @@ copy_base_service_dll: $(I_BASE_SERVICE_DLLS_TARGET)
 
 $(I_BASE_SERVICE_DLLS_TARGET): $(I_BASE_SERVICE_DLLS_SOURCE)
 	@mkdir -p ../$(G_ABI)
-	cp -f $< ../$(G_ABI)
+	ln -f $< ../$(G_ABI)
 
 help-base-service:
 	@echo "DEP_LIBS=$(I_BASE_SERVICE_DEP_LIBS)"
