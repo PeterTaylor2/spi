@@ -16,17 +16,21 @@ include $(U_MAKEFILES)/config/macos64_gcc.mk
 ###########################################################################
 G_MACOS64_GCC_OPTIMIZE?=-O2
 I_DEFINES = $(U_DEFINES) $(U_MACOS64_RELEASE_CFLAGS)
-I_CFLAGS = -pthread -c -m64 -fPIC -Wformat -Wno-write-strings -pipe $(G_MACOS64_GCC_OPTIONS) $(I_DEFINES)
+I_CFLAGS = -pthread -c $(G_MACOS64_GCC_M64) -fPIC $(G_MACOS64_GCC_WARNINGS) -pipe $(G_MACOS_VISIBILITY) $(G_MACOS64_GCC_OPTIMIZE) $(I_DEFINES)
 
 G_CFLAGS = $(I_CFLAGS) 
-G_CPPFLAGS = $(I_CFLAGS) -std=c++11 -Wno-register
+G_CPPFLAGS = $(I_CFLAGS) -std=c++14 -Wno-register
 
 ############################################################################
 # Linker flags 
 ############################################################################
 G_OPTIMIZE_LFLAGS = 
-I_LFLAGS = -m64 -o$@ $(G_OPTIMIZE_LFLAGS) $(U_MACOS64_RELEASE_LFLAGS)
+I_LFLAGS = $(G_MACOS64_GCC_M64) -o$@ $(G_OPTIMIZE_LFLAGS) $(U_MACOS64_RELEASE_LFLAGS)
 I_DLL_LFLAGS = -dynamiclib $(G_LINKMAP_SPEC)
+
+ifdef U_PYTHON_BUILD
+I_LFLAGS+=-undefined dynamic_lookup
+endif
 
 G_DLL_LFLAGS = $(I_LFLAGS) $(I_DLL_LFLAGS)
 G_DLL_LFLAGS += -rpath @loader_path

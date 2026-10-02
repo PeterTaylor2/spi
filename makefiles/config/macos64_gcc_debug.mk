@@ -16,22 +16,26 @@ include $(U_MAKEFILES)/config/macos64_gcc.mk
 # G_SYS_INCLUDES
 ###########################################################################
 
-I_DEFINES = $(U_DEFINES) $(U_MACOS64_DEBUG_CFLAGS)
-I_CFLAGS = -pthread -m64 -Werror -Wall -Wno-unused-variable -Wno-write-strings -ggdb3 -c -fPIC -pipe $(I_DEFINES)
+I_DEFINES = $(U_DEFINES) $(U_DEBUG_CFLAGS) $(U_MACOS64_DEBUG_CFLAGS)
+I_CFLAGS = -pthread $(G_MACOS64_GCC_M64) $(G_MACOS64_GCC_WARNINGS) -ggdb3 -c -fPIC -pipe $(G_MACOS_VISIBILITY) $(I_DEFINES)
 
-G_CFLAGS = $(I_CFLAGS) 
-G_CPPFLAGS = $(I_CFLAGS) -std=c++11 -Wno-register
+G_CFLAGS = $(I_CFLAGS) $(G_MACOS64_SANITIZER_FLAGS)
+G_CPPFLAGS = $(I_CFLAGS) -std=c++14 -Wno-register $(G_MACOS64_SANITIZER_FLAGS)
 
 
 ############################################################################
 # Linker flags 
 ############################################################################
-G_DEBUG_LFLAGS = 
-I_LFLAGS = -m64 -o $@ $(G_DEBUG_LFLAGS) $(U_MACOS64_DEBUG_LFLAGS)
+G_DEBUG_LFLAGS = $(G_MACOS64_SANITIZER_FLAGS)
+I_LFLAGS = $(G_MACOS64_GCC_M64) -o $@ $(G_DEBUG_LFLAGS) $(U_MACOS64_DEBUG_LFLAGS)
 I_DLL_LFLAGS = -dynamiclib $(G_LINKMAP_SPEC)
 G_DLL_LFLAGS = $(I_LFLAGS) $(I_DLL_LFLAGS)
 G_DLL_LFLAGS += -rpath @loader_path
 G_EXE_LFLAGS = $(I_LFLAGS) 
+
+ifdef U_PYTHON_BUILD
+I_LFLAGS+=-undefined dynamic_lookup
+endif
 
 ############################################################################
 # Standard system libraries 

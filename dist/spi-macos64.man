@@ -1,5 +1,4 @@
 # macos64 specific files
 
-code-generators/bin-macos64/spcl code-generators/bin-macos64
-code-generators/bin-macos64/sppy code-generators/bin-macos64
+makeXLAddin/Makefile
 

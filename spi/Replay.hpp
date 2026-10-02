@@ -86,7 +86,7 @@ public:
     ReplayFunctionAction(const MapConstSP& inputs, const MapConstSP& output);
     void execute(
         const ServiceSP& svc,
-        const ObjectRefCacheSP& cache);
+        const ObjectRefCacheSP& cache) override;
     void generateCode(ReplayCodeGenerator* generator) const override;
     std::string description() const override;
 
@@ -103,7 +103,7 @@ public:
     ReplayObjectAction(const MapConstSP& inputs);
     void execute(
         const ServiceSP& svc,
-        const ObjectRefCacheSP& cache);
+        const ObjectRefCacheSP& cache) override;
     void generateCode(ReplayCodeGenerator* generator) const override;
     std::string description() const override;
 

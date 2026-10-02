@@ -27,7 +27,11 @@ ifdef G_EMBED_MANIFEST
 endif
 ifneq ($(G_PLATFORM),win32)
 ifeq ($(DEBUG),0)
+ifeq ($(G_PLATFORM),macos64)
+	strip -x $(I_TARGET)
+else
 	@strip $(I_TARGET)
+endif
 endif
 endif
 ifeq ($(G_PLATFORM),macos64)

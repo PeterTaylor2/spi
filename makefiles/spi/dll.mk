@@ -104,20 +104,20 @@ endif
 
 $(U_OUTPUT_DIR)/$(G_ABI)/%$(G_DLL_EXT): $(I_SPI_RUNTIME_BIN_DIR)/%$(G_DLL_EXT)
 	@mkdir -p $(U_OUTPUT_DIR)/$(G_ABI)
-	cp -f $< $(U_OUTPUT_DIR)/$(G_ABI)
+	ln -f $< $(U_OUTPUT_DIR)/$(G_ABI)
 ifeq ($(G_PLATFORM),win32)
-	@if [ -f $(basename $<).pdb ]; then cp -f $(basename $<).pdb $(U_OUTPUT_DIR)/$(G_ABI); fi
+	@if [ -f $(basename $<).pdb ]; then ln -f $(basename $<).pdb $(U_OUTPUT_DIR)/$(G_ABI); fi
 endif
 
 $(U_OUTPUT_DIR)/$(G_ABI)/$(G_DLL_PFX)$(U_TARGET)$(G_DLL_EXT): $(G_BUILD_DIR)/$(G_DLL_PFX)$(U_TARGET)$(G_DLL_EXT)
 	@mkdir -p $(U_OUTPUT_DIR)/$(G_ABI)
-	cp -f $< $(U_OUTPUT_DIR)/$(G_ABI)
+	ln -f $< $(U_OUTPUT_DIR)/$(G_ABI)
 ifeq ($(G_PLATFORM),win32)
-	@if [ -f $(basename $<).lib ]; then cp -f $(basename $<).lib $(U_OUTPUT_DIR)/$(G_ABI); fi
-	@if [ -f $(basename $<).pdb ]; then cp -f $(basename $<).pdb $(U_OUTPUT_DIR)/$(G_ABI); fi
+	@if [ -f $(basename $<).lib ]; then ln -f $(basename $<).lib $(U_OUTPUT_DIR)/$(G_ABI); fi
+	@if [ -f $(basename $<).pdb ]; then ln -f $(basename $<).pdb $(U_OUTPUT_DIR)/$(G_ABI); fi
 endif
 
 $(U_OUTPUT_DIR)/$(G_ABI)/$(U_SERVICE_SVO): $(U_SERVICE_SVO)
 	@mkdir -p $(U_OUTPUT_DIR)/$(G_ABI)
-	cp -f $< $(U_OUTPUT_DIR)/$(G_ABI)
+	ln -f $< $(U_OUTPUT_DIR)/$(G_ABI)
 

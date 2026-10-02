@@ -21,6 +21,7 @@ G_LIB_PFX=lib
 G_LIB_EXT=.a
 G_DLL_PFX=lib
 G_DLL_EXT=.dylib
+G_DLL_LIB_EXT=.dylib
 
 G_CC=gcc -o $(I_BUILD_DIR)/$*.o -MMD -MP
 G_CPPC=g++ -o $(I_BUILD_DIR)/$*.o -MMD -MP
@@ -30,4 +31,9 @@ G_LIB=ar rv $@
 # these are the system libraries independent of whether we are using
 # debug or optimised code
 I_SYS_LIBS=-lc -lm -ldl -lpthread
+
+G_MACOS64_GCC_WARNINGS?=-Wall -Wno-unknown-warning-option -Wno-unused-value -Wno-deprecated -Wno-unused-variable -Wno-unused-but-set-variable -Wno-write-strings -Wno-sequence-point -Werror
+
+G_MACOS_VISIBILITY?=-fvisibility=hidden
+G_MACOS64_GCC_M64?=-m64
 
