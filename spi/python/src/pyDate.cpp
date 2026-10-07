@@ -30,12 +30,14 @@
 */
 
 #include "../pyDate.hpp"
+#include "../pyUtil.hpp"
 #include "pyVersion.hpp"
 
 // extra python headers
 #include <datetime.h>
 
 #include <spi/RuntimeError.hpp>
+#include <spi/Map.hpp>
 
 #ifdef Py_LIMITED_API
 
@@ -223,11 +225,22 @@ Date pyToDate(PyObject* pyo)
 {
     if (pyIsDate(pyo))
     {
+#ifdef Py_LIMITED_API
+        static PyObject* name = PyUnicode_InternFromString("toordinal");   // cached
+        PyObjectSP r = pyoShare(PyObject_CallMethodObjArgs(pyo, name, nullptr));
+        if (!r)
+            throw PyException();
+        long ord = PyLong_AsLong(r.get());
+        if (ord == -1 && PyErr_Occurred())
+            throw PyException();
+        return Date(ord - 584389);
+#else
         int year  = pyDateTime_GetYear(pyo);
         int month = pyDateTime_GetMonth(pyo);
         int day   = pyDateTime_GetDay(pyo);
 
         return Date(year, month, day);
+#endif
     }
 
     throw RuntimeError("%s: Input is not a date", __FUNCTION__);
