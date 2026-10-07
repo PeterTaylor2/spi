@@ -1,6 +1,7 @@
 target:
 
 G_LINUX_VISIBILITY=
+G_MACOS_VISIBILITY=
 U_SPI_HOME=../..
 
 include $(U_SPI_HOME)/makefiles/config/config.mk

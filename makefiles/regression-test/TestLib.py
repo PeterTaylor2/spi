@@ -19,7 +19,7 @@ def printTimings(timings):
                 name, calls, errors, totalTime*1e3, totalTime*1e3/calls))
     print()
 
-def runDriverClass(driverClass, ifn, ofn, profile=False):
+def runDriverClass(driverClass, ifn, ofn, profile=False, repeats=1):
     #
     # runs a driver class returning True on success and False on failure
     #
@@ -33,11 +33,18 @@ def runDriverClass(driverClass, ifn, ofn, profile=False):
 
     try:
         driver = driverClass()
-        if profile:
-            import cProfile
-            cProfile.runctx("driver.run(ifn,ofn)", globals(), locals())
+        if repeats > 1:
+            if profile:
+                import cProfile
+                cProfile.runctx("driver.repeat(ifn,ofn,repeats)", globals(), locals())
+            else:
+                driver.repeat(ifn, ofn, repeats)
         else:
-            driver.run(ifn, ofn)
+            if profile:
+                import cProfile
+                cProfile.runctx("driver.run(ifn,ofn)", globals(), locals())
+            else:
+                driver.run(ifn, ofn)
     except Exception as e:
         # driver.run should deal with exceptions for individual tests
         # hence any failures would be something more significant
@@ -63,7 +70,7 @@ def TestMain(driverClass, driverFile):
     import sys
 
     opts,args = getopt.getopt(
-        sys.argv[1:], "w",
+        sys.argv[1:], "wN:",
         ["service=", "logging", "timing", "startup=", "profile"])
 
     compare = False
@@ -71,17 +78,19 @@ def TestMain(driverClass, driverFile):
     service = None
     logging = False
     timing = False
+    repeats = 1
 
     for opt in opts:
         if opt[0] == "-w": raw_input("Enter to continue:")
-        if opt[0] == "--startup":
+        elif opt[0] == "--startup":
             startupCode = opt[1]
             print ("executing %s" % startupCode)
             exec(startupCode)
-        if opt[0] == "--profile": profile = True
-        if opt[0] == "--service": service = opt[1]
-        if opt[0] == "--logging": logging = True
-        if opt[0] == "--timing": timing = True
+        elif opt[0] == "--profile": profile = True
+        elif opt[0] == "--service": service = opt[1]
+        elif opt[0] == "--logging": logging = True
+        elif opt[0] == "--timing": timing = True
+        elif opt[0] == "-N": repeats = int(opt[1])
 
     svc = None if service is None else __import__(service)
     if svc is None:
@@ -120,13 +129,13 @@ def TestMain(driverClass, driverFile):
 
     if logging:
         name = ifn.split(".")[0]
-        lfn = name + ".log"
+        lfn = os.path.basename(name) + ".log"
         svc.start_logging(lfn)
 
     if timing:
         svc.start_timing()
 
-    success = runDriverClass(driverClass, ifn, ofn, profile=profile)
+    success = runDriverClass(driverClass, ifn, ofn, profile=profile, repeats=repeats)
 
     if logging:
         print("closing logfile: %s" % lfn)
@@ -188,6 +197,10 @@ class TestDriver:
                 raise Exception("Duplicate name '%s' defined" % name)
             self.dataFormat[name] = (dataType, isArray)
             self.fieldNames.append(name)
+
+    def repeat(self, ifn, ofn, repeats):
+        for _ in range(repeats):
+            self.run(ifn, ofn)
 
     def run(self, ifn, ofn):
         perms = self.readInputFile(ifn)

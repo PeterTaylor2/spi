@@ -50,15 +50,15 @@ public:
     // implementation of construct
     void declare(GeneratedOutput& ostr,
                  const ServiceDefinitionSP& svc,
-                 bool types) const;
+                 bool types) const override;
 
-    bool declareInClasses() const;
+    bool declareInClasses() const override;
 
     void implement(GeneratedOutput& ostr,
         const ServiceDefinitionSP& svc,
         bool types) const override;
 
-    spdoc::ConstructConstSP getDoc() const;
+    spdoc::ConstructConstSP getDoc() const override;
 
 protected:
     VerbatimConstruct(

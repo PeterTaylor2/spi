@@ -37,6 +37,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <netdb.h>
+#include <string.h>
 
 #endif
 
@@ -186,6 +187,22 @@ unsigned int ProcessID()
 
 #else
 
+BEGIN_ANONYMOUS_NAMESPACE
+
+void throwIfError(int rc, const char* routine)
+{
+    if (rc == EAI_SYSTEM)
+    {
+        throw RuntimeError("%s failed: %s\n", routine, strerror(errno));
+    }
+    else if (rc != 0)
+    {
+        throw RuntimeError("%s failed with code %d: %s", routine, rc, gai_strerror(rc));
+    }
+}
+
+END_ANONYMOUS_NAMESPACE
+
 // returns the name of the currently logged on user
 std::string UserName()
 {
@@ -209,32 +226,34 @@ std::string ComputerName(bool fullyQualified)
 {
     char hostName[256];
     int rc = gethostname(&hostName[0], 256);
-    if (rc != 0)
-    {
-        throw RuntimeError("gethostname failed with code %d", rc);
-    }
+    throwIfError(rc, "gethostname");
 
     if (fullyQualified)
     {
-        struct hostent h2;
-        struct hostent* h;
-        char w[1024]; // work buffer
-        int err;
+        char out_str[INET6_ADDRSTRLEN];
 
-        rc = gethostbyname2_r(hostName, AF_INET, &h2, w, sizeof(w), &h, &err);
+        struct addrinfo hints, *res, *p;
+        int rc;
 
-        if (rc != 0)
-        {
-            rc = gethostbyname2_r(hostName, AF_INET6, &h2, w, sizeof(w), &h, &err);
-        }
+        memset(&hints, 0, sizeof(hints));
+        hints.ai_family = AF_UNSPEC;
+        hints.ai_socktype = SOCK_STREAM; // hint only, doesn't filter results by itself
 
-        if (rc != 0)
-        {
-            throw RuntimeError("gethostbyname2_r failed with code %d", rc);
-        }
+        rc = getaddrinfo(hostName, NULL, &hints, &res);
+        throwIfError(rc, "getaddrinfo");
 
-        SPI_UTIL_POST_CONDITION(h == &h2);
-        return std::string(h2.h_name);
+        // take the first result and format it as a string
+        rc = getnameinfo(res->ai_addr, res->ai_addrlen,
+            out_str, sizeof(out_str),
+            NULL, 0,        // no service/port lookup
+            NI_NUMERICHOST); // don't do reverse DNS, just format the address
+
+        // freeaddrinfo before possibly throwing, since it allocates memory for the results
+        freeaddrinfo(res);
+
+        throwIfError(rc, "getnameinfo");
+
+        return std::string(out_str);
     }
     else
     {

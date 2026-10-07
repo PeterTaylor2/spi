@@ -89,7 +89,7 @@ spi::Value FuncArg::coerce(const spi::Variant& var) const
             case ArgType::OBJECT:
                 return context->ValueToObjectVector(value, ot, isOptional);
             case ArgType::VARIANT:
-                return context->ValueToVariantVector(value, isOptional);
+                return Variant::VectorToValue(context->ValueToVariantVector(value, isOptional));
             }
             break;
         case 0:
@@ -134,3 +134,4 @@ spi::Value FuncArg::coerce(const spi::Variant& var) const
 }
 
 SPI_END_NAMESPACE
+

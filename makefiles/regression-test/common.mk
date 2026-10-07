@@ -2,6 +2,7 @@ MEMCHECK?=0
 DEBUG?=$(MEMCHECK)
 WAIT?=0
 PROFILE?=0
+REPEAT?=0
 
 build:
 	$(MAKE) -C $(U_PRODUCT_HOME)/python
@@ -20,6 +21,10 @@ endif
 
 ifneq ($(WAIT),0)
 OPTS+=-w
+endif
+
+ifneq ($(REPEAT),0)
+OPTS+=-N$(REPEAT)
 endif
 
 ifneq ($(PROFILE),0)

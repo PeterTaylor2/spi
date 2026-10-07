@@ -132,7 +132,7 @@ void pyPythonExceptionHandler();
  * catch (spi::PyException)  { return NULL; }
  * catch (std::exception &e) { return spi::pyExceptionHandler(e.what()); }
  */
-class PyException
+class SPI_PY_IMPORT PyException
 {};
 
 /**
