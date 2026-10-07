@@ -54,11 +54,19 @@ std::vector<T> pyoToVector(
         PySequence_Fast(pyo, "Not a sequence"));
     if (!pyoArray)
         throw PyException();
+#ifdef Py_LIMITED_API
     Py_ssize_t size = PySequence_Size(pyoArray.get());
+#else
+    Py_ssize_t size = PySequence_Fast_GET_SIZE(pyoArray.get());
+#endif
     std::vector<T> out;
     for (Py_ssize_t i = 0; i < size; ++i)
     {
+#ifdef Py_LIMITED_API
         PyObject* item = PySequence_GetItem(pyoArray.get(), i);
+#else
+        PyObject* item = PySequence_Fast_GET_ITEM(pyoArray.get(), i);
+#endif
         out.push_back(ToScalar(item));
     }
     return out;
@@ -74,11 +82,19 @@ std::vector<T> pyoToVector(
         PySequence_Fast(pyo, "Not a sequence"));
     if (!pyoArray)
         throw PyException();
+#ifdef Py_LIMITED_API
     Py_ssize_t size = PySequence_Size(pyoArray.get());
+#else
+    Py_ssize_t size = PySequence_Fast_GET_SIZE(pyoArray.get());
+#endif
     std::vector<T> out;
     for (Py_ssize_t i = 0; i < size; ++i)
     {
+#ifdef Py_LIMITED_API
         PyObject* item = PySequence_GetItem(pyoArray.get(), i);
+#else
+        PyObject* item = PySequence_Fast_GET_ITEM(pyoArray.get(), i);
+#endif
         out.push_back(ToScalar(item, ot));
     }
     return out;
@@ -185,7 +201,11 @@ double pyoToDouble(PyObject* pyo)
     if (!float_pyo)
         throw PyException();
 
+#ifdef Py_LIMITED_API
     return pyFloat_AsDouble(float_pyo.get());
+#else
+    return PyFloat_AS_DOUBLE(float_pyo.get());
+#endif
 }
 
 std::vector<double> pyoToDoubleVector(PyObject* pyo)
@@ -364,7 +384,7 @@ Date pyoToDate(PyObject* pyo)
     }
 
     PyErr_Format(PyExc_TypeError, "%s: Cannot convert %s to Date",
-                 __FUNCTION__, pyo_typename(pyo));
+                 __FUNCTION__, pyo_typename(pyo).c_str());
     throw PyException();
 }
 

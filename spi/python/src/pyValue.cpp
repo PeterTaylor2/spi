@@ -227,7 +227,7 @@ Value pyoToValue(PyObject* pyo)
             return v;
         PyErr_Format(PyExc_TypeError,
                      "Cannot convert python type '%s' to value",
-                     pyo_typename(pyo));
+                     pyo_typename(pyo).c_str());
         throw PyException();
     }
 }
@@ -471,9 +471,15 @@ PyObjectSP pyTupleFromValueVector(
     {
         PyObject* pyo = pyoFromValue(values[i]);
         SPI_POST_CONDITION(pyo != NULL);
-        // PyType_SetItem steals a reference to pyo
+#ifdef Py_LIMITED_API
+        // PyTuple_SetItem steals a reference to pyo
         // which means that we no longer need to care about pyo
         PyTuple_SetItem(pyTuple, i, pyo);
+#else
+        // PyTuple_SET_ITEM steals a reference to pyo
+        // which means that we no longer need to care about pyo
+        PyTuple_SET_ITEM(pyTuple, i, pyo);
+#endif
     }
     return output;
 }

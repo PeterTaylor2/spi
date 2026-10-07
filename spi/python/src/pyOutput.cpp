@@ -261,10 +261,18 @@ PyObject* pyoFromMap(const MapConstSP& m)
                 throw PyException();
             for (int j = 0; j < cols; ++j)
             {
+#ifdef Py_LIMITED_API
                 PyList_SetItem(pyc.get(), j, pyoFromValue(data[k]));
+#else
+                PyList_SET_ITEM(pyc.get(), j, pyoFromValue(data[k]));
+#endif
                 ++k;
             }
+#ifdef Py_LIMITED_API
             PyList_SetItem(pyo.get(), i, pyoRelease(pyc));
+#else
+            PyList_SET_ITEM(pyo.get(), i, pyoRelease(pyc));
+#endif
         }
         return pyoRelease(pyo);
     }
