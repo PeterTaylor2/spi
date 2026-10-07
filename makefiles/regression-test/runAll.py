@@ -16,7 +16,7 @@ def runOne(name, inputs, output):
     return TestLib.runDriverClass(driverClass, ifn, ofn)
 
 def main(drivers, inputs, output, startup=None, service=None,
-         logging=False, timing=False):
+         logging=False, timing=False, repeats=1):
 
     sys.path.insert(0, drivers)
 
@@ -87,7 +87,7 @@ if __name__ == "__main__":
     # results to the output directory
 
     kwargs = {}
-    opts, args = getopt.getopt(sys.argv[1:], "w", 
+    opts, args = getopt.getopt(sys.argv[1:], "wN:", 
                                ["startup=", "service=", "logging", "timing"])
     if len(args) != 3:
         raise RuntimeError(
@@ -100,6 +100,7 @@ if __name__ == "__main__":
         elif opt[0] == "--service": kwargs["service"] = opt[1]
         elif opt[0] == "--logging": kwargs["logging"] = True
         elif opt[0] == "--timing": kwargs["timing"] = True
+        elif opt[0] == "-N": kwargs["repeats"] = int(opt[i])
 
     main(*args, **kwargs)
     
