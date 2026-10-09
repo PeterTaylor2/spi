@@ -102,6 +102,31 @@ End Sub
 ' process operations > Open, Print,Play or Explore
 ' by passing just the FullPathFilename of the item.
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+#If VBA7 Then
+
+Public Function ShellOper(strFileExe As String, _
+    Optional strOperation As String, _
+    Optional nShowCmd As Double) As LongPtr
+     
+    Dim hWndDesk As LongPtr
+     
+    hWndDesk = GetDesktopWindow()
+    If Len(strOperation) = 0 Then strOperation = "Open"
+    If Len(Dir(strFileExe)) = 0 Then GoTo ErrH
+     
+     '// Failure >> <=32
+    ShellOper = ShellExecute(hWndDesk, strOperation, strFileExe, 0, 0, nShowCmd)
+    If ShellOper <= 32 Then
+        MsgBox "Couldn't " & strOperation & " " & strFileExe
+    End If
+     
+    Exit Function
+ErrH:
+    ShellOper = -1
+End Function
+
+#Else
+
 Public Function ShellOper(strFileExe As String, _
     Optional strOperation As String, _
     Optional nShowCmd As Double) As Long
@@ -123,7 +148,9 @@ ErrH:
     ShellOper = -1
 End Function
  
-  
+#End If
+
+
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 ' This function sets the given path as the DLL directory
 '

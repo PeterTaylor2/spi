@@ -148,7 +148,7 @@ int main(int argc, char* argv[])
 
     Options options;
 
-    const char* longOptions = "help import satellite noGeneratedCodeNotice noTidyUp license licenseFile = backup csNamingStyle nullable";
+    const char* longOptions = "help import satellite noGeneratedCodeNotice noTidyUp license licenseFile= backup csNamingStyle nullable";
     try
     {
         std::vector<spi_util::CommandLineOption> clOptions = {
