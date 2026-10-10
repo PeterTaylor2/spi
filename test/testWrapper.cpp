@@ -1,4 +1,5 @@
 #include <spi/spi.hpp>
+#include <spi/RuntimeError.hpp>
 #include <spi_boost/shared_ptr.hpp>
 #include <dll/test_wrapper_classes.hpp>
 #include <dll/test_dll_service.hpp>
@@ -34,6 +35,13 @@ static void testWrapperObjectStream(void)
 
         std::cout << "Reading object of type Outer from " << fn << std::endl;
         auto d2 = test::Outer::from_file(fn);
+        SPI_POST_CONDITION(d2);
+        SPI_POST_CONDITION(d2->aBool() == item->aBool());
+        SPI_POST_CONDITION(d2->anInt() == item->anInt());
+        SPI_POST_CONDITION(d2->aDouble() == item->aDouble());
+        SPI_POST_CONDITION(d2->aDate() == item->aDate());
+        SPI_POST_CONDITION(d2->aString() == item->aString());
+        SPI_POST_CONDITION(d2->intVec() == intVector);
         auto mdo = spi::MapObject::Make(d2->get_meta_data());
 
         std::cout << d2->to_string() << "\n" << std::endl;

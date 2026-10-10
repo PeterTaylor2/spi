@@ -43,32 +43,41 @@ static void testBadOptions(void)
 {
     char* argv[] = {"hello", "-abc", "--debug=yes", "world"};
 
+    bool failed = false;
     try
     {
         spi_util::CommandLine commandLine(4, argv, "abd", "debug=");
     }
     catch(std::exception &e)
     {
+        failed = true;
         std::cout << "expecting error: " << e.what() << std::endl;
     }
+    SPI_UTIL_POST_CONDITION(failed);
 
+    failed = false;
     try
     {
         spi_util::CommandLine commandLine(4, argv, "abc", "debug");
     }
     catch(std::exception &e)
     {
+        failed = true;
         std::cout << "expecting error: " << e.what() << std::endl;
     }
+    SPI_UTIL_POST_CONDITION(failed);
 
+    failed = false;
     try
     {
         spi_util::CommandLine commandLine(4, argv, "ab=c", "debug=");
     }
     catch(std::exception &e)
     {
+        failed = true;
         std::cout << "expecting error: " << e.what() << std::endl;
     }
+    SPI_UTIL_POST_CONDITION(failed);
 }
 
 

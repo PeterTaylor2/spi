@@ -2,6 +2,7 @@
 #include <spi/Date.hpp>
 #include <spi/Service.hpp>
 #include <spi/IObjectMap.hpp>
+#include <spi/RuntimeError.hpp>
 
 #include <dll/test_data_classes.hpp>
 #include <dll/test_dll_service.hpp>
@@ -34,6 +35,15 @@ static void testSimpleObjectStream(void)
 
     std::cout << "Reading object of type Data from string" << std::endl;
     test::DataConstSP d2 = test::Data::from_string(str);
+    SPI_POST_CONDITION(d2);
+    SPI_POST_CONDITION(d2->aBool() == item->aBool());
+    SPI_POST_CONDITION(d2->anInt() == item->anInt());
+    SPI_POST_CONDITION(d2->aDouble() == item->aDouble());
+    SPI_POST_CONDITION(d2->aDate() == item->aDate());
+    SPI_POST_CONDITION(d2->intVec() == intVector);
+    SPI_POST_CONDITION(d2->anInstance());
+    SPI_POST_CONDITION(d2->anInstance()->aString() == "Hello world");
+    SPI_POST_CONDITION(!d2->anotherInstance());
     std::ostringstream oss2;
     d2->to_stream(oss2);
     std::cout << oss2.str() << std::endl;
