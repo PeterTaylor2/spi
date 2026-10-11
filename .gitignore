@@ -104,3 +104,5 @@ obj
 *.stackdump
 *.gz
 spi_util/lex/JSONLexer.cpp
+
+sample
