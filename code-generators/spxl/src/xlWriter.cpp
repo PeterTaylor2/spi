@@ -1757,9 +1757,9 @@ void ExcelModule::registerClass(
 
         if (!method->isStatic)
         {
-            ostr << "    args.push_back(\"handle\");\n"
+            ostr << "    args.push_back(\"" << method->instance << "\");\n"
                 << "    help.push_back(\"" << cls->name
-                << " object handle.\");\n";
+                << " object " << method->instance << ".\");\n";
         }
 
         for (size_t i = 0; i < method->function->inputs.size(); ++i)

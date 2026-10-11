@@ -848,12 +848,14 @@ struct MethodContext
     MethodContext(
         const ClassSP& cls,
         const ClassConstSP& baseClass,
+        const std::string& instance,
         bool isVirtual,
         bool isStatic,
         bool isDelegate)
         :
         cls(cls),
         baseClass(baseClass),
+        instance(instance),
         isVirtual(isVirtual),
         isStatic(isStatic),
         isDelegate(isDelegate),
@@ -863,6 +865,7 @@ struct MethodContext
 
     ClassSP cls;
     const ClassConstSP baseClass;
+    std::string instance;
     const bool isVirtual;
     const bool isStatic;
     const bool isDelegate;
@@ -1004,6 +1007,7 @@ FunctionConstSP parseFunction(
         methodFunction = getOption(options, "function")->getString();
         methodInstance = getOption(options, "instance")->getString();
 
+        methodContext->instance = methodInstance;
         // TBD: match prototypes when isImplementation == true
     }
 
@@ -1306,7 +1310,7 @@ ClassMethodConstSP classMethodKeywordHandler(
         }
     }
 
-    MethodContext methodContext(cls, baseClass, isVirtual, isStatic, isDelegate);
+    MethodContext methodContext(cls, baseClass, {}, isVirtual, isStatic, isDelegate);
     FunctionConstSP function = parseFunction(
         lexer, description, module, service, mustImplement,
         &methodContext, verbose);
@@ -1316,6 +1320,7 @@ ClassMethodConstSP classMethodKeywordHandler(
 
     return ClassMethod::Make(
         function,
+        methodContext.instance,
         methodContext.isConst,
         isVirtual,
         isStatic,
@@ -3233,7 +3238,7 @@ void classNoWrapHandler(
 
     const std::string& ns = module->moduleNamespace();
 
-    ClassConstSP baseClass;
+    StructConstSP baseWrapperClass;
 
     // implement as Struct except that we use accessors for attributes
     // and specify these as public or private like in WrapperClass
@@ -3242,10 +3247,45 @@ void classNoWrapHandler(
     {
         token = getTokenOfType(lexer, SPI_CONFIG_TOKEN_TYPE_NAME, "BaseClass");
         std::string baseClassName(token.value.aName);
-        baseClass = service->getClass(baseClassName);
+        bool hasNamespace = false;
+
+        token = lexer.getToken();
+        if (token.type == '.')
+        {
+            // note only one level of namespace supported
+            hasNamespace = true;
+            token = getTokenOfType(lexer, SPI_CONFIG_TOKEN_TYPE_NAME, "BaseClass");
+            baseClassName = baseClassName + "." + token.value.aName;
+        }
+        else
+        {
+            lexer.returnToken(token);
+        }
+
+        ClassConstSP baseClass;
+
+        // classes defined in the current namespace take precedence over a class
+        // with the same name in the global namespace
+        if (!hasNamespace && !ns.empty())
+        {
+            std::string baseClassNameNS = ns + "." + baseClassName;
+            baseClass = service->getClass(baseClassNameNS);
+        }
+
+        if (!baseClass)
+            baseClass = service->getClass(baseClassName);
+
         if (!baseClass)
         {
             throw spi::RuntimeError("Undefined base class: %s",
+                baseClassName.c_str());
+        }
+        baseWrapperClass = spi_boost::dynamic_pointer_cast<
+            const Struct>(baseClass);
+
+        if (!baseWrapperClass)
+        {
+            throw spi::RuntimeError("Base class %s is not of type struct",
                 baseClassName.c_str());
         }
     }
@@ -3276,7 +3316,7 @@ void classNoWrapHandler(
 
     StructSP type = Struct::Make(
         description, className, module->moduleNamespace(),
-        baseClass, noMake,
+        baseWrapperClass, noMake,
         getOption(options, "objectName")->getString(),
         canPut, noId, isVirtual, asValue, byValue, true, incomplete,
         constructor, noLog);
@@ -3306,7 +3346,7 @@ void classNoWrapHandler(
                 bool isVirtual = keyword == "virtual";
                 bool isStatic = keyword == "static";
                 ClassMethodConstSP classMethod = classMethodKeywordHandler(
-                    lexer, desc.take(), module, service, type, baseClass, false,
+                    lexer, desc.take(), module, service, type, baseWrapperClass, false,
                     isVirtual, isStatic, verbose, byValue);
                 if (classMethod)
                     type->addMethod(classMethod);

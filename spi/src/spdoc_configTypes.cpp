@@ -557,6 +557,7 @@ std::string SimpleType_Helper::getType(
 }
 
 std::vector<std::string> SimpleType::Summary(
+    const std::string& mns,
     bool includeDescription) const
 {
   spdoc_begin_function();
@@ -565,7 +566,7 @@ std::vector<std::string> SimpleType::Summary(
   {
     SimpleTypeConstSP self(this);
     const std::vector<std::string>& i_result = SimpleType_Helper::Summary(
-        self, includeDescription);
+        self, mns, includeDescription);
 
     spdoc_end_function();
 
@@ -579,6 +580,7 @@ std::vector<std::string> SimpleType::Summary(
 
 std::vector<std::string> SimpleType_Helper::Summary(
     const SimpleTypeConstSP& in_self,
+    const std::string& mns,
     bool includeDescription)
 {
     const SimpleType* self = in_self.get();
@@ -592,7 +594,7 @@ std::vector<std::string> SimpleType_Helper::Summary(
                 summary.push_back("# " + item);
         }
         std::ostringstream oss;
-        oss << "typedef " << self->typeName << " " << self->name << ";";
+        oss << "typedef " << self->typeName << " " << mns << self->name << ";";
         summary.push_back(oss.str());
     }
     return summary;
@@ -797,6 +799,7 @@ int Function_Helper::objectCount(
 }
 
 std::vector<std::string> Function::Summary(
+    const std::string& mns,
     bool includeDescription) const
 {
   spdoc_begin_function();
@@ -805,7 +808,7 @@ std::vector<std::string> Function::Summary(
   {
     FunctionConstSP self(this);
     const std::vector<std::string>& i_result = Function_Helper::Summary(self,
-        includeDescription);
+        mns, includeDescription);
 
     spdoc_end_function();
 
@@ -819,6 +822,7 @@ std::vector<std::string> Function::Summary(
 
 std::vector<std::string> Function_Helper::Summary(
     const FunctionConstSP& in_self,
+    const std::string& mns,
     bool includeDescription)
 {
     const Function* self = in_self.get();
@@ -841,7 +845,7 @@ std::vector<std::string> Function_Helper::Summary(
     {
         oss << "void";
     }
-    oss << " " << self->name << "(";
+    oss << " " << mns << self->name << "(";
     if (self->inputs.size() == 0 && self->outputs.size() == 0)
     {
         oss << ");";
@@ -1104,6 +1108,7 @@ std::string Enum_Helper::getType(
 }
 
 std::vector<std::string> Enum::Summary(
+    const std::string& mns,
     bool includeDescription) const
 {
   spdoc_begin_function();
@@ -1111,7 +1116,7 @@ std::vector<std::string> Enum::Summary(
   try
   {
     EnumConstSP self(this);
-    const std::vector<std::string>& i_result = Enum_Helper::Summary(self,
+    const std::vector<std::string>& i_result = Enum_Helper::Summary(self, mns,
         includeDescription);
 
     spdoc_end_function();
@@ -1126,6 +1131,7 @@ std::vector<std::string> Enum::Summary(
 
 std::vector<std::string> Enum_Helper::Summary(
     const EnumConstSP& in_self,
+    const std::string& mns,
     bool includeDescription)
 {
     const Enum* self = in_self.get();
@@ -1145,7 +1151,7 @@ std::vector<std::string> Enum_Helper::Summary(
         oss << "enum ";
         if (self->isBitmask)
             oss << "bitmask ";
-        oss << self->name;
+        oss << mns << self->name;
         summary.push_back(oss.str());
         summary.push_back("{");
         for (size_t i = 0; i < numEnumerands; ++i)
@@ -1166,7 +1172,7 @@ std::vector<std::string> Enum_Helper::Summary(
     else
     {
         std::ostringstream oss;
-        oss << "enum " << self->name << ";";
+        oss << "enum " << mns << self->name << ";";
         summary.push_back(oss.str());
     }
 
@@ -1180,6 +1186,7 @@ std::vector<std::string> Enum_Helper::Summary(
 */
 ClassMethodConstSP ClassMethod::New(
     const FunctionConstSP& function,
+    const std::string& instance,
     bool isConst,
     bool isVirtual,
     bool isStatic,
@@ -1191,8 +1198,8 @@ ClassMethodConstSP ClassMethod::New(
   try
   {
 
-    auto _obj = Make(function, isConst, isVirtual, isStatic, isImplementation,
-        implements);
+    auto _obj = Make(function, instance, isConst, isVirtual, isStatic,
+        isImplementation, implements);
 
     spdoc_end_function();
 
@@ -1206,6 +1213,7 @@ ClassMethodConstSP ClassMethod::New(
 
 ClassMethodConstSP ClassMethod::Make(
     const FunctionConstSP& function,
+    const std::string& instance,
     bool isConst,
     bool isVirtual,
     bool isStatic,
@@ -1213,12 +1221,13 @@ ClassMethodConstSP ClassMethod::Make(
     const std::string& implements)
 {
     return ClassMethodConstSP(
-        new ClassMethod(function, isConst, isVirtual, isStatic,
+        new ClassMethod(function, instance, isConst, isVirtual, isStatic,
             isImplementation, implements));
 }
 
 ClassMethod::ClassMethod(
     const FunctionConstSP& function,
+    const std::string& instance,
     bool isConst,
     bool isVirtual,
     bool isStatic,
@@ -1227,6 +1236,7 @@ ClassMethod::ClassMethod(
     :
     spi::Object(true),
     function(function),
+    instance(instance),
     isConst(isConst),
     isVirtual(isVirtual),
     isStatic(isStatic),
@@ -1235,6 +1245,7 @@ ClassMethod::ClassMethod(
 {}
 
 std::vector<std::string> ClassMethod::Summary(
+    const std::string& mns,
     bool includeDescription) const
 {
   spdoc_begin_function();
@@ -1243,7 +1254,7 @@ std::vector<std::string> ClassMethod::Summary(
   {
     ClassMethodConstSP self(this);
     const std::vector<std::string>& i_result = ClassMethod_Helper::Summary(
-        self, includeDescription);
+        self, mns, includeDescription);
 
     spdoc_end_function();
 
@@ -1257,12 +1268,13 @@ std::vector<std::string> ClassMethod::Summary(
 
 std::vector<std::string> ClassMethod_Helper::Summary(
     const ClassMethodConstSP& in_self,
+    const std::string& mns,
     bool includeDescription)
 {
     const ClassMethod* self = in_self.get();
 
     std::vector<std::string> summary;
-    std::vector<std::string> funcSummary = self->function->Summary(includeDescription);
+    std::vector<std::string> funcSummary = self->function->Summary(mns, includeDescription);
 
     size_t numLines = funcSummary.size();
     if (numLines == 0)
@@ -1299,7 +1311,7 @@ std::vector<std::string> ClassMethod_Helper::Summary(
         // there might be description of the return type after the ";" which ends the function
         if (self->isConst && line[0] != '#' && line[line.size() - 1] == ';')
         {
-            line = line.substr(0, line.size() - 2) + " const;";
+            line = line.substr(0, line.size() - 1) + " const;";
         }
         summary.push_back("    " + line);
     }
@@ -1351,6 +1363,7 @@ CoerceFrom::CoerceFrom(
 {}
 
 std::vector<std::string> CoerceFrom::Summary(
+    const std::string& mns,
     bool includeDescription) const
 {
   spdoc_begin_function();
@@ -1359,7 +1372,7 @@ std::vector<std::string> CoerceFrom::Summary(
   {
     CoerceFromConstSP self(this);
     const std::vector<std::string>& i_result = CoerceFrom_Helper::Summary(
-        self, includeDescription);
+        self, mns, includeDescription);
 
     spdoc_end_function();
 
@@ -1373,6 +1386,7 @@ std::vector<std::string> CoerceFrom::Summary(
 
 std::vector<std::string> CoerceFrom_Helper::Summary(
     const CoerceFromConstSP& in_self,
+    const std::string& mns,
     bool includeDescription)
 {
     const CoerceFrom* self = in_self.get();
@@ -1439,6 +1453,7 @@ CoerceTo::CoerceTo(
 {}
 
 std::vector<std::string> CoerceTo::Summary(
+    const std::string& mns,
     bool includeDescription) const
 {
   spdoc_begin_function();
@@ -1447,7 +1462,7 @@ std::vector<std::string> CoerceTo::Summary(
   {
     CoerceToConstSP self(this);
     const std::vector<std::string>& i_result = CoerceTo_Helper::Summary(self,
-        includeDescription);
+        mns, includeDescription);
 
     spdoc_end_function();
 
@@ -1461,6 +1476,7 @@ std::vector<std::string> CoerceTo::Summary(
 
 std::vector<std::string> CoerceTo_Helper::Summary(
     const CoerceToConstSP& in_self,
+    const std::string& mns,
     bool includeDescription)
 {
     const CoerceTo* self = in_self.get();
@@ -1590,6 +1606,7 @@ Class::Class(
 {}
 
 std::vector<std::string> Class::Summary(
+    const std::string& mns,
     bool includeDescription) const
 {
   spdoc_begin_function();
@@ -1597,7 +1614,7 @@ std::vector<std::string> Class::Summary(
   try
   {
     ClassConstSP self(this);
-    const std::vector<std::string>& i_result = Class_Helper::Summary(self,
+    const std::vector<std::string>& i_result = Class_Helper::Summary(self, mns,
         includeDescription);
 
     spdoc_end_function();
@@ -1612,6 +1629,7 @@ std::vector<std::string> Class::Summary(
 
 std::vector<std::string> Class_Helper::Summary(
     const ClassConstSP& in_self,
+    const std::string& mns,
     bool includeDescription)
 {
     const Class* self = in_self.get();
@@ -1623,7 +1641,7 @@ std::vector<std::string> Class_Helper::Summary(
             summary.push_back("# " + item);
     }
     std::ostringstream oss;
-    oss << "class " << self->name;
+    oss << "class " << mns << self->name;
     if (!self->baseClassName.empty())
         oss << " : " << self->baseClassName;
     summary.push_back(oss.str());
@@ -1664,7 +1682,7 @@ std::vector<std::string> Class_Helper::Summary(
     }
     for (size_t i = 0; i < self->methods.size(); ++i)
     {
-        std::vector<std::string> mSummary = self->methods[i]->Summary(includeDescription);
+        std::vector<std::string> mSummary = self->methods[i]->Summary(mns, includeDescription);
         if (started)
             summary.push_back("");
         else
@@ -1674,7 +1692,7 @@ std::vector<std::string> Class_Helper::Summary(
     }
     for (size_t i = 0; i < self->coerceFrom.size(); ++i)
     {
-        std::vector<std::string> cfSummary = self->coerceFrom[i]->Summary(includeDescription);
+        std::vector<std::string> cfSummary = self->coerceFrom[i]->Summary(mns, includeDescription);
         if (started)
             summary.push_back("");
         else
@@ -1683,7 +1701,7 @@ std::vector<std::string> Class_Helper::Summary(
     }
     for (size_t i = 0; i < self->coerceTo.size(); ++i)
     {
-        std::vector<std::string> ctSummary = self->coerceTo[i]->Summary(includeDescription);
+        std::vector<std::string> ctSummary = self->coerceTo[i]->Summary(mns, includeDescription);
         if (started)
             summary.push_back("");
         else
@@ -1877,16 +1895,17 @@ std::vector<std::string> Module_Helper::combineSummaries(
     for (size_t i = 0; i < numModules; ++i)
     {
         ModuleConstSP m = modules[i];
+        std::string mns = m->ns.empty() ? m->ns : m->ns + ".";
         size_t numConstructs = m->constructs.size();
         for (size_t j = 0; j < numConstructs; ++j)
         {
             const ConstructConstSP& c = m->constructs[j];
-            std::vector<std::string> cSummary = c->Summary();
+            std::vector<std::string> cSummary = c->Summary(mns);
             if (cSummary.size() > 0)
             {
                 if (sort)
                 {
-                    nameIndex[c->getName()] = cSummary;
+                    nameIndex[c->getName(mns)] = cSummary;
                 }
                 else
                 {
@@ -2412,6 +2431,8 @@ bool Service_Helper::isSubClass(
 {
     const Service* self = in_self.get();
 
+    // there is a problem with module namespaces here
+
     self->buildIndexClasses(); // this includes imported base classes
 
     if (cls->getName() == name)
@@ -2634,21 +2655,15 @@ void Service::buildIndexConstructs() const
         for (const ModuleConstSP& module : modules)
         {
             const std::string& ns = module->ns;
+            std::string mns = ns.empty() ? ns : ns + ".";
             for (const ConstructConstSP& construct : module->constructs)
             {
                 // this test is a way of ignoring noDoc SIMPLE_TYPEs
-                if (construct->Summary().size() == 0)
+                if (construct->Summary(mns).size() == 0)
                     continue;
 
-                const std::string& name = construct->getName();
-                if (ns.empty())
-                {
-                    indexConstructs.insert({ name, construct });
-                }
-                else
-                {
-                    indexConstructs.insert({ ns + "." + name, construct });
-                }
+                const std::string& name = construct->getName(mns);
+                indexConstructs.insert({ name, construct });
             }
         }
     }

@@ -511,6 +511,8 @@ void ServiceDefinition::addServiceLevelModule()
             "In order to get the information the file " + m_name + ".svo needs to be found in the startup directory" };
 
         const DataTypeConstSP stringType = getDataType("string");
+
+        // FIXME: where does the module namespace come into play here?
         std::vector<std::string> code = {
             "    static spdoc::ServiceConstSP doc;",
             "    if (!doc)",
@@ -518,7 +520,7 @@ void ServiceDefinition::addServiceLevelModule()
             "",
             "    if (name.empty())",
             "        return doc->getConstructs();",
-            "    return doc->getConstruct(name)->Summary(true);",
+            "    return doc->getConstruct(name)->Summary({}, true);",
             "}"
         };
 

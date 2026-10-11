@@ -663,19 +663,22 @@ spi::Value Construct_Summary_caller(
 {
     const ConstructConstSP& self =
         in_context->ValueToInstance<Construct const>(in_values[0]);
+    const std::string& mns =
+        in_context->ValueToString(in_values[1]);
     bool includeDescription =
-        in_context->ValueToBool(in_values[1], true, false);
+        in_context->ValueToBool(in_values[2], true, false);
 
-    const std::vector<std::string>& o_result = self->Summary(
+    const std::vector<std::string>& o_result = self->Summary(mns,
         includeDescription);
     return o_result;
 }
 
 spi::FunctionCaller Construct_Summary_FunctionCaller = {
     "Construct.Summary",
-    2,
+    3,
     {
         {"self", spi::ArgType::OBJECT, "Construct", false, false, false},
+        {"mns", spi::ArgType::STRING, "string", 0, false, false},
         {"includeDescription", spi::ArgType::BOOL, "bool", 0, true, false}
     },
     Construct_Summary_caller
@@ -1397,6 +1400,7 @@ void ClassMethod::to_map(
     spi::IObjectMap* obj_map, bool public_only) const
 {
     obj_map->SetObject("function", function);
+    obj_map->SetString("instance", instance, !public_only && (instance == std::string("handle")));
     obj_map->SetBool("isConst", isConst);
     obj_map->SetBool("isVirtual", isVirtual, !public_only && (isVirtual == false));
     obj_map->SetBool("isStatic", isStatic, !public_only && (isStatic == false));
@@ -1410,6 +1414,8 @@ spi::ObjectConstSP ClassMethod::object_from_map(
 {
     const FunctionConstSP& function
         = obj_map->GetInstance<Function const>("function", value_to_object);
+    const std::string& instance
+        = obj_map->GetString("instance", true, "handle");
     bool isConst
         = obj_map->GetBool("isConst");
     bool isVirtual
@@ -1421,7 +1427,7 @@ spi::ObjectConstSP ClassMethod::object_from_map(
     const std::string& implements
         = obj_map->GetString("implements", true);
 
-    return new ClassMethod(function, isConst, isVirtual, isStatic,
+    return new ClassMethod(function, instance, isConst, isVirtual, isStatic,
         isImplementation, implements);
 }
 
@@ -1433,27 +1439,30 @@ spi::Value ClassMethod_caller(
 {
     const FunctionConstSP& function =
         in_context->ValueToInstance<Function const>(in_values[0]);
+    const std::string& instance =
+        in_context->ValueToString(in_values[1], true, "handle");
     bool isConst =
-        in_context->ValueToBool(in_values[1]);
+        in_context->ValueToBool(in_values[2]);
     bool isVirtual =
-        in_context->ValueToBool(in_values[2], true, false);
-    bool isStatic =
         in_context->ValueToBool(in_values[3], true, false);
-    bool isImplementation =
+    bool isStatic =
         in_context->ValueToBool(in_values[4], true, false);
+    bool isImplementation =
+        in_context->ValueToBool(in_values[5], true, false);
     const std::string& implements =
-        in_context->ValueToString(in_values[5], true, "");
+        in_context->ValueToString(in_values[6], true, "");
 
     const ClassMethodConstSP& o_result = spdoc::ClassMethod::New(function,
-        isConst, isVirtual, isStatic, isImplementation, implements);
+        instance, isConst, isVirtual, isStatic, isImplementation, implements);
     return spi::ObjectConstSP(o_result);
 }
 
 spi::FunctionCaller ClassMethod_FunctionCaller = {
     "ClassMethod",
-    6,
+    7,
     {
         {"function", spi::ArgType::OBJECT, "Function", 0, false, false},
+        {"instance", spi::ArgType::STRING, "string", 0, true, false},
         {"isConst", spi::ArgType::BOOL, "bool", 0, false, false},
         {"isVirtual", spi::ArgType::BOOL, "bool", 0, true, false},
         {"isStatic", spi::ArgType::BOOL, "bool", 0, true, false},
@@ -1469,19 +1478,22 @@ spi::Value ClassMethod_Summary_caller(
 {
     const ClassMethodConstSP& self =
         in_context->ValueToInstance<ClassMethod const>(in_values[0]);
+    const std::string& mns =
+        in_context->ValueToString(in_values[1]);
     bool includeDescription =
-        in_context->ValueToBool(in_values[1], true, false);
+        in_context->ValueToBool(in_values[2], true, false);
 
-    const std::vector<std::string>& o_result = self->Summary(
+    const std::vector<std::string>& o_result = self->Summary(mns,
         includeDescription);
     return o_result;
 }
 
 spi::FunctionCaller ClassMethod_Summary_FunctionCaller = {
     "ClassMethod.Summary",
-    2,
+    3,
     {
         {"self", spi::ArgType::OBJECT, "ClassMethod", false, false, false},
+        {"mns", spi::ArgType::STRING, "string", 0, false, false},
         {"includeDescription", spi::ArgType::BOOL, "bool", 0, true, false}
     },
     ClassMethod_Summary_caller
@@ -1596,19 +1608,22 @@ spi::Value CoerceFrom_Summary_caller(
 {
     const CoerceFromConstSP& self =
         in_context->ValueToInstance<CoerceFrom const>(in_values[0]);
+    const std::string& mns =
+        in_context->ValueToString(in_values[1]);
     bool includeDescription =
-        in_context->ValueToBool(in_values[1], true, false);
+        in_context->ValueToBool(in_values[2], true, false);
 
-    const std::vector<std::string>& o_result = self->Summary(
+    const std::vector<std::string>& o_result = self->Summary(mns,
         includeDescription);
     return o_result;
 }
 
 spi::FunctionCaller CoerceFrom_Summary_FunctionCaller = {
     "CoerceFrom.Summary",
-    2,
+    3,
     {
         {"self", spi::ArgType::OBJECT, "CoerceFrom", false, false, false},
+        {"mns", spi::ArgType::STRING, "string", 0, false, false},
         {"includeDescription", spi::ArgType::BOOL, "bool", 0, true, false}
     },
     CoerceFrom_Summary_caller
@@ -1729,19 +1744,22 @@ spi::Value CoerceTo_Summary_caller(
 {
     const CoerceToConstSP& self =
         in_context->ValueToInstance<CoerceTo const>(in_values[0]);
+    const std::string& mns =
+        in_context->ValueToString(in_values[1]);
     bool includeDescription =
-        in_context->ValueToBool(in_values[1], true, false);
+        in_context->ValueToBool(in_values[2], true, false);
 
-    const std::vector<std::string>& o_result = self->Summary(
+    const std::vector<std::string>& o_result = self->Summary(mns,
         includeDescription);
     return o_result;
 }
 
 spi::FunctionCaller CoerceTo_Summary_FunctionCaller = {
     "CoerceTo.Summary",
-    2,
+    3,
     {
         {"self", spi::ArgType::OBJECT, "CoerceTo", false, false, false},
+        {"mns", spi::ArgType::STRING, "string", 0, false, false},
         {"includeDescription", spi::ArgType::BOOL, "bool", 0, true, false}
     },
     CoerceTo_Summary_caller

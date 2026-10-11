@@ -544,7 +544,7 @@ static PyMethodDef Construct_methods[] = {
     {"getType", (PyCFunction)py_spdoc_Construct_getType, METH_VARARGS | METH_KEYWORDS,
         "getType(self)\n\nReturns the type of the Construct - specific to each sub-class of Construct."},
     {"Summary", (PyCFunction)py_spdoc_Construct_Summary, METH_VARARGS | METH_KEYWORDS,
-        "Summary(self, includeDescription=None)\n\nReturns a short summary of the construct (disregarding description)"},
+        "Summary(self, mns, includeDescription=None)\n\nReturns a short summary of the construct (disregarding description)"},
     {NULL, NULL, 0, NULL} // sentinel
 };
 
@@ -1173,6 +1173,8 @@ static int py_spdoc_ClassMethod_init(SpiPyObject* self, PyObject* args, PyObject
 static PyGetSetDef ClassMethod_properties[] = {
     {"function", (getter)(spi_py_object_getter), NULL, NULL,
         (void*) "function"},
+    {"instance", (getter)(spi_py_object_getter), NULL, NULL,
+        (void*) "instance"},
     {"isConst", (getter)(spi_py_object_getter), NULL, NULL,
         (void*) "isConst"},
     {"isVirtual", (getter)(spi_py_object_getter), NULL, NULL,
@@ -1222,7 +1224,7 @@ static PyMethodDef ClassMethod_methods[] = {
     {"Coerce", (PyCFunction)py_spdoc_ClassMethod_Coerce, METH_VARARGS | METH_STATIC,
         "Coerce ClassMethod from arbitrary value"},
     {"Summary", (PyCFunction)py_spdoc_ClassMethod_Summary, METH_VARARGS | METH_KEYWORDS,
-        "Summary(self, includeDescription=None)"},
+        "Summary(self, mns, includeDescription=None)"},
     {NULL, NULL, 0, NULL} // sentinel
 };
 
@@ -1247,7 +1249,7 @@ static PyTypeObject ClassMethod_PyObjectType = {
     0, /*tp_setattro*/
     0, /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT, /*tp_flags*/
-    "Defines a class method.\n\n__init__(self, function, isConst, isVirtual=None, isStatic=None, isImplementation=None, implements=None)", /* tp_doc */
+    "Defines a class method.\n\n__init__(self, function, instance=None, isConst, isVirtual=None, isStatic=None, isImplementation=None, implements=None)", /* tp_doc */
     0, /* tp_traverse */
     0, /* tp_clear */
     0, /* tp_richcompare */
@@ -1339,7 +1341,7 @@ static PyMethodDef CoerceFrom_methods[] = {
     {"Coerce", (PyCFunction)py_spdoc_CoerceFrom_Coerce, METH_VARARGS | METH_STATIC,
         "Coerce CoerceFrom from arbitrary value"},
     {"Summary", (PyCFunction)py_spdoc_CoerceFrom_Summary, METH_VARARGS | METH_KEYWORDS,
-        "Summary(self, includeDescription=None)"},
+        "Summary(self, mns, includeDescription=None)"},
     {NULL, NULL, 0, NULL} // sentinel
 };
 
@@ -1458,7 +1460,7 @@ static PyMethodDef CoerceTo_methods[] = {
     {"Coerce", (PyCFunction)py_spdoc_CoerceTo_Coerce, METH_VARARGS | METH_STATIC,
         "Coerce CoerceTo from arbitrary value"},
     {"Summary", (PyCFunction)py_spdoc_CoerceTo_Summary, METH_VARARGS | METH_KEYWORDS,
-        "Summary(self, includeDescription=None)"},
+        "Summary(self, mns, includeDescription=None)"},
     {NULL, NULL, 0, NULL} // sentinel
 };
 

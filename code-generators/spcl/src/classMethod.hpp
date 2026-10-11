@@ -70,6 +70,7 @@ public:
 
     static ClassMethodConstSP Make(
         const FunctionConstSP& function,
+        const std::string& instance,
         bool isConst,
         bool isVirtual,
         bool isStatic,
@@ -124,6 +125,7 @@ public:
 protected:
     ClassMethod(
         const FunctionConstSP& function,
+        const std::string& instance,
         bool isConst,
         bool isVirtual,
         bool isStatic,
@@ -134,6 +136,7 @@ protected:
 
 private:
     FunctionConstSP m_function;
+    std::string m_instance;
     bool m_isConst;
     bool m_isVirtual;
     bool m_isStatic;
