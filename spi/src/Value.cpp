@@ -32,6 +32,7 @@
 #include "String.hpp"
 
 #include <string.h>
+#include <math.h>
 
 SPI_BEGIN_NAMESPACE
 
@@ -287,6 +288,130 @@ Value Value::Bytes(std::string& value)
 Value Value::Error(std::string& value)
 {
     return Value(value, Value::ERROR);
+}
+
+namespace
+{
+    // returns a converted string - if the conversion took place then converted=true
+// if the conversion was impossible then an UNDEFINED Scalar is returned and converted=false
+//
+// note that we can return an UNDEFINED scalar after a conversion
+//
+// if you need to decide whether to encode a string in quotes then you can call StringConvert
+// if it can be converted, then you should encode the string in quotes
+    Value StringConvert(const char* str, bool* converted)
+    {
+        *converted = true;
+
+        if (!str)
+        {
+            return Value();
+        }
+
+        switch (str[0])
+        {
+        case '-':
+        case '1': case '2': case '3': case '4': case '5':
+        case '6': case '7': case '8': case '9': case '0':
+        {
+            char* ep;
+            // note that strtol call is partially wasted if str is a double
+            // however strtod is slower than strtol
+            long value = strtol(str, &ep, 10);
+            if (*ep == '\0')
+            {
+                int ival = (int)value;
+                if ((long)ival == value)
+                    return Value(ival);
+            }
+            else if (*ep == '-') // might be a date of format yyyy-mm-dd
+            {
+                long year = value;
+                long month = strtol(ep + 1, &ep, 10);
+                if (*ep == '-')
+                {
+                    long day = strtol(ep + 1, &ep, 10);
+                    if (*ep == '\0')
+                    {
+                        int iyear = (int)year;
+                        int imonth = (int)month;
+                        int iday = (int)day;
+
+                        if ((year == (long)iyear) &&
+                            (month == (long)imonth) &&
+                            (day == (long)iday))
+                        {
+                            return Value(Date(iyear, imonth, iday));
+                        }
+                    }
+                }
+            }
+            else if (*ep == '.' || *ep == 'e' || *ep == 'E')
+            {
+                double value = strtod(str, &ep);
+                if (*ep == '\0')
+                {
+                    return Value(value);
+                }
+            }
+            break;
+        }
+        case 'N':
+            if (strcmp(str, "NAN") == 0)
+            {
+                double i = NAN;
+                return Value(i);
+            }
+            if (strcmp(str, "NULL") == 0)
+            {
+                return Value();
+            }
+            break;
+        case 'I':
+            if (strcmp(str, "INF") == 0)
+            {
+                return Value(INFINITY);
+            }
+            break;
+        case 't':
+            if (strcmp(str, "true") == 0)
+            {
+                return Value(true);
+            }
+            break;
+        case 'f':
+            if (strcmp(str, "false") == 0)
+            {
+                return Value(false);
+            }
+            break;
+        }
+
+        *converted = false;
+        return Value();
+    }
+} // end of anonymous namespace
+
+Value Value::FromString(const std::string& str)
+{
+    bool converted = false;
+    Value out = StringConvert(str.c_str(), &converted);
+
+    if (converted)
+        return out;
+
+    // if it is not converted then we have return a string
+    // but it might be in quotes and it might have been escaped
+
+    SPI_POST_CONDITION(!str.empty());
+
+    if (str[0] == '"' && str.length() >= 2 && str[str.length() - 1] == '"')
+    {
+        std::string work = str.substr(1, str.length() - 2);
+        return Value(spi_util::StringCapture(work.c_str()));
+    }
+
+    return Value(spi_util::StringCapture(str.c_str()));
 }
 
 Value::Value(const std::vector<Value>& values)

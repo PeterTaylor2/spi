@@ -156,6 +156,9 @@ public:
     static Value Bytes(std::string& str);
     static Value Error(std::string& str);
 
+    // given an arbitrary string tries to guess the value type
+    static Value FromString(const std::string& str);
+
     template<class T> 
     Value(const ObjectSmartPtr<T>& obj) : type(Value::UNDEFINED)
     {
