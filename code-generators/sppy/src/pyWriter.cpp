@@ -505,7 +505,7 @@ std::string PythonService::writePyImporter(const std::string& dirname) const
         << "    import sys\n"
         << "    sys.path.insert(0, os.getcwd()) # needed by python3\n"
         << "    try:\n"
-        << "        from py_" << m_service->ns << " import *\n"
+        << "        from py_" << m_service->name << " import *\n"
         << "    finally: sys.path.pop(0)\n"
         << "finally: os.chdir(cwd)\n"
         << "\n";

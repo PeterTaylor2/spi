@@ -379,7 +379,7 @@ std::string CService::writeSourceFile(const std::string& dirname) const
             << "            spi_Error_set_function(__FUNCTION__, \"NULL output\");\n"
             << "            return -1;\n"
             << "        }\n"
-            << "        const char* cv = " << m_service->ns << "::" << m_service->ns << "_version();\n"
+            << "        const char* cv = " << m_service->ns << "::" << m_service->name << "_version();\n"
             << "        *version = spi_String_copy(cv);\n"
             << "        return 0;\n"
             << "    }\n"
