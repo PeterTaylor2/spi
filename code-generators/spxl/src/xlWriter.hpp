@@ -72,6 +72,7 @@ struct Options
         objectList("object_list"),
         objectClassName("object_class_name"),
         objectSHA("object_sha"),
+        objectMake("object_make"),
         xlTargetVersion(12)
     {
         verify();
@@ -110,6 +111,7 @@ struct Options
     std::string objectList;
     std::string objectClassName;
     std::string objectSHA;
+    std::string objectMake;
     int xlTargetVersion;
 
     void update(const std::string& fn);

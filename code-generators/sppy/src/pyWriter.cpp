@@ -366,6 +366,12 @@ std::string PythonService::writePydSourceFile(const std::string& dirname) const
             << "spi_py_object_put,\n"
             << "        \"object_put(obj,names[],value,...)\\n\\n\"\n"
             << "        \"Sets a value by name within an object.\");\n"
+            << "\n"
+            << "    /* object_make */\n"
+            << "    svc->AddFunction(\"object_make\", "
+            << "spi_py_object_make,\n"
+            << "        \"object_make(className,names[],value,...)\\n\\n\"\n"
+            << "        \"Sets a value by name within an object.\");\n"
             << "\n";
 
         if (options.objectCoerce)
