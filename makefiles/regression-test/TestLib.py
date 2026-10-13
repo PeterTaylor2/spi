@@ -5,6 +5,9 @@ import getopt
 import datetime
 import sys
 import re
+import cProfile
+import pstats
+import io
 
 if sys.version_info[0] > 2:
     raw_input = input
@@ -19,7 +22,27 @@ def printTimings(timings):
                 name, calls, errors, totalTime*1e3, totalTime*1e3/calls))
     print()
 
-def runDriverClass(driverClass, ifn, ofn, profile=False, repeats=1):
+def printProfile(pr, profileLog):
+    s = io.StringIO()
+    ps = pstats.Stats(pr, stream=s).strip_dirs().sort_stats(-1)
+    ps.print_stats()
+    output = s.getvalue()
+    print(output)
+
+    if profileLog is not None:
+        print("Writing profile to %s" % profileLog)
+        ofp = open(profileLog, "w")
+        ofp.write("Command line: %s\n" % sys.argv)
+        ofp.write("Executable: %s\n" % sys.executable)
+        ofp.write("env(PYTHONPATH): %s\n" % os.getenv("PYTHONPATH"))
+        ofp.write("sys.path:\n")
+        for dn in sys.path:
+            ofp.write("\t%s\n" % dn)
+        ofp.write("\n\n")
+        ofp.write(output)
+        ofp.write("\n")
+
+def runDriverClass(driverClass, ifn, ofn, profile=False, repeats=1, profileLog=None):
     #
     # runs a driver class returning True on success and False on failure
     #
@@ -35,14 +58,16 @@ def runDriverClass(driverClass, ifn, ofn, profile=False, repeats=1):
         driver = driverClass()
         if repeats > 1:
             if profile:
-                import cProfile
-                cProfile.runctx("driver.repeat(ifn,ofn,repeats)", globals(), locals())
+                pr = cProfile.Profile()
+                pr.runctx("driver.repeat(ifn,ofn,repeats)", globals(), locals())
+                printProfile(pr, profileLog)
             else:
                 driver.repeat(ifn, ofn, repeats)
         else:
             if profile:
-                import cProfile
-                cProfile.runctx("driver.run(ifn,ofn)", globals(), locals())
+                pr = cProfile.Profile()
+                pr.runctx("driver.run(ifn,ofn)", globals(), locals())
+                printProfile(pr, profileLog)
             else:
                 driver.run(ifn, ofn)
     except Exception as e:
@@ -71,7 +96,7 @@ def TestMain(driverClass, driverFile):
 
     opts,args = getopt.getopt(
         sys.argv[1:], "wN:",
-        ["service=", "logging", "timing", "startup=", "profile"])
+        ["service=", "logging", "timing", "startup=", "profile", "profileLog="])
 
     compare = False
     profile = False
@@ -79,6 +104,7 @@ def TestMain(driverClass, driverFile):
     logging = False
     timing = False
     repeats = 1
+    profileLog = None
 
     for opt in opts:
         if opt[0] == "-w": raw_input("Enter to continue:")
@@ -87,6 +113,7 @@ def TestMain(driverClass, driverFile):
             print ("executing %s" % startupCode)
             exec(startupCode)
         elif opt[0] == "--profile": profile = True
+        elif opt[0] == "--profileLog": profileLog = opt[1]
         elif opt[0] == "--service": service = opt[1]
         elif opt[0] == "--logging": logging = True
         elif opt[0] == "--timing": timing = True
@@ -135,7 +162,7 @@ def TestMain(driverClass, driverFile):
     if timing:
         svc.start_timing()
 
-    success = runDriverClass(driverClass, ifn, ofn, profile=profile, repeats=repeats)
+    success = runDriverClass(driverClass, ifn, ofn, profile=profile, repeats=repeats, profileLog=profileLog)
 
     if logging:
         print("closing logfile: %s" % lfn)
@@ -199,10 +226,11 @@ class TestDriver:
             self.fieldNames.append(name)
 
     def repeat(self, ifn, ofn, repeats):
-        for _ in range(repeats):
-            self.run(ifn, ofn)
+        for i in range(repeats):
+            print("Repeat %d of %d" % (i+1,repeats))
+            self.run(ifn, ofn, permPrint=False)
 
-    def run(self, ifn, ofn):
+    def run(self, ifn, ofn, permPrint=True):
         perms = self.readInputFile(ifn)
 
         ofp = open(ofn, "w")
@@ -214,7 +242,8 @@ class TestDriver:
         try:
             for perm in perms:
                 count += 1
-                print ("Permutation %d of %d" % (count, len(perms)))
+                if permPrint:
+                    print ("Permutation %d of %d" % (count, len(perms)))
                 ofp.write("Permutation %d of %d\n" % (count, len(perms)))
                 self.writePermutation(ofp, perm)
                 self.runOne(ofp, **perm)

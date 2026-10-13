@@ -28,7 +28,12 @@ OPTS+=-N$(REPEAT)
 endif
 
 ifneq ($(PROFILE),0)
+PROFILE_LOG?=profile.log
 PROFILE_OPTS+=--profile
+endif
+
+ifdef PROFILE_LOG
+PROFILE_OPTS+=--profileLog=$(PROFILE_LOG)
 endif
 
 DRIVER:=$(basename $(notdir $(NAME)))
