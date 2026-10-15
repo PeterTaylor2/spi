@@ -275,19 +275,20 @@ ExcelService::writeXllSourceFile(const std::string& dirname) const
 
         if (m_options.noObjectFuncs)
         {
-            ostr << "\"\","
-                << " \"\","
-                << " \"\","
-                << " \"\","
-                << " \"\","
-                << " \"\","
-                << " \"\","
-                << " \"\","
-                << " \"\","
-                << " \"\","
-                << " \"\","
-                << " \"\","
-                << " \"\"";
+            ostr << "\"\"," // objectToString
+                << " \"\"," // objectFromString
+                << " \"\"," // objectGet
+                << " \"\"," // objectPut
+                << " \"\"," // objectPutMetaData (not supported)
+                << " \"\"," // objectToFile
+                << " \"\"," // objectFromFile
+                << " \"\"," // objectCount
+                << " \"\"," // objectFree
+                << " \"\"," // objectFreeAll
+                << " \"\"," // objectList
+                << " \"\"," // objectClassName
+                << " \"\"," // objectSHA
+                << " \"\""; // objectMake
         }
         else
         {

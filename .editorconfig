@@ -1,4 +1,4 @@
-root = true
+# this file agrees with .gitattributes and we do not use root on purpose
 
 [*]
 end_of_line = lf

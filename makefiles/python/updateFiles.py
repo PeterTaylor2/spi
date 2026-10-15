@@ -128,8 +128,7 @@ if __name__ == "__main__":
         rootSource = args[0]
         rootTarget = args[1]
         newfn = args[2]
-        if len(args) > 3:
-            oldfn = args[3]
+        oldfn = args[3] if len(args) > 3 else None
         main(rootSource, rootTarget, newfn, oldfn, **kwargs)
 
     except Exception as e:

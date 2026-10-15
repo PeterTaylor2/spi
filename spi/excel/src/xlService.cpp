@@ -362,16 +362,6 @@ void ExcelService::RegisterStandardFunctions(const std::string& xll,
         args.push_back("v23");
         args.push_back("v24");
         args.push_back("v25");
-        args.push_back("v16");
-        args.push_back("v17");
-        args.push_back("v18");
-        args.push_back("v19");
-        args.push_back("v20");
-        args.push_back("v21");
-        args.push_back("v22");
-        args.push_back("v23");
-        args.push_back("v24");
-        args.push_back("v25");
         args.push_back("v26");
         args.push_back("v27");
         args.push_back("v28");
@@ -972,7 +962,7 @@ void ExcelService::RegisterFunction(
         if (failed)
         {
             std::string errmsg = StringFormat("Failed to register %s with code (%d)",
-                xlFuncName, xlFailureCode);
+                xlFuncName.c_str(), xlFailureCode);
             Excel(xlcAlert, 0, 2, TempStrConst(errmsg.c_str()), TempInt(2));
         }
         else

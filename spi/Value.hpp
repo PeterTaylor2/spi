@@ -446,7 +446,7 @@ public:
     {
         if (i >= m_vec.size())
             throw RuntimeError("Index %ld out of range", (long)i);
-        return Value(m_vec[i]);
+        return m_vec[i];
     }
 
     void assign(size_t i, const Value& value)
