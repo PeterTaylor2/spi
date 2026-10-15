@@ -3,6 +3,8 @@ help:
 .PHONY: all copy clean doc zip doc-zip tar build doc-clean
 
 help:
+	@echo "make copy TARGET=<path_to_spi_directory>"
+	@echo "  --- copies runtime libraries and source code for the code-generators"
 	@echo "make copy-runtime TARGET=<path_to_spi_directory>"
 	@echo "  --- copies runtime libraries"
 	@echo "make copy-code-generators-source TARGET=<path_to_spi_directory>"
@@ -18,7 +20,7 @@ include $(U_SPI_HOME)/makefiles/config/config.mk
 include $(U_SPI_HOME)/makefiles/version.mk
 
 COPY_MANIFEST=$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/copyManifest.py
-TARGET=3rdParty/spi
+TARGET=3rdParty/spi-$(G_PLATFORM)
 
 clean: 
 	$(MAKE) -C $(U_SPI_HOME)/config -s -j4 config-clean
@@ -58,6 +60,12 @@ ifndef TARGET
 	@echo "TARGET undefined" && exit 1
 endif
 	@$(COPY_MANIFEST) spi-code-generators-$(G_PLATFORM).man $(U_SPI_HOME) $(TARGET)
+
+copy:
+	@echo "copying files for runtime libraries"
+	@$(MAKE) --no-print-directory copy-runtime
+	@echo "copying files for code-generators"
+	@$(MAKE) --no-print-directory copy-code-generators-source
 
 doc:
 	@$(COPY_MANIFEST) spi-doc-source.man $(U_SPI_HOME)/doc $(TARGET)-doc

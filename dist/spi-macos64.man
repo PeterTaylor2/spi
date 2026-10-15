@@ -1,4 +1,1 @@
-# macos64 specific files
-
-makeXLAddin/Makefile
-
+# deliberately blank

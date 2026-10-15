@@ -1,0 +1,9 @@
+# macos64 code generators specific files
+
+code-generators/bin-macos64/spcl code-generators/bin-macos64
+code-generators/bin-macos64/spxl code-generators/bin-macos64
+code-generators/bin-macos64/sppy code-generators/bin-macos64
+code-generators/bin-macos64/sptex code-generators/bin-macos64
+code-generators/bin-macos64/spc code-generators/bin-macos64
+code-generators/bin-macos64/spcs code-generators/bin-macos64
+

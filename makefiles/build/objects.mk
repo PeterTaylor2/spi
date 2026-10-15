@@ -54,8 +54,15 @@ I_OBJS=$(patsubst %.$(G_OBJ),$(I_BUILD_DIR)/%.$(G_OBJ),$(U_OBJS))
 I_FORCE_REBUILD=$(U_FORCE_REBUILD) $(U_MAKEFILES)/config/$(G_CONFIG).mk
 I_INCLUDES=-I$(U_INC_DIR) $(U_INCLUDES)
 
-ifeq ($(G_PLATFORM),win32)
-I_GENDEP_EXE=$(U_MAKEFILES)/gendep/bin/gendep.exe
+I_USE_GENDEP=0
+
+ifdef G_USE_GENDEP
+ifndef U_NO_GENDEP
+
+I_USE_GENDEP=1
+I_GENDEP_EXE=$(U_MAKEFILES)/gendep/bin-$(G_PLATFORM)/gendep$(G_EXE)
+
+endif
 endif
 
 objects-info:
@@ -70,6 +77,9 @@ objects-info:
 	@echo G_BUILD_DIR=$(G_BUILD_DIR)
 	@echo I_FORCE_REBUILD=$(I_FORCE_REBUILD)
 	@echo G_CONFIG=$(G_CONFIG)
+	@echo USE_GENDEP=$(I_USE_GENDEP)
+	@echo GENDEP_EXE=$(I_GENDEP_EXE)
+	@echo GENDEP_FILTERS=$(U_GENDEP_FILTERS)
 
 ############################################################################
 # In all cases the main target is 'target'
@@ -156,14 +166,14 @@ endif
 $(I_BUILD_DIR)/%.$(G_OBJ): %.c $(G_PCH) $(I_FORCE_REBUILD)
 	@rm -f $@
 	$(G_CC) $(G_PCH_CFLAGS) $(G_CFLAGS) $(U_CFLAGS) $(I_INCLUDES) $(G_SYS_INCLUDES) "$<" 
-ifeq ($(G_PLATFORM),win32)
+ifneq ($(I_USE_GENDEP),0)
 	@-$(I_GENDEP_EXE) $(I_INCLUDES) -d$(I_BUILD_DIR) -o$(G_OBJ) -sd $(U_GENDEP_FILTERS) "$<"
 endif
 
 $(I_BUILD_DIR)/%.$(G_OBJ): %.cpp $(G_PCH) $(I_FORCE_REBUILD)
 	@rm -f $@
 	$(G_CPPC) $(G_PCH_CFLAGS) $(G_CPPFLAGS) $(U_CFLAGS) $(U_CPPFLAGS) $(I_INCLUDES) $(G_SYS_INCLUDES) "$<"
-ifeq ($(G_PLATFORM),win32)
+ifneq ($(I_USE_GENDEP),0)
 	@-$(I_GENDEP_EXE) $(I_INCLUDES) -d$(I_BUILD_DIR) -o$(G_OBJ) -sd $(U_GENDEP_FILTERS) "$<"
 endif
 

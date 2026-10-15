@@ -23,8 +23,16 @@ G_DLL_PFX=lib
 G_DLL_EXT=.dylib
 G_DLL_LIB_EXT=.dylib
 
-G_CC=gcc -o $(I_BUILD_DIR)/$*.o -MMD -MP
-G_CPPC=g++ -o $(I_BUILD_DIR)/$*.o -MMD -MP
+G_CC=gcc -o $(I_BUILD_DIR)/$*.o
+G_CPPC=g++ -o $(I_BUILD_DIR)/$*.o
+
+ifdef G_MACOS64_USE_GENDEP
+G_USE_GENDEP=1
+else
+G_CC+=-MMD -MP
+G_CPPC+=-MMD -MP
+endif
+
 G_LINK=g++ 
 G_LIB=ar rv $@ 
 
