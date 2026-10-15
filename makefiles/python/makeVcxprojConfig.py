@@ -12,7 +12,7 @@ def command_line(compiler, toolsVersion, platformToolset):
     import sys
     import getopt
 
-    opts,args = getopt.getopt(sys.argv[1:], "x:s:c:t:b:I:f:",
+    opts,args = getopt.getopt(sys.argv[1:], "x:s:c:t:b:I:f:B:",
                               ["vcTarget=",
                                "compiler="])
     configPatterns  = ["*.cfg", "*.api"]
@@ -21,6 +21,7 @@ def command_line(compiler, toolsVersion, platformToolset):
     configFilters = []
     kwargs = {}
     includePath = []
+    buildPatterns = []
     for opt in opts:
         if opt[0] == "-c": configPatterns.append(opt[1])
         elif opt[0] == "-s": servicePatterns.append(opt[1])
@@ -28,6 +29,7 @@ def command_line(compiler, toolsVersion, platformToolset):
         elif opt[0] == "-f": configFilters.append(opt[1])
         elif opt[0] == "-t": kwargs["makefileTarget"] = opt[1]
         elif opt[0] == "-b": kwargs["bin"] = opt[1]
+        elif opt[0] == "-B": buildPatterns.append(opt[1])
         elif opt[0] == "-I": includePath.append(opt[1])
         elif opt[0] == "--compiler": compiler = opt[1]
         elif opt[0] == "--vcTarget": kwargs["vcTarget"] = opt[1]
@@ -45,7 +47,7 @@ def command_line(compiler, toolsVersion, platformToolset):
 
     make_proj(fileName, name, target, srcDir, configPatterns, servicePatterns,
                includePath, compiler, toolsVersion, platformToolset, projectFileVersion,
-               extraSourceDirs, configFilters,
+               extraSourceDirs, configFilters, buildPatterns,
                **kwargs)
 
 
@@ -77,7 +79,7 @@ def _get_property_groups(platforms, target, makefileTarget, vcTarget, cleanTarge
         bits = platform[1]
         systemIncludes = vstools.systemIncludes(compiler, bits)
         for debug in ["Debug", "Release"]:
-            debugFlag = "" # no point in allowing debug option from VS
+            debugFlag = " DEBUG=1" if debug == "Debug" else ""
             condition = "'$(Configuration)|$(Platform)'=='%s|%s'" % (debug,name)
             lines.append("    <NMakeBuildCommandLine Condition=\"%s\">make %s VS_BUILD=1 COMPILER=%s BITS=%s%s</NMakeBuildCommandLine>" % (
                 condition, makefileTarget, compiler, bits, debugFlag))
@@ -173,6 +175,7 @@ def make_proj(fileName, name, target, srcDir,
              toolsVersion, platformToolset, projectFileVersion,
              extraSourceDirs,
              configFilters,
+             buildPatterns,
              makefileTarget="target", 
              vcTarget="",
              bin=r"C:\cygwin\bin"):
@@ -197,7 +200,7 @@ def make_proj(fileName, name, target, srcDir,
 
     configFiles  = [os.path.normpath(fn) for fn in configFiles]
     serviceFiles = [os.path.normpath(fn) for fn in serviceFiles]
-    serviceFiles.extend(makeVcxproj.get_build_files())
+    serviceFiles.extend(makeVcxproj.get_build_files(extraPatterns=buildPatterns))
 
     platforms = vstools.platforms(compiler)
 

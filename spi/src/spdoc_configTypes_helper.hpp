@@ -69,6 +69,7 @@ public:
         const ConstructConstSP& self);
     static std::vector<std::string> Summary(
         const ConstructConstSP& self,
+        const std::string& mns,
         bool includeDescription);
 };
 
@@ -79,6 +80,7 @@ public:
         const SimpleTypeConstSP& self);
     static std::vector<std::string> Summary(
         const SimpleTypeConstSP& self,
+        const std::string& mns,
         bool includeDescription);
 };
 
@@ -93,6 +95,7 @@ public:
         const FunctionConstSP& self);
     static std::vector<std::string> Summary(
         const FunctionConstSP& self,
+        const std::string& mns,
         bool includeDescription);
     static std::string getType(
         const FunctionConstSP& self);
@@ -105,6 +108,7 @@ public:
         const EnumConstSP& self);
     static std::vector<std::string> Summary(
         const EnumConstSP& self,
+        const std::string& mns,
         bool includeDescription);
 };
 
@@ -113,6 +117,7 @@ class ClassMethod_Helper
 public:
     static std::vector<std::string> Summary(
         const ClassMethodConstSP& self,
+        const std::string& mns,
         bool includeDescription);
 };
 
@@ -121,6 +126,7 @@ class CoerceFrom_Helper
 public:
     static std::vector<std::string> Summary(
         const CoerceFromConstSP& self,
+        const std::string& mns,
         bool includeDescription);
 };
 
@@ -129,6 +135,7 @@ class CoerceTo_Helper
 public:
     static std::vector<std::string> Summary(
         const CoerceToConstSP& self,
+        const std::string& mns,
         bool includeDescription);
 };
 
@@ -137,6 +144,7 @@ class Class_Helper
 public:
     static std::vector<std::string> Summary(
         const ClassConstSP& self,
+        const std::string& mns,
         bool includeDescription);
     static std::string getType(
         const ClassConstSP& self);

@@ -98,6 +98,7 @@ public:
         const std::string& objectList = std::string("object_list"),
         const std::string& objectClassName = std::string("object_class_name"),
         const std::string& objectSHA= std::string("object_sha"),
+        const std::string& objectMake = std::string("object_make"),
         bool noPrefixObjectFuncs = false);
 
     /**
@@ -186,6 +187,19 @@ public:
         XLOPER12* v16, XLOPER12* v17, XLOPER12* v18, XLOPER12* v19, XLOPER12* v20);
 
     XLOPER12* ObjectGet(XLOPER12* handle, XLOPER12* name);
+
+    XLOPER12* ObjectMake(XLOPER12* baseName, XLOPER12* className, XLOPER12* names,
+        XLOPER12* v1, XLOPER12* v2, XLOPER12* v3, XLOPER12* v4, XLOPER12* v5,
+        XLOPER12* v6, XLOPER12* v7, XLOPER12* v8, XLOPER12* v9, XLOPER12* v10,
+        XLOPER12* v11, XLOPER12* v12, XLOPER12* v13, XLOPER12* v14, XLOPER12* v15,
+        XLOPER12* v16, XLOPER12* v17, XLOPER12* v18, XLOPER12* v19, XLOPER12* v20,
+        XLOPER12* v21, XLOPER12* v22, XLOPER12* v23, XLOPER12* v24, XLOPER12* v25,
+        XLOPER12* v26, XLOPER12* v27, XLOPER12* v28, XLOPER12* v29, XLOPER12* v30,
+        XLOPER12* v31, XLOPER12* v32, XLOPER12* v33, XLOPER12* v34, XLOPER12* v35,
+        XLOPER12* v36, XLOPER12* v37, XLOPER12* v38, XLOPER12* v39, XLOPER12* v40,
+        XLOPER12* v41, XLOPER12* v42, XLOPER12* v43, XLOPER12* v44, XLOPER12* v45,
+        XLOPER12* v46, XLOPER12* v47, XLOPER12* v48, XLOPER12* v49, XLOPER12* v50);
+
     XLOPER12* ObjectPut(XLOPER12* baseName, XLOPER12* handle, XLOPER12* names,
         XLOPER12* v1, XLOPER12* v2, XLOPER12* v3, XLOPER12* v4, XLOPER12* v5,
         XLOPER12* v6, XLOPER12* v7, XLOPER12* v8, XLOPER12* v9, XLOPER12* v10,

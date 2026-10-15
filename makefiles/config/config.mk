@@ -52,6 +52,8 @@ G_CONFIG:=$(G_BASE_CONFIG)_$(I_MODE)
 include $(U_MAKEFILES)/config/$(G_CONFIG).mk
 -include $(U_MAKEFILES)/config/python.mk
 
+U_GENDEP_FILTERS+=-f$(U_SPI_HOME)/spi_boost
+
 info::
 	@echo "COMPUTERNAME=$(COMPUTERNAME)"
 	@echo "U_SPI_HOME=$(U_SPI_HOME)"
@@ -71,4 +73,5 @@ info::
 	@echo "G_CONFIG=$(G_CONFIG)"
 	@echo "G_PYTHON=$(G_PYTHON)"
 	@echo "G_CYGWIN_BIN=$(G_CYGWIN_BIN)"
+	@echo "G_USE_GENDEP=$(G_USE_GENDEP)"
 

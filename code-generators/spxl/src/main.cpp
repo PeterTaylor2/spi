@@ -176,7 +176,7 @@ int main(int argc, char* argv[])
                 "that are generated for all services:\n"
                 "helpFunc, hepFuncList, helpEnum, objectCoerce, startLogging, stopLogging, startTiming, stopTiming,\n"
                 "clearTimings, getTimings, setErrorPopups, objectToString, objectFromString, objectGet, objectPut,\n"
-                "objectToFile, objectFromFile, objectCount, objectFree, objectFreeAll, objectList, objectSHA\n",
+                "objectToFile, objectFromFile, objectCount, objectFree, objectFreeAll, objectList, objectSHA, objectMake\n",
                 true},
             { "nameAtEnd", "", "Functions which return objects in the Excel API are returned as strings to the\n"
                 "spreadsheet. You need to provide a name which will form part of this string - the so-called\n"

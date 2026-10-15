@@ -366,6 +366,12 @@ std::string PythonService::writePydSourceFile(const std::string& dirname) const
             << "spi_py_object_put,\n"
             << "        \"object_put(obj,names[],value,...)\\n\\n\"\n"
             << "        \"Sets a value by name within an object.\");\n"
+            << "\n"
+            << "    /* object_make */\n"
+            << "    svc->AddFunction(\"object_make\", "
+            << "spi_py_object_make,\n"
+            << "        \"object_make(className,names[],value,...)\\n\\n\"\n"
+            << "        \"Sets a value by name within an object.\");\n"
             << "\n";
 
         if (options.objectCoerce)
@@ -505,7 +511,7 @@ std::string PythonService::writePyImporter(const std::string& dirname) const
         << "    import sys\n"
         << "    sys.path.insert(0, os.getcwd()) # needed by python3\n"
         << "    try:\n"
-        << "        from py_" << m_service->ns << " import *\n"
+        << "        from py_" << m_service->name << " import *\n"
         << "    finally: sys.path.pop(0)\n"
         << "finally: os.chdir(cwd)\n"
         << "\n";

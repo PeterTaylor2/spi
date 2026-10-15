@@ -29,8 +29,7 @@ test
 EXTRA_VCPROJ_DIRS=\
 makefiles\
 makefiles/gendep\
-makefiles/cversion\
-makefiles/dia2dump
+makefiles/cversion
 
 BUILD_DIRS=$(RUNTIME_BUILD_DIRS) code-generators $(TEST_BUILD_DIRS)
 
@@ -48,8 +47,15 @@ runtime::
 		$(MAKE) -C $$lib all; \
 	done
 
+# if somebody wants to generate code before building the runtime
+# then they will likely use the code-generators target
+# hence we must build gendep in this step
+#
+# note that the build target builds the code-generators first
+
 code-generators::
-	$(MAKE) -C code-generators all
+	@$(MAKE) --no-print-directory gendep
+	@$(MAKE) --no-print-directory -C code-generators all
 
 testing::
 	@for lib in $(TEST_BUILD_DIRS); do \
@@ -70,11 +76,11 @@ clean-all-runtime::
 clean-code-generators::
 	$(MAKE) -C code-generators clean-all
 
-ifeq ($(G_PLATFORM),win32)
+ifdef G_USE_GENDEP
 
 gendep::
 	@echo Building makefiles/gendep
-	@$(MAKE) -C makefiles/gendep config-install
+	@$(MAKE) --no-print-directory -C makefiles/gendep config-install
 
 else
 
@@ -83,7 +89,6 @@ gendep::
 endif
 
 build::
-	@$(MAKE) gendep
 	@$(MAKE) code-generators
 	@$(MAKE) runtime
 

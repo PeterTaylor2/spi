@@ -204,11 +204,14 @@ def _get_source_files(sourcePatterns, srcDir, extraSourceDirs):
             sourceFiles.extend(glob.glob(os.path.join(dn, pattern)))
     return [os.path.normpath(fn) for fn in sourceFiles]
 
-def get_build_files():
+def get_build_files(extraPatterns=None):
     buildFiles = []
     if os.path.isfile("Makefile"): buildFiles.append("Makefile")
     buildFiles.extend(glob.glob("*.mk"))
     buildFiles.extend(glob.glob("*.md"))
+    if extraPatterns is not None:
+        for pattern in extraPatterns:
+            buildFiles.extend(glob.glob(pattern))
     return buildFiles
 
 def _get_item_group_files(sourceFiles, headerFiles, buildFiles, extraFiles):

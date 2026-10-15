@@ -305,7 +305,8 @@ ExcelService::writeXllSourceFile(const std::string& dirname) const
                 << "\n        "
                 << "\"" << m_options.objectList << "\","
                 << " \"" << m_options.objectClassName << "\","
-                << " \"" << m_options.objectSHA << "\"";
+                << " \"" << m_options.objectSHA << "\","
+                << " \"" << m_options.objectMake << "\"";
         }
         if (m_options.noPrefixObjectFuncs)
         {
@@ -473,6 +474,71 @@ ExcelService::writeXllSourceFile(const std::string& dirname) const
                 << "        v1, v2, v3, v4, v5, v6, v7, v8, v9, v10,\n"
                 << "        v11, v12, v13, v14, v15, v16, v17, v18, v19, v20,\n"
                 << "        v21, v22, v23, v24, v25);\n"
+                << "}\n"
+                << "\n"
+                << m_import << "\n"
+                << "XLOPER12* xl_" << m_service->ns << "_object_make(\n"
+                << "    XLOPER12* className,\n"
+                << "    XLOPER12* baseName,\n"
+                << "    XLOPER12* names,\n"
+                << "    XLOPER12* v1,\n"
+                << "    XLOPER12* v2,\n"
+                << "    XLOPER12* v3,\n"
+                << "    XLOPER12* v4,\n"
+                << "    XLOPER12* v5,\n"
+                << "    XLOPER12* v6,\n"
+                << "    XLOPER12* v7,\n"
+                << "    XLOPER12* v8,\n"
+                << "    XLOPER12* v9,\n"
+                << "    XLOPER12* v10,\n"
+                << "    XLOPER12* v11,\n"
+                << "    XLOPER12* v12,\n"
+                << "    XLOPER12* v13,\n"
+                << "    XLOPER12* v14,\n"
+                << "    XLOPER12* v15,\n"
+                << "    XLOPER12* v16,\n"
+                << "    XLOPER12* v17,\n"
+                << "    XLOPER12* v18,\n"
+                << "    XLOPER12* v19,\n"
+                << "    XLOPER12* v20,\n"
+                << "    XLOPER12* v21,\n"
+                << "    XLOPER12* v22,\n"
+                << "    XLOPER12* v23,\n"
+                << "    XLOPER12* v24,\n"
+                << "    XLOPER12* v25,\n"
+                << "    XLOPER12* v26,\n"
+                << "    XLOPER12* v27,\n"
+                << "    XLOPER12* v28,\n"
+                << "    XLOPER12* v29,\n"
+                << "    XLOPER12* v30,\n"
+                << "    XLOPER12* v31,\n"
+                << "    XLOPER12* v32,\n"
+                << "    XLOPER12* v33,\n"
+                << "    XLOPER12* v34,\n"
+                << "    XLOPER12* v35,\n"
+                << "    XLOPER12* v36,\n"
+                << "    XLOPER12* v37,\n"
+                << "    XLOPER12* v38,\n"
+                << "    XLOPER12* v39,\n"
+                << "    XLOPER12* v40,\n"
+                << "    XLOPER12* v41,\n"
+                << "    XLOPER12* v42,\n"
+                << "    XLOPER12* v43,\n"
+                << "    XLOPER12* v44,\n"
+                << "    XLOPER12* v45,\n"
+                << "    XLOPER12* v46,\n"
+                << "    XLOPER12* v47,\n"
+                << "    XLOPER12* v48,\n"
+                << "    XLOPER12* v49,\n"
+                << "    XLOPER12* v50)\n"
+                << "{\n"
+                << "    return " << xlServiceName
+                << "->ObjectMake(baseName, className, names,\n"
+                << "        v1, v2, v3, v4, v5, v6, v7, v8, v9, v10,\n"
+                << "        v11, v12, v13, v14, v15, v16, v17, v18, v19, v20,\n"
+                << "        v21, v22, v23, v24, v25, v26, v27, v28, v29, v30,\n"
+                << "        v31, v32, v33, v34, v35, v36, v37, v38, v39, v40,\n"
+                << "        v41, v42, v43, v44, v45, v46, v47, v48, v49, v50);\n"
                 << "}\n"
                 << "\n"
                 << m_import << "\n"
@@ -740,14 +806,14 @@ std::string ExcelService::writeVbaFile(const std::string& dirname) const
         << "\n"
         << "Public Sub Auto_Open()\n"
         << "\n"
-        << "    " << m_service->ns << "Functions." << m_service->ns << "LoadXLL\n"
-        << "    " << m_service->ns << "Utils.SetManualCalculation\n"
-        << "    " << m_service->ns << "Functions." << m_service->ns << "AddMenu\n"
+        << "    " << m_service->name << "Functions." << m_service->name << "LoadXLL\n"
+        << "    " << m_service->name << "Utils.SetManualCalculation\n"
+        << "    " << m_service->name << "Functions." << m_service->name << "AddMenu\n"
         << "End Sub\n"
         << "\n"
         << "Public Sub Auto_Close()\n"
-        << "    " << m_service->ns << "Functions." << m_service->ns << "RemoveMenu\n"
-        << "    " << m_service->ns << "Functions." << m_service->ns << "UnloadXLL\n"
+        << "    " << m_service->name << "Functions." << m_service->name << "RemoveMenu\n"
+        << "    " << m_service->name << "Functions." << m_service->name << "UnloadXLL\n"
         << "End Sub\n"
         << "\n";
 
@@ -1757,9 +1823,9 @@ void ExcelModule::registerClass(
 
         if (!method->isStatic)
         {
-            ostr << "    args.push_back(\"handle\");\n"
+            ostr << "    args.push_back(\"" << method->instance << "\");\n"
                 << "    help.push_back(\"" << cls->name
-                << " object handle.\");\n";
+                << " object " << method->instance << ".\");\n";
         }
 
         for (size_t i = 0; i < method->function->inputs.size(); ++i)
@@ -1899,6 +1965,7 @@ void Options::update(const std::string& fn)
     JSONMapUpdateString(objectList, jm, "objectList");
     JSONMapUpdateString(objectClassName, jm, "objectClassName");
     JSONMapUpdateString(objectSHA, jm, "objectSHA");
+    JSONMapUpdateString(objectMake, jm, "objectMake");
     JSONMapUpdateInt(xlTargetVersion, jm, "xlTargetVersion");
 
     verify();

@@ -37,6 +37,8 @@ makefiles/regression-test/README.txt
 makefiles/Makefile
 makefiles/README.md
 
+makeXLAddin/Makefile
+
 README.md
 
 # this is needed for a package of development only
@@ -142,7 +144,7 @@ replay/dll/src/*.hpp
 replay/dll/src/*.cpp
 replay/dll/replay.svo
 replay/python/Makefile
-replay/python/makeTestInputs.py
+replay/python/test/test-replay.py
 replay/python/src/*.py
 replay/python/src/*.cpp
 replay/python/src/*.hpp

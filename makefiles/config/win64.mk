@@ -16,9 +16,9 @@ I_WIN64_PROGRAM_FILES_DOS:=$(subst /,\,$(subst $(G_CYGWIN_ROOT),C:,$(G_WIN64_PRO
 
 include $(U_MAKEFILES)/config/msvc_version.mk
 
+G_USE_GENDEP=1
 G_PLATFORM=win32
 G_BITS=64
-G_EXTLIBS_HOME=$(U_SPI_HOME)/3rdParty
 
 G_XL_VERSIONS=15
 G_XL_VERSION=15

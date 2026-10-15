@@ -66,6 +66,7 @@ std::vector<AttributeConstSP> getExtendedArgs(
 */
 ClassMethodConstSP ClassMethod::Make(
     const FunctionConstSP& function,
+    const std::string& instance,
     bool isConst,
     bool isVirtual,
     bool isStatic,
@@ -74,12 +75,13 @@ ClassMethodConstSP ClassMethod::Make(
     const std::string& implements,
     bool byValue)
 {
-    return new ClassMethod(function, isConst, isVirtual, isStatic, isDelegate,
+    return new ClassMethod(function, instance, isConst, isVirtual, isStatic, isDelegate,
                            isImplementation, implements, byValue);
 }
 
 ClassMethod::ClassMethod(
     const FunctionConstSP& function,
+    const std::string& instance,
     bool isConst,
     bool isVirtual,
     bool isStatic,
@@ -89,6 +91,7 @@ ClassMethod::ClassMethod(
     bool byValue)
     :
     m_function(function),
+    m_instance(instance),
     m_isConst(isConst),
     m_isVirtual(isVirtual),
     m_isStatic(isStatic),
@@ -816,6 +819,7 @@ spdoc::ClassMethodConstSP ClassMethod::getDoc() const
 
     return spdoc::ClassMethod::Make(
         m_function->m_doc,
+        m_instance,
         m_isConst, m_isVirtual, m_isStatic, m_isImplementation, m_implements);
 }
 

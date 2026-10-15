@@ -1,0 +1,23 @@
+﻿Binary package,Version,Source package,Expected source archive,Mirror folder,Notes
+diffutils,3.12-1,diffutils,diffutils-3.12-1-src.tar.xz,x86_64/release/diffutils/99,
+coreutils,9.0-1,coreutils,coreutils-9.0-1-src.tar.xz,x86_64/release/coreutils/,Old version: may no longer be on the Cygwin mirrors
+grep,3.12-1,grep,grep-3.12-1-src.tar.xz,x86_64/release/grep/,
+make,4.4.1-2,make,make-4.4.1-2-src.tar.xz,x86_64/release/make/,
+bash,5.2.21-1,bash,bash-5.2.21-1-src.tar.xz,x86_64/release/bash/,
+tar,1.35-2,tar,tar-1.35-2-src.tar.xz,x86_64/release/tar/,
+dos2unix,7.5.2-1,dos2unix,dos2unix-7.5.2-1-src.tar.xz,x86_64/release/dos2unix/,
+which,2.23-1,which,which-2.23-1-src.tar.xz,x86_64/release/which/,
+libattr1,2.5.1-1.20.g0981a7bfe487,attr,attr-2.5.1-1.20.g0981a7bfe487-src.tar.xz,x86_64/release/attr/,
+libcrypt2,4.4.20-1,libxcrypt,libxcrypt-4.4.20-1-src.tar.xz,x86_64/release/libxcrypt/,
+libffi8,3.5.2-1,libffi,libffi-3.5.2-1-src.tar.xz,x86_64/release/libffi/,
+libgc1,8.2.8-1,gc,gc-8.2.8-1-src.tar.xz,x86_64/release/gc/,
+libgcc1,13.4.0-1,gcc,gcc-13.4.0-1-src.tar.xz,x86_64/release/gcc/,Very large source download; runtime library licence differs from plain GPL
+libgmp10,6.3.0-1,gmp,gmp-6.3.0-1-src.tar.xz,x86_64/release/gmp/,
+libguile3.0_1,3.0.10-3,guile,guile-3.0.10-3-src.tar.xz,x86_64/release/guile/,
+libiconv2,1.17-1,libiconv,libiconv-1.17-1-src.tar.xz,x86_64/release/libiconv/,
+libintl8,0.22.5-1,gettext,gettext-0.22.5-1-src.tar.xz,x86_64/release/gettext/,
+libncursesw10,6.5+20240427-1,ncurses,ncurses-6.5+20240427-1-src.tar.xz,x86_64/release/ncurses/,
+libpcre2_8_0,10.46-1,pcre2,pcre2-10.46-1-src.tar.xz,x86_64/release/pcre2/,
+libreadline7,8.2-2,readline,readline-8.2-2-src.tar.xz,x86_64/release/readline/,
+libunistring5,1.2-1,libunistring,libunistring-1.2-1-src.tar.xz,x86_64/release/libunistring/,
+cygwin,3.6.5-1,cygwin,cygwin-3.6.5-1-src.tar.xz,x86_64/release/cygwin/,Cygwin runtime (cygwin1.dll); has its own linking exception

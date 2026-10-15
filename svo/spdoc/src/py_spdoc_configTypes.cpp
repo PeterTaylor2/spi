@@ -498,7 +498,7 @@ static PyTypeObject* Construct_PyObjectType()
         {"getType", (PyCFunction)py_spdoc_Construct_getType, METH_VARARGS | METH_KEYWORDS,
             "getType(self)\n\nReturns the type of the Construct - specific to each sub-class of Construct."},
         {"Summary", (PyCFunction)py_spdoc_Construct_Summary, METH_VARARGS | METH_KEYWORDS,
-            "Summary(self, includeDescription=None)\n\nReturns a short summary of the construct (disregarding description)"},
+            "Summary(self, mns, includeDescription=None)\n\nReturns a short summary of the construct (disregarding description)"},
         {NULL, NULL, 0, NULL} // sentinel
     };
 
@@ -1050,6 +1050,8 @@ static PyTypeObject* ClassMethod_PyObjectType()
     {
         {"function", (getter)(spi_py_object_getter), NULL, NULL,
             (void*) "function"},
+        {"instance", (getter)(spi_py_object_getter), NULL, NULL,
+            (void*) "instance"},
         {"isConst", (getter)(spi_py_object_getter), NULL, NULL,
             (void*) "isConst"},
         {"isVirtual", (getter)(spi_py_object_getter), NULL, NULL,
@@ -1068,7 +1070,7 @@ static PyTypeObject* ClassMethod_PyObjectType()
         {"Coerce", (PyCFunction)py_spdoc_ClassMethod_Coerce, METH_VARARGS | METH_STATIC,
             "Coerce ClassMethod from arbitrary value"},
         {"Summary", (PyCFunction)py_spdoc_ClassMethod_Summary, METH_VARARGS | METH_KEYWORDS,
-            "Summary(self, includeDescription=None)"},
+            "Summary(self, mns, includeDescription=None)"},
         {NULL, NULL, 0, NULL} // sentinel
     };
 
@@ -1077,7 +1079,7 @@ static PyTypeObject* ClassMethod_PyObjectType()
         properties,
         methods,
         false,
-        "Defines a class method.\n\n__init__(self, function, isConst, isVirtual=None, isStatic=None, isImplementation=None, implements=None)",
+        "Defines a class method.\n\n__init__(self, function, instance=None, isConst, isVirtual=None, isStatic=None, isImplementation=None, implements=None)",
         nullptr,
         Py_tp_init, (void*)py_spdoc_ClassMethod_init,
         0);
@@ -1167,7 +1169,7 @@ static PyTypeObject* CoerceFrom_PyObjectType()
         {"Coerce", (PyCFunction)py_spdoc_CoerceFrom_Coerce, METH_VARARGS | METH_STATIC,
             "Coerce CoerceFrom from arbitrary value"},
         {"Summary", (PyCFunction)py_spdoc_CoerceFrom_Summary, METH_VARARGS | METH_KEYWORDS,
-            "Summary(self, includeDescription=None)"},
+            "Summary(self, mns, includeDescription=None)"},
         {NULL, NULL, 0, NULL} // sentinel
     };
 
@@ -1268,7 +1270,7 @@ static PyTypeObject* CoerceTo_PyObjectType()
         {"Coerce", (PyCFunction)py_spdoc_CoerceTo_Coerce, METH_VARARGS | METH_STATIC,
             "Coerce CoerceTo from arbitrary value"},
         {"Summary", (PyCFunction)py_spdoc_CoerceTo_Summary, METH_VARARGS | METH_KEYWORDS,
-            "Summary(self, includeDescription=None)"},
+            "Summary(self, mns, includeDescription=None)"},
         {NULL, NULL, 0, NULL} // sentinel
     };
 

@@ -297,10 +297,12 @@ public:
     *
     * If the construct is undocumented then this will be a zero size array
     *
+    * @param mns
     * @param includeDescription
     ************************************************************************
     */
     virtual std::vector<std::string> Summary(
+        const std::string& mns,
         bool includeDescription = false) const = 0;
 
     typedef spi::ObjectSmartPtr<Construct> outer_type;
@@ -312,7 +314,7 @@ protected:
     Construct();
 
 public:
-    virtual std::string getName() const = 0;
+    virtual std::string getName(const std::string& mns = {}) const = 0;
 };
 
 /**
@@ -347,10 +349,12 @@ public:
     ************************************************************************
     * No description.
     *
+    * @param mns
     * @param includeDescription
     ************************************************************************
     */
     std::vector<std::string> Summary(
+        const std::string& mns,
         bool includeDescription = false) const;
 
     typedef spi::ObjectSmartPtr<SimpleType> outer_type;
@@ -373,7 +377,10 @@ public:
     const bool noDoc;
 
 public:
-    std::string getName() const { return name; }
+    std::string getName(const std::string& mns) const
+    {
+        return mns + name;
+    }
 };
 
 /**
@@ -432,10 +439,12 @@ public:
     ************************************************************************
     * No description.
     *
+    * @param mns
     * @param includeDescription
     ************************************************************************
     */
     std::vector<std::string> Summary(
+        const std::string& mns,
         bool includeDescription = false) const;
 
     /**
@@ -475,7 +484,10 @@ public:
     const bool optionalReturnType;
 
 public:
-    std::string getName() const { return name; }
+    std::string getName(const std::string& mns) const
+    {
+        return mns + name;
+    }
 };
 
 /**
@@ -582,10 +594,12 @@ public:
     ************************************************************************
     * No description.
     *
+    * @param mns
     * @param includeDescription
     ************************************************************************
     */
     std::vector<std::string> Summary(
+        const std::string& mns,
         bool includeDescription = false) const;
 
     typedef spi::ObjectSmartPtr<Enum> outer_type;
@@ -610,7 +624,10 @@ public:
     const bool isBitmask;
 
 public:
-    std::string getName() const { return name; }
+    std::string getName(const std::string& mns) const
+    {
+        return mns + name;
+    }
 };
 
 /**
@@ -623,6 +640,7 @@ class SPI_IMPORT ClassMethod : public spi::Object
 public:
     static ClassMethodConstSP Make(
         const FunctionConstSP& function,
+        const std::string& instance,
         bool isConst,
         bool isVirtual = false,
         bool isStatic = false,
@@ -632,6 +650,7 @@ public:
     /** Use New when calling the constructor direct from the add-in level */
     static ClassMethodConstSP New(
         const FunctionConstSP& function,
+        const std::string& instance,
         bool isConst,
         bool isVirtual = false,
         bool isStatic = false,
@@ -642,10 +661,12 @@ public:
     ************************************************************************
     * No description.
     *
+    * @param mns
     * @param includeDescription
     ************************************************************************
     */
     std::vector<std::string> Summary(
+        const std::string& mns,
         bool includeDescription = false) const;
 
     typedef spi::ObjectSmartPtr<ClassMethod> outer_type;
@@ -656,6 +677,7 @@ protected:
 
     ClassMethod(
         const FunctionConstSP& function,
+        const std::string& instance,
         bool isConst,
         bool isVirtual,
         bool isStatic,
@@ -665,6 +687,7 @@ protected:
 public:
 
     const FunctionConstSP function;
+    const std::string instance;
     const bool isConst;
     const bool isVirtual;
     const bool isStatic;
@@ -694,10 +717,12 @@ public:
     ************************************************************************
     * No description.
     *
+    * @param mns
     * @param includeDescription
     ************************************************************************
     */
     std::vector<std::string> Summary(
+        const std::string& mns,
         bool includeDescription = false) const;
 
     typedef spi::ObjectSmartPtr<CoerceFrom> outer_type;
@@ -740,10 +765,12 @@ public:
     ************************************************************************
     * No description.
     *
+    * @param mns
     * @param includeDescription
     ************************************************************************
     */
     std::vector<std::string> Summary(
+        const std::string& mns,
         bool includeDescription = false) const;
 
     typedef spi::ObjectSmartPtr<CoerceTo> outer_type;
@@ -817,10 +844,12 @@ public:
     ************************************************************************
     * No description.
     *
+    * @param mns
     * @param includeDescription
     ************************************************************************
     */
     std::vector<std::string> Summary(
+        const std::string& mns,
         bool includeDescription = false) const;
 
     /**
@@ -893,7 +922,10 @@ public:
     const std::string constructor;
 
 public:
-    std::string getName() const { return name; }
+    std::string getName(const std::string& mns = {}) const
+    {
+        return mns + name;
+    }
 };
 
 /**

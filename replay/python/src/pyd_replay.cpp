@@ -146,6 +146,11 @@ void initpy_replay(void)
         "object_put(obj,names[],value,...)\n\n"
         "Sets a value by name within an object.");
 
+    /* object_make */
+    svc->AddFunction("object_make", spi_py_object_make,
+        "object_make(className,names[],value,...)\n\n"
+        "Sets a value by name within an object.");
+
     /* start_timing */
     svc->AddFunction("start_timing", py_spi_replay_start_timing,
         "start_timing()\n\n"

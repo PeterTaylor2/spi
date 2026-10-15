@@ -225,40 +225,35 @@ std::string UserName()
 std::string ComputerName(bool fullyQualified)
 {
     char hostName[256];
-    int rc = gethostname(&hostName[0], 256);
+    int rc = gethostname(hostName, sizeof(hostName));
     throwIfError(rc, "gethostname");
 
-    if (fullyQualified)
+    hostName[sizeof(hostName) - 1] = '\0';   // in case hostName overflows
+    if (!fullyQualified)
     {
-        char out_str[INET6_ADDRSTRLEN];
-
-        struct addrinfo hints, *res, *p;
-        int rc;
-
-        memset(&hints, 0, sizeof(hints));
-        hints.ai_family = AF_UNSPEC;
-        hints.ai_socktype = SOCK_STREAM; // hint only, doesn't filter results by itself
-
-        rc = getaddrinfo(hostName, NULL, &hints, &res);
-        throwIfError(rc, "getaddrinfo");
-
-        // take the first result and format it as a string
-        rc = getnameinfo(res->ai_addr, res->ai_addrlen,
-            out_str, sizeof(out_str),
-            NULL, 0,        // no service/port lookup
-            NI_NUMERICHOST); // don't do reverse DNS, just format the address
-
-        // freeaddrinfo before possibly throwing, since it allocates memory for the results
-        freeaddrinfo(res);
-
-        throwIfError(rc, "getnameinfo");
-
-        return std::string(out_str);
+        return std::string(hostName);
     }
-    else
-    {
-        return std::string(&hostName[0]);
-    }
+
+    struct addrinfo hints, *res = NULL;
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_flags = AI_CANONNAME;
+
+    rc = getaddrinfo(hostName, NULL, &hints, &res);
+    throwIfError(rc, "getaddrinfo");
+
+    // canonical name is only set on the first entry; copy it before freeing
+    std::string name;
+    if (res->ai_canonname)
+        name = res->ai_canonname;
+
+    freeaddrinfo(res);
+
+    if (name.empty())
+        return std::string(hostName);
+
+    return name;
 }
 
 // returns the names of the groups to which the current user belongs
