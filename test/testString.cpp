@@ -70,6 +70,34 @@ static void testStringStrip(void)
 }
 
 
+static void testStringFormat(void)
+{
+    char alphabet[] = "abcdefghijklmnopqrstuvwxyz";
+
+    std::ostringstream format;
+    for (int i = 1; i < 10; ++i)
+        format << i << ": %s\n";
+
+    // StringFormat behaves differently when the format string is long
+    // this is a test to see that it works
+
+    std::string output = spi::StringFormat(format.str().c_str(),
+        alphabet, // 1
+        alphabet, // 2
+        alphabet, // 3
+        alphabet, // 4
+        alphabet, // 5
+        alphabet, // 6
+        alphabet, // 7
+        alphabet, // 8
+        alphabet); // 9
+
+    std::cout << output;
+    std::cout << output.length() << std::endl;
+
+    SPI_POST_CONDITION(output.length() == 270);
+}
+
 
 static void testStringUpper(void)
 {
@@ -188,6 +216,7 @@ int main(int argc, char* argv[])
                             "StringJoin", testStringJoin,
                             "StringStrip", testStringStrip,
                             "StringUpper", testStringUpper,
+                            "StringFormat", testStringFormat,
                             "StringLower", testStringLower,
                             "StringToNumber", testStringToNumber,
                             "StringEscape", testStringEscape,

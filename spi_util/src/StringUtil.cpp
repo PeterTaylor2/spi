@@ -52,6 +52,15 @@ std::string StringFormatV(const char* format, va_list args)
 
     std::string result;
 
+    // vsnprintf consumes args, so the second pass for a long result needs
+    // its own copy - reusing args crashes where va_list is an array type
+    // (x86_64 macOS and Linux), though it happens to work on Windows
+    //
+    // va_copy is regarded as a cheap operation so this should not cost
+    // in the usual case
+    va_list args2;
+    va_copy (args2, args);
+
     size = vsnprintf (buf, sizeof(buf), format, args);
 
     // allegedly vsnprintf returns the required size if there is an
@@ -61,7 +70,7 @@ std::string StringFormatV(const char* format, va_list args)
     if (size == -1)
     {
         char *tmp = (char*)malloc(8192);
-        vsprintf (tmp, format, args);
+        vsprintf (tmp, format, args2);
         result = std::string(tmp);
         free(tmp);
     }
@@ -70,7 +79,7 @@ std::string StringFormatV(const char* format, va_list args)
         if (size >= (int)(sizeof(buf)))
         {
             char *tmp = (char*)malloc(size+1);
-            vsprintf (tmp, format, args);
+            vsprintf (tmp, format, args2);
             result = std::string(tmp);
             free(tmp);
         }
@@ -79,6 +88,8 @@ std::string StringFormatV(const char* format, va_list args)
             result = std::string(buf);
         }
     }
+    va_end(args2);
+
     return result;
 }
 
