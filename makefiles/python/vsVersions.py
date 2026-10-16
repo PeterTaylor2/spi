@@ -83,15 +83,71 @@ def compilerRoot(compiler, packageType=None):
         rootDir = os.path.join(rootDir, packageType)
     return rootDir
 
+def getValues(lines):
+    # assume we have a Makefile and lines are the lines coming from readlines
+    values = {}
+
+    for line in lines:
+        sline = line.strip()
+        items = sline.split("=")
+        if len(items) == 2:
+            name = items[0].strip()
+            value = items[1].strip()
+            values[name] = value
+    return values
+
+def getNewLines(contents, values):
+    newLines = []
+    lines = contents.split("\n")
+    for line in lines:
+        sline = line.strip()
+        items = sline.split("=")
+        if len(items) == 2:
+            name = items[0].strip()
+            value = items[1].strip()
+            if name in values and value == values[name]:
+                continue
+        newLines.append(line)
+
+    return newLines
+
+def combineLines(lines, newLines):
+    # we only add blank lines when we have content
+    combined = lines[:]
+    hasBlank = False
+    changed = False
+    for line in newLines:
+        sline = line.strip()
+        if not sline:
+            hasBlank = True
+            continue
+        changed = True
+        if hasBlank:
+            combined.append("\n")
+        combined.append("%s\n" % sline)
+        hasBlank = False
+
+    return combined, changed
+
 def updateFile(name, contents):
     if os.path.isfile(name):
-        print("updating %s" % name)
-        fp = open(name, "a")
+        ifp = open(name, "r")
+        lines = ifp.readlines()
+        ifp.close()
+        values = getValues(lines)
+        newLines = getNewLines(contents, values)
+        combined, changed = combineLines(lines, newLines)
+        if changed:
+            print("updating %s" % name)
+            ofp = open(name, "w", newline="\n")
+            ofp.writelines(combined)
+        else:
+            print("%s unchanged" % name)
     else:
         print("writing %s" % name)
-        fp = open(name, "w")
-
-    fp.write(contents)
+        ofp = open(name, "w", newline="\n")
+        ofp.write(contents)
+        ofp.close()
 
 def main():
     computerName = os.getenv("COMPUTERNAME")
