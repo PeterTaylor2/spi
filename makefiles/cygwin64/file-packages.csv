@@ -2,6 +2,7 @@
 cmp.exe,diffutils,3.12-1,diffutils
 cp.exe,coreutils,9.0-1,coreutils
 cut.exe,coreutils,9.0-1,coreutils
+date.exe,coreutils,9.0-1,coreutils
 echo.exe,coreutils,9.0-1,coreutils
 grep.exe,grep,3.12-1,grep
 ln.exe,coreutils,9.0-1,coreutils

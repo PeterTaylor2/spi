@@ -14,16 +14,14 @@
 
 static char* g_exe = NULL;
 
-static char g_fn[] = "../doc/spi-user-guide.pdf";
-
 static void testReadFile(void)
 {
     // call this first to get the directory into the operating system cache
     std::vector<std::string> strs;
-    strs.push_back( spi_util::FileReadContents(g_fn, spi_util::FILE_READ_METHOD_C));;
-    strs.push_back( spi_util::FileReadContents(g_fn, spi_util::FILE_READ_METHOD_CPP));;
-    strs.push_back( spi_util::FileReadContents(g_fn, spi_util::FILE_READ_METHOD_ITERATOR));;
-    strs.push_back( spi_util::FileReadContents(g_fn, spi_util::FILE_READ_METHOD_RDBUF));;
+    strs.push_back( spi_util::FileReadContents(g_exe, spi_util::FILE_READ_METHOD_C));;
+    strs.push_back( spi_util::FileReadContents(g_exe, spi_util::FILE_READ_METHOD_CPP));;
+    strs.push_back( spi_util::FileReadContents(g_exe, spi_util::FILE_READ_METHOD_ITERATOR));;
+    strs.push_back( spi_util::FileReadContents(g_exe, spi_util::FILE_READ_METHOD_RDBUF));;
 
     // test that we can read a binary file - hence strlen should be different from length and size
     size_t N = strs.size();
@@ -39,27 +37,27 @@ static void testReadFile(void)
 
 static void testReadFileDefault(void)
 {
-    spi_util::FileReadContents(g_fn, spi_util::FILE_READ_METHOD_DEFAULT);
+    spi_util::FileReadContents(g_exe, spi_util::FILE_READ_METHOD_DEFAULT);
 }
 
 static void testReadFileC(void)
 {
-    spi_util::FileReadContents(g_fn, spi_util::FILE_READ_METHOD_C);
+    spi_util::FileReadContents(g_exe, spi_util::FILE_READ_METHOD_C);
 }
 
 static void testReadFileCPP(void)
 {
-    spi_util::FileReadContents(g_fn, spi_util::FILE_READ_METHOD_CPP);
+    spi_util::FileReadContents(g_exe, spi_util::FILE_READ_METHOD_CPP);
 }
 
 static void testReadFileIterator(void)
 {
-    spi_util::FileReadContents(g_fn, spi_util::FILE_READ_METHOD_ITERATOR);
+    spi_util::FileReadContents(g_exe, spi_util::FILE_READ_METHOD_ITERATOR);
 }
 
 static void testReadFileRdbuf(void)
 {
-    spi_util::FileReadContents(g_fn, spi_util::FILE_READ_METHOD_RDBUF);
+    spi_util::FileReadContents(g_exe, spi_util::FILE_READ_METHOD_RDBUF);
 }
 
 int main(int argc, char* argv[])

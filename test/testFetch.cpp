@@ -36,7 +36,7 @@ static std::string testFetchOne(CURL* handle, const char* url)
   CURLcode status = curl_easy_setopt(handle, CURLOPT_URL, url);
   errorHandler(status);
 
-  status = curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION);
+  status = curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, NULL);
   errorHandler(status);
 
   status = curl_easy_perform(handle);
