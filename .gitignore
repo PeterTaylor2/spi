@@ -83,6 +83,7 @@ Release*
 *.rej
 *#
 *~
+*.patch
 
 code-generators/spcl/types/src
 code-generators/spcl/types/*.h
