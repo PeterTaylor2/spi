@@ -107,3 +107,5 @@ obj
 spi_util/lex/JSONLexer.cpp
 
 sample
+
+test-results
