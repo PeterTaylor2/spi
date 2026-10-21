@@ -81,7 +81,7 @@ U_OUTPUT_DIR?=..
 code:
 	$(MAKE) -C $(U_CONFIG_DIR) code-python
 
-U_FORCE_REBUILD+=Makefile $(U_DLL_DIR)/properties.mk
+U_FORCE_REBUILD+=Makefile
 U_FORCE_REBUILD+=$(U_SPI_HOME)/makefiles/version.mk
 ############################################################################
 # the following values depend on properties.mk but can be overridden
@@ -229,13 +229,18 @@ dll: $(addprefix $(U_OUTPUT_DIR)/$(G_PY_ABI)/,$(notdir $(U_DLLS)))
 
 $(U_OUTPUT_DIR)/$(G_PY_ABI)/%.dll: $(I_SPI_RUNTIME_BIN_DIR)/py$(G_PY_VERSION)/%.dll
 	@mkdir -p $(U_OUTPUT_DIR)/$(G_PY_ABI)
-	cp -f $< $(U_OUTPUT_DIR)/$(G_PY_ABI)
-	cp -f $(basename $<).pdb $(U_OUTPUT_DIR)/$(G_PY_ABI)
+	ln -f $< $(U_OUTPUT_DIR)/$(G_PY_ABI)
+	ln -f $(basename $<).pdb $(U_OUTPUT_DIR)/$(G_PY_ABI)
+
+$(U_OUTPUT_DIR)/$(G_PY_ABI)/%.dll: $(I_SPI_RUNTIME_BIN_DIR)/%.dll
+	@mkdir -p $(U_OUTPUT_DIR)/$(G_PY_ABI)
+	ln -f $< $(U_OUTPUT_DIR)/$(G_PY_ABI)
+	ln -f $(basename $<).pdb $(U_OUTPUT_DIR)/$(G_PY_ABI)
 
 $(U_OUTPUT_DIR)/$(G_PY_ABI)/$(U_TARGET)$(G_DLL_EXT): $(G_BUILD_DIR)-py$(G_PY_VERSION)/$(U_TARGET)$(G_DLL_EXT)
 	@mkdir -p $(U_OUTPUT_DIR)/$(G_PY_ABI)
-	cp -f $< $(U_OUTPUT_DIR)/$(G_PY_ABI)
-	cp -f $(basename $<).pdb $(U_OUTPUT_DIR)/$(G_PY_ABI)
+	ln -f $< $(U_OUTPUT_DIR)/$(G_PY_ABI)
+	ln -f $(basename $<).pdb $(U_OUTPUT_DIR)/$(G_PY_ABI)
 
 else
 
@@ -250,6 +255,9 @@ $(U_OUTPUT_DIR)/$(G_PY_ABI)/%$(G_INSTALL_DLL_EXT): $(I_SPI_RUNTIME_BIN_DIR)/py$(
 	@mkdir -p $(U_OUTPUT_DIR)/$(G_PY_ABI)
 	ln -f $< $(U_OUTPUT_DIR)/$(G_PY_ABI)
 
+$(U_OUTPUT_DIR)/$(G_PY_ABI)/%$(G_DLL_EXT): $(I_SPI_RUNTIME_BIN_DIR)/%$(G_DLL_EXT)
+	@mkdir -p $(U_OUTPUT_DIR)/$(G_PY_ABI)
+	ln -f $< $(U_OUTPUT_DIR)/$(G_PY_ABI)
 
 $(U_OUTPUT_DIR)/$(G_PY_ABI)/$(U_TARGET)$(G_INSTALL_PYD_EXT): $(G_BUILD_DIR)-py$(G_PY_VERSION)/$(U_TARGET)$(G_INSTALL_PYD_EXT)
 	@mkdir -p $(U_OUTPUT_DIR)/$(G_PY_ABI)

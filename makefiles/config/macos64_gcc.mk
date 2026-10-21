@@ -34,7 +34,7 @@ G_CPPC+=-MMD -MP
 endif
 
 G_LINK=g++ 
-G_LIB=ar rv $@ 
+G_LIB=ar rc $@ 
 
 # these are the system libraries independent of whether we are using
 # debug or optimised code

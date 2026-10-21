@@ -166,6 +166,9 @@ endif
 $(I_BUILD_DIR)/%.$(G_OBJ): %.c $(G_PCH) $(I_FORCE_REBUILD)
 	@rm -f $@
 	$(G_CC) $(G_PCH_CFLAGS) $(G_CFLAGS) $(U_CFLAGS) $(I_INCLUDES) $(G_SYS_INCLUDES) "$<" 
+ifneq ($(G_PLATFORM),win32)
+	@echo $(notdir $<)
+endif
 ifneq ($(I_USE_GENDEP),0)
 	@-$(I_GENDEP_EXE) $(I_INCLUDES) -d$(I_BUILD_DIR) -o$(G_OBJ) -sd $(U_GENDEP_FILTERS) "$<"
 endif
@@ -173,6 +176,9 @@ endif
 $(I_BUILD_DIR)/%.$(G_OBJ): %.cpp $(G_PCH) $(I_FORCE_REBUILD)
 	@rm -f $@
 	$(G_CPPC) $(G_PCH_CFLAGS) $(G_CPPFLAGS) $(U_CFLAGS) $(U_CPPFLAGS) $(I_INCLUDES) $(G_SYS_INCLUDES) "$<"
+ifneq ($(G_PLATFORM),win32)
+	@echo $(notdir $<)
+endif
 ifneq ($(I_USE_GENDEP),0)
 	@-$(I_GENDEP_EXE) $(I_INCLUDES) -d$(I_BUILD_DIR) -o$(G_OBJ) -sd $(U_GENDEP_FILTERS) "$<"
 endif

@@ -162,12 +162,18 @@ win64:
 	done
 
 
+# in these visual studio solution converters the master is either 17 or 18
+# vs16 is still temporarily supported although not installed on the development machine
+
 vs16.sln:
 	$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/translateVS.py --old=17 --new=16 spi-vs17.sln spi-vs16.sln
+	$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/translateVS.py --old=17 --new=16 spi-vs17-python.sln spi-vs16-python.sln
 
 vs17.sln:
-	$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/translateVS.py --old=16 --new=17 spi-vs16.sln spi-vs17.sln
+	$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/translateVS.py --old=18 --new=17 spi-vs18.sln spi-vs17.sln
+	$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/translateVS.py --old=18 --new=17 spi-vs18-python.sln spi-vs17-python.sln
 
 vs18.sln:
 	$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/translateVS.py --old=17 --new=18 spi-vs17.sln spi-vs18.sln
+	$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/translateVS.py --old=17 --new=18 spi-vs17-python.sln spi-vs18-python.sln
 

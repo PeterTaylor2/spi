@@ -33,7 +33,7 @@ class TestGenerator(ReplayCodeGenerator):
     def _write(self, txt):
         if self.ofn and self.fp is None:
             sys.stdout.write("Opening %s\n" % self.ofn)
-            self.fp = open(self.ofn, "w")
+            self.fp = open(self.ofn, "w", newline='\n')
         fp = sys.stdout if self.fp is None else self.fp
         fp.write("%s\n" % txt)
         if not txt: fp.flush()

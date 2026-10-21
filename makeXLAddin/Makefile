@@ -5,6 +5,12 @@ include $(U_SPI_HOME)/makefiles/config/config.mk
 
 ifeq ($(G_PLATFORM),win32)
 
+ifdef G_NO_MAKE_XLADDIN
+
+U_NO_BUILD=1
+
+else
+
 ifeq ($(DEBUG),0)
 I_CONFIG=Release
 else
@@ -47,6 +53,7 @@ v17.vcxproj:
 
 v18.vcxproj:
 
+endif
 
 else
 

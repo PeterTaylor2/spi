@@ -2,7 +2,7 @@ name: Build and test
 
 on:
   push:
-    branches: [main, python3-abi]
+    branches: [main]
   pull_request:
   workflow_dispatch:
 

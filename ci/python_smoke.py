@@ -4,6 +4,7 @@ import datetime
 import os
 from pathlib import Path
 import sys
+import filecmp
 
 
 def main():
@@ -24,27 +25,32 @@ def main():
         print('PASS import', module, flush=True)
         return result
 
-    spi = import_from(root / 'replay' / args.abi / ('py' + args.python_tag), 'spi_replay')
-    values = {
-        'integer': (42, 'INT'), 'float': (3.125, 'DOUBLE'),
-        'boolean': (True, 'BOOL'), 'string': ('hello world', 'STRING'),
-        'date': (datetime.date(2024, 2, 29), 'DATE'),
-        'datetime': (datetime.datetime(2024, 2, 29, 12, 34, 56), 'DATETIME'),
-    }
-    sample = {name: value for name, (value, _) in values.items()}
-    assert set(spi.MapFieldNames(sample)) == set(values)
-    for name, (expected, expected_type) in values.items():
-        actual, value_type = spi.MapGetValue(sample, name)
-        assert actual == expected, (name, actual, expected)
-        assert type(actual) is type(expected), (name, type(actual), type(expected))
-        assert value_type == expected_type, (name, value_type, expected_type)
-        print('PASS roundtrip', name, flush=True)
-    original = spi.TestGenerator()
-    restored = spi.Object.from_string(original.to_string())
-    assert isinstance(restored, spi.TestGenerator), type(restored)
-    assert restored.to_dict(True) == {}
-    print('PASS Python subclass serialization', flush=True)
-    import_from(root / 'svo/spdoc/bin' / (args.abi + '-py' + args.python_tag), 'spdoc')
+    spdoc = import_from(root / 'svo/spdoc/bin' / args.abi / ('py' + args.python_tag), 'spdoc')
+    test_svo = str(root / 'test/config/test.svo')
+
+    svc = spdoc.Service.from_file(test_svo)
+    print('PASS read service object', test_svo)
+
+    print("Summary of service object:\n")
+    print("\n".join(svc.Summary(True)))
+    print("\n")
+
+    print('PASS summarize service object', test_svo)
+
+    spi_replay = import_from(root / 'replay' / args.abi / ('py' + args.python_tag), 'spi_replay')
+
+    ifn = str(root / 'ci/a.log')
+    ofn = str(root / 'test-results/a.out')
+    baseline = str(root / 'ci/a.out')
+
+    replayLog = spi_replay.ReplayLog.Read(ifn)
+    generator = spi_replay.TestGenerator(ofn)
+    replayLog.generateCode(generator)
+    del generator
+    
+    assert filecmp.cmp(ofn, baseline, shallow=False)
+    print('PASS spi_replay.generateCode')
+
     print('ALL PYTHON CHECKS PASSED:', sys.version, flush=True)
 
 

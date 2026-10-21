@@ -149,18 +149,7 @@ def updateFile(name, contents):
         ofp.write(contents)
         ofp.close()
 
-def main():
-    computerName = os.getenv("COMPUTERNAME")
-    if not computerName:
-        raise Exception("Cannot find COMPUTERNAME")
-                               
-    me = os.path.normpath(__file__)
-    config = os.path.normpath(os.path.join(me, "..", "..", "config"))
-    computers = os.path.join(config, "computers")
-    hasComputers = os.path.isdir(computers)
-
-    ofn = os.path.join(computers, "%s.mk" % computerName) if hasComputers else None
-
+def get_contents():
     contents = []
     kitsVersion = getKitsVersion() 
     for compiler in ["VS16", "VS17", "VS18"]:
@@ -175,6 +164,21 @@ def main():
             contents.append("G_%s_REDIST_VERSION=%s" % (compiler, redistVersion))
         except Exception:
             print("compiler %s not installed" % compiler)
+    return contents
+
+def main():
+    computerName = os.getenv("COMPUTERNAME")
+    if not computerName:
+        raise Exception("Cannot find COMPUTERNAME")
+                               
+    me = os.path.normpath(__file__)
+    config = os.path.normpath(os.path.join(me, "..", "..", "config"))
+    computers = os.path.join(config, "computers")
+    hasComputers = os.path.isdir(computers)
+
+    ofn = os.path.join(computers, "%s.mk" % computerName) if hasComputers else None
+
+    contents = get_contents()
 
     if len(contents):
         contents.append("")

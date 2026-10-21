@@ -35,6 +35,8 @@ def win32_set_permission(ofn, username = None):
         raise Exception("Failed to set permissions for %s" % ofn)
 
 def copyFile(src, dst):
+    if os.path.isdir(src):
+        return False # don't copy directories
     if not os.path.isfile(src):
         raise Exception("Source file %s is not a file" % os.path.normpath(src))
     if not os.path.isfile(dst):
