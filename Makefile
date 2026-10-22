@@ -118,16 +118,13 @@ test:
 	@$(MAKE) -C test all
 
 vc-all:
-	$(MAKE) -s v16.vcxproj U_VCPROJ=refresh-projects U_VCPROJ_OPTIONS="-j1 -tvc-all"
 	$(MAKE) -s v17.vcxproj U_VCPROJ=refresh-projects U_VCPROJ_OPTIONS="-j1 -tvc-all"
 	$(MAKE) -s v18.vcxproj U_VCPROJ=refresh-projects U_VCPROJ_OPTIONS="-j1 -tvc-all"
-	$(MAKE) -s v16.vcxproj U_VCPROJ=all U_VCPROJ_OPTIONS="-j4 -tbuild"
 	$(MAKE) -s v17.vcxproj U_VCPROJ=all U_VCPROJ_OPTIONS="-j4 -tbuild"
 	$(MAKE) -s v18.vcxproj U_VCPROJ=all U_VCPROJ_OPTIONS="-j4 -tbuild"
 	$(MAKE) -C code-generators vc-all
 	@for lib in $(BUILD_DIRS) $(EXTRA_VCPROJ_DIRS); do \
 		echo Creating vcproject for $$lib; \
-		$(MAKE) -s -C $$lib v16.vcxproj; \
 		$(MAKE) -s -C $$lib v17.vcxproj; \
 		$(MAKE) -s -C $$lib v18.vcxproj; \
 	done
@@ -135,7 +132,6 @@ vc-all:
 vc-all-runtime:
 	@for lib in $(RUNTIME_BUILD_DIRS); do \
 		echo Creating vcproject for $$lib; \
-		$(MAKE) -s -C $$lib v16.vcxproj; \
 		$(MAKE) -s -C $$lib v17.vcxproj; \
 		$(MAKE) -s -C $$lib v18.vcxproj; \
 	done
@@ -161,13 +157,6 @@ win64:
 		$(MAKE) build COMPILER=$$compiler BITS=64; \
 	done
 
-
-# in these visual studio solution converters the master is either 17 or 18
-# vs16 is still temporarily supported although not installed on the development machine
-
-vs16.sln:
-	$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/translateVS.py --old=17 --new=16 spi-vs17.sln spi-vs16.sln
-	$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/translateVS.py --old=17 --new=16 spi-vs17-python.sln spi-vs16-python.sln
 
 vs17.sln:
 	$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/translateVS.py --old=18 --new=17 spi-vs18.sln spi-vs17.sln

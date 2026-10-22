@@ -6,8 +6,7 @@ import os
 import shutil
 import sys
 
-MAPPING = { "16" : "16.0.29001.49",
-            "17" : "17.3.32929.385",
+MAPPING = { "17" : "17.3.32929.385",
             "18" : "18.0.0.0" }
 
 def transform_line(line, old, new):
@@ -51,8 +50,8 @@ def transform(ifn, ofn, old, new):
 def main():
     import getopt
 
-    old = "16"
-    new = "17"
+    old = "17"
+    new = "18"
     opts, args = getopt.getopt(sys.argv[1:], "", ["old=", "new="])
     if len(args) != 2:
         raise Exception("Expect input file and output file on command line")

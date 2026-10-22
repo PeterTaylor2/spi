@@ -67,8 +67,6 @@ def getPackageType(compiler):
     raise Exception("Could not find package type via directory %s" % rootDir)
 
 def getCompilerDirectory(compiler):
-    if compiler == "VS16":
-        return "2019"
     if compiler == "VS17":
         return "2022"
     if compiler == "VS18":
@@ -157,7 +155,7 @@ def get_contents():
     print("using %s to locate visual studio installations" % vswhere)
 
     installs = json.loads(subprocess.check_output([
-            vswhere, '-products', '*', '-version', '[16.0,19.0)',
+            vswhere, '-products', '*', '-version', '[17.0,19.0)',
             '-requires', 'Microsoft.VisualStudio.Component.VC.Tools.x86.x64', '-format', 'json']))
 
     indexCompilerRootDir = {}
@@ -165,12 +163,12 @@ def get_contents():
         version = item['installationVersion']
         location = item['installationPath']
 
-        for cv in ["16", "17", "18"]:
+        for cv in ["17", "18"]:
             if version.startswith(cv+"."):
                 indexCompilerRootDir["VS"+cv] = location
 
     kitsVersion = getKitsVersion() 
-    for compiler in ["VS16", "VS17", "VS18"]:
+    for compiler in ["VS17", "VS18"]:
         try:
             rootDir = indexCompilerRootDir[compiler]
             print(compiler, "installed in", rootDir)

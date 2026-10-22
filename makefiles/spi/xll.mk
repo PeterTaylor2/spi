@@ -227,9 +227,6 @@ install-info:
 	@echo TARGET=$(I_INSTALL_TARGET_DIR)
 	@echo FILES=$(I_INSTALL_FILES)
 
-v16.vcxproj::
-	@$(I_VCPROJ16_CMD) $(I_COMPILER_OPTIONS) -j1 -t install -b $(G_CYGWIN_BIN) $(U_VCPROJ)-install.v16.vcxproj $(U_VCPROJ)-install . . $(G_WIN32_COMPILER) $(G_WIN32_BITS)
-
 v17.vcxproj::
 	@$(I_VCPROJ17_CMD) $(I_COMPILER_OPTIONS) -j1 -t install -b $(G_CYGWIN_BIN) $(U_VCPROJ)-install.v17.vcxproj $(U_VCPROJ)-install . . $(G_WIN32_COMPILER) $(G_WIN32_BITS)
 

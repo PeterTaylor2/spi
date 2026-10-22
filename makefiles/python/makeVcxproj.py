@@ -1,4 +1,4 @@
-# makes a visual studio project file for VC16 (and above)
+# makes a visual studio project file for VC17 (and above)
 #
 # naming convention is that functions starting with an underscore should not be called
 # outside this module, whereas other functions are being called outside this module
@@ -266,7 +266,7 @@ def get_abi(compiler, bits, debug, defaultCompiler, defaultBits):
     # defaultBits is ignored now in the windows makfile configuration
     #
     # msvc9 => 32-bit default
-    # msvc16+ => 64-bit default
+    # msvc17+ => 64-bit default
     defaultBits = 32 if compiler == "msvc9" else 64
 
     if bits != 32 and bits != 64:

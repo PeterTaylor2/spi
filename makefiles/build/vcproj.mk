@@ -11,7 +11,6 @@
 ###########################################################################
 
 I_VCPROJ9_CMD=$(G_PYTHON) $(U_MAKEFILES)/python/makeVcproj9.py
-I_VCPROJ16_CMD=$(G_PYTHON) $(U_MAKEFILES)/python/makeVcproj16.py
 I_VCPROJ17_CMD=$(G_PYTHON) $(U_MAKEFILES)/python/makeVcproj17.py
 I_VCPROJ18_CMD=$(G_PYTHON) $(U_MAKEFILES)/python/makeVcproj18.py
 
@@ -20,9 +19,6 @@ I_VCPROJ=$(U_TARGET)
 else
 I_VCPROJ=$(U_VCPROJ)
 endif
-
-v16.vcxproj:: 
-	@$(I_VCPROJ16_CMD) $(I_INCLUDES) $(U_VCPROJ_OPTIONS) -b $(G_CYGWIN_BIN) --vcTarget=v16.vcxproj $(I_VCPROJ).v16.vcxproj $(I_VCPROJ) $(U_SRC_DIR) $(U_INC_DIR) $(G_WIN32_COMPILER) $(G_WIN32_BITS)
 
 v17.vcxproj:: 
 	@$(I_VCPROJ17_CMD) $(I_INCLUDES) $(U_VCPROJ_OPTIONS) -b $(G_CYGWIN_BIN) --vcTarget=v17.vcxproj $(I_VCPROJ).v17.vcxproj $(I_VCPROJ) $(U_SRC_DIR) $(U_INC_DIR) $(G_WIN32_COMPILER) $(G_WIN32_BITS)

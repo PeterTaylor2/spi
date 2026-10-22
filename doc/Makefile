@@ -83,7 +83,6 @@ clean:
 	@rm -f *.aux *.bbl *.blg *.dvi *.log *.out *.toc
 
 vc-all:
-	@$(MAKE) v16.vcxproj
 	@$(MAKE) v17.vcxproj
 	@$(MAKE) v18.vcxproj
 

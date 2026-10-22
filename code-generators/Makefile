@@ -85,12 +85,10 @@ code:
 
 vc-all:
 	@echo Creating vcproject for all-code-generators
-	@$(MAKE) -s v16.vcxproj
 	@$(MAKE) -s v17.vcxproj
 	@$(MAKE) -s v18.vcxproj
 	@for lib in $(BUILD_DIRS) $(EXTRA_VCPROJ_DIRS); do \
 		echo Creating vcproject for $$lib; \
-		$(MAKE) -s -C $$lib v16.vcxproj; \
 		$(MAKE) -s -C $$lib v17.vcxproj; \
 		$(MAKE) -s -C $$lib v18.vcxproj; \
 	done
