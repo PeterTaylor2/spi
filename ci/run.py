@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Build SPI and run every native test plus the Python extension smoke tests."""
 import argparse
+import contextlib
 from contextlib import contextmanager
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
@@ -30,33 +31,46 @@ def latest_directory(parent):
 
 
 def configuration(python_tag):
-    version = f'{sys.version_info.major}.{sys.version_info.minor}'
-    config = {'linux': 'linux64', 'darwin': 'macos64', 'win32': 'win64'}[sys.platform]
-    tag = python_tag or (version.replace('.', '') if sys.platform == 'win32' else version)
-    args = [f'SARTORIAL_CONFIG={config}', f'PY_VERSION={tag}',
-            f'G_PYTHON={Path(sys.executable).as_posix()}']
-    make = 'make'
-    if sys.platform == 'win32':
-        cygwin = ROOT / 'makefiles/cygwin64/bin'
-        os.environ['PATH'] = str(cygwin) + os.pathsep + os.environ['PATH']
-        make = str(cygwin / 'make.exe')
-        args.append("COMPILER=msvc17")
-        args.append("G_NO_MAKE_XLADDIN=1")
-        args += vsVersions.get_contents()
-        abi = 'Release'
-    else:
-        abi = 'Release-' + config
-    return make, args, abi, tag
+    log = RESULTS / 'configuration.log'
+    print("getting local configuration with python_tag", python_tag, flush=True)
+    with log.open('w', encoding='utf-8') as output:
+        version = f'{sys.version_info.major}.{sys.version_info.minor}'
+        output.write("version=%s\n" % version)
+        config = {'linux': 'linux64', 'darwin': 'macos64', 'win32': 'win64'}[sys.platform]
+        output.write("config=%s\n" % config)
+        tag = python_tag or (version.replace('.', '') if sys.platform == 'win32' else version)
+        output.write("tag=%s\n" % tag)
+        args = [f'SARTORIAL_CONFIG={config}', f'PY_VERSION={tag}',
+                f'G_PYTHON={Path(sys.executable).as_posix()}']
+        make = 'make'
+        if sys.platform == 'win32':
+            cygwin = ROOT / 'makefiles/cygwin64/bin'
+            os.environ['PATH'] = str(cygwin) + os.pathsep + os.environ['PATH']
+            make = str(cygwin / 'make.exe')
+            args.append("COMPILER=msvc17")
+            args.append("G_NO_MAKE_XLADDIN=1")
+            with contextlib.redirect_stdout(output):
+                args += vsVersions.get_contents()
+            abi = 'Release'
+        else:
+            abi = 'Release-' + config
+        return make, args, abi, tag
 
 def create_site_mk(args):
     """site.mk file is not in source control but will be read by all the makefiles if it exists"""
+    log = RESULTS / 'create-site-mk.log'
     site_mk = ROOT / 'makefiles/config/site.mk'
     print("writing", site_mk)
+    lfp = log.open('w', encoding='utf-8')
     with site_mk.open('w', encoding='utf-8', newline='\n') as fp:
+        lfp.write("Creating temporary site.mk file with the following content:\n\n")
         fp.write("# Temporary site.mk file as part of ci build process\n\n")
         for arg in args:
             fp.write("%s\n" % arg)
+            lfp.write("%s\n" % arg)
         fp.write("\n")
+        lfp.write("\n")
+    lfp.close()
 
 def remove_site_mk():
     site_mk = ROOT / 'makefiles/config/site.mk'

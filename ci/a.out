@@ -1,0 +1,259 @@
+FUNCTION: clib.AddDateInterval
+<spi>
+ReplayFunctionAction 1 {
+ inputs = Map 2 {
+  startDate = 2022-05-03
+  ivl = DateInterval {
+   name = "2D"
+  }
+  count = 1
+ }
+ output = Map 3 {
+  output = 2022-05-05
+ }
+}
+
+FUNCTION: clib.AddDateInterval
+<spi>
+ReplayFunctionAction 1 {
+ inputs = Map 2 {
+  startDate = 2022-05-05
+  ivl = DateInterval {
+   name = "1M"
+  }
+  count = 1
+ }
+ output = Map 3 {
+  output = 2022-06-05
+ }
+}
+
+FUNCTION: clib.AddDateInterval
+<spi>
+ReplayFunctionAction 1 {
+ inputs = Map 2 {
+  startDate = 2022-05-05
+  ivl = DateInterval {
+   name = "3M"
+  }
+  count = 1
+ }
+ output = Map 3 {
+  output = 2022-08-05
+ }
+}
+
+FUNCTION: clib.AddDateInterval
+<spi>
+ReplayFunctionAction 1 {
+ inputs = Map 2 {
+  startDate = 2022-05-05
+  ivl = DateInterval {
+   name = "6M"
+  }
+  count = 1
+ }
+ output = Map 3 {
+  output = 2022-11-05
+ }
+}
+
+FUNCTION: clib.AddDateInterval
+<spi>
+ReplayFunctionAction 1 {
+ inputs = Map 2 {
+  startDate = 2022-05-05
+  ivl = DateInterval {
+   name = "12M"
+  }
+  count = 1
+ }
+ output = Map 3 {
+  output = 2023-05-05
+ }
+}
+
+FUNCTION: clib.AddDateInterval
+<spi>
+ReplayFunctionAction 1 {
+ inputs = Map 2 {
+  startDate = 2022-05-05
+  ivl = DateInterval {
+   name = "36M"
+  }
+  count = 1
+ }
+ output = Map 3 {
+  output = 2025-05-05
+ }
+}
+
+FUNCTION: clib.AddDateInterval
+<spi>
+ReplayFunctionAction 1 {
+ inputs = Map 2 {
+  startDate = 2022-05-05
+  ivl = DateInterval {
+   name = "60M"
+  }
+  count = 1
+ }
+ output = Map 3 {
+  output = 2027-05-05
+ }
+}
+
+FUNCTION: clib.AddDateInterval
+<spi>
+ReplayFunctionAction 1 {
+ inputs = Map 2 {
+  startDate = 2022-05-05
+  ivl = DateInterval {
+   name = "7D"
+  }
+  count = 1
+ }
+ output = Map 3 {
+  output = 2022-05-12
+ }
+}
+
+FUNCTION: CashSwapCurve
+<spi>
+ReplayFunctionAction 1 {
+ inputs = Map 2 {
+  baseDate = 2022-05-05
+  cashOrSwaps = [7]
+  {
+   "Cash"
+   "Cash"
+   "Cash"
+   "Cash"
+   "Swap"
+   "Swap"
+   "Swap"
+  }
+  dates = [7]
+  {
+   2022-05-12
+   2022-06-05
+   2022-08-05
+   2022-11-05
+   2023-05-05
+   2025-05-05
+   2027-05-05
+  }
+  rates = [7]
+  {
+   0.01
+   0.012
+   0.015
+   0.02
+   0.025
+   0.03
+   0.035
+  }
+  cashDcc = "Actual/360"
+  swapFixedInterval = DateInterval {
+   name = "6M"
+  }
+  swapFixedDcc = "30/360"
+  badDayConv = "ModifiedFollow"
+  holidays = "NONE"
+ }
+ output = Map 3 {
+  output = CashSwapCurve {
+   baseDate = 2022-05-05
+   cashOrSwaps = [7]
+   {
+    "Cash"
+    "Cash"
+    "Cash"
+    "Cash"
+    "Swap"
+    "Swap"
+    "Swap"
+   }
+   dates = [7]
+   {
+    2022-05-12
+    2022-06-05
+    2022-08-05
+    2022-11-05
+    2023-05-05
+    2025-05-05
+    2027-05-05
+   }
+   rates = [7]
+   {
+    0.01
+    0.012
+    0.015
+    0.02
+    0.025
+    0.03
+    0.035
+   }
+   cashDcc = "Actual/360"
+   swapFixedInterval = DateInterval {
+    name = "6M"
+   }
+   swapFixedDcc = "30/360"
+   badDayConv = "ModifiedFollow"
+   holidays = "NONE"
+  }
+ }
+}
+
+FUNCTION: clib.CashSwapCurve.ZeroCurve
+<spi>
+ReplayFunctionAction 1 {
+ inputs = Map 2 {
+  self = *1
+  interpType = "FLAT_FORWARDS"
+  flags = ""
+ }
+ output = Map 3 {
+  output = ZeroCurve {
+   anchorDate = 2022-05-05
+   interpType = "FLAT_FORWARDS"
+   dates = [14]
+   {
+    2022-05-12
+    2022-06-05
+    2022-08-05
+    2022-11-05
+    2022-11-07
+    2023-05-05
+    2023-11-06
+    2024-05-06
+    2024-11-05
+    2025-05-05
+    2025-11-05
+    2026-05-05
+    2026-11-05
+    2027-05-05
+   }
+   rates = [14]
+   {
+    0.0101894659312871
+    0.0122346229789676
+    0.0152950483755934
+    0.020379724288913
+    0.0204836832015527
+    0.0251851171676606
+    0.0277535874152837
+    0.0290158967444316
+    0.0297795825340401
+    0.0302843719379534
+    0.0322023327458372
+    0.0336199620367328
+    0.0347427034672358
+    0.0356272307274284
+   }
+   rateType = "Annual"
+   dayCountConv = "Actual/365F"
+  }
+ }
+}
+

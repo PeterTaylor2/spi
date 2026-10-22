@@ -115,7 +115,7 @@ bool pyoToBool(PyObject* pyo)
         return (PyInt_AS_LONG(pyo)) != 0;
 
     PyErr_Format(PyExc_TypeError, "Cannot convert %s to bool",
-                 pyo_typename(pyo));
+                 pyo_typename(pyo).c_str());
     throw PyException();
 }
 

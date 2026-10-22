@@ -137,10 +137,6 @@ G_INSTALL_PYD_PFX:=
 
 else
 
-ifdef G_CYGWIN
-G_DLL_EXT:=$(G_DEBUG_EXT).dll
-endif
-
 U_DEP_LIBS:=\
 $(U_DLL_DIR)/$(G_BUILD_DIR)/lib$(U_SERVICE_DLL)$(G_DLL_EXT)\
 $(U_DEP_LIBS)\
@@ -149,16 +145,6 @@ $(I_SPI_RUNTIME_BIN_DIR)/lib$(SPI_DLL)$(G_DLL_EXT)\
 $(I_SPI_RUNTIME_BIN_DIR)/lib$(SPI_UTIL_DLL)$(G_DLL_EXT)\
 $(I_SPI_RUNTIME_BIN_DIR)/libspi_boost$(G_LIB_EXT)
 
-ifdef G_CYGWIN
-U_LIBS:=\
-$(U_DLL_DIR)/$(G_BUILD_DIR)/lib$(U_SERVICE_DLL)$(G_DLL_EXT)\
-$(U_LIBS)\
-$(I_SPI_RUNTIME_BIN_DIR)/py$(G_PY_VERSION)/lib$(SPI_DLL)-py$(G_PY_VERSION).so\
-$(I_SPI_RUNTIME_BIN_DIR)/lib$(SPI_DLL).so\
-$(I_SPI_RUNTIME_BIN_DIR)/lib$(SPI_UTIL_DLL).so\
-$(I_SPI_RUNTIME_BIN_DIR)/libspi_boost$(G_LIB_EXT)\
-$(G_PYTHON_LIBS)
-else
 U_LIBS:=\
 -L$(U_DLL_DIR)/$(G_BUILD_DIR) -l$(U_SERVICE_DLL)\
 $(U_LIBS)\
@@ -166,7 +152,6 @@ $(U_LIBS)\
 -L$(I_SPI_RUNTIME_BIN_DIR) -l$(SPI_DLL) -l$(SPI_UTIL_DLL)\
 $(I_SPI_RUNTIME_BIN_DIR)/libspi_boost$(G_LIB_EXT)\
 $(G_PYTHON_LIBS)
-endif
 
 G_DLL_PFX=
 
@@ -258,6 +243,17 @@ $(U_OUTPUT_DIR)/$(G_PY_ABI)/%$(G_INSTALL_DLL_EXT): $(I_SPI_RUNTIME_BIN_DIR)/py$(
 $(U_OUTPUT_DIR)/$(G_PY_ABI)/%$(G_DLL_EXT): $(I_SPI_RUNTIME_BIN_DIR)/%$(G_DLL_EXT)
 	@mkdir -p $(U_OUTPUT_DIR)/$(G_PY_ABI)
 	ln -f $< $(U_OUTPUT_DIR)/$(G_PY_ABI)
+
+ifeq ($(G_PLATFORM),macos64)
+
+# G_DLL_EXT was changed to .so to enable the build to work
+# however this copy needs the .dylib files to be copied over
+
+$(U_OUTPUT_DIR)/$(G_PY_ABI)/%.dylib: $(I_SPI_RUNTIME_BIN_DIR)/%.dylib
+	@mkdir -p $(U_OUTPUT_DIR)/$(G_PY_ABI)
+	ln -f $< $(U_OUTPUT_DIR)/$(G_PY_ABI)
+
+endif
 
 $(U_OUTPUT_DIR)/$(G_PY_ABI)/$(U_TARGET)$(G_INSTALL_PYD_EXT): $(G_BUILD_DIR)-py$(G_PY_VERSION)/$(U_TARGET)$(G_INSTALL_PYD_EXT)
 	@mkdir -p $(U_OUTPUT_DIR)/$(G_PY_ABI)

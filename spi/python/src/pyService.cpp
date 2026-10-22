@@ -468,7 +468,7 @@ void PythonService::RegisterPythonClass(PyObject* args)
     
     PyTypeObject* pyType = (PyTypeObject*)vargs[0];
     if (className.empty())
-        className = StringFormat("py.%s", pyType_GetName(pyType));
+        className = StringFormat("py.%s", pyType_GetName(pyType).c_str());
 
     RegisterPythonClassDetails(className, pyType);
 }
@@ -483,7 +483,7 @@ ObjectTypeSP PythonService::FindRegisteredPythonClass(PyTypeObject * pto)
         // this means that you won't be able to de-serialize this type if you 
         // didn't register it explicitly and haven't used any instances of
         // this type before attempting to de-serialize
-        std::string className = StringFormat("py.%s", pyType_GetName(pto));
+        std::string className = StringFormat("py.%s", pyType_GetName(pto).c_str());
         return RegisterPythonClassDetails(className, pto);
     }
 

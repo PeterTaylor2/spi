@@ -94,6 +94,8 @@ static void testBadDates(void)
 
 int main(int argc, char* argv[])
 {
+    std::cout << "main for " << argv[0] << std::endl;
+
     return spi_util::TestRunner(argc, argv,
                       "DateConversions", testDates,
                       "BadDates", testBadDates,

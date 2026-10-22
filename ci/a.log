@@ -1,0 +1,210 @@
+# Log file for testing spi_replay
+clib.AddDateInterval {
+ startDate = 2022-05-03
+ ivl = DateInterval {
+  name = "2D"
+ }
+ count = 1
+}
+{
+ output = 2022-05-05
+}
+clib.AddDateInterval {
+ startDate = 2022-05-05
+ ivl = DateInterval {
+  name = "1M"
+ }
+ count = 1
+}
+{
+ output = 2022-06-05
+}
+clib.AddDateInterval {
+ startDate = 2022-05-05
+ ivl = DateInterval {
+  name = "3M"
+ }
+ count = 1
+}
+{
+ output = 2022-08-05
+}
+clib.AddDateInterval {
+ startDate = 2022-05-05
+ ivl = DateInterval {
+  name = "6M"
+ }
+ count = 1
+}
+{
+ output = 2022-11-05
+}
+clib.AddDateInterval {
+ startDate = 2022-05-05
+ ivl = DateInterval {
+  name = "12M"
+ }
+ count = 1
+}
+{
+ output = 2023-05-05
+}
+clib.AddDateInterval {
+ startDate = 2022-05-05
+ ivl = DateInterval {
+  name = "36M"
+ }
+ count = 1
+}
+{
+ output = 2025-05-05
+}
+clib.AddDateInterval {
+ startDate = 2022-05-05
+ ivl = DateInterval {
+  name = "60M"
+ }
+ count = 1
+}
+{
+ output = 2027-05-05
+}
+clib.AddDateInterval {
+ startDate = 2022-05-05
+ ivl = DateInterval {
+  name = "7D"
+ }
+ count = 1
+}
+{
+ output = 2022-05-12
+}
+CashSwapCurve {
+ baseDate = 2022-05-05
+ cashOrSwaps = [7]
+ {
+  "Cash"
+  "Cash"
+  "Cash"
+  "Cash"
+  "Swap"
+  "Swap"
+  "Swap"
+ }
+ dates = [7]
+ {
+  2022-05-12
+  2022-06-05
+  2022-08-05
+  2022-11-05
+  2023-05-05
+  2025-05-05
+  2027-05-05
+ }
+ rates = [7]
+ {
+  0.01
+  0.012
+  0.014999999999999999
+  0.02
+  0.025000000000000001
+  0.029999999999999999
+  0.035000000000000003
+ }
+ cashDcc = "Actual/360"
+ swapFixedInterval = DateInterval {
+  name = "6M"
+ }
+ swapFixedDcc = "30/360"
+ badDayConv = "ModifiedFollow"
+ holidays = "NONE"
+}
+{
+ output = CashSwapCurve 1 {
+  baseDate = 2022-05-05
+  cashOrSwaps = [7]
+  {
+   "Cash"
+   "Cash"
+   "Cash"
+   "Cash"
+   "Swap"
+   "Swap"
+   "Swap"
+  }
+  dates = [7]
+  {
+   2022-05-12
+   2022-06-05
+   2022-08-05
+   2022-11-05
+   2023-05-05
+   2025-05-05
+   2027-05-05
+  }
+  rates = [7]
+  {
+   0.01
+   0.012
+   0.014999999999999999
+   0.02
+   0.025000000000000001
+   0.029999999999999999
+   0.035000000000000003
+  }
+  cashDcc = "Actual/360"
+  swapFixedInterval = DateInterval {
+   name = "6M"
+  }
+  swapFixedDcc = "30/360"
+  badDayConv = "ModifiedFollow"
+  holidays = "NONE"
+ }
+}
+clib.CashSwapCurve.ZeroCurve {
+ self = CashSwapCurve *1
+ interpType = "FLAT_FORWARDS"
+ flags = ""
+}
+{
+ output = ZeroCurve 2 {
+  anchorDate = 2022-05-05
+  interpType = "FLAT_FORWARDS"
+  dates = [14]
+  {
+   2022-05-12
+   2022-06-05
+   2022-08-05
+   2022-11-05
+   2022-11-07
+   2023-05-05
+   2023-11-06
+   2024-05-06
+   2024-11-05
+   2025-05-05
+   2025-11-05
+   2026-05-05
+   2026-11-05
+   2027-05-05
+  }
+  rates = [14]
+  {
+   0.010189465931287112
+   0.012234622978967602
+   0.015295048375593367
+   0.020379724288912993
+   0.020483683201552694
+   0.02518511716766058
+   0.027753587415283665
+   0.029015896744431613
+   0.029779582534040117
+   0.030284371937953428
+   0.03220233274583717
+   0.033619962036732787
+   0.034742703467235847
+   0.035627230727428398
+  }
+  rateType = "Annual"
+  dayCountConv = "Actual/365F"
+ }
+}
