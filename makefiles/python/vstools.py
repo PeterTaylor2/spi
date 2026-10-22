@@ -37,10 +37,6 @@ def siteSettings():
 
 def systemIncludes(compiler, bits=32):
 
-    if compiler == "msvc9":
-        if bits == 32:
-            return r"C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\include;C:\Program Files\Microsoft SDKs\Windows\v6.0A\Include"
-
     if compiler == "msvc17":
         settings = siteSettings()
         if bits in [32,64]:
@@ -64,15 +60,12 @@ def systemIncludes(compiler, bits=32):
 
 def platforms(compiler):
     platforms = []
-    if compiler in ["msvc9"]:
-        platforms.append(("Win32", 32))
-    elif compiler in ["msvc17", "msvc18"]:
+    if compiler in ["msvc17", "msvc18"]:
         platforms.append(("Win32", 32))
         platforms.append(("x64", 64))
     return platforms
 
 if __name__ == "__main__":
-    print (systemIncludes("msvc9"))
     print (systemIncludes("msvc17", bits=32))
     print (systemIncludes("msvc17", bits=64))
     print (systemIncludes("msvc18", bits=32))
