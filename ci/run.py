@@ -25,14 +25,9 @@ MAKEFILES_PYTHON = ROOT / 'makefiles/python'
 sys.path.insert(0, str(MAKEFILES_PYTHON))
 import vsVersions
 
-def latest_directory(parent):
-    return max((p for p in parent.iterdir() if p.is_dir() and p.name[0].isdigit()),
-               key=lambda p: tuple(int(n) for n in p.name.split('.')))
-
-
 def configuration(python_tag):
     log = RESULTS / 'configuration.log'
-    print("getting local configuration with python_tag", python_tag, flush=True)
+    print("getting local configuration", flush=True)
     with log.open('w', encoding='utf-8') as output:
         version = f'{sys.version_info.major}.{sys.version_info.minor}'
         output.write("version=%s\n" % version)
@@ -65,12 +60,15 @@ def create_site_mk(args):
     with site_mk.open('w', encoding='utf-8', newline='\n') as fp:
         lfp.write("Creating temporary site.mk file with the following content:\n\n")
         fp.write("# Temporary site.mk file as part of ci build process\n\n")
+        print()
         for arg in args:
+            print(arg)
             fp.write("%s\n" % arg)
             lfp.write("%s\n" % arg)
         fp.write("\n")
         lfp.write("\n")
     lfp.close()
+    print()
 
 def remove_site_mk():
     site_mk = ROOT / 'makefiles/config/site.mk'
@@ -139,7 +137,6 @@ def fetch_proxy():
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--jobs', type=int, default=2)
-    parser.add_argument('--live', action='store_true', help='Show main build steps to the screen')
     parser.add_argument('--skip-build', action='store_true', help='Use existing runtime libraries')
     parser.add_argument('--python-tag', help='Override the makefile Python version, e.g. 3-abi')
     parser.add_argument('--make-arg', action='append', default=[], help='Additional make variable assignment')
@@ -155,7 +152,7 @@ def main():
     start_time = datetime.datetime.now()
 
     if not opts.skip_build:
-        if not run('build-all', [*command], timeout=3600, live=opts.live):
+        if not run('build-all', [*command], timeout=1800, live=True):
             return 1
     failures = []
     for directory in ('test/lib', 'test/config', 'test/dll'):
@@ -173,13 +170,14 @@ def main():
 
         for source in sorted((ROOT / 'test').glob('test*.cpp')):
             if not run(source.stem + '-build',
-                   [make, '-j1', *args, '-C', 'test', 'run', 'NAME=' + source.stem], 120, env=test_env):
+                   [make, '-j1', '-C', 'test', 'run', 'NAME=' + source.stem], 120, env=test_env):
                 return 1
 
     if not run('python-smoke', [sys.executable, str(ROOT / 'ci/python_smoke.py'),
                                 '--root', str(ROOT), '--abi', abi, '--python-tag', tag], 60):
         failures.append('python-smoke')
 
+    remove_site_mk()
     end_time = datetime.datetime.now()
 
     summary = {'failed': failures, 'native_test_programs': len(list((ROOT / 'test').glob('test*.cpp'))),
@@ -188,8 +186,6 @@ def main():
                'python': sys.version, 'platform': sys.platform, 'abi': abi, 'python_tag': tag}
     (RESULTS / 'summary.json').write_text(json.dumps(summary, indent=2) + '\n')
     print(json.dumps(summary, indent=2))
-
-    remove_site_mk()
 
     return int(bool(failures))
 

@@ -84,12 +84,14 @@ run-all::
 	@$(MAKE) -s clean
 	@$(MAKE) -s libs
 	@echo
-	$(shell echo "startTime: `date`" > run-all.log)
+	@rm -f run-all.log
 	@for nm in $(NAMES); do \
 		echo Running $$nm; \
+		echo Running $$nm \(`date`\) >> run-all.log; \
+		echo "" >> run-all.log; \
 		$(MAKE) -s run NAME=$$nm >> run-all.log; \
+		echo "" >> run-all.log; \
 	done
-	$(shell echo "endTime: `date`" >> run-all.log)
 	@echo
 	@echo See file run-all.log for log messages
 	@echo Error messages would have appeared on the screen
