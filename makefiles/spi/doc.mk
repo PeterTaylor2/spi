@@ -37,11 +37,6 @@ U_SPDOC_BIN=$(U_SPI_HOME)/svo/spdoc/bin/$(G_ABI)-py$(G_PY_VERSION)
 PYTHONPATH=$(U_SPDOC_BIN)
 export PYTHONPATH
 
-ifdef G_CYGWIN
-PATH:=$(U_SPDOC_BIN):$(PATH)
-export PATH
-endif
-
 ifeq ($(G_PLATFORM),linux64)
 LD_LIBRARY_PATH:=$(U_SPDOC_BIN):$(LD_LIBRARY_PATH)
 export LD_LIBRARY_PATH

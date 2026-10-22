@@ -59,11 +59,7 @@ U_DEP_LIBS=\
 ../bin/$(G_ABI)/$(G_LIB_PFX)$(SPI_UTIL_DLL)$(G_DLL_EXT)\
 $(U_DEP_STATIC_LIBS)
 
-ifdef G_CYGWIN
-U_LIBS=$(U_DEP_LIBS) $(G_PYTHON_LIBS)
-else
 U_LIBS=-L../bin/$(G_ABI) -l$(SPI_DLL) -l$(SPI_UTIL_DLL) $(U_DEP_STATIC_LIBS) $(G_PYTHON_LIBS)
-endif
 
 endif
 

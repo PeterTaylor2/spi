@@ -30,11 +30,7 @@ else
 I_BASE_SERVICE_DEP_LIBS:=\
 $(addsuffix $(G_DLL_EXT),$(subst :,/$(G_BUILD_DIR)/lib,$(U_BASE_SERVICE_DLL)))
 
-ifdef G_CYGWIN
-I_BASE_SERVICE_LIBS:=$(I_BASE_SERVICE_DEP_LIBS)
-else
 I_BASE_SERVICE_LIBS:=$(U_BASE_SERVICE_LINK)
-endif
 
 I_BASE_SERVICE_DLLS_TARGET:=\
 $(addprefix ../$(G_ABI)/,$(notdir $(I_BASE_SERVICE_DEP_LIBS)))

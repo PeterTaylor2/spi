@@ -55,16 +55,9 @@ $(I_SPI_RUNTIME_BIN_DIR)/lib$(SPI_DLL)$(G_DLL_EXT)\
 $(I_SPI_RUNTIME_BIN_DIR)/lib$(SPI_UTIL_DLL)$(G_DLL_EXT)\
 $(I_SPI_RUNTIME_BIN_DIR)/libspi_boost$(G_LIB_EXT)
 
-ifdef G_CYGWIN
-U_LIBS+=\
-$(I_SPI_RUNTIME_BIN_DIR)/lib$(SPI_DLL)$(G_DLL_EXT)\
-$(I_SPI_RUNTIME_BIN_DIR)/lib$(SPI_UTIL_DLL)$(G_DLL_EXT)\
-$(I_SPI_RUNTIME_BIN_DIR)/libspi_boost$(G_LIB_EXT)
-else
 U_LIBS+=\
 -L$(I_SPI_RUNTIME_BIN_DIR) -l$(SPI_DLL) -l$(SPI_UTIL_DLL)\
 $(I_SPI_RUNTIME_BIN_DIR)/libspi_boost$(G_LIB_EXT)
-endif
 
 endif
 
