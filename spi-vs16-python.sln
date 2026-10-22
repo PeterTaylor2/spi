@@ -7,6 +7,8 @@ Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "svo", "svo\svo.pyproj", "{F
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "ci", "ci\ci.pyproj", "{BF6B8BD9-59CA-423F-B79B-6BE3DFD154C9}"
 EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "makefiles", "makefiles\python\makefiles.pyproj", "{E83F7D47-A96F-4CB9-BAC9-C92568D82983}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,6 +19,8 @@ Global
 		{FA751092-C016-4594-BA98-C01B867673FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BF6B8BD9-59CA-423F-B79B-6BE3DFD154C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BF6B8BD9-59CA-423F-B79B-6BE3DFD154C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E83F7D47-A96F-4CB9-BAC9-C92568D82983}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E83F7D47-A96F-4CB9-BAC9-C92568D82983}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,4 +1,7 @@
 import os
+from pathlib import Path
+import json
+import subprocess
 
 """
 Checks whether a directory exists and throws an exception if it doesn't
@@ -23,14 +26,12 @@ def getLatestVersion(dn):
             return version
     raise Exception("no version directories found in directory %s" % dn)
 
-def getToolsVersion(compiler, packageType):
-    rootDir = compilerRoot(compiler, packageType=packageType)
+def getToolsVersion(compiler, rootDir):
     msvcDir = os.path.join(rootDir, "VC", "Tools", "MSVC")
     checkDirectory(msvcDir)
     return getLatestVersion(msvcDir)
 
-def getRedistVersion(compiler, packageType):
-    rootDir = compilerRoot(compiler, packageType=packageType)
+def getRedistVersion(compiler, rootDir):
     msvcDir = os.path.join(rootDir, "VC", "Redist", "MSVC")
     checkDirectory(msvcDir)
     return getLatestVersion(msvcDir)
@@ -151,12 +152,36 @@ def updateFile(name, contents):
 
 def get_contents():
     contents = []
+
+    vswhere = str(Path(os.environ['ProgramFiles(x86)']) / 'Microsoft Visual Studio/Installer/vswhere.exe')
+    print("using %s to locate visual studio installations" % vswhere)
+
+    installs = json.loads(subprocess.check_output([
+            vswhere, '-products', '*', '-version', '[16.0,19.0)',
+            '-requires', 'Microsoft.VisualStudio.Component.VC.Tools.x86.x64', '-format', 'json']))
+
+    indexCompilerRootDir = {}
+    for item in installs:
+        version = item['installationVersion']
+        location = item['installationPath']
+
+        for cv in ["16", "17", "18"]:
+            if version.startswith(cv+"."):
+                indexCompilerRootDir["VS"+cv] = location
+
     kitsVersion = getKitsVersion() 
     for compiler in ["VS16", "VS17", "VS18"]:
         try:
-            packageType = getPackageType(compiler)
-            toolsVersion = getToolsVersion(compiler, packageType)
-            redistVersion = getRedistVersion(compiler, packageType)
+            rootDir = indexCompilerRootDir[compiler]
+            print(compiler, "installed in", rootDir)
+            packageType = os.path.basename(rootDir)
+            # the makefiles have a hard-coded path for the compiler
+            # we need to check that these match with the full path given
+            rootDir2 = compilerRoot(compiler, packageType=packageType)
+            if rootDir != rootDir2:
+                raise Exception("Makefiles will not be able to find %s for %s" % (rootDir, compiler))
+            toolsVersion = getToolsVersion(compiler, rootDir)
+            redistVersion = getRedistVersion(compiler, rootDir)
             contents.append("")
             contents.append("G_%s_PACKAGE_TYPE=%s" % (compiler, packageType))
             contents.append("G_%s_KITS_VERSION=%s" % (compiler, kitsVersion))
