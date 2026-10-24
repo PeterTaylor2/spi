@@ -75,8 +75,8 @@ def getCompilerDirectory(compiler):
     raise Exception("Unknown compiler %s" % compiler)
 
 def compilerRoot(compiler, packageType=None):
-    rootDir = os.path.normpath(os.path.join(
-            "C:/Program Files/Microsoft Visual Studio",
+    programFiles = "C:/Program Files (x86)" if packageType is not None and packageType == "BuildTools" else "C:/Program Files"
+    rootDir = os.path.normpath(os.path.join(programFiles, "Microsoft Visual Studio",
             getCompilerDirectory(compiler)))
     if packageType is not None:
         rootDir = os.path.join(rootDir, packageType)
@@ -152,11 +152,14 @@ def get_contents():
     contents = []
 
     vswhere = str(Path(os.environ['ProgramFiles(x86)']) / 'Microsoft Visual Studio/Installer/vswhere.exe')
-    print("using %s to locate visual studio installations" % vswhere)
-
-    installs = json.loads(subprocess.check_output([
+    try:
+        installs = json.loads(subprocess.check_output([
             vswhere, '-products', '*', '-version', '[17.0,19.0)',
             '-requires', 'Microsoft.VisualStudio.Component.VC.Tools.x86.x64', '-format', 'json']))
+    except Exception as e:
+        print("ERROR: Failed using %s to locate visual studio installations" % vswhere)
+        print("EXCEPTION:", str(e))
+        raise
 
     indexCompilerRootDir = {}
     for item in installs:
@@ -170,7 +173,10 @@ def get_contents():
     kitsVersion = getKitsVersion() 
     for compiler in ["VS17", "VS18"]:
         try:
-            rootDir = indexCompilerRootDir[compiler]
+            rootDir = indexCompilerRootDir.get(compiler, None)
+            if rootDir is None:
+                print("compiler %s not installed" % compiler)
+                continue
             print(compiler, "installed in", rootDir)
             packageType = os.path.basename(rootDir)
             # the makefiles have a hard-coded path for the compiler
@@ -185,8 +191,8 @@ def get_contents():
             contents.append("G_%s_KITS_VERSION=%s" % (compiler, kitsVersion))
             contents.append("G_%s_TOOLS_VERSION=%s" % (compiler, toolsVersion))
             contents.append("G_%s_REDIST_VERSION=%s" % (compiler, redistVersion))
-        except Exception:
-            print("compiler %s not installed" % compiler)
+        except Exception as e:
+            print("WARNING:", str(e))
     return contents
 
 def main():
