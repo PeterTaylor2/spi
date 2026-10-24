@@ -29,8 +29,13 @@
 ###########################################################################
 include $(U_MAKEFILES)/config/win64.mk
 
+ifeq ($(G_VS18_PACKAGE_TYPE),BuildTools)
+I_VS18_HOME:=$(G_WIN32_PROGRAM_FILES)/Microsoft Visual Studio/18/$(G_VS18_PACKAGE_TYPE)
+I_VS18_HOME_DOS:=$(I_WIN32_PROGRAM_FILES_DOS)\Microsoft Visual Studio\18\$(G_VS18_PACKAGE_TYPE)
+else
 I_VS18_HOME:=$(G_WIN64_PROGRAM_FILES)/Microsoft Visual Studio/18/$(G_VS18_PACKAGE_TYPE)
 I_VS18_HOME_DOS:=$(I_WIN64_PROGRAM_FILES_DOS)\Microsoft Visual Studio\18\$(G_VS18_PACKAGE_TYPE)
+endif
 
 I_WINDOWS_KITS=$(I_WIN32_PROGRAM_FILES_DOS)\Windows Kits
 I_WINDOWS_KITS_BASE_INCLUDE=$(I_WINDOWS_KITS)\10\include\$(G_VS18_KITS_VERSION)
