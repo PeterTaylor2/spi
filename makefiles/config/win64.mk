@@ -115,6 +115,8 @@ else
 G_CYGWIN_BIN?=$(U_MAKEFILES)/cygwin64/bin
 endif
 
+include $(U_MAKEFILES)/config/win32_curl.mk
+
 ifdef VS_BUILD
 
 # despite the fact that we set the PATH inside the Visual Studio projects

@@ -1,0 +1,27 @@
+# this manifest translates from the file structure of the github curl repository
+# to the file structure needed by the spi_curl build of libcurl
+# each line has the source files followed by the destination directory
+#
+# use the makefile copy-curl.mk to invoke the manifest
+# alternatively just run copyManifest.py directly
+
+# header files
+
+include/curl/*.h curl
+
+# source files
+
+lib/*.[ch] curl/src
+lib/vauth/*.[ch] curl/src/vauth
+lib/vtls/*.[ch] curl/src/vtls
+lib/curlx/*.[ch] curl/src/curlx
+lib/vquic/*.[ch] curl/src/vquic
+lib/vssh/*.[ch] curl/src/vssh
+
+# other
+
+COPYING
+README
+README.md
+LICENSES/*
+

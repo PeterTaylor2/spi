@@ -136,7 +136,10 @@ def main(manifestFile, source, target, replacements,
         sourcePattern = posixpath.join(source, pattern)
         fns = glob.glob(sourcePattern)
         if not fns:
-            raise Exception("Could not find %s in %s" % (pattern, source))
+            if os.path.basename(sourcePattern).startswith("*"):
+                print("WARNING: No files found for %s" % sourcePattern)
+            else:
+                raise Exception("Could not find %s in %s" % (pattern, source))
         for fn in fns:
             fn = fn.replace("\\", "/")
             if exclusions is not None:

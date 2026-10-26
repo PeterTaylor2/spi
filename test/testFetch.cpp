@@ -11,11 +11,7 @@
 
 #include <spi_boost/shared_ptr.hpp>
 
-#ifndef _MSC_VER
 #include <curl/curl.h>
-#else
-#include <spi_curl/curl.h>
-#endif
 
 #include <spi_util/UrlRead.hpp>
 

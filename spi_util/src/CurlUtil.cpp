@@ -29,11 +29,7 @@
 
 #include <sstream>
 
-#ifdef _MSC_VER
-#include <spi_curl/curl.h>
-#else
 #include <curl/curl.h>
-#endif
 
 #include <spi_boost/shared_ptr.hpp>
 
