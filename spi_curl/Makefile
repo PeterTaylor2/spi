@@ -7,7 +7,7 @@ include $(U_SPI_HOME)/makefiles/version.mk
 
 U_BUILD_SUFFIX=-curl-$(G_WIN32_CURL_VERSION)
 
-all:
+all::
 
 ifneq ($(G_PLATFORM),win32)
 U_NO_BUILD=1
