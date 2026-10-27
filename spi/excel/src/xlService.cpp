@@ -1535,11 +1535,34 @@ XLOPER12* ExcelService::ObjectFromURL(
 
 XLOPER12* ExcelService::ObjectGet(XLOPER12* xl_handle, XLOPER12* xl_name)
 {
+    Value name;
+    try
+    {
+        name = xloper12ToValue(xl_name);
+    }
+    catch (ExcelInputError&)
+    {
+        return xloper12InputError();
+    }
+    catch (std::exception &e)
+    {
+        return ErrorHandler12(e.what());
+    }
+    return objectGet(xl_handle, name);
+}
+
+XLOPER12* ExcelService::ObjectGet(XLOPER12* xl_handle, const char* name)
+{
+    return objectGet(xl_handle, Value(name));
+}
+
+// common code shared by the two versions of ObjectGet
+XLOPER12* ExcelService::objectGet(XLOPER12* xl_handle, const Value& name)
+{
     XLOPER12* xlo = NULL;
 
     try
     {
-        Value name = xloper12ToValue(xl_name);
         Value handle = xloper12ToValue(xl_handle);
         bool fillBlank = true;
         Value output = spi::ObjectGet(handle, name, getInputContext());

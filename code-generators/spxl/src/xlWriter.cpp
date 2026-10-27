@@ -1067,6 +1067,30 @@ std::string ExcelModule::writeSourceFile(const std::string& dirname) const
 */
 namespace {
 
+// The attributes and properties of cls that get an Excel function of their
+// own with the attributeFuncs option: those that are readable, and not
+// named as one of its methods, whose function would have the same name.
+std::vector<spdoc::ClassAttributeConstSP> attributeFuncFields(const spdoc::Class* cls)
+{
+    std::vector<spdoc::ClassAttributeConstSP> fields(cls->attributes);
+    fields.insert(fields.end(), cls->properties.begin(), cls->properties.end());
+    std::vector<spdoc::ClassAttributeConstSP> withFuncs;
+    for (size_t i = 0; i < fields.size(); ++i)
+    {
+        if (!fields[i]->accessible)
+            continue;
+        bool isMethod = false;
+        for (size_t j = 0; j < cls->methods.size(); ++j)
+        {
+            if (cls->methods[j]->function->name == fields[i]->name)
+                isMethod = true;
+        }
+        if (!isMethod)
+            withFuncs.push_back(fields[i]);
+    }
+    return withFuncs;
+}
+
 int funcBaseNamePosition(const spdoc::Function* func)
 {
     size_t numInputs = func->inputs.size();
@@ -1529,6 +1553,20 @@ void ExcelModule::declareClass(
         }
         ostr << ");\n";
     }
+
+    if (service->options().attributeFuncs)
+    {
+        const std::vector<spdoc::ClassAttributeConstSP> fields = attributeFuncFields(cls);
+        for (size_t i = 0; i < fields.size(); ++i)
+        {
+            ostr << "\n"
+                 << service->import() << "\n"
+                 << "XLOPER12* xl_" << service->ns() << "_"
+                 << makeNamespaceSep(module->ns, "_") << cls->name
+                 << "_" << fields[i]->name << "(\n"
+                 << "    XLOPER12* self);\n";
+        }
+    }
 }
 
 void ExcelModule::implementClass(
@@ -1722,6 +1760,24 @@ void ExcelModule::implementClass(
 
         writeExceptionHandlingAndReturn(ostr, service);
     }
+
+    if (service->options().attributeFuncs)
+    {
+        // the field's value as object_get gives it
+        const std::vector<spdoc::ClassAttributeConstSP> fields = attributeFuncFields(cls);
+        for (size_t i = 0; i < fields.size(); ++i)
+        {
+            const std::string& name = fields[i]->name;
+            ostr << "\n"
+                 << "XLOPER12* xl_" << service->ns() << "_"
+                 << makeNamespaceSep(module->ns, "_") << cls->name
+                 << "_" << name << "(\n"
+                 << "    XLOPER12* xl_self)\n"
+                 << "{\n"
+                 << "    return " << service->name() << "_excel_service->ObjectGet(xl_self, \"" << name << "\");\n"
+                 << "}\n";
+        }
+    }
 }
 
 void ExcelModule::registerClass(
@@ -1876,6 +1932,31 @@ void ExcelModule::registerClass(
         }
     }
 
+    if (service->options().attributeFuncs)
+    {
+        const std::vector<spdoc::ClassAttributeConstSP> fields = attributeFuncFields(cls);
+        for (size_t i = 0; i < fields.size(); ++i)
+        {
+            const std::string& name = fields[i]->name;
+            std::string fieldHelp = GetFirstParagraph(fields[i]->description);
+            ostr << "\n"
+                << "    /* " << makeNamespaceSep(module->ns, funcNameSep)
+                << cls->name << funcNameSep << name << " */\n"
+                << "    args.clear();\n"
+                << "    help.clear();\n"
+                << "    args.push_back(\"handle\");\n"
+                << "    help.push_back(\"" << cls->name << " object handle.\");\n"
+                << "    svc->RegisterFunction(xllName, \"xl_" << service->ns()
+                << "_" << makeNamespaceSep(module->ns, "_") << cls->name << "_"
+                << name << "\", \"" << service->ns()
+                << funcNameSep
+                << makeNamespaceSep(module->ns, funcNameSep) << xlFuncPrefix
+                << funcNameSep << name << "\", \""
+                << service->ns() << "\", args,\n"
+                << "        \"" << spi::StringEscape(fieldHelp.c_str()) << "\",\n"
+                << "        help);\n";
+        }
+    }
 }
 
 std::string ExcelModule::regFunctionPrefix(const std::string& functionPrefix) const
@@ -1941,6 +2022,7 @@ void Options::update(const std::string& fn)
     JSONMapUpdateBool(upperCase, jm, "upperCase");
     JSONMapUpdateBool(nsUpperCase, jm, "nsUpperCase");
     JSONMapUpdateBool(noObjectFuncs, jm, "noObjectFuncs");
+    JSONMapUpdateBool(attributeFuncs, jm, "attributeFuncs");
     JSONMapUpdateBool(errIsNA, jm, "errIsNA");
 
     JSONMapUpdateString(helpFunc, jm, "helpFunc");

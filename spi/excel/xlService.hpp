@@ -187,6 +187,9 @@ public:
         XLOPER12* v16, XLOPER12* v17, XLOPER12* v18, XLOPER12* v19, XLOPER12* v20);
 
     XLOPER12* ObjectGet(XLOPER12* handle, XLOPER12* name);
+    // ObjectGet of the field name - for the functions spxl's attributeFuncs
+    // option generates for each attribute
+    XLOPER12* ObjectGet(XLOPER12* handle, const char* name);
 
     XLOPER12* ObjectMake(XLOPER12* baseName, XLOPER12* className, XLOPER12* names,
         XLOPER12* v1, XLOPER12* v2, XLOPER12* v3, XLOPER12* v4, XLOPER12* v5,
@@ -240,6 +243,9 @@ public:
     bool errorPopups() const;
 
 private:
+    // ObjectGet once the name is a Value
+    XLOPER12* objectGet(XLOPER12* handle, const Value& name);
+
     ServiceSP m_service;
     std::vector<std::string> m_registeredFunctions;
     std::string m_dirname;

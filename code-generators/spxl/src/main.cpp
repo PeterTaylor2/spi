@@ -157,7 +157,7 @@ int main(int argc, char* argv[])
 
     Options options;
 
-    const char* longOptions = "help nameAtEnd noGeneratedCodeNotice upperCase funcNameSep= noObjectFuncs noPrefixObjectFuncs parent= "
+    const char* longOptions = "help nameAtEnd noGeneratedCodeNotice upperCase funcNameSep= noObjectFuncs noPrefixObjectFuncs attributeFuncs parent= "
         " optionsFile= license licenseFile= errIsNA backup xlTargetVersion= nsUpperCase";
 
     try
@@ -169,7 +169,7 @@ int main(int argc, char* argv[])
                 "objects in a generic manner, then the optionsFile approach is the one that you should be using.\n"
                 ":\n"
                 "These options are available with the optionsFile: funcNameSep, noGeneratedCodeNotice, nameAtEnd,\n"
-                "upperCase, nsUpperCase, noObjectFuncs, errIsNA, xlVersion.\n"
+                "upperCase, nsUpperCase, noObjectFuncs, attributeFuncs, errIsNA, xlVersion.\n"
                 "These options can also be specified independently on the command line.\n"
                 ":\n"
                 "These options can only be defined via the optionsFile - they define the names for particular functions\n"
@@ -192,6 +192,9 @@ int main(int argc, char* argv[])
                 "etc. See the optionsFile parameter for a list of the possible object functions.\n"
                 "You might set this flag if another of the Excel add-ins contains all the object functions.\n"},
             { "noPrefixObjectFuncs", "", "If defined, then we do not use the namespace prefix for the object functions.\n"},
+            { "attributeFuncs", "", "If defined, then each readable attribute and property of a class gets an Excel\n"
+                "function of its own, Class.attribute(handle), giving what object_get gives for it - an attribute\n"
+                "with the name of one of the class's methods doesn't.\n"},
             { "parent", "", "This option is deprecated and ignored", true },
             { "errIsNA", "", "Use this option to set error results as #N/A as opposed to the default which is #NUM!\n" },
             { "xlTargetVersion", "", "Defines which version of Excel we are targetting. By default 12.\n"
@@ -280,6 +283,14 @@ int main(int argc, char* argv[])
             else if (opt == "--noPrefixObjectFuncs")
             {
                 options.noPrefixObjectFuncs = true;
+            }
+            else if (opt == "--attributeFuncs")
+            {
+                options.attributeFuncs = true;
+            }
+            else if (opt == "--attributeFuncs")
+            {
+                options.attributeFuncs = true;
             }
             else if (opt == "--backup")
             {

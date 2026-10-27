@@ -46,6 +46,7 @@ struct Options
         nsUpperCase(false),
         noObjectFuncs(false),
         noPrefixObjectFuncs(false),
+        attributeFuncs(false),
         errIsNA(false),
         writeBackup(false),
         license(),
@@ -85,6 +86,9 @@ struct Options
     bool nsUpperCase;
     bool noObjectFuncs;
     bool noPrefixObjectFuncs;
+    // an Excel function for each readable class attribute and property,
+    // Class.attribute(handle) - what object_get gives for it
+    bool attributeFuncs;
     bool errIsNA;
     bool writeBackup;
     std::string license;
