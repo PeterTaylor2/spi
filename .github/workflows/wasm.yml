@@ -1,0 +1,33 @@
+name: Browser WebAssembly
+
+on:
+  push:
+    branches: [main, feature/emscripten]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          repository: emscripten-core/emsdk
+          ref: '35659964bc2762fffec0d257997fb61475f765b7' # 6.0.13
+          path: .emsdk
+      - name: Install Emscripten
+        run: |
+          .emsdk/emsdk install 6.0.13
+          .emsdk/emsdk activate 6.0.13
+      - name: Build and test in Chromium
+        run: |
+          source .emsdk/emsdk_env.sh
+          npm ci --prefix wasm
+          cd wasm
+          npx playwright install --with-deps chromium
+          make -j2 test
