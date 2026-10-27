@@ -1234,6 +1234,7 @@ void BaseStruct::to_map(
     bool byValue = this->byValue();
     bool useAccessors = this->useAccessors();
     bool noLog = this->noLog();
+    const std::string& instance = this->instance();
 
     if (!public_only)
     {
@@ -1250,6 +1251,7 @@ void BaseStruct::to_map(
         obj_map->SetBool("byValue", byValue, !public_only && (byValue == false));
         obj_map->SetBool("useAccessors", useAccessors, !public_only && (useAccessors == false));
         obj_map->SetBool("noLog", noLog, !public_only && (noLog == false));
+        obj_map->SetString("instance", instance, !public_only && (instance.empty()));
     }
 }
 
@@ -1283,10 +1285,12 @@ spi::ObjectConstSP BaseStruct::object_from_map(
         = obj_map->GetBool("useAccessors", true, false);
     bool noLog
         = obj_map->GetBool("noLog", true, false);
+    const std::string& instance
+        = obj_map->GetString("instance", true);
 
     return BaseStruct::Make(description, name, ns, baseClass, noMake,
         objectName, canPut, noId, isVirtual, asValue, byValue, useAccessors,
-        noLog);
+        noLog, instance);
 }
 
 SPI_IMPLEMENT_OBJECT_TYPE(BaseStruct, "BaseStruct", types_service, false, 0);
@@ -1321,16 +1325,18 @@ spi::Value BaseStruct_caller(
         in_context->ValueToBool(in_values[11], true, false);
     bool noLog =
         in_context->ValueToBool(in_values[12], true, false);
+    const std::string& instance =
+        in_context->ValueToString(in_values[13], true, "");
 
     const BaseStructConstSP& o_result = types::BaseStruct::New(description,
         name, ns, baseClass, noMake, objectName, canPut, noId, isVirtual,
-        asValue, byValue, useAccessors, noLog);
+        asValue, byValue, useAccessors, noLog, instance);
     return spi::ObjectConstSP(o_result);
 }
 
 spi::FunctionCaller BaseStruct_FunctionCaller = {
     "BaseStruct",
-    13,
+    14,
     {
         {"description", spi::ArgType::STRING, "string", 1, false, false},
         {"name", spi::ArgType::STRING, "string", 0, false, false},
@@ -1344,7 +1350,8 @@ spi::FunctionCaller BaseStruct_FunctionCaller = {
         {"asValue", spi::ArgType::BOOL, "bool", 0, true, false},
         {"byValue", spi::ArgType::BOOL, "bool", 0, true, false},
         {"useAccessors", spi::ArgType::BOOL, "bool", 0, true, false},
-        {"noLog", spi::ArgType::BOOL, "bool", 0, true, false}
+        {"noLog", spi::ArgType::BOOL, "bool", 0, true, false},
+        {"instance", spi::ArgType::STRING, "string", 0, true, false}
     },
     BaseStruct_caller
 };
@@ -1628,6 +1635,7 @@ void BaseWrapperClass::to_map(
     bool asValue = this->asValue();
     const std::vector<ClassPropertyConstSP>& classProperties = this->classProperties();
     bool noLog = this->noLog();
+    const std::string& instance = this->instance();
 
     if (!public_only)
     {
@@ -1646,6 +1654,7 @@ void BaseWrapperClass::to_map(
         obj_map->SetBool("asValue", asValue, !public_only && (asValue == false));
         obj_map->SetInstanceVector<ClassProperty const>("classProperties", classProperties, !public_only && (classProperties.size() == 0));
         obj_map->SetBool("noLog", noLog, !public_only && (noLog == true));
+        obj_map->SetString("instance", instance, !public_only && (instance.empty()));
     }
 }
 
@@ -1683,10 +1692,12 @@ spi::ObjectConstSP BaseWrapperClass::object_from_map(
         = obj_map->GetInstanceVector<ClassProperty const>("classProperties", value_to_object);
     bool noLog
         = obj_map->GetBool("noLog", true, true);
+    const std::string& instance
+        = obj_map->GetString("instance", true);
 
     return BaseWrapperClass::Make(description, name, ns, innerClass, baseClass,
         isVirtual, noMake, objectName, isDelegate, canPut, noId, dataType,
-        asValue, classProperties, noLog);
+        asValue, classProperties, noLog, instance);
 }
 
 SPI_IMPLEMENT_OBJECT_TYPE(BaseWrapperClass, "BaseWrapperClass", types_service, false, 0);
@@ -1725,17 +1736,19 @@ spi::Value BaseWrapperClass_caller(
         in_context->ValueToInstanceVector<ClassProperty const>(in_values[13]);
     bool noLog =
         in_context->ValueToBool(in_values[14], true, true);
+    const std::string& instance =
+        in_context->ValueToString(in_values[15], true, "");
 
     const BaseWrapperClassConstSP& o_result = types::BaseWrapperClass::New(
         description, name, ns, innerClass, baseClass, isVirtual, noMake,
         objectName, isDelegate, canPut, noId, dataType, asValue,
-        classProperties, noLog);
+        classProperties, noLog, instance);
     return spi::ObjectConstSP(o_result);
 }
 
 spi::FunctionCaller BaseWrapperClass_FunctionCaller = {
     "BaseWrapperClass",
-    15,
+    16,
     {
         {"description", spi::ArgType::STRING, "string", 1, false, false},
         {"name", spi::ArgType::STRING, "string", 0, false, false},
@@ -1751,7 +1764,8 @@ spi::FunctionCaller BaseWrapperClass_FunctionCaller = {
         {"dataType", spi::ArgType::OBJECT, "DataType", 0, false, false},
         {"asValue", spi::ArgType::BOOL, "bool", 0, true, false},
         {"classProperties", spi::ArgType::OBJECT, "ClassProperty", 1, false, false},
-        {"noLog", spi::ArgType::BOOL, "bool", 0, true, false}
+        {"noLog", spi::ArgType::BOOL, "bool", 0, true, false},
+        {"instance", spi::ArgType::STRING, "string", 0, true, false}
     },
     BaseWrapperClass_caller
 };

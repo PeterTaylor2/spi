@@ -1420,6 +1420,8 @@ static PyTypeObject* Class_PyObjectType()
             (void*) "asValue"},
         {"constructor", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
             (void*) "constructor"},
+        {"instance", (getter)(spi_py_object_getter), (setter)(spi_py_object_setter), NULL,
+            (void*) "instance"},
         {NULL} // sentinel
     };
 
@@ -1439,7 +1441,7 @@ static PyTypeObject* Class_PyObjectType()
         properties,
         methods,
         false,
-        "Defines a class.\n\n__init__(self, name, ns=None, description=[], baseClassName=None, attributes=[], properties=[], methods=[], coerceFrom=[], coerceTo=[], isAbstract=None, noMake=None, objectName, dataType, isDelegate=None, canPut=None, hasDynamicAttributes=None, asValue=None, constructor=None)",
+        "Defines a class.\n\n__init__(self, name, ns=None, description=[], baseClassName=None, attributes=[], properties=[], methods=[], coerceFrom=[], coerceTo=[], isAbstract=None, noMake=None, objectName, dataType, isDelegate=None, canPut=None, hasDynamicAttributes=None, asValue=None, constructor=None, instance=None)",
         "Construct",
         Py_tp_init, (void*)py_spdoc_Class_init,
         0);

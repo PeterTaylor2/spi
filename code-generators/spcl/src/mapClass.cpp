@@ -194,6 +194,7 @@ spdoc::ConstructConstSP MapClass::getDoc() const
 
         std::string baseClassName;
         std::string constructor;
+        std::string instance;
 
         m_doc = spdoc::Class::Make(
             m_name, m_ns, m_description, baseClassName,
@@ -207,7 +208,8 @@ spdoc::ConstructConstSP MapClass::getDoc() const
             m_canPut,
             true, // hasDynamicAttributes
             false, // asValue
-            constructor);
+            constructor,
+            instance);
     }
     return m_doc;
 }

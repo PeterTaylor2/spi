@@ -1516,7 +1516,8 @@ ClassConstSP Class::New(
     bool canPut,
     bool hasDynamicAttributes,
     bool asValue,
-    const std::string& constructor)
+    const std::string& constructor,
+    const std::string& instance)
 {
   SPI_PROFILE("spdoc.Class");
   spdoc_begin_function();
@@ -1526,7 +1527,7 @@ ClassConstSP Class::New(
     auto _obj = Make(name, ns, description, baseClassName, attributes, properties,
         methods, coerceFrom, coerceTo, isAbstract, noMake, objectName,
         dataType, isDelegate, canPut, hasDynamicAttributes, asValue,
-        constructor);
+        constructor, instance);
 
     spdoc_end_function();
 
@@ -1556,13 +1557,14 @@ ClassConstSP Class::Make(
     bool canPut,
     bool hasDynamicAttributes,
     bool asValue,
-    const std::string& constructor)
+    const std::string& constructor,
+    const std::string& instance)
 {
     return ClassConstSP(
         new Class(name, ns, description, baseClassName, attributes,
             properties, methods, coerceFrom, coerceTo, isAbstract, noMake,
             objectName, dataType, isDelegate, canPut, hasDynamicAttributes,
-            asValue, constructor));
+            asValue, constructor, instance));
 }
 
 Class::Class(
@@ -1583,7 +1585,8 @@ Class::Class(
     bool canPut,
     bool hasDynamicAttributes,
     bool asValue,
-    const std::string& constructor)
+    const std::string& constructor,
+    const std::string& instance)
     :
     name(name),
     ns(ns),
@@ -1602,7 +1605,8 @@ Class::Class(
     canPut(canPut),
     hasDynamicAttributes(hasDynamicAttributes),
     asValue(asValue),
-    constructor(constructor)
+    constructor(constructor),
+    instance(instance)
 {}
 
 std::vector<std::string> Class::Summary(

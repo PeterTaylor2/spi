@@ -615,7 +615,8 @@ public:
         bool asValue,
         bool byValue,
         bool useAccessors,
-        bool noLog);
+        bool noLog,
+        const std::string& instance);
 
     /** Use New when calling the constructor direct from the add-in level */
     static BaseStructConstSP New(
@@ -631,7 +632,8 @@ public:
         bool asValue,
         bool byValue,
         bool useAccessors,
-        bool noLog);
+        bool noLog,
+        const std::string& instance);
 
     typedef spi::ObjectSmartPtr<BaseStruct> outer_type; 
 
@@ -667,7 +669,8 @@ private:
         bool asValue,
         bool byValue,
         bool useAccessors,
-        bool noLog);
+        bool noLog,
+        const std::string& instance);
 
     /* private accessor methods */
     std::vector<std::string> description() const;
@@ -683,6 +686,7 @@ private:
     bool byValue() const;
     bool useAccessors() const;
     bool noLog() const;
+    std::string instance() const;
 
     /* shared pointer to implementation */
     spi_boost::intrusive_ptr< ::Struct const > inner_value;
@@ -812,7 +816,8 @@ public:
         const DataTypeConstSP& dataType,
         bool asValue,
         const std::vector<ClassPropertyConstSP>& classProperties,
-        bool noLog);
+        bool noLog,
+        const std::string& instance);
 
     /** Use New when calling the constructor direct from the add-in level */
     static BaseWrapperClassConstSP New(
@@ -830,7 +835,8 @@ public:
         const DataTypeConstSP& dataType,
         bool asValue,
         const std::vector<ClassPropertyConstSP>& classProperties,
-        bool noLog);
+        bool noLog,
+        const std::string& instance);
 
     typedef spi::ObjectSmartPtr<BaseWrapperClass> outer_type; 
 
@@ -868,7 +874,8 @@ private:
         const DataTypeConstSP& dataType,
         bool asValue,
         const std::vector<ClassPropertyConstSP>& classProperties,
-        bool noLog);
+        bool noLog,
+        const std::string& instance);
 
     /* private accessor methods */
     std::vector<std::string> description() const;
@@ -886,6 +893,7 @@ private:
     bool asValue() const;
     std::vector<ClassPropertyConstSP> classProperties() const;
     bool noLog() const;
+    std::string instance() const;
 
     /* shared pointer to implementation */
     spi_boost::intrusive_ptr< ::WrapperClass const > inner_value;

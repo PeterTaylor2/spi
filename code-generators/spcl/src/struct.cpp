@@ -64,11 +64,13 @@ StructSP Struct::Make(
     bool useAccessors,
     bool incomplete,
     const std::string& constructor,
-    bool noLog)
+    bool noLog,
+    const std::string& instance)
 {
     return new Struct(
         description, name, ns, baseClass, noMake, objectName, canPut, noId,
-        isVirtual, asValue, byValue, useAccessors, incomplete, constructor, noLog);
+        isVirtual, asValue, byValue, useAccessors, incomplete, constructor,
+        noLog, instance);
 }
 
 Struct::Struct(
@@ -86,7 +88,8 @@ Struct::Struct(
     bool useAccessors,
     bool incomplete,
     const std::string& constructor,
-    bool noLog)
+    bool noLog,
+    const std::string& instance)
     :
     m_description(description),
     m_name(name),
@@ -103,6 +106,7 @@ Struct::Struct(
     m_incomplete(incomplete),
     m_constructor(constructor),
     m_noLog(noLog),
+    m_instance(instance),
     m_attributes(),
     m_methods(),
     m_verbatimStart(),
@@ -871,7 +875,7 @@ spdoc::ConstructConstSP Struct::getDoc() const
             m_noMake || isAbstract(), m_objectName,
             m_dataType->getDoc(), isDelegate(), m_canPut,
             !!m_dynamicPropertiesCode,
-            m_asValue, m_constructor);
+            m_asValue, m_constructor, m_instance);
     }
     return m_doc;
 }

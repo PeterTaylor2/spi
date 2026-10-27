@@ -817,7 +817,8 @@ public:
         bool canPut = false,
         bool hasDynamicAttributes = false,
         bool asValue = false,
-        const std::string& constructor = "");
+        const std::string& constructor = "",
+        const std::string& instance = "");
 
     /** Use New when calling the constructor direct from the add-in level */
     static ClassConstSP New(
@@ -838,7 +839,8 @@ public:
         bool canPut = false,
         bool hasDynamicAttributes = false,
         bool asValue = false,
-        const std::string& constructor = "");
+        const std::string& constructor = "",
+        const std::string& instance = "");
 
     /**
     ************************************************************************
@@ -898,7 +900,8 @@ protected:
         bool canPut,
         bool hasDynamicAttributes,
         bool asValue,
-        const std::string& constructor);
+        const std::string& constructor,
+        const std::string& instance);
 
 public:
 
@@ -920,6 +923,7 @@ public:
     const bool hasDynamicAttributes;
     const bool asValue;
     const std::string constructor;
+    const std::string instance;
 
 public:
     std::string getName(const std::string& mns = {}) const

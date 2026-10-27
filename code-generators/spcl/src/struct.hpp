@@ -74,7 +74,8 @@ public:
         bool                            useAccessors,
         bool                            incomplete,
         const std::string&              constructor,
-        bool                            noLog);
+        bool                            noLog,
+        const std::string&              instance);
 
     void addClassAttribute(const ClassAttributeConstSP& attribute);
     void addMethod(const ClassMethodConstSP& method);
@@ -150,7 +151,8 @@ protected:
         bool useAccessors,
         bool incomplete,
         const std::string& constructor,
-        bool noLog);
+        bool noLog,
+        const std::string& instance);
 
 private:
     std::vector<std::string>        m_description;
@@ -168,6 +170,7 @@ private:
     bool                            m_incomplete;
     std::string                     m_constructor;
     bool                            m_noLog;
+    std::string                     m_instance;
 
     std::vector<AttributeConstSP>   m_attributes;
     std::vector<ClassMethodConstSP> m_methods;
@@ -212,6 +215,7 @@ public:
     bool useAccessors() const { return m_useAccessors; }
     bool incomplete() const { return m_incomplete; }
     bool noLog() const { return m_noLog; }
+    const std::string& instance() const { return m_instance; }
 };
 
 #endif

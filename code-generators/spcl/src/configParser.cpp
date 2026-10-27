@@ -973,7 +973,7 @@ FunctionConstSP parseFunction(
     {
         methodDefaultOptions = functionDefaultOptions;
         methodDefaultOptions["function"] = StringConstant::Make("");
-        methodDefaultOptions["instance"] = StringConstant::Make("handle");
+        methodDefaultOptions["instance"] = StringConstant::Make("");
     }
 
     ParserOptions options;
@@ -2510,6 +2510,7 @@ void initClassStructOptions(
     defaultOptions["ignore"] = BoolConstant::Make(false);
     defaultOptions["constructor"] = StringConstant::Make("");
     defaultOptions["constructorCache"] = IntConstant::Make(0);
+    defaultOptions["instance"] = StringConstant::Make("");
 
     if (wrapperClass)
     {
@@ -2673,12 +2674,13 @@ void structKeywordHandler(
     bool ignore = getOption(options, "ignore")->getBool();
     std::string constructor = getOption(options, "constructor")->getString();
     int constructorCache = getOption(options, "constructorCache")->getInt();
+    std::string instance = getOption(options, "instance")->getString();
 
     StructSP type = Struct::Make(
         description, name, module->moduleNamespace(), baseClass, noMake,
         getOption(options, "objectName")->getString(),
         canPut, noId, isVirtual, asValue, byValue, false, incomplete,
-        constructor, noLog);
+        constructor, noLog, instance);
 
     // we need to register the type before parsing the contents in order to
     // allow references to itself in the structure definition
@@ -3313,13 +3315,14 @@ void classNoWrapHandler(
     bool ignore = getOption(options, "ignore")->getBool();
     std::string constructor = getOption(options, "constructor")->getString();
     int constructorCache = getOption(options, "constructorCache")->getInt();
+    std::string instance = getOption(options, "instance")->getString();
 
     StructSP type = Struct::Make(
         description, className, module->moduleNamespace(),
         baseWrapperClass, noMake,
         getOption(options, "objectName")->getString(),
         canPut, noId, isVirtual, asValue, byValue, true, incomplete,
-        constructor, noLog);
+        constructor, noLog, instance);
 
     // we need to register the type before parsing the contents in order to
     // allow references to itself in the class definition
@@ -3622,7 +3625,8 @@ void classKeywordHandler(
         getOption(options, "accessorFormat")->getString(),
         getOption(options, "propertyFormat")->getString(),
         constructor,
-        getOption(options, "noLog")->getBool());
+        getOption(options, "noLog")->getBool(),
+        getOption(options, "instance")->getString());
 
     // we need to register the type before parsing the contents in order to
     // allow references to itself in the class definition

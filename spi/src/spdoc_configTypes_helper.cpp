@@ -1844,6 +1844,7 @@ void Class::to_map(
     obj_map->SetBool("hasDynamicAttributes", hasDynamicAttributes, !public_only && (hasDynamicAttributes == false));
     obj_map->SetBool("asValue", asValue, !public_only && (asValue == false));
     obj_map->SetString("constructor", constructor, !public_only && (constructor.empty()));
+    obj_map->SetString("instance", instance, !public_only && (instance.empty()));
 }
 
 spi::ObjectConstSP Class::object_from_map(
@@ -1886,11 +1887,13 @@ spi::ObjectConstSP Class::object_from_map(
         = obj_map->GetBool("asValue", true, false);
     const std::string& constructor
         = obj_map->GetString("constructor", true);
+    const std::string& instance
+        = obj_map->GetString("instance", true);
 
     return new Class(name, ns, description, baseClassName, attributes,
         properties, methods, coerceFrom, coerceTo, isAbstract, noMake,
         objectName, dataType, isDelegate, canPut, hasDynamicAttributes,
-        asValue, constructor);
+        asValue, constructor, instance);
 }
 
 SPI_IMPLEMENT_OBJECT_TYPE(Class, "Class", spdoc_service, true, 0);
@@ -1935,17 +1938,19 @@ spi::Value Class_caller(
         in_context->ValueToBool(in_values[16], true, false);
     const std::string& constructor =
         in_context->ValueToString(in_values[17], true, "");
+    const std::string& instance =
+        in_context->ValueToString(in_values[18], true, "");
 
     const ClassConstSP& o_result = spdoc::Class::New(name, ns, description,
         baseClassName, attributes, properties, methods, coerceFrom, coerceTo,
         isAbstract, noMake, objectName, dataType, isDelegate, canPut,
-        hasDynamicAttributes, asValue, constructor);
+        hasDynamicAttributes, asValue, constructor, instance);
     return spi::ObjectConstSP(o_result);
 }
 
 spi::FunctionCaller Class_FunctionCaller = {
     "Class",
-    18,
+    19,
     {
         {"name", spi::ArgType::STRING, "string", 0, false, false},
         {"ns", spi::ArgType::STRING, "string", 0, true, false},
@@ -1964,7 +1969,8 @@ spi::FunctionCaller Class_FunctionCaller = {
         {"canPut", spi::ArgType::BOOL, "bool", 0, true, false},
         {"hasDynamicAttributes", spi::ArgType::BOOL, "bool", 0, true, false},
         {"asValue", spi::ArgType::BOOL, "bool", 0, true, false},
-        {"constructor", spi::ArgType::STRING, "string", 0, true, false}
+        {"constructor", spi::ArgType::STRING, "string", 0, true, false},
+        {"instance", spi::ArgType::STRING, "string", 0, true, false}
     },
     Class_caller
 };

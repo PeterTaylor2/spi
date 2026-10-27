@@ -682,6 +682,27 @@ namespace
             return StringUpper(xlf);
         return xlf;
     }
+
+    std::string get_instance(
+        const spdoc::Class* cls,
+        const spdoc::ClassMethodConstSP& method = {})
+    {
+        std::string instance;
+        if (method && !method->instance.empty())
+        {
+            instance = method->instance;
+        }
+        else if (!cls->instance.empty())
+        {
+            instance = cls->instance;
+        }
+        else
+        {
+            instance = "handle";
+        }
+        return instance;
+    }
+
 } // end of anonymous namespace
 
 std::vector<std::string> ExcelService::translateVbaFiles(
@@ -1880,9 +1901,9 @@ void ExcelModule::registerClass(
 
         if (!method->isStatic)
         {
-            ostr << "    args.push_back(\"" << method->instance << "\");\n"
+            ostr << "    args.push_back(\"" << get_instance(cls, method) << "\");\n"
                 << "    help.push_back(\"" << cls->name
-                << " object " << method->instance << ".\");\n";
+                << " object " << get_instance(cls, method) << ".\");\n";
         }
 
         for (size_t i = 0; i < method->function->inputs.size(); ++i)
@@ -1944,8 +1965,8 @@ void ExcelModule::registerClass(
                 << cls->name << funcNameSep << name << " */\n"
                 << "    args.clear();\n"
                 << "    help.clear();\n"
-                << "    args.push_back(\"handle\");\n"
-                << "    help.push_back(\"" << cls->name << " object handle.\");\n"
+                << "    args.push_back(\"" << get_instance(cls) << "\");\n"
+                << "    help.push_back(\"" << cls->name << " object " << get_instance(cls) << ".\");\n"
                 << "    svc->RegisterFunction(xllName, \"xl_" << service->ns()
                 << "_" << makeNamespaceSep(module->ns, "_") << cls->name << "_"
                 << name << "\", \"" << service->ns()
