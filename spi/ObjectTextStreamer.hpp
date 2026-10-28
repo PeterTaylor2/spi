@@ -140,51 +140,6 @@ public:
     static void Register();
 };
 
-/**
- * ObjectCompressedTextStreamer interface.
- *
- * Implements to_ostream and from_istream for an object using a text format.
- */
-class SPI_IMPORT ObjectCompressedTextStreamer : public IObjectStreamer
-{
-public:
-    // implementation of IObjectTextStreamer
-    ObjectConstSP from_data(
-        const std::string& streamName,
-        const std::string& data,
-        size_t offset,
-        const MapConstSP& metaData);
-    void to_stream(
-        std::ostream& ostr,
-        const ObjectConstSP& object,
-        const MapConstSP& metaData,
-        bool addObjectId);
-
-    /**
-     * If options is defined then it is a ';' delimited string with the
-     * same options supported as ObjectTextStreamer.
-     */
-    static ObjectCompressedTextStreamerSP Make(
-        const ServiceConstSP& service,
-        const char* options=0);
-
-    static void Register();
-
-    ~ObjectCompressedTextStreamer();
-
-private:
-    // main constructor - accessed via static Make method
-    ObjectCompressedTextStreamer(
-        const ServiceConstSP& service,
-        const char* options);
-
-    // prevent compiler implementation of copy constructor and assignment
-    ObjectCompressedTextStreamer(const ObjectCompressedTextStreamer&);
-    ObjectCompressedTextStreamer& operator=(const ObjectCompressedTextStreamer&);
-
-    ObjectTextStreamerSP m_textStreamer;
-};
-
 SPI_END_NAMESPACE
 
 #endif

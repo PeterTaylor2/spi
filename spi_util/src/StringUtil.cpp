@@ -21,7 +21,7 @@
 */
 #include "StringUtil.hpp"
 #include "Utils.hpp"
-#include "CompressUtil.hpp"
+#include "Base64.hpp"
 
 #include <spi_boost/shared_array.hpp>
 #include <ctype.h>

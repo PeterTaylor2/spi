@@ -38,32 +38,7 @@
 
 SPI_UTIL_NAMESPACE
 
-/*
- * Defines a data buffer for use with the compression routines.
- *
- * You can construct from a pointer and size (in which case it is
- * your pointer and it won't be freed when the DataBuffer goes out
- * of scope).
- *
- * After construction, you can subsequently allocate data - in which
- * case the data is owned by the DataBuffer and will be freed when the
- * DataBuffer goes out of scope.
- */
-struct DataBuffer
-{
-    DataBuffer(const std::string& data);
-    DataBuffer();
-
-    void Allocate(size_t newSize);
-
-    void* data; // &str[0]
-    size_t size;
-    std::string str; // actual data storage
-
-private:
-    DataBuffer(const DataBuffer&);
-    DataBuffer& operator=(const DataBuffer&);
-};
+struct DataBuffer;
 
 /**
  * Uses ZLIB to compress the input buffer and return allocated output.

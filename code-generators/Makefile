@@ -23,7 +23,6 @@ override DEBUG=0
 include $(U_SPI_HOME)/makefiles/config/config.mk
 
 BUILD_DIRS=\
-../zlib\
 ../spi_util/lib\
 ../lib\
 ../makeXLAddin\

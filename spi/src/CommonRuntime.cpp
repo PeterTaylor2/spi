@@ -23,6 +23,9 @@
 
 #include "Service.hpp"
 #include "ObjectTextStreamer.hpp"
+#ifndef SPI_STATIC
+#include "ObjectCompressedTextStreamer.hpp"
+#endif
 #include "ObjectJSONStreamer.hpp"
 #include "ObjectBinaryStreamer.hpp"
 #include "Function.hpp"
@@ -77,7 +80,9 @@ CommonRuntime::CommonRuntime()
     // the format string
     ObjectTextStreamer::Register();
     ObjectJSONStreamer::Register();
+#ifndef SPI_STATIC
     ObjectCompressedTextStreamer::Register();
+#endif
     ObjectBinaryStreamer::Register();
     // ShortText is registered last since it doesn't have a recognizer
     ObjectShortTextStreamer::Register();
