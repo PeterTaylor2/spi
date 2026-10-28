@@ -152,6 +152,9 @@ def main():
     start_time = datetime.datetime.now()
 
     if not opts.skip_build:
+        if sys.platform == 'win32':
+            if not run('build-dependency-generator', [*command, "gendep"], timeout=1800):
+                return 1
         if not run('build-all', [*command], timeout=1800, live=True):
             return 1
     failures = []

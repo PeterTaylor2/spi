@@ -54,7 +54,6 @@ runtime::
 # note that the build target builds the code-generators first
 
 code-generators::
-	@$(MAKE) --no-print-directory gendep
 	@$(MAKE) --no-print-directory -C code-generators all
 
 testing::
@@ -88,9 +87,18 @@ gendep::
 
 endif
 
+pre-build::
+ifeq ($(G_PLATFORM),win32)
+	$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/vsVersions.py
+	@$(MAKE) gendep 
+endif
+ifeq ($(G_PLATFORM),linux64)
+	$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/pyLinuxVersions.py
+endif
+
 build::
 	@$(MAKE) code-generators
-	@$(MAKE) runtime
+	@$(MAKE) --no-print-directory runtime
 
 all::
 	@$(MAKE) build
