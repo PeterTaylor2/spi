@@ -4,6 +4,7 @@ U_SPI_HOME=..
 
 include $(U_SPI_HOME)/makefiles/config/config.mk
 include $(U_SPI_HOME)/makefiles/version.mk
+include $(U_SPI_HOME)/makefiles/config/zlib.mk
 
 U_BUILD_SUFFIX=-curl-$(G_WIN32_CURL_VERSION)
 
@@ -21,16 +22,15 @@ else
 
 U_SRC_DIR=$(G_WIN32_CURL_HOME)/curl/src
 U_INC_DIR=$(G_WIN32_CURL_HOME)/curl
-U_INCLUDES=-I$(U_SRC_DIR) -I$(U_SPI_HOME)/zlib -I$(G_WIN32_CURL_HOME)
+U_INCLUDES=-I$(U_SRC_DIR) -I$(G_ZLIB_HOME)/zlib -I$(G_WIN32_CURL_HOME)
 U_TARGET=$(G_WIN32_CURL_DLL)
 U_FORCE_REBUILD+=Makefile $(U_SPI_HOME)/makefiles/config/win32_curl.mk
 U_CFLAGS+=-DBUILDING_LIBCURL
 
 U_CFLAGS+=-DWIN32
 U_CFLAGS+=-DUSE_WINDOWS_SSPI -DUSE_SCHANNEL -DSSL_ENABLED
-U_CFLAGS+=-DHAVE_ZLIB_H -DHAVE_ZLIB -DHAVE_LIBZ
-U_CFLAGS+=-DZ_PREFIX
-U_DEP_LIBS+=$(U_SPI_HOME)/zlib/$(G_BUILD_DIR)/zlib.lib
+U_CFLAGS+=-DHAVE_ZLIB_H -DHAVE_ZLIB -DHAVE_LIBZ $(G_ZLIB_CFLAGS)
+U_DEP_LIBS+=$(U_SPI_HOME)/bin/$(G_ABI)/zlib.lib
 U_LIBS+=$(U_DEP_LIBS)
 
 vpath %.c $(U_SRC_DIR)/vtls

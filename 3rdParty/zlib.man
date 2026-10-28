@@ -1,0 +1,22 @@
+# this manifest translates from the file structure of the github zlib repository
+# to the file structure needed by the spi build of zlib
+# each line has the source files followed by the destination directory
+#
+# use the makefile copy-curl.mk to invoke the manifest
+# alternatively just run copyManifest.py directly
+
+# public header files
+
+zlib.h zlib
+zconf.h zlib
+
+# source files
+
+[a-u]*.[ch] src
+zutil.[ch] src
+
+# other
+
+LICENSE
+README
+

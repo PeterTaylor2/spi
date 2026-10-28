@@ -3,19 +3,20 @@ target:
 U_SPI_HOME=../..
 
 include $(U_SPI_HOME)/makefiles/config/config.mk
+include $(U_SPI_HOME)/makefiles/config/zlib.mk
 
 U_VCPROJ=spi-util-lib
 
 U_SRC_DIR=../src
 U_INC_DIR=..
-U_INCLUDES=-I../.. -I$(U_SRC_DIR)
+U_INCLUDES=-I../.. -I$(U_SRC_DIR) -I$(G_ZLIB_HOME)
 U_TARGET=spi_util
 U_CFLAGS=-DSPI_UTIL_STATIC
 U_FORCE_REBUILD=Makefile 
 #U_CFLAGS+=-DTRACE_MEM_UTIL
 #U_CFLAGS+=-DTRACK_MEMORY_ALLOCATED
 
-U_CFLAGS+=-DZ_PREFIX
+U_CFLAGS+=$(G_ZLIB_CFLAGS)
 
 ifneq ($(G_NO_UUID),0)
 U_CFLAGS+=-DNO_UUID

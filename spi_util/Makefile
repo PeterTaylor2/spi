@@ -4,19 +4,20 @@ U_SPI_HOME=..
 
 include $(U_SPI_HOME)/makefiles/config/config.mk
 include $(U_SPI_HOME)/makefiles/version.mk
+include $(U_SPI_HOME)/makefiles/config/zlib.mk
 
 U_VCPROJ=spi-util
 
 U_SRC_DIR=src
 U_INC_DIR=.
-U_INCLUDES=-I.. -I$(U_SRC_DIR)
+U_INCLUDES=-I.. -I$(U_SRC_DIR) -I$(G_ZLIB_HOME)
 U_TARGET=$(SPI_UTIL_DLL)
 U_CFLAGS=-DSPI_UTIL_EXPORT
 #U_CFLAGS+=-DTRACE_MEM_UTIL
 U_CFLAGS+=-DTRACK_MEMORY_ALLOCATED
 U_FORCE_REBUILD=Makefile $(U_SPI_HOME)/makefiles/version.mk
 
-U_CFLAGS+=-DZ_PREFIX
+U_CFLAGS+=$(G_ZLIB_CFLAGS)
 
 ifneq ($(G_NO_UUID),0)
 U_CFLAGS+=-DNO_UUID
@@ -29,7 +30,7 @@ include extra_objects.mk
 ifeq ($(G_PLATFORM),win32)
 
 U_DEP_LIBS=\
-$(U_SPI_HOME)/zlib/$(G_BUILD_DIR)/$(G_LIB_PFX)zlib$(G_LIB_EXT)\
+$(U_SPI_HOME)/bin/$(G_ABI)/$(G_LIB_PFX)zlib$(G_LIB_EXT)\
 $(U_SPI_HOME)/bin/$(G_ABI)/$(G_DLL_PFX)$(SPI_CURL_DLL)$(G_DLL_LIB_EXT)
 
 U_LIBS=$(U_DEP_LIBS)
@@ -38,7 +39,7 @@ U_INCLUDES+=-I$(G_WIN32_CURL_HOME)
 else
 
 U_DEP_LIBS=\
-$(U_SPI_HOME)/zlib/$(G_BUILD_DIR)/$(G_LIB_PFX)zlib$(G_LIB_EXT)
+$(U_SPI_HOME)/bin/$(G_ABI)/$(G_LIB_PFX)zlib$(G_LIB_EXT)
 
 U_LIBS=$(U_DEP_LIBS) $(G_CURL_LIBS)
 

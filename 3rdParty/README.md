@@ -38,7 +38,21 @@ Of course python must be in your path - perhaps it is easier to use py instead o
 
 ## zlib
 
-The intention is to use the same mechanism for zlib - but this has not been implemented yet.
+We compile zlib as a static library and link it into spi\_util and spi\_curl (on Windows).
+The code is copied from the zlib source distribution, but we do not use the zlib build system.
+
+The process for getting a new version of zlib is to fetch the zip file (or tar.gz file) from zlib.net.
+Extract all the code into the downloads directory - this will have the name zlib-v1.v2.v3.
+Then you can either run the script copyManifest.py (in the directory makefiles/python) or else type
+"make -f copy-zlib.mk" which will provide instructions on how to use the copy-zlib.mk makefile.
+You will of course need to have make in your path in order to undertake the latter step.
+If it is not in your path, then you can add the makefiles/cygwin64/bin directory to your path.
+
+If you want to call copyManifest directly, then the command to use is as follows (from this directory):
+
+```
+    python ../makefiles/python/copyManifest.py zlib.man downloads/zlib-v1.v2.v3 zlib-v1.v2.v3
+``` 
 
 ## boost
 
