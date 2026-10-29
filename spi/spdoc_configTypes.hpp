@@ -377,7 +377,7 @@ public:
     const bool noDoc;
 
 public:
-    std::string getName(const std::string& mns) const
+    std::string getName(const std::string& mns) const override
     {
         return mns + name;
     }
@@ -484,7 +484,7 @@ public:
     const bool optionalReturnType;
 
 public:
-    std::string getName(const std::string& mns) const
+    std::string getName(const std::string& mns) const override
     {
         return mns + name;
     }
@@ -624,7 +624,7 @@ public:
     const bool isBitmask;
 
 public:
-    std::string getName(const std::string& mns) const
+    std::string getName(const std::string& mns) const override
     {
         return mns + name;
     }
@@ -926,7 +926,7 @@ public:
     const std::string instance;
 
 public:
-    std::string getName(const std::string& mns = {}) const
+    std::string getName(const std::string& mns = {}) const override
     {
         return mns + name;
     }

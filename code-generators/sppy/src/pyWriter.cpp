@@ -981,13 +981,13 @@ void PythonModule::implementClass(
              << "{\n"
              << "public:\n"
              << "    // IMPLEMENTS spi::Object\n"
-             << "    spi::ObjectType* get_object_type() const\n"
+             << "    spi::ObjectType* get_object_type() const override\n"
              << "    {\n"
              << "        return py_object_type.get();\n"
              << "    }\n"
              << "\n"
              << "    // IMPLEMENTS spi::Object\n"
-             << "    void to_map(spi::IObjectMap* objMap, bool publicOnly) const\n"
+             << "    void to_map(spi::IObjectMap* objMap, bool publicOnly) const override\n"
              << "    {\n"
              << "        spi::pyObjectToMap(self, objMap, publicOnly);\n"
              << "    }\n"
@@ -1076,7 +1076,7 @@ void PythonModule::implementClass(
                 }
                 ostr << " " << argName; // no lining up
             }
-            ostr << ") const";
+            ostr << ") const override";
 
             //if (method->isConst)
             //    ostr << " const";

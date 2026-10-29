@@ -238,13 +238,13 @@ class ReplayCodeGenerator_python_delegate : public spi_replay::ReplayCodeGenerat
 {
 public:
     // IMPLEMENTS spi::Object
-    spi::ObjectType* get_object_type() const
+    spi::ObjectType* get_object_type() const override
     {
         return py_object_type.get();
     }
 
     // IMPLEMENTS spi::Object
-    void to_map(spi::IObjectMap* objMap, bool publicOnly) const
+    void to_map(spi::IObjectMap* objMap, bool publicOnly) const override
     {
         spi::pyObjectToMap(self, objMap, publicOnly);
     }
@@ -264,7 +264,7 @@ public:
     }
 
     void GenerateFunction(
-        const spi_replay::ReplayFunctionActionConstSP& action) const
+        const spi_replay::ReplayFunctionActionConstSP& action) const override
     {
         spi::PyInterpreterLock lock;
         PyObjectSP the_method = spi::pyoShare(PyObject_GetAttrString(self, "GenerateFunction"));
@@ -281,7 +281,7 @@ public:
     }
 
     void GenerateObject(
-        const spi_replay::ReplayObjectActionConstSP& action) const
+        const spi_replay::ReplayObjectActionConstSP& action) const override
     {
         spi::PyInterpreterLock lock;
         PyObjectSP the_method = spi::pyoShare(PyObject_GetAttrString(self, "GenerateObject"));

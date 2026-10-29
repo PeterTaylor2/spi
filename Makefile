@@ -93,8 +93,12 @@ ifeq ($(G_PLATFORM),win32)
 	@$(MAKE) gendep 
 endif
 ifeq ($(G_PLATFORM),linux64)
-	$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/pyLinuxVersions.py
+	$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/pyLinuxVersions.py $(U_SPI_HOME)/makefiles/config/computers/$(COMPUTERNAME).mk
 endif
+ifeq ($(G_PLATFORM),macos64)
+	$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/pyMacosVersions.py $(U_SPI_HOME)/makefiles/config/computers/$(COMPUTERNAME).mk
+endif
+
 
 build::
 	@$(MAKE) code-generators
