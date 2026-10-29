@@ -1154,7 +1154,7 @@ void PythonModule::implementClass(
 
         ostr << "\n"
              << "    // RE-IMPLEMENTS spi::Object\n"
-             << "    void* get_py_object() const\n"
+             << "    void* get_py_object() const override\n"
              << "    {\n"
              << "        return (void*)self;\n"
              << "    }\n";

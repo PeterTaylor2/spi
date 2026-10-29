@@ -298,7 +298,7 @@ public:
     }
 
     // RE-IMPLEMENTS spi::Object
-    void* get_py_object() const
+    void* get_py_object() const override
     {
         return (void*)self;
     }
