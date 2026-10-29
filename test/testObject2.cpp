@@ -23,6 +23,18 @@ static void testCompoundObjectStream(void)
         test::SubData::Make("Hello world"),
         intVector);
 
+    // demonstrates the operator string() method on SubData class
+    // this only works because we declared as_string in the SubData class
+    // what happens is that item->anInstance returns test::SubDataConstSP
+    // test::SubDataConstSP tries to implement the operator std::string()
+    // it can do it because test::SubData class defines the as_string() method
+    std::string helloWorld = item->anInstance();
+    SPI_POST_CONDITION(helloWorld == "Hello world");
+
+#if false
+    std::string itemText = item; // this won't compile because Data does not have as_string
+#endif
+
     std::ostringstream oss;
 
     std::cout << "Writing object of type Data to stream" << std::endl;
