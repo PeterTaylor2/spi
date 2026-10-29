@@ -2,6 +2,7 @@
 #include <spi/Date.hpp>
 #include <spi/Service.hpp>
 #include <spi/IObjectMap.hpp>
+#include <spi/RuntimeError.hpp>
 
 #include <dll/test_data_classes.hpp>
 #include <dll/test_dll_service.hpp>
@@ -12,6 +13,22 @@
 #include <stdio.h>
 
 #include <spi_util/TestRunner.hpp>
+
+static void checkData(const test::DataConstSP& actual, const test::DataConstSP& expected)
+{
+    SPI_POST_CONDITION(actual);
+    SPI_POST_CONDITION(actual->aBool() == expected->aBool());
+    SPI_POST_CONDITION(actual->anInt() == expected->anInt());
+    SPI_POST_CONDITION(actual->aDouble() == expected->aDouble());
+    SPI_POST_CONDITION(actual->aDate() == expected->aDate());
+    SPI_POST_CONDITION(actual->intVec() == expected->intVec());
+    SPI_POST_CONDITION(actual->anInstance());
+    SPI_POST_CONDITION(actual->anotherInstance());
+    SPI_POST_CONDITION(actual->anInstance()->aString() == expected->anInstance()->aString());
+    SPI_POST_CONDITION(actual->anotherInstance()->aString() == expected->anotherInstance()->aString());
+    SPI_POST_CONDITION((actual->anInstance() == actual->anotherInstance()) ==
+                       (expected->anInstance() == expected->anotherInstance()));
+}
 
 static void testCompoundObjectStream(void)
 {
@@ -35,6 +52,7 @@ static void testCompoundObjectStream(void)
 
     std::cout << "Reading object of type Data from string" << std::endl;
     test::DataConstSP d2 = test::Data::from_string(str);
+    checkData(d2, item);
     std::ostringstream oss2;
     d2->to_stream(oss2);
     std::cout << oss2.str() << std::endl;
@@ -44,6 +62,7 @@ static void testCompoundObjectStream(void)
 
     // can we read from binary string?
     test::DataConstSP d3 = test::Data::from_file("data.bin");
+    checkData(d3, item);
 
     std::cout << "Does binary serialization preserve the property that anInstance and anotherInstance are the same?" << std::endl;
     std::cout << d3->to_string() << std::endl;
@@ -53,6 +72,7 @@ static void testCompoundObjectStream(void)
         "Hello world", intVector, "Goodbye");
     item2->to_file("data2.bin", "BIN"); // examine the file for field name definitions
     test::DataConstSP d4 = test::Data::from_file("data2.bin");
+    checkData(d4, item2);
     std::cout << "More binary serialization testing" << std::endl;
     std::cout << d4->to_string() << std::endl;
 }

@@ -4,6 +4,7 @@
 #include <spi/MapObject.hpp>
 #include <spi/ObjectPut.hpp>
 #include <spi/IObjectMap.hpp>
+#include <spi/RuntimeError.hpp>
 
 #include <string>
 #include <sstream>
@@ -48,6 +49,16 @@ static void testMapStreaming(void)
     for (const char* fn : { "map.text", "map.bin" })
     {
         spi::MapObjectConstSP m2 = spi::MapObject::from_file(fn);
+        SPI_POST_CONDITION(m2);
+        SPI_POST_CONDITION(m2->get_value("ints").getIntVector() == ints);
+        SPI_POST_CONDITION(m2->get_value("names").getStringVector() == names);
+        spi::ObjectConstSP map1 = m2->get_value("map1").getObject();
+        spi::ObjectConstSP map2 = m2->get_value("map2").getObject();
+        SPI_POST_CONDITION(map1);
+        SPI_POST_CONDITION(map2);
+        SPI_POST_CONDITION(map1->get_value("aString").getString() == "Hello world");
+        SPI_POST_CONDITION(map2->get_value("aString").getString() == "Hello world");
+        SPI_POST_CONDITION(map1 == map2);
         spi::MapObjectConstSP m3 = spi::MapObject::Make(m2->get_meta_data());
         std::cout << "\nmeta_data" << std::endl;
         std::cout << m3->to_string() << std::endl;
