@@ -86,7 +86,7 @@ public:
     void addValidateInner(const std::string& varName,
         const VerbatimConstSP& verbatim);
     void addDynamicProperties(const VerbatimConstSP& verbatim);
-    void addAsValueCode(const VerbatimConstSP& verbatim);
+    void addAsValueCode(const VerbatimConstSP& verbatim, const char* as_value);
 
     // re-implementation of Construct
     void declareInner(
@@ -202,6 +202,7 @@ private:
     std::string                        m_validateInnerName;
     VerbatimConstSP                    m_validateInnerCode;
     VerbatimConstSP                    m_dynamicPropertiesCode;
+    std::string                        m_asValueType;
     VerbatimConstSP                    m_asValueCode;
 
     mutable DataTypeConstSP m_dataType;

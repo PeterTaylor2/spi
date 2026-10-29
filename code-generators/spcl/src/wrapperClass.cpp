@@ -220,12 +220,16 @@ void WrapperClass::addDynamicProperties(const VerbatimConstSP& verbatim)
         throw spi::RuntimeError("dynamic_properties already defined");
 }
 
-void WrapperClass::addAsValueCode(const VerbatimConstSP& verbatim)
+void WrapperClass::addAsValueCode(const VerbatimConstSP& verbatim,
+    const char* as_value)
 {
-    if (!m_asValueCode)
-        m_asValueCode = verbatim;
-    else
+    if (m_asValueCode)
+    {
         throw spi::RuntimeError("as_value already defined");
+    }
+
+    m_asValueType = std::string(as_value).substr(3);
+    m_asValueCode = verbatim;
 }
 
 void WrapperClass::addDelegate(
@@ -371,6 +375,11 @@ void WrapperClass::declare(
     {
         ostr << "\n"
              << "    spi::Value as_value() const;\n";
+
+        if (m_asValueType == "string")
+        {
+            ostr << "    std::string as_string() const;\n";
+        }
     }
 
     ostr << "\n"
@@ -1129,6 +1138,17 @@ void WrapperClass::implement(
         ostr << "\n"
              << "spi::Value " << m_name << "::as_value() const\n"
              << "{";
+
+        if (m_asValueType == "string")
+        {
+            ostr << "\n"
+                << "    return as_string(); \n"
+                << "}\n"
+                << "\n"
+                << "std::string " << m_name << "::as_string() const\n"
+                << "{";
+        }
+
         writeVerbatim(ostr, m_asValueCode, 0, false);
     }
 

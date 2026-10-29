@@ -619,14 +619,15 @@ VerbatimConstSP parseImplementation(
 }
 
 VerbatimConstSP parseAsValueCode(
-    ConfigLexer& lexer)
+    ConfigLexer& lexer,
+    const char* as_value)
 {
     ConfigLexer::Token token = lexer.getToken();
     if (token.type != '(')
-        throw spi::RuntimeError("Expecting '(' after as_value");
+        throw spi::RuntimeError("Expecting '(' after %s", as_value);
     token = lexer.getToken();
     if (token.type != ')')
-        throw spi::RuntimeError("Expecting ')' after as_value");
+        throw spi::RuntimeError("Expecting ')' after %s", as_value);
 
     return parseImplementation(lexer, true);
 }
@@ -2753,10 +2754,11 @@ void structKeywordHandler(
             continue;
         }
         else if (token.type == SPI_CONFIG_TOKEN_TYPE_NAME &&
-                 strcmp(token.value.aName, "as_value") == 0)
+                 (strcmp(token.value.aName, "as_value") == 0 ||
+                  strcmp(token.value.aName, "as_string") == 0))
         {
-            VerbatimConstSP code = parseAsValueCode(lexer);
-            type->addAsValueCode(code);
+            VerbatimConstSP code = parseAsValueCode(lexer, token.value.aName);
+            type->addAsValueCode(code, token.value.aName);
             token = lexer.getToken();
             continue;
         }
@@ -3409,10 +3411,11 @@ void classNoWrapHandler(
             type->addDynamicProperties(code);
         }
         else if (token.type == SPI_CONFIG_TOKEN_TYPE_NAME &&
-            strcmp(token.value.aName, "as_value") == 0)
+            (strcmp(token.value.aName, "as_value") == 0 ||
+             strcmp(token.value.aName, "as_string") == 0))
         {
-            VerbatimConstSP code = parseAsValueCode(lexer);
-            type->addAsValueCode(code);
+            VerbatimConstSP code = parseAsValueCode(lexer, token.value.aName);
+            type->addAsValueCode(code, token.value.aName);
         }
         else
         {
@@ -3827,10 +3830,11 @@ void classKeywordHandler(
             type->addDynamicProperties(code);
         }
         else if (token.type == SPI_CONFIG_TOKEN_TYPE_NAME &&
-            strcmp(token.value.aName, "as_value") == 0)
+            (strcmp(token.value.aName, "as_value") == 0 ||
+            strcmp(token.value.aName, "as_string") == 0))
         {
-            VerbatimConstSP code = parseAsValueCode(lexer);
-            type->addAsValueCode(code);
+            VerbatimConstSP code = parseAsValueCode(lexer, token.value.aName);
+            type->addAsValueCode(code, token.value.aName);
         }
         else
         {

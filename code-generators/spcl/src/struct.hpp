@@ -85,7 +85,8 @@ public:
     void addCoerceFrom(const CoerceFromConstSP& coerceFrom);
     void addCoerceTo(const CoerceToConstSP& coerceTo);
     void addDynamicProperties(const VerbatimConstSP& verbatim);
-    void addAsValueCode(const VerbatimConstSP& verbatim);
+    void addAsValueCode(const VerbatimConstSP& verbatim,
+        const char* as_value);
 
     // re-implementation of Construct
     int preDeclare(GeneratedOutput& ostr,
@@ -180,6 +181,7 @@ private:
     std::vector<CoerceFromConstSP>  m_coerceFromVector;
     std::vector<CoerceToConstSP>    m_coerceToVector;
     VerbatimConstSP                 m_dynamicPropertiesCode;
+    std::string                     m_asValueType;
     VerbatimConstSP                 m_asValueCode;
 
     mutable DataTypeConstSP m_dataType;

@@ -220,6 +220,13 @@ public:
         swap(tmp);
     }
 
+    // also extra code - provide operator std::string
+    // for any underlying class which supports as_string method
+    operator std::string() const
+    {
+        return px->as_string();
+    }
+
 #ifndef SPI_BOOST_NO_CXX11_DELETED_FUNCTIONS
     ObjectSmartPtr(const spi_boost::intrusive_ptr<T>& rhs) = delete;
     ObjectSmartPtr(const spi_boost::intrusive_ptr<T const>& rhs) = delete;
