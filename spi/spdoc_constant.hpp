@@ -145,28 +145,28 @@ public:
     * returns the string which should appear in documentation
     ************************************************************************
     */
-    std::string docString() const;
+    std::string docString() const override;
 
     /**
     ************************************************************************
     * returns "int"
     ************************************************************************
     */
-    std::string typeName() const;
+    std::string typeName() const override;
 
     /**
     ************************************************************************
     * returns the integer value for the scalar
     ************************************************************************
     */
-    int getInt() const;
+    int getInt() const override;
 
     /**
     ************************************************************************
     * returns the double value for the scalar
     ************************************************************************
     */
-    double getDouble() const;
+    double getDouble() const override;
 
     typedef spi::ObjectSmartPtr<IntConstant> outer_type;
 
@@ -202,21 +202,21 @@ public:
     * returns the string which should appear in documentation
     ************************************************************************
     */
-    std::string docString() const;
+    std::string docString() const override;
 
     /**
     ************************************************************************
     * returns "date"
     ************************************************************************
     */
-    std::string typeName() const;
+    std::string typeName() const override;
 
     /**
     ************************************************************************
     * returns the date value for the scalar
     ************************************************************************
     */
-    spi::Date getDate() const;
+    spi::Date getDate() const override;
 
     typedef spi::ObjectSmartPtr<DateConstant> outer_type;
 
@@ -252,21 +252,21 @@ public:
     * returns the string which should appear in documentation
     ************************************************************************
     */
-    std::string docString() const;
+    std::string docString() const override;
 
     /**
     ************************************************************************
     * returns "datetime"
     ************************************************************************
     */
-    std::string typeName() const;
+    std::string typeName() const override;
 
     /**
     ************************************************************************
     * returns the date value for the scalar
     ************************************************************************
     */
-    spi::DateTime getDateTime() const;
+    spi::DateTime getDateTime() const override;
 
     typedef spi::ObjectSmartPtr<DateTimeConstant> outer_type;
 
@@ -302,21 +302,21 @@ public:
     * returns the string which should appear in documentation
     ************************************************************************
     */
-    std::string docString() const;
+    std::string docString() const override;
 
     /**
     ************************************************************************
     * returns "double"
     ************************************************************************
     */
-    std::string typeName() const;
+    std::string typeName() const override;
 
     /**
     ************************************************************************
     * returns the double value for the scalar
     ************************************************************************
     */
-    double getDouble() const;
+    double getDouble() const override;
 
     typedef spi::ObjectSmartPtr<DoubleConstant> outer_type;
 
@@ -352,21 +352,21 @@ public:
     * returns the string which should appear in documentation
     ************************************************************************
     */
-    std::string docString() const;
+    std::string docString() const override;
 
     /**
     ************************************************************************
     * returns "char"
     ************************************************************************
     */
-    std::string typeName() const;
+    std::string typeName() const override;
 
     /**
     ************************************************************************
     * returns the char value for the scalar
     ************************************************************************
     */
-    char getChar() const;
+    char getChar() const override;
 
     typedef spi::ObjectSmartPtr<CharConstant> outer_type;
 
@@ -402,21 +402,21 @@ public:
     * returns the string which should appear in documentation
     ************************************************************************
     */
-    std::string docString() const;
+    std::string docString() const override;
 
     /**
     ************************************************************************
     * returns "string"
     ************************************************************************
     */
-    std::string typeName() const;
+    std::string typeName() const override;
 
     /**
     ************************************************************************
     * returns the string value for the scalar
     ************************************************************************
     */
-    std::string getString() const;
+    std::string getString() const override;
 
     typedef spi::ObjectSmartPtr<StringConstant> outer_type;
 
@@ -452,21 +452,21 @@ public:
     * returns the string which should appear in documentation
     ************************************************************************
     */
-    std::string docString() const;
+    std::string docString() const override;
 
     /**
     ************************************************************************
     * returns "bool"
     ************************************************************************
     */
-    std::string typeName() const;
+    std::string typeName() const override;
 
     /**
     ************************************************************************
     * returns the bool value for the scalar
     ************************************************************************
     */
-    bool getBool() const;
+    bool getBool() const override;
 
     typedef spi::ObjectSmartPtr<BoolConstant> outer_type;
 
@@ -500,63 +500,63 @@ public:
     * returns the data type name for the scalar
     ************************************************************************
     */
-    std::string typeName() const;
+    std::string typeName() const override;
 
     /**
     ************************************************************************
     * returns the string which should appear in documentation
     ************************************************************************
     */
-    std::string docString() const;
+    std::string docString() const override;
 
     /**
     ************************************************************************
     * returns the integer value (where applicable) for the scalar
     ************************************************************************
     */
-    int getInt() const;
+    int getInt() const override;
 
     /**
     ************************************************************************
     * returns the date value (where applicable) for the scalar
     ************************************************************************
     */
-    spi::Date getDate() const;
+    spi::Date getDate() const override;
 
     /**
     ************************************************************************
     * returns the date value (where applicable) for the scalar
     ************************************************************************
     */
-    spi::DateTime getDateTime() const;
+    spi::DateTime getDateTime() const override;
 
     /**
     ************************************************************************
     * returns the double value (where applicable) for the scalar
     ************************************************************************
     */
-    double getDouble() const;
+    double getDouble() const override;
 
     /**
     ************************************************************************
     * returns the char value (where applicable) for the scalar
     ************************************************************************
     */
-    char getChar() const;
+    char getChar() const override;
 
     /**
     ************************************************************************
     * returns the string value (where applicable) for the scalar
     ************************************************************************
     */
-    std::string getString() const;
+    std::string getString() const override;
 
     /**
     ************************************************************************
     * returns the bool value (where applicable) for the scalar
     ************************************************************************
     */
-    bool getBool() const;
+    bool getBool() const override;
 
     typedef spi::ObjectSmartPtr<UndefinedConstant> outer_type;
 

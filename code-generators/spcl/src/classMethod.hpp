@@ -82,10 +82,10 @@ public:
     void declare(GeneratedOutput& ostr,
         const DataTypeConstSP& classType,
         const std::string& className,
-                 bool types,
-                 const ServiceDefinitionSP& svc,
-                 bool alwaysVirtual=false,
-                 bool innerContext=false) const;
+        bool types,
+        const ServiceDefinitionSP& svc,
+        bool alwaysVirtual=false,
+        bool innerContext=false) const;
 
     // implement as delegate only works for wrapper classes
     void implementAsDelegate(GeneratedOutput& ostr,

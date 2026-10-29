@@ -343,7 +343,7 @@ public:
     * Returns "SIMPLE_TYPE"
     ************************************************************************
     */
-    std::string getType() const;
+    std::string getType() const override;
 
     /**
     ************************************************************************
@@ -355,7 +355,7 @@ public:
     */
     std::vector<std::string> Summary(
         const std::string& mns,
-        bool includeDescription = false) const;
+        bool includeDescription = false) const override;
 
     typedef spi::ObjectSmartPtr<SimpleType> outer_type;
 
@@ -445,14 +445,14 @@ public:
     */
     std::vector<std::string> Summary(
         const std::string& mns,
-        bool includeDescription = false) const;
+        bool includeDescription = false) const override;
 
     /**
     ************************************************************************
     * Returns "FUNCTION"
     ************************************************************************
     */
-    std::string getType() const;
+    std::string getType() const override;
 
     typedef spi::ObjectSmartPtr<Function> outer_type;
 
@@ -588,7 +588,7 @@ public:
     * Returns "ENUM"
     ************************************************************************
     */
-    std::string getType() const;
+    std::string getType() const override;
 
     /**
     ************************************************************************
@@ -600,7 +600,7 @@ public:
     */
     std::vector<std::string> Summary(
         const std::string& mns,
-        bool includeDescription = false) const;
+        bool includeDescription = false) const override;
 
     typedef spi::ObjectSmartPtr<Enum> outer_type;
 
@@ -852,14 +852,14 @@ public:
     */
     std::vector<std::string> Summary(
         const std::string& mns,
-        bool includeDescription = false) const;
+        bool includeDescription = false) const override;
 
     /**
     ************************************************************************
     * Returns "CLASS"
     ************************************************************************
     */
-    std::string getType() const;
+    std::string getType() const override;
 
     /**
     ************************************************************************

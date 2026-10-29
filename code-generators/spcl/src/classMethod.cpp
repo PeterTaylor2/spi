@@ -170,6 +170,8 @@ void ClassMethod::declare(
     // that all non-static functions must be declared as const
     if (!m_isStatic)
         ostr << " const";
+    if (!m_implements.empty())
+        ostr << " override";
     if (m_isVirtual && !m_function->m_implementation)
         ostr << " = 0";
     ostr << ";\n";
