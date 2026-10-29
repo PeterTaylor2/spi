@@ -242,7 +242,7 @@ public:
     SPI_DECLARE_OBJECT_TYPE(ClassAttribute);
 
     spi::ObjectConstSP coerce_to_object(
-        const std::string& className) const;
+        const std::string& className) const override;
 
 protected:
 

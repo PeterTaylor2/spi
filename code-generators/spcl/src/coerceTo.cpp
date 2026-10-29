@@ -105,7 +105,7 @@ void CoerceTo::declare(
 
     ostr << "\n"
          << "    spi::ObjectConstSP " << "coerce_to_object(\n"
-         << "        const std::string& className) const;\n";
+         << "        const std::string& className) const override;\n";
 }
 
 void CoerceTo::implement(

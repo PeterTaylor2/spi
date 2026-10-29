@@ -374,7 +374,7 @@ void WrapperClass::declare(
     if (m_asValueCode)
     {
         ostr << "\n"
-             << "    spi::Value as_value() const;\n";
+             << "    spi::Value as_value() const override;\n";
 
         if (m_asValueType == "string")
         {

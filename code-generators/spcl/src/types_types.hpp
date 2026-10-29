@@ -189,7 +189,7 @@ public:
     /* public accessor methods */
     std::string format() const;
 
-    spi::Value as_value() const;
+    spi::Value as_value() const override;
 
     typedef spi::ObjectSmartPtr<InputConverterStringFormat> outer_type; 
 

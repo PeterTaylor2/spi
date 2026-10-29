@@ -41,8 +41,8 @@
 #include "ObjectSmartPtr.hpp"
 
 #define SPI_DECLARE_OBJECT_TYPE(T)\
-    spi::ObjectType* get_object_type() const;\
-    void to_map(spi::IObjectMap* objMap, bool publicOnly) const;\
+    spi::ObjectType* get_object_type() const override;\
+    void to_map(spi::IObjectMap* objMap, bool publicOnly) const override;\
     static spi::ObjectConstSP object_from_map(spi::IObjectMap* objMap, spi::ValueToObject& mapToObject);\
     static spi::ObjectConstSP coerce_from_value(const spi::Value& v, const spi::InputContext* c);\
     static spi::ObjectConstSP coerce_from_object(const spi::ObjectConstSP& o);\
