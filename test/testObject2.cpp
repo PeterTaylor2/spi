@@ -60,7 +60,9 @@ static void testCompoundObjectStream(void)
 #else
     // we don't particularly want item != NULL to be used but it has been in places
     // it will continue to work if the class does not support as_string()
+    //
     // but it actually fails to compile if the class does support as_string()
+    // although you can use != nullptr instead of != NULL as we show here
     if (item != NULL)
     {
        rubbish += 1;
