@@ -39,15 +39,27 @@ static void testCompoundObjectStream(void)
     SPI_POST_CONDITION("Hello world" == item->anInstance());
     SPI_POST_CONDITION(std::string("Hello world") == item->anInstance());
 
+    int rubbish = 0;
 #if defined(__apple_build_version__) && __apple_build_version__ >= 17000000 \
                                      && __apple_build_version__ < 18000000
-    std::cout << "__apple_build_version__ " << __apple_build_version__
-	      << ": not compiling object NULL comparison tests" << std::endl;
+    std::cout << "APPLE_BUILD_VERSION=" << __apple_build_version__ << std::endl;
+
+    // since we don't support checking whether operator std::string() is allowed
+    // for this version of the Apple compilers (if we do then the previous 4 tests
+    // will all actually crash the compiler - I kid you not), we will revert to
+    // the simple boolean tests which is what you should write anyway
+    if (item)
+    {
+       rubbish += 1;
+    }
+
+    if (item->anInstance())
+    {
+       rubbish += 2;
 #else
     // we don't particularly want item != NULL to be used but it has been in places
     // it will continue to work if the class does not support as_string()
     // but it actually fails to compile if the class does support as_string()
-    int rubbish = 0;
     if (item != NULL)
     {
        rubbish += 1;
@@ -57,9 +69,9 @@ static void testCompoundObjectStream(void)
     {
        rubbish += 2;
     }
+#endif
 
     SPI_POST_CONDITION(rubbish==3);
-#endif
 
 #if false
     std::string itemText = item; // this won't compile because Data does not have as_string

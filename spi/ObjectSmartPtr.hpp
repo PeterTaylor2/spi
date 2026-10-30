@@ -232,53 +232,53 @@ public:
     // when a conversion is attempted, not when SmartPtr<T> is instantiated.
 #if defined(__apple_build_version__) && __apple_build_version__ >= 17000000 \
                                      && __apple_build_version__ < 18000000
-#define HAS_AS_STRING
+#define SPI_OBJECT_SMART_PTR_STRING_OPERATOR_TEST
 #else
-#define HAS_AS_STRING template <class U = T, class = decltype(std::declval<const U&>().as_string())>
+#define SPI_OBJECT_SMART_PTR_STRING_OPERATOR_TEST template <class U = T, class = decltype(std::declval<const U&>().as_string())>
 #endif
 
-    HAS_AS_STRING
+    SPI_OBJECT_SMART_PTR_STRING_OPERATOR_TEST
     operator std::string() const
     {
         return px->as_string();
     }
 
-    HAS_AS_STRING
+    SPI_OBJECT_SMART_PTR_STRING_OPERATOR_TEST
     friend bool operator==(const std::string& lhs, const ObjectSmartPtr& rhs)
     {
         return lhs == rhs.operator std::string();
     }
-    HAS_AS_STRING
+    SPI_OBJECT_SMART_PTR_STRING_OPERATOR_TEST
     friend bool operator==(const ObjectSmartPtr& lhs, const std::string& rhs)
     {
         return lhs.operator std::string() == rhs;
     }
-    HAS_AS_STRING
+    SPI_OBJECT_SMART_PTR_STRING_OPERATOR_TEST
     friend bool operator==(const char* lhs, const ObjectSmartPtr& rhs)
     {
         return lhs && lhs == rhs.operator std::string();
     }
-    HAS_AS_STRING
+    SPI_OBJECT_SMART_PTR_STRING_OPERATOR_TEST
     friend bool operator==(const ObjectSmartPtr& lhs, const char* rhs)
     {
         return rhs && lhs.operator std::string() == rhs;
     }
-    HAS_AS_STRING
+    SPI_OBJECT_SMART_PTR_STRING_OPERATOR_TEST
     friend bool operator!=(const std::string& lhs, const ObjectSmartPtr& rhs)
     {
         return !(lhs == rhs);
     }
-    HAS_AS_STRING
+    SPI_OBJECT_SMART_PTR_STRING_OPERATOR_TEST
     friend bool operator!=(const ObjectSmartPtr& lhs, const std::string& rhs)
     {
         return !(lhs == rhs);
     }
-    HAS_AS_STRING
+    SPI_OBJECT_SMART_PTR_STRING_OPERATOR_TEST
     friend bool operator!=(const char* lhs, const ObjectSmartPtr& rhs)
     {
         return !(lhs == rhs);
     }
-    HAS_AS_STRING
+    SPI_OBJECT_SMART_PTR_STRING_OPERATOR_TEST
     friend bool operator!=(const ObjectSmartPtr& lhs, const char* rhs)
     {
         return !(lhs == rhs);
