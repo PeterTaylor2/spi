@@ -43,7 +43,11 @@ static void testCompoundObjectStream(void)
     // it will continue to work if the class does not support as_string()
     // but it actually fails to compile if the class does support as_string()
     int rubbish = 0;
+#ifdef __clang__
+    if (item != nullptr)
+#else
     if (item != NULL)
+#endif
     {
        rubbish += 1;
     }
