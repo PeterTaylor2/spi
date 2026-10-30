@@ -23,9 +23,6 @@ static void testCompoundObjectStream(void)
         test::SubData::Make("Hello world"),
         intVector);
 
-#ifdef __clang__
-    std::cout << "not compiling tests for comparison with NULL and nullptr" << std::endl;
-#else
     // demonstrates the operator string() method on SubData class
     // this only works because we declared as_string in the SubData class
     // what happens is that item->anInstance returns test::SubDataConstSP
@@ -34,6 +31,11 @@ static void testCompoundObjectStream(void)
     std::string helloWorld = item->anInstance();
     SPI_POST_CONDITION(helloWorld == "Hello world");
 
+#if defined(__apple_build_version__) && __apple_build_version__ >= 17000000 \
+                                     && __apple_build_version__ < 18000000
+    std::cout << "__apple_build_version__ " << __apple_build_version__
+	      << ": not compiling implicit string comparison tests" << std::endl;
+#else
     // but what about these comparison?
     // we haven't used the operator std::string to extract a string
     // so can we compare the instance object with std::string or literal?
