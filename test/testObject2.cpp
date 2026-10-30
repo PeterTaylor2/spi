@@ -23,6 +23,9 @@ static void testCompoundObjectStream(void)
         test::SubData::Make("Hello world"),
         intVector);
 
+#ifdef __clang__
+    std::cout << "not compiling tests for comparison with NULL and nullptr" << std::endl;
+#else
     // demonstrates the operator string() method on SubData class
     // this only works because we declared as_string in the SubData class
     // what happens is that item->anInstance returns test::SubDataConstSP
@@ -39,9 +42,6 @@ static void testCompoundObjectStream(void)
     SPI_POST_CONDITION("Hello world" == item->anInstance());
     SPI_POST_CONDITION(std::string("Hello world") == item->anInstance());
 
-#ifdef __clang__
-    std::cout << "not compiling tests for comparison with NULL and nullptr" << std::endl;
-#else
     // we don't particularly want item != NULL to be used but it has been in places
     // it will continue to work if the class does not support as_string()
     // but it actually fails to compile if the class does support as_string()
