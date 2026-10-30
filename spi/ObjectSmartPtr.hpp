@@ -26,6 +26,9 @@
 #include "RefCounter.hpp"
 #include <spi_boost/intrusive_ptr.hpp>
 
+#include <string>
+#include <utility>   // std::declval
+		     
 #undef SPI_DECLARE_OBJECT_CLASS
 #define SPI_DECLARE_OBJECT_CLASS(T) \
 class T;\
@@ -222,43 +225,57 @@ public:
 
     // also extra code - provide operator std::string
     // for any underlying class which supports as_string method
+    //
+    // Converts to std::string only if T has a const as_string() member.
+    // 'class U = T' makes this a template of its own, so the check is made
+    // when a conversion is attempted, not when SmartPtr<T> is instantiated.
+    template <class U = T, class = decltype(std::declval<const U&>().as_string())>
     operator std::string() const
     {
         return px->as_string();
     }
 
+    template <class U = T, class = decltype(std::declval<const U&>().as_string())>
     friend bool operator==(const std::string& lhs, const ObjectSmartPtr& rhs)
     {
         return lhs == rhs.operator std::string();
     }
+    template <class U = T, class = decltype(std::declval<const U&>().as_string())>
     friend bool operator==(const ObjectSmartPtr& lhs, const std::string& rhs)
     {
         return lhs.operator std::string() == rhs;
     }
+    template <class U = T, class = decltype(std::declval<const U&>().as_string())>
     friend bool operator==(const char* lhs, const ObjectSmartPtr& rhs)
     {
         return lhs && lhs == rhs.operator std::string();
     }
+    template <class U = T, class = decltype(std::declval<const U&>().as_string())>
     friend bool operator==(const ObjectSmartPtr& lhs, const char* rhs)
     {
         return rhs && lhs.operator std::string() == rhs;
     }
+    template <class U = T, class = decltype(std::declval<const U&>().as_string())>
     friend bool operator!=(const std::string& lhs, const ObjectSmartPtr& rhs)
     {
         return !(lhs == rhs);
     }
+    template <class U = T, class = decltype(std::declval<const U&>().as_string())>
     friend bool operator!=(const ObjectSmartPtr& lhs, const std::string& rhs)
     {
         return !(lhs == rhs);
     }
+    template <class U = T, class = decltype(std::declval<const U&>().as_string())>
     friend bool operator!=(const char* lhs, const ObjectSmartPtr& rhs)
     {
         return !(lhs == rhs);
     }
+    template <class U = T, class = decltype(std::declval<const U&>().as_string())>
     friend bool operator!=(const ObjectSmartPtr& lhs, const char* rhs)
     {
         return !(lhs == rhs);
     }
+
 #ifndef SPI_BOOST_NO_CXX11_DELETED_FUNCTIONS
     ObjectSmartPtr(const spi_boost::intrusive_ptr<T>& rhs) = delete;
     ObjectSmartPtr(const spi_boost::intrusive_ptr<T const>& rhs) = delete;

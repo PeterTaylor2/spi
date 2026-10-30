@@ -39,6 +39,22 @@ static void testCompoundObjectStream(void)
     SPI_POST_CONDITION("Hello world" == item->anInstance());
     SPI_POST_CONDITION(std::string("Hello world") == item->anInstance());
 
+    // we don't particularly want item != NULL to be used but it has been in places
+    // it will continue to work if the class does not support as_string()
+    // but it actually fails to compile if the class does support as_string()
+    int rubbish = 0;
+    if (item != NULL)
+    {
+       rubbish += 1;
+    }
+
+    if (item->anInstance() != nullptr)
+    {
+       rubbish += 2;
+    }
+
+    SPI_POST_CONDITION(rubbish==3);
+
 #if false
     std::string itemText = item; // this won't compile because Data does not have as_string
 #endif
