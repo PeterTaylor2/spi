@@ -229,7 +229,7 @@ public:
     const DataTypeConstSP& dataType() const { return m_dataType; }
     const std::vector<ClassAttributeConstSP>& classProperties() const { return m_classProperties; }
     bool noLog() const { return m_noLog; }
-    const std::string& instance() const { return m_instance; }
+    const std::string& instance() const override { return m_instance; }
 
     void setVerbatimConstructor(const VerbatimConstSP& verbatimConstructor);
     void setDataType(const DataTypeConstSP& dataType);

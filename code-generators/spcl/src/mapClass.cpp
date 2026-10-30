@@ -54,22 +54,25 @@ MapClassConstSP MapClass::Make(
     const std::vector<std::string>& description,
     const std::string&              name,
     const std::string&              ns,
-    bool                            canPut)
+    bool                            canPut,
+    const std::string&              instance)
 {
     return new MapClass(
-        description, name, ns, canPut);
+        description, name, ns, canPut, instance);
 }
 
 MapClass::MapClass(
     const std::vector<std::string>& description,
     const std::string&              name,
     const std::string&              ns,
-    bool                            canPut)
+    bool                            canPut,
+    const std::string&              instance)
     :
     m_description(description),
     m_name(name),
     m_ns(ns),
     m_canPut(canPut),
+    m_instance(instance),
     m_dataType(),
     m_doc()
 {

@@ -881,6 +881,19 @@ struct MethodContext
 
         return baseClass->isVirtualMethod(name);
     }
+
+    std::string get_instance()
+    {
+        if (instance.empty())
+        {
+            if (cls->instance().empty())
+            {
+                return "handle";
+            }
+            return cls->instance();
+        }
+        return instance;
+    }
 };
 
 FunctionConstSP parseFunction(
@@ -1051,6 +1064,7 @@ FunctionConstSP parseFunction(
         {
             bool ignored = false; // if the class is ignored we shouldn't get here
             DataTypeConstSP instanceType = methodContext->cls->getDataType(service, ignored);
+            methodInstance = methodContext->get_instance();
 
             FunctionAttributeConstSP instanceArg = FunctionAttribute::Make(
                 Attribute::Make(std::vector<std::string>(), instanceType, methodInstance), false);
@@ -3508,6 +3522,7 @@ void classKeywordHandler(
         {
             defaultMapOptions["canPut"] = BoolConstant::Make(false);
             defaultMapOptions["ignore"] = BoolConstant::Make(false);
+            defaultMapOptions["instance"] = StringConstant::Make("");
         }
         ParserOptions options;
         options = parseOptions(lexer, ";", defaultMapOptions, verbose);
@@ -3518,7 +3533,8 @@ void classKeywordHandler(
             description,
             name,
             module->moduleNamespace(),
-            getOption(options, "canPut")->getBool());
+            getOption(options, "canPut")->getBool(),
+            getOption(options, "instance")->getString());
 
         type->getDataType(service, ignore);
         if (!ignore)

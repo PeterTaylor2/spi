@@ -217,7 +217,7 @@ public:
     bool useAccessors() const { return m_useAccessors; }
     bool incomplete() const { return m_incomplete; }
     bool noLog() const { return m_noLog; }
-    const std::string& instance() const { return m_instance; }
+    const std::string& instance() const override { return m_instance; }
 };
 
 #endif

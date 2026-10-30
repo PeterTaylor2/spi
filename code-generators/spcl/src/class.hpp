@@ -60,6 +60,7 @@ public:
     virtual ClassConstSP getBaseClass() const = 0;
     virtual std::vector<CoerceFromConstSP> getCoerceFrom() const = 0;
     virtual bool byValue() const = 0;
+    virtual const std::string& instance() const = 0;
 
     virtual std::vector<AttributeConstSP> AllAttributes() const = 0;
 

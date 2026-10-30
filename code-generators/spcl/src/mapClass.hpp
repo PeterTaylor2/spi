@@ -51,7 +51,8 @@ public:
         const std::vector<std::string>& description,
         const std::string&              name,
         const std::string&              ns,
-        bool                            canPut);
+        bool                            canPut,
+        const std::string&              instance);
 
     // re-implementation of Construct
     //void declareInner(
@@ -97,6 +98,7 @@ public:
     ClassConstSP getBaseClass() const override;
     std::vector<CoerceFromConstSP> getCoerceFrom() const override;
     bool byValue() const override;
+    const std::string& instance() const override { return m_instance; }
 
     std::vector<AttributeConstSP> AllAttributes() const override;
 
@@ -105,13 +107,15 @@ protected:
         const std::vector<std::string>& description,
         const std::string&              name,
         const std::string&              ns,
-        bool                            canPut);
+        bool                            canPut,
+        const std::string&              instance);
 
 private:
     std::vector<std::string> m_description;
     std::string              m_name;
     std::string              m_ns;
     bool                     m_canPut;
+    std::string              m_instance;
 
     void VerifyAndComplete();
 
