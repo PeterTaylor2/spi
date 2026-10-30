@@ -120,7 +120,7 @@ build::
 all::
 	@$(MAKE) build
 	echo Building spi-user-guide
-	@$(MAKE) -C code-generators/spcl doc
+	@$(MAKE) -C doc
 
 clean::
 	@$(MAKE) clean-code-generators

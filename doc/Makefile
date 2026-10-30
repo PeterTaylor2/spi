@@ -8,6 +8,10 @@ U_VCPROJ_OPTIONS=-F 'spi-user-guide.tex' -F 'spi-user-guide/*.tex' -tdoc
 U_SRC_DIR=.
 U_INC_DIR=.
 
+info::
+	@echo G_PDFLATEX=$(G_PDFLATEX)
+	@echo G_NO_PDFLATEX=$(G_NO_PDFLATEX)
+
 include $(U_SPI_HOME)/makefiles/build/vcproj.mk
 
 ifdef G_NO_PDFLATEX
