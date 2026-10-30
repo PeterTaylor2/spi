@@ -35,15 +35,15 @@ static void testCompoundObjectStream(void)
     // we haven't used the operator std::string to extract a string
     // so can we compare the instance object with std::string or literal?
     SPI_POST_CONDITION(item->anInstance() == "Hello world");
-#if defined(__apple_build_version__) && __apple_build_version__ >= 17000000 \
-                                     && __apple_build_version__ < 18000000
-    std::cout << "__apple_build_version__ " << __apple_build_version__
-	      << ": not compiling implicit string comparison tests" << std::endl;
-#else
     SPI_POST_CONDITION(item->anInstance() == std::string("Hello world"));
     SPI_POST_CONDITION("Hello world" == item->anInstance());
     SPI_POST_CONDITION(std::string("Hello world") == item->anInstance());
 
+#if defined(__apple_build_version__) && __apple_build_version__ >= 17000000 \
+                                     && __apple_build_version__ < 18000000
+    std::cout << "__apple_build_version__ " << __apple_build_version__
+	      << ": not compiling object NULL comparison tests" << std::endl;
+#else
     // we don't particularly want item != NULL to be used but it has been in places
     // it will continue to work if the class does not support as_string()
     // but it actually fails to compile if the class does support as_string()
