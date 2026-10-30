@@ -56,6 +56,7 @@ static void testCompoundObjectStream(void)
     if (item->anInstance())
     {
        rubbish += 2;
+    }
 #else
     // we don't particularly want item != NULL to be used but it has been in places
     // it will continue to work if the class does not support as_string()
