@@ -31,6 +31,14 @@ static void testCompoundObjectStream(void)
     std::string helloWorld = item->anInstance();
     SPI_POST_CONDITION(helloWorld == "Hello world");
 
+    // but what about these comparison?
+    // we haven't used the operator std::string to extract a string
+    // so can we compare the instance object with std::string or literal?
+    SPI_POST_CONDITION(item->anInstance() == "Hello world");
+    SPI_POST_CONDITION(item->anInstance() == std::string("Hello world"));
+    SPI_POST_CONDITION("Hello world" == item->anInstance());
+    SPI_POST_CONDITION(std::string("Hello world") == item->anInstance());
+
 #if false
     std::string itemText = item; // this won't compile because Data does not have as_string
 #endif

@@ -227,6 +227,38 @@ public:
         return px->as_string();
     }
 
+    friend bool operator==(const std::string& lhs, const ObjectSmartPtr& rhs)
+    {
+        return lhs == rhs.operator std::string();
+    }
+    friend bool operator==(const ObjectSmartPtr& lhs, const std::string& rhs)
+    {
+        return lhs.operator std::string() == rhs;
+    }
+    friend bool operator==(const char* lhs, const ObjectSmartPtr& rhs)
+    {
+        return lhs && lhs == rhs.operator std::string();
+    }
+    friend bool operator==(const ObjectSmartPtr& lhs, const char* rhs)
+    {
+        return rhs && lhs.operator std::string() == rhs;
+    }
+    friend bool operator!=(const std::string& lhs, const ObjectSmartPtr& rhs)
+    {
+        return !(lhs == rhs);
+    }
+    friend bool operator!=(const ObjectSmartPtr& lhs, const std::string& rhs)
+    {
+        return !(lhs == rhs);
+    }
+    friend bool operator!=(const char* lhs, const ObjectSmartPtr& rhs)
+    {
+        return !(lhs == rhs);
+    }
+    friend bool operator!=(const ObjectSmartPtr& lhs, const char* rhs)
+    {
+        return !(lhs == rhs);
+    }
 #ifndef SPI_BOOST_NO_CXX11_DELETED_FUNCTIONS
     ObjectSmartPtr(const spi_boost::intrusive_ptr<T>& rhs) = delete;
     ObjectSmartPtr(const spi_boost::intrusive_ptr<T const>& rhs) = delete;
