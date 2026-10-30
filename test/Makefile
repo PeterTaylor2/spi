@@ -6,6 +6,8 @@ help:
 
 target:
 
+.PHONY: test debug help target
+
 NAME?=hello
 OPTS=
 U_SPI_HOME=..
@@ -60,7 +62,11 @@ help:
 	@echo "--- output is sent to run-all.log"
 	@echo "--- error messages (sent to stderr) will be echoed to the screen"
 	@echo
-	@echo "make run-debug NAME="
+	@echo "make test NAME="
+	@echo "--- builds all libraries and then builds and and runs one test"
+	@echo "---(by name, e.g. testWalker) in release mode"
+	@echo
+	@echo "make debug NAME="
 	@echo "--- builds all debug libraries and then builds and and runs one test"
 	@echo "---(by name, e.g. testWalker) in debug mode"
 	@echo "--- then pauses at the start to allow you to attach a debugger"
@@ -71,12 +77,17 @@ help:
 	@echo
 	@echo "make libs"
 	@echo "--- builds all libraries"
-	@echo "--- this is done by default in run-all and run-debug but not for run"
+	@echo "--- this is done by default in run-all, debug and test but not for run"
 
 pre_build:
 	@$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/copyFiles.py $(G_BUILD_DIR) $(G_ABI)/*$(G_DLL_EXT) 
 
-run-debug:
+test:
+	@$(MAKE) -s libs
+	@$(MAKE) -s target
+	@$(MAKE) run
+
+debug:
 	@$(MAKE) -s libs DEBUG=1
 	@$(MAKE) -s target DEBUG=1
 	@$(MAKE) run DEBUG=1 ARGS=-w
@@ -101,7 +112,8 @@ rstrip:
 	@$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/rstrip.py *.cpp
 
 libs:
-	@$(MAKE) -C $(U_SPI_HOME) -j4 -s
+	@$(MAKE) -C $(U_SPI_HOME) code-generators -j4 -s
+	@$(MAKE) -C $(U_SPI_HOME) core-runtime -j4 -s
 	@echo Building test/lib
 	@$(MAKE) -C lib -j4 -s
 	@echo Building test/config

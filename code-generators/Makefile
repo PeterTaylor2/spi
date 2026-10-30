@@ -50,10 +50,12 @@ info::
 	@echo G_ABI=$(G_ABI)
 
 build::
-	@for lib in $(BUILD_DIRS); do \
+	@failed=""; \
+	for lib in $(BUILD_DIRS); do \
 		echo Building $$lib; \
-		$(MAKE) -C $$lib; \
-	done
+		$(MAKE) -C $$lib || failed="$$failed $$lib"; \
+	done; \
+	if [ -n "$$failed" ]; then echo "FAILED:$$failed"; exit 1; fi
 
 clean::
 	@for lib in $(BUILD_DIRS); do \

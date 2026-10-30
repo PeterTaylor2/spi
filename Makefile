@@ -3,12 +3,15 @@ default: build
 U_SPI_HOME=.
 include $(U_SPI_HOME)/makefiles/config/config.mk
 
-RUNTIME_BUILD_DIRS=\
+CORE_RUNTIME_BUILD_DIRS=\
 spi_boost/lib\
 zlib\
 spi_curl\
 spi_util\
-dll\
+dll
+
+RUNTIME_BUILD_DIRS=\
+$(CORE_RUNTIME_BUILD_DIRS)\
 c\
 excel\
 python\
@@ -41,11 +44,21 @@ rstrip::
 		$(MAKE) -C $$lib rstrip; \
 	done
 
-runtime::
-	@for lib in $(RUNTIME_BUILD_DIRS); do \
+core-runtime::
+	@failed=""; \
+	for lib in $(CORE_RUNTIME_BUILD_DIRS); do \
 		echo Building $$lib; \
-		$(MAKE) -C $$lib all; \
-	done
+		$(MAKE) -C $$lib all || failed="$$failed $$lib"; \
+	done; \
+	if [ -n "$$failed" ]; then echo "FAILED:$$failed"; exit 1; fi
+
+runtime::
+	@failed=""; \
+	for lib in $(RUNTIME_BUILD_DIRS); do \
+		echo Building $$lib; \
+		$(MAKE) -C $$lib all || failed="$$failed $$lib"; \
+	done; \
+	if [ -n "$$failed" ]; then echo "FAILED:$$failed"; exit 1; fi
 
 # if somebody wants to generate code before building the runtime
 # then they will likely use the code-generators target
