@@ -111,9 +111,8 @@ def getNewLines(contents, values):
     return newLines
 
 def combineLines(lines, newLines):
-    # we only add blank lines when we have content
     combined = lines[:]
-    hasBlank = False
+    hasBlank = True # this is so that we always start with a blank line when inserting
     changed = False
     for line in newLines:
         sline = line.strip()
