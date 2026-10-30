@@ -29,6 +29,7 @@
 #include <string>
 #include <utility>   // std::declval
 		     
+
 #undef SPI_DECLARE_OBJECT_CLASS
 #define SPI_DECLARE_OBJECT_CLASS(T) \
 class T;\
@@ -229,48 +230,55 @@ public:
     // Converts to std::string only if T has a const as_string() member.
     // 'class U = T' makes this a template of its own, so the check is made
     // when a conversion is attempted, not when SmartPtr<T> is instantiated.
-    template <class U = T, class = decltype(std::declval<const U&>().as_string())>
+#if defined(__apple_build_version__) && __apple_build_version__ >= 17000000 \
+                                     && __apple_build_version__ < 18000000
+#define HAS_AS_STRING
+#else
+#define HAS_AS_STRING template <class U = T, class = decltype(std::declval<const U&>().as_string())>
+#endif
+
+    HAS_AS_STRING
     operator std::string() const
     {
         return px->as_string();
     }
 
-    template <class U = T, class = decltype(std::declval<const U&>().as_string())>
+    HAS_AS_STRING
     friend bool operator==(const std::string& lhs, const ObjectSmartPtr& rhs)
     {
         return lhs == rhs.operator std::string();
     }
-    template <class U = T, class = decltype(std::declval<const U&>().as_string())>
+    HAS_AS_STRING
     friend bool operator==(const ObjectSmartPtr& lhs, const std::string& rhs)
     {
         return lhs.operator std::string() == rhs;
     }
-    template <class U = T, class = decltype(std::declval<const U&>().as_string())>
+    HAS_AS_STRING
     friend bool operator==(const char* lhs, const ObjectSmartPtr& rhs)
     {
         return lhs && lhs == rhs.operator std::string();
     }
-    template <class U = T, class = decltype(std::declval<const U&>().as_string())>
+    HAS_AS_STRING
     friend bool operator==(const ObjectSmartPtr& lhs, const char* rhs)
     {
         return rhs && lhs.operator std::string() == rhs;
     }
-    template <class U = T, class = decltype(std::declval<const U&>().as_string())>
+    HAS_AS_STRING
     friend bool operator!=(const std::string& lhs, const ObjectSmartPtr& rhs)
     {
         return !(lhs == rhs);
     }
-    template <class U = T, class = decltype(std::declval<const U&>().as_string())>
+    HAS_AS_STRING
     friend bool operator!=(const ObjectSmartPtr& lhs, const std::string& rhs)
     {
         return !(lhs == rhs);
     }
-    template <class U = T, class = decltype(std::declval<const U&>().as_string())>
+    HAS_AS_STRING
     friend bool operator!=(const char* lhs, const ObjectSmartPtr& rhs)
     {
         return !(lhs == rhs);
     }
-    template <class U = T, class = decltype(std::declval<const U&>().as_string())>
+    HAS_AS_STRING
     friend bool operator!=(const ObjectSmartPtr& lhs, const char* rhs)
     {
         return !(lhs == rhs);
