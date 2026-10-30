@@ -20,12 +20,24 @@
 
 int main(int argc, char* argv[])
 {
-#ifdef _MSC_VER
+#if defined(_MSC_VER)
     std::cout << "_MSC_VER=" << _MSC_VER << std::endl;
 #endif
 
-#ifdef __GNUC__
-    std::cout << "GNUC_VERSION=" << __GNUC__ << "." << __GNUC_MINOR__ << "." << __GNUC_PATCHLEVEL__ << std::endl;
+#if defined(__clang__)
+    std::cout << "CLANG_VERSION=" << __clang_major__ << "." << __clang_minor__
+              << "." << __clang_patchlevel__ << std::endl;
+    std::cout << "clang_version_string=" << __clang_version__ << std::endl;
+#if defined(__apple_build_version__)
+    std::cout << "APPLE_BUILD_VERSION=" << __apple_build_version__ << std::endl;
 #endif
+#elif defined(__GNUC__)
+    std::cout << "GNUC_VERSION=" << __GNUC__ << "." << __GNUC_MINOR__ << "."
+              << __GNUC_PATCHLEVEL__ << std::endl;
+#endif
+
+    std::cout << "__cplusplus=" << __cplusplus << std::endl;
+
+    return 0;
 }
 

@@ -151,6 +151,10 @@ def main():
 
     start_time = datetime.datetime.now()
 
+    if not run('cversion',
+           [*command, '-C', 'makefiles/cversion', 'run'], live=True):
+        return 1
+
     if not opts.skip_build:
         if sys.platform == 'win32':
             if not run('build-dependency-generator', [*command, "gendep"], timeout=1800):
