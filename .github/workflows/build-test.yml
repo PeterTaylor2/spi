@@ -45,3 +45,4 @@ jobs:
           name: test-results-${{ matrix.name }}
           path: test-results/
           if-no-files-found: warn
+          retention-days: 7
