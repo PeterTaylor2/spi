@@ -232,7 +232,7 @@ public:
 
 #define SPI_OBJECT_SMART_PTR_STRING_OPERATOR_TEST template <class U = T, class = decltype(std::declval<const U&>().as_string())>
 
-    //SPI_OBJECT_SMART_PTR_STRING_OPERATOR_TEST
+    SPI_OBJECT_SMART_PTR_STRING_OPERATOR_TEST
     explicit operator std::string() const
     {
         SPI_BOOST_ASSERT( px != 0 );
