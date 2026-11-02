@@ -226,35 +226,11 @@ public:
     // also extra code - provide operator std::string
     // for any underlying class which supports as_string method
 
-#if defined(__apple_build_version__) && __apple_build_version__ >= 17000000 \
-                                     && __apple_build_version__ < 18000000
-
-    // it is hard to believe but using the syntax below for the method of
-    // testing whether the string operator exists actually caused the
-    // compiler to crash (not the runtime - the compiler) - you might expect
-    // a compilation failure if the syntax is incorrect but instead the
-    // compiler actually crashed
-    //
-    // the upshot of not having this macro defined is that if you try the
-    // following: if (obj != NULL) then there will be a compiler error
-    // telling you that the class does not have the as_string() method
-    // (this is for a class which indeed does not have the as_string()
-    // method)
-    //
-    // it was to avoid this error that we introduced the string operator test
-    // in the first place
-
-#define SPI_OBJECT_SMART_PTR_STRING_OPERATOR_TEST
-
-#else
-
     // Converts to std::string only if T has a const as_string() member.
     // 'class U = T' makes this a template of its own, so the check is made
     // when a conversion is attempted, not when SmartPtr<T> is instantiated.
 
 #define SPI_OBJECT_SMART_PTR_STRING_OPERATOR_TEST template <class U = T, class = decltype(std::declval<const U&>().as_string())>
-
-#endif
 
     SPI_OBJECT_SMART_PTR_STRING_OPERATOR_TEST
     explicit operator std::string() const
