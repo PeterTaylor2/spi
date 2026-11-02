@@ -232,9 +232,10 @@ public:
 
 #define SPI_OBJECT_SMART_PTR_STRING_OPERATOR_TEST template <class U = T, class = decltype(std::declval<const U&>().as_string())>
 
-    SPI_OBJECT_SMART_PTR_STRING_OPERATOR_TEST
+    //SPI_OBJECT_SMART_PTR_STRING_OPERATOR_TEST
     explicit operator std::string() const
     {
+        SPI_BOOST_ASSERT( px != 0 );
         return px->as_string();
     }
 
@@ -248,22 +249,22 @@ public:
     SPI_OBJECT_SMART_PTR_STRING_OPERATOR_TEST
     friend bool operator==(const std::string& lhs, const ObjectSmartPtr& rhs)
     {
-        return lhs == rhs.operator std::string();
+        return lhs == rhs->as_string();
     }
     SPI_OBJECT_SMART_PTR_STRING_OPERATOR_TEST
     friend bool operator==(const ObjectSmartPtr& lhs, const std::string& rhs)
     {
-        return lhs.operator std::string() == rhs;
+        return lhs->as_string() == rhs;
     }
     SPI_OBJECT_SMART_PTR_STRING_OPERATOR_TEST
     friend bool operator==(const char* lhs, const ObjectSmartPtr& rhs)
     {
-        return lhs && lhs == rhs.operator std::string();
+        return lhs && lhs == rhs->as_string();
     }
     SPI_OBJECT_SMART_PTR_STRING_OPERATOR_TEST
     friend bool operator==(const ObjectSmartPtr& lhs, const char* rhs)
     {
-        return rhs && lhs.operator std::string() == rhs;
+        return rhs && lhs->as_string() == rhs;
     }
     SPI_OBJECT_SMART_PTR_STRING_OPERATOR_TEST
     friend bool operator!=(const std::string& lhs, const ObjectSmartPtr& rhs)
