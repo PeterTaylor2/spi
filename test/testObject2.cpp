@@ -28,7 +28,7 @@ static void testCompoundObjectStream(void)
     // what happens is that item->anInstance returns test::SubDataConstSP
     // test::SubDataConstSP tries to implement the operator std::string()
     // it can do it because test::SubData class defines the as_string() method
-    std::string helloWorld = item->anInstance();
+    std::string helloWorld = std::string(item->anInstance());
     SPI_POST_CONDITION(helloWorld == "Hello world");
 
     // but what about these comparison?

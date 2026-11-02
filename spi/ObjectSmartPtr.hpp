@@ -28,7 +28,6 @@
 
 #include <string>
 #include <utility>   // std::declval
-		     
 
 #undef SPI_DECLARE_OBJECT_CLASS
 #define SPI_DECLARE_OBJECT_CLASS(T) \
@@ -258,7 +257,7 @@ public:
 #endif
 
     SPI_OBJECT_SMART_PTR_STRING_OPERATOR_TEST
-    operator std::string() const
+    explicit operator std::string() const
     {
         return px->as_string();
     }
