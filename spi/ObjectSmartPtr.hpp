@@ -28,7 +28,6 @@
 
 #include <string>
 #include <utility>   // std::declval
-		     
 
 #undef SPI_DECLARE_OBJECT_CLASS
 #define SPI_DECLARE_OBJECT_CLASS(T) \
@@ -227,39 +226,28 @@ public:
     // also extra code - provide operator std::string
     // for any underlying class which supports as_string method
 
-#if defined(__apple_build_version__) && __apple_build_version__ >= 17000000 \
-                                     && __apple_build_version__ < 18000000
-
-    // it is hard to believe but using the syntax below for the method of
-    // testing whether the string operator exists actually caused the
-    // compiler to crash (not the runtime - the compiler) - you might expect
-    // a compilation failure if the syntax is incorrect but instead the
-    // compiler actually crashed
-    //
-    // the upshot of not having this macro defined is that if you try the
-    // following: if (obj != NULL) then there will be a compiler error
-    // telling you that the class does not have the as_string() method
-    // (this is for a class which indeed does not have the as_string()
-    // method)
-    //
-    // it was to avoid this error that we introduced the string operator test
-    // in the first place
-
-#define SPI_OBJECT_SMART_PTR_STRING_OPERATOR_TEST
-
-#else
-
     // Converts to std::string only if T has a const as_string() member.
     // 'class U = T' makes this a template of its own, so the check is made
-    // when a conversion is attempted, not when SmartPtr<T> is instantiated.
+    // when a conversion is attempted, not when ObjectSmartPtr<T> is instantiated.
 
 #define SPI_OBJECT_SMART_PTR_STRING_OPERATOR_TEST template <class U = T, class = decltype(std::declval<const U&>().as_string())>
 
-#endif
-
+    // we use explict on operator std::string() primarily to avoid ambiguity
+    // in the following: obj ? obj : str;
+    //
+    // how does the compiler determine the type of this expression?
+    // obj can be explicitly converted to std::string but not implicitly
+    // str can be implicitly converted to the type of obj (assuming we have
+    // a coercion constructor to go with the as_string method)
+    // so obj ? obj : str has a clear type - namely the type of obj
+    //
+    // with an implicit operator std::string() then obj can be converted
+    // implicity to string and vice versa - this is a problem for the
+    // compiler
     SPI_OBJECT_SMART_PTR_STRING_OPERATOR_TEST
-    operator std::string() const
+    explicit operator std::string() const
     {
+        SPI_BOOST_ASSERT( px != 0 );
         return px->as_string();
     }
 
@@ -273,22 +261,22 @@ public:
     SPI_OBJECT_SMART_PTR_STRING_OPERATOR_TEST
     friend bool operator==(const std::string& lhs, const ObjectSmartPtr& rhs)
     {
-        return lhs == rhs.operator std::string();
+        return lhs == rhs->as_string();
     }
     SPI_OBJECT_SMART_PTR_STRING_OPERATOR_TEST
     friend bool operator==(const ObjectSmartPtr& lhs, const std::string& rhs)
     {
-        return lhs.operator std::string() == rhs;
+        return lhs->as_string() == rhs;
     }
     SPI_OBJECT_SMART_PTR_STRING_OPERATOR_TEST
     friend bool operator==(const char* lhs, const ObjectSmartPtr& rhs)
     {
-        return lhs && lhs == rhs.operator std::string();
+        return lhs && lhs == rhs->as_string();
     }
     SPI_OBJECT_SMART_PTR_STRING_OPERATOR_TEST
     friend bool operator==(const ObjectSmartPtr& lhs, const char* rhs)
     {
-        return rhs && lhs.operator std::string() == rhs;
+        return rhs && lhs->as_string() == rhs;
     }
     SPI_OBJECT_SMART_PTR_STRING_OPERATOR_TEST
     friend bool operator!=(const std::string& lhs, const ObjectSmartPtr& rhs)

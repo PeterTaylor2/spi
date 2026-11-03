@@ -28,7 +28,7 @@ static void testCompoundObjectStream(void)
     // what happens is that item->anInstance returns test::SubDataConstSP
     // test::SubDataConstSP tries to implement the operator std::string()
     // it can do it because test::SubData class defines the as_string() method
-    std::string helloWorld = item->anInstance();
+    std::string helloWorld = std::string(item->anInstance());
     SPI_POST_CONDITION(helloWorld == "Hello world");
 
     // but what about these comparison?
@@ -39,25 +39,7 @@ static void testCompoundObjectStream(void)
     SPI_POST_CONDITION("Hello world" == item->anInstance());
     SPI_POST_CONDITION(std::string("Hello world") == item->anInstance());
 
-    int rubbish = 0;
-#if defined(__apple_build_version__) && __apple_build_version__ >= 17000000 \
-                                     && __apple_build_version__ < 18000000
-    std::cout << "APPLE_BUILD_VERSION=" << __apple_build_version__ << std::endl;
-
-    // since we don't support checking whether operator std::string() is allowed
-    // for this version of the Apple compilers (if we do then the previous 4 tests
-    // will all actually crash the compiler - I kid you not), we will revert to
-    // the simple boolean tests which is what you should write anyway
-    if (item)
-    {
-       rubbish += 1;
-    }
-
-    if (item->anInstance())
-    {
-       rubbish += 2;
-    }
-#else
+    int null_comparisons = 0;
     // we don't particularly want item != NULL to be used but it has been in places
     // it will continue to work if the class does not support as_string()
     //
@@ -65,16 +47,28 @@ static void testCompoundObjectStream(void)
     // although you can use != nullptr instead of != NULL as we show here
     if (item != NULL)
     {
-       rubbish += 1;
+       null_comparisons += 1;
     }
 
     if (item->anInstance() != nullptr)
     {
-       rubbish += 2;
+       null_comparisons += 2;
     }
-#endif
 
-    SPI_POST_CONDITION(rubbish==3);
+    SPI_POST_CONDITION(null_comparisons==3);
+
+    auto this_instance = item->anInstance();
+    test::SubDataConstSP null_instance;
+
+    // the following lines of code should not be ambiguous
+    // changing the ObjectSmartPtr to be a non-explicit std::operator will break
+
+    const std::string hello("Hello");
+    auto instance1 = this_instance ? this_instance : hello;
+    auto instance2 = null_instance ? null_instance : hello;
+
+    SPI_POST_CONDITION(instance1 == "Hello world");
+    SPI_POST_CONDITION(instance2 == hello);
 
 #if false
     std::string itemText = item; // this won't compile because Data does not have as_string
