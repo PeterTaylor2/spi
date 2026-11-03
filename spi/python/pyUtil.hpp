@@ -39,36 +39,23 @@
 #include "DeclSpec.h"
 #include <Python.h>
 
-#ifdef _MSC_VER
-namespace spi_boost {
-#endif
-    void intrusive_ptr_add_ref(PyObject* p);
-    void intrusive_ptr_release(PyObject* p);
-#ifdef _MSC_VER
-}
-#endif
+inline void intrusive_ptr_add_ref(PyObject* p);
+inline void intrusive_ptr_release(PyObject* p);
 
 #include <spi/RefCounter.hpp>
 #include <spi/Object.hpp>
 
 typedef spi_boost::intrusive_ptr<PyObject> PyObjectSP;
 
-#ifdef _MSC_VER
-namespace spi_boost {
-#endif
+inline void intrusive_ptr_add_ref(PyObject* p)
+{
+    Py_XINCREF(p);
+}
 
-    inline void intrusive_ptr_add_ref(PyObject* p)
-    {
-        Py_XINCREF(p);
-    }
-
-    inline void intrusive_ptr_release(PyObject* p)
-    {
-        Py_XDECREF(p);
-    }
-#ifdef _MSC_VER
-} 
-#endif
+inline void intrusive_ptr_release(PyObject* p)
+{
+    Py_XDECREF(p);
+}
 
 SPI_BEGIN_NAMESPACE
 

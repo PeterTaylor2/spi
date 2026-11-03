@@ -1095,7 +1095,7 @@ FunctionConstSP parseFunction(
         code << name << "(";
 
         size_t N = args.size();
-        char* sep = "";
+        const char* sep = "";
         for (size_t i = 0; i < N; ++i)
         {
             code << sep << "\n        " << args[i]->attribute()->name();
@@ -2574,7 +2574,7 @@ void addConstructorFunction(
 
     std::ostringstream code;
     code << "    return " << cls->getName(true, "::") << "::Make(";
-    char* sep = "";
+    const char* sep = "";
     for (size_t i = 0; i < N; ++i)
     {
         code << sep << "\n        " << attributes[i]->name();

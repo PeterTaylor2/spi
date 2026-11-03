@@ -34,6 +34,7 @@
 #include <spi/spi.hpp>
 #include <spi_util/Utils.hpp>
 #include "DeclSpec.h"
+#include "Error.h"
 
 #ifdef _MSC_VER
 

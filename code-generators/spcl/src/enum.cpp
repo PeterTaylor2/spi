@@ -304,9 +304,8 @@ void EnumBitmask::declare(
 
     writeStartCommentBlock(ostr, true);
 
-    char* enumNameSep;
+    const char* enumNameSep = "::";
 
-    enumNameSep = "::";
     ostr << "* Class " << enumName << " containing enumerated type "
         << enumName << "::Enum.\n"
         << "* Whenever " << enumName << " is expected you can use "
@@ -711,9 +710,8 @@ void Enum::declare(
 
     writeStartCommentBlock(ostr, true);
 
-    char* enumNameSep;
+    const char* enumNameSep = "::";
 
-    enumNameSep = "::";
     ostr << "* Class " << m_name << " containing enumerated type "
         << m_name << "::Enum.\n"
         << "* Whenever " << m_name << " is expected you can use "

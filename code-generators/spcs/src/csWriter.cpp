@@ -1064,8 +1064,8 @@ void CModule::implementClass(
             << service->csDllImport() << "\n"
             << "private static extern IntPtr " << cname << "_new(";
 
-        char* sep = "\n    ";
-        char* sep2 = ",\n    ";
+        const char* sep = "\n    ";
+        const char* sep2 = ",\n    ";
 
         for (size_t i = 0; i < cls->attributes.size(); ++i)
         {
@@ -1255,8 +1255,8 @@ void CModule::implementClass(
         }
         ostr << "    public " << cls->name << "(";
 
-        char* sep = "\n        ";
-        char* sep2 = ",\n        ";
+        const char* sep = "\n        ";
+        const char* sep2 = ",\n        ";
 
         for (size_t i = 0; i < cls->attributes.size(); ++i)
         {

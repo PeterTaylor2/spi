@@ -820,8 +820,8 @@ void CModule::declareClassConstructor(
             args.push_back(arg);
         }
 
-        char* sep = "\n    ";
-        char* sep2 = ",\n    ";
+        const char* sep = "\n    ";
+        const char* sep2 = ",\n    ";
 
         for (size_t i = 0; i < args.size(); ++i)
         {

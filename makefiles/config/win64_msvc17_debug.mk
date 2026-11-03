@@ -20,7 +20,7 @@ include $(U_MAKEFILES)/config/win64_msvc17.mk
 ###########################################################################
 
 I_DEFINES = -D_CRT_SECURE_NO_WARNINGS $(U_DEFINES) $(U_DEBUG_CFLAGS) $(U_WIN64_DEBUG_CFLAGS)
-I_CFLAGS = -c -MD -W3 -Gy -nologo -Od -FS -Fd$(I_BUILD_DIR)/$(U_TARGET).pdb $(I_DEFINES)
+I_CFLAGS = -c -MD -W3 $(G_MSVC_CONFORMANCE) -Gy -nologo -Od -FS -Fd$(I_BUILD_DIR)/$(U_TARGET).pdb $(I_DEFINES)
 
 # if we want multi-character byte set then add -D_MCBS
 

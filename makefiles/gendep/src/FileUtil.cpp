@@ -69,7 +69,7 @@ namespace path
         va_list args;
         std::ostringstream ostr;
 
-        char* sep = "";
+        const char* sep = "";
         if (*path)
         {
             ostr << path;

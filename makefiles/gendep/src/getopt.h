@@ -14,7 +14,7 @@ extern char *optarg;  /* argument associated with option */
 int getopt(
     int nargc,
     char **nargv,
-    char *ostr);
+    const char *ostr);
 
 #ifdef __cplusplus
 }
