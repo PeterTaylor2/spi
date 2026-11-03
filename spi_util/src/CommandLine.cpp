@@ -81,7 +81,7 @@ int processOption(CommandLine& commandLine,
                   const std::string& arg,
                   int n,
                   int argc,
-                  char* argv[],
+                  const char* const* argv,
                   const char* shortOptions,
                   const std::vector<std::string>& longOptions)
 {
@@ -178,7 +178,7 @@ CommandLine::CommandLine()
 
 CommandLine::CommandLine(
     int argc,
-    char* argv[],
+    const char* const* argv,
     const char* shortOptions,
     const char* longOptions)
     :

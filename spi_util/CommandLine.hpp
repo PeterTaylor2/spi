@@ -86,7 +86,7 @@ struct SPI_UTIL_IMPORT CommandLine
      *   needs to have an equal sign (=) on the command line to specify the
      *   value.
      */
-    CommandLine(int argc, char* argv[], const char* shortOptions,
+    CommandLine(int argc, const char* const* argv, const char* shortOptions,
         const char* longOptions="");
 
 private:

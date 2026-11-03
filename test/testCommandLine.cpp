@@ -11,7 +11,7 @@
 
 static void testShortOptions(void)
 {
-    char* argv[] = {"hello", "-abc", "-d", "yes", "world"};
+    const char* argv[] = {"hello", "-abc", "-d", "yes", "world"};
 
     spi_util::CommandLine commandLine(5, argv, "abcd=");
 
@@ -27,7 +27,7 @@ static void testShortOptions(void)
 
 static void testLongOptions(void)
 {
-    char* argv[] = {"hello", "-abc", "--debug=yes", "world"};
+    const char* argv[] = {"hello", "-abc", "--debug=yes", "world"};
 
     spi_util::CommandLine commandLine(4, argv, "abc", "debug=");
 
@@ -41,7 +41,7 @@ static void testLongOptions(void)
 
 static void testBadOptions(void)
 {
-    char* argv[] = {"hello", "-abc", "--debug=yes", "world"};
+    const char* argv[] = {"hello", "-abc", "--debug=yes", "world"};
 
     try
     {

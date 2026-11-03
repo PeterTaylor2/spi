@@ -194,7 +194,7 @@ void testStringEndsWith()
 
 static void testStringMapFormat(void)
 {
-    char* format = "The quick brown %animal1% jumped over the lazy %animal2%";
+    const char* format = "The quick brown %animal1% jumped over the lazy %animal2%";
     std::string expected = "The quick brown fox jumped over the lazy dog";
 
     std::map<std::string, std::string> values;
