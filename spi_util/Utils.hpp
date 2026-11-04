@@ -34,6 +34,9 @@
 #include "Namespace.hpp"
 #include "RuntimeError.hpp"
 
+#include <algorithm>
+#include <iterator>
+
 SPI_UTIL_NAMESPACE
 
 template <typename T, typename U>
@@ -43,6 +46,13 @@ T IntegerCast(U in)
     if ((U)out != in)
         SPI_UTIL_THROW_RUNTIME_ERROR(in << " is out of range");
     return out;
+}
+
+template <class Container, class T>
+bool Contains(const Container& c, const T& value)
+{
+    auto iter = std::find(std::begin(c), std::end(c), value);
+    return iter != std::end(c);
 }
 
 SPI_UTIL_IMPORT

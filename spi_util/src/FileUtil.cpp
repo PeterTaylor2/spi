@@ -633,4 +633,246 @@ Directory::Directory(const std::string& dn)
 #endif
 }
 
+namespace glob
+{
+    BEGIN_ANONYMOUS_NAMESPACE
+
+    bool HasMagic(const std::string& s)
+    {
+        return s.find_first_of("*?[") != std::string::npos;
+    }
+
+    std::string Join(const std::string& dir,
+        const std::string& name)
+    {
+        if (dir.empty()) return name;
+        if (dir[dir.size() - 1] == '/')
+            return dir + name;
+        return dir + "/" + name;
+    }
+
+    // Python rule: wildcards never match a leading '.' unless the pattern
+    // component itself starts with '.'.
+    bool MatchName(const std::string& pat,
+        const std::string& name)
+    {
+        if (!name.empty() && name[0] == '.' && (pat.empty() || pat[0] != '.'))
+            return false;
+#ifdef _WIN32
+        std::string p = StringLower(pat);
+        std::string n = StringLower(name);
+        return Match(p, n);
+#else
+        return Match(pat, name);
+#endif
+    }
+
+    // Lists one directory without recursing.
+    // False if it can't be read.
+    bool ListDir(
+        const std::string& dir,
+        std::vector<std::string>* files,
+        std::vector<std::string>* dirs)
+    {
+        SPI_UTIL_PRE_CONDITION(files);
+        SPI_UTIL_PRE_CONDITION(dirs);
+
+        DirectoryWalker walker(
+            dir.empty() ? std::string(".") : dir);
+
+        Directory* d = walker.Next();
+        if (!d)
+            return false;
+
+        files->assign(d->fns.begin(), d->fns.end());
+        dirs->assign(d->dns.begin(), d->dns.end());
+
+        return true; // we never call Next() again: no descent
+    }
+
+    void ExpandFrom(
+        const std::string& base,
+        const std::vector<std::string>& comps,
+        size_t i,
+        bool recursive,
+        bool dirsOnly,
+        std::vector<std::string>& results)
+    {
+        std::vector<std::string> files, dirs;
+        if (!ListDir(base, &files, &dirs))
+            return;
+
+        const std::string& c = comps[i];
+        const bool last = (i + 1 == comps.size());
+
+        if (recursive && c == "**")
+        {
+            if (!last)  // '**' matching zero directories
+                ExpandFrom(base, comps, i + 1, recursive, dirsOnly, results);
+
+            for (size_t k = 0; k < dirs.size(); ++k)
+            {
+                if (dirs[k][0] == '.')
+                    continue; // hidden dirs are skipped
+
+                std::string sub = Join(base, dirs[k]);
+                if (last)
+                    results.push_back(dirsOnly ? sub + "/" : sub);
+                ExpandFrom(sub, comps, i, recursive, dirsOnly, results);  // '**' continues
+            }
+            if (last && !dirsOnly)
+            {
+                for (size_t k = 0; k < files.size(); ++k)
+                {
+                    if (files[k][0] != '.')
+                        results.push_back(Join(base, files[k]));
+                }
+            }
+            return;
+        }
+
+        for (size_t k = 0; k < dirs.size(); ++k)
+        {
+            if (!MatchName(c, dirs[k]))
+                continue;
+            std::string sub = Join(base, dirs[k]);
+            if (last)
+            {
+                results.push_back(dirsOnly ? sub + "/" : sub);
+            }
+            else
+            {
+                ExpandFrom(sub, comps, i + 1, recursive, dirsOnly, results);
+            }
+        }
+        if (last && !dirsOnly)
+        {
+            for (size_t k = 0; k < files.size(); ++k)
+            {
+                if (MatchName(c, files[k]))
+                    results.push_back(Join(base, files[k]));
+            }
+        }
+    }
+
+    // matches one pattern element at p against c, and advances p past the element
+    bool MatchElement(const char*& p, char c)
+    {
+        if (*p == '?') { ++p; return true; }
+        if (*p == '[')
+        {
+            const char* q = p + 1;
+            bool negate = (*q == '!');
+            if (negate) ++q;
+            bool found = false, first = true;
+            while (*q && (*q != ']' || first))
+            {
+                first = false;
+                if (q[1] == '-' && q[2] && q[2] != ']')
+                {
+                    if (c >= q[0] && c <= q[2]) found = true;
+                    q += 3;
+                }
+                else
+                {
+                    if (c == q[0]) found = true;
+                    ++q;
+                }
+            }
+            if (*q == ']') { p = q + 1; return found != negate; }
+            // no closing bracket: fall through and treat '[' literally
+        }
+        bool ok = (*p == c);
+        ++p;
+        return ok;
+    }
+
+    END_ANONYMOUS_NAMESPACE
+
+    bool Match(const std::string& pattern, const std::string& fn)
+    {
+        const char* star = nullptr;   // pattern position just after the last '*'
+        const char* mark = nullptr;   // where in s to resume if we backtrack
+
+        const char* s = fn.c_str();
+        const char* p = pattern.c_str();
+
+        while (*s)
+        {
+            if (*p == '*')
+            {
+                star = ++p;
+                mark = s;
+                continue;
+            }
+            const char* q = p;
+            if (*p && MatchElement(q, *s))
+            {
+                p = q;
+                ++s;
+            }
+            else if (star)
+            {
+                p = star;
+                s = ++mark;
+            }
+            else
+                return false;
+        }
+        while (*p == '*')
+            ++p;
+        return *p == 0;
+    }
+
+
+
+    // Expands a pattern against the file system. Results are sorted, use '/'.
+    std::vector<std::string> Expand(
+        const std::string& pattern,
+        bool recursive)
+    {
+        std::string p = path::posix(pattern);
+        const bool dirsOnly = !p.empty() && p[p.size() - 1] == '/';
+
+        std::string base;
+        size_t pos = 0;
+        if (!p.empty() && p[0] == '/')
+        {
+            base = "/"; pos = 1;
+        }
+#ifdef _WIN32
+        else if (p.size() >= 2 && p[1] == ':')       // "C:/..." (drive-relative "C:x" not supported)
+        {
+            base = p.substr(0, 2) + "/";
+            pos = (p.size() > 2 && p[2] == '/') ? 3 : 2;
+        }
+#endif
+
+        std::vector<std::string> comps;
+        while (pos <= p.size())
+        {
+            size_t next = p.find('/', pos);
+            if (next == std::string::npos) next = p.size();
+            std::string c = p.substr(pos, next - pos);
+            if (!c.empty()) comps.push_back(c);      // collapses '//' and a trailing '/'
+            pos = next + 1;
+        }
+
+        std::vector<std::string> results;
+        if (comps.empty()) return results;
+
+        // leading components without wildcards just extend the starting directory
+        size_t i = 0;
+        while (i + 1 < comps.size() && !HasMagic(comps[i]))
+            base = Join(base, comps[i++]);
+
+        ExpandFrom(base, comps, i, recursive, dirsOnly, results);
+
+        std::sort(results.begin(), results.end());
+        results.erase(std::unique(results.begin(), results.end()), results.end());
+        return results;
+    }
+
+} // end of namespace glob
+
 SPI_UTIL_END_NAMESPACE

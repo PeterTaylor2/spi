@@ -64,7 +64,7 @@ namespace path
     SPI_UTIL_IMPORT
     std::string posix(const std::string& path);
 
-    /// returns the vali win32 filename (using \ as separator)
+    /// returns the valid win32 filename (using \ as separator)
     SPI_UTIL_IMPORT
     std::string win32(const std::string& path);
 
@@ -215,6 +215,29 @@ void MakeDirectory(const std::string& dn);
 
 SPI_UTIL_IMPORT
 void MakeDirectories(const std::string& dn);
+
+namespace glob
+{
+    SPI_UTIL_IMPORT
+    /// <summary>
+    /// Tests whether a filename matches a glob-style pattern
+    /// </summary>
+    /// <param name="pattern"></param>
+    /// <param name="fn"></param>
+    /// <returns></returns>
+    bool Match(const std::string& pattern, const std::string& fn);
+
+    SPI_UTIL_IMPORT
+    /// <summary>
+    /// Expands a pattern against the file system; results are sorted
+    /// </summary>
+    /// <param name="pattern"></param>
+    /// <param name="recursive"></param>
+    /// <returns></returns>
+    std::vector<std::string> Expand(
+        const std::string& pattern,
+        bool recursive = false);
+} // end of namespace glob
 
 SPI_UTIL_END_NAMESPACE
 
