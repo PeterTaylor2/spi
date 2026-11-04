@@ -131,6 +131,7 @@ private:
     void VerifyAndComplete();
 
     spdoc::PublicType::Enum m_publicType;
+    bool m_byRef;
 
     mutable DataTypeConstSP m_dataType;
     mutable spdoc::SimpleTypeConstSP m_doc;

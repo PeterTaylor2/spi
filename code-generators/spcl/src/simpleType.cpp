@@ -133,15 +133,18 @@ void SimpleType::implement(
 
     if (m_convertOut)
     {
-        bool innerIsPointer = spi::StringEndsWith(m_innerTypeName, "*");
         ostr << "\n";
         ostr << m_outerDataType->outerValueType() << " " << m_name
              << "_convert_out(";
-        if (!innerIsPointer)
-            ostr << "const ";
-        ostr << m_innerTypeName;
-        if (!innerIsPointer)
-            ostr << "&";
+
+        if (m_byRef)
+        {
+            ostr << "const " << m_innerTypeName << "&";
+        }
+        else
+        {
+            ostr << m_innerTypeName;
+        }
         ostr << " " << m_convertOutVarName << ")\n";
         ostr << "{";
         writeVerbatim(ostr, m_convertOut);
@@ -162,7 +165,6 @@ spdoc::ConstructConstSP SimpleType::getDoc() const
     }
     return m_doc;
 }
-
 
 const DataTypeConstSP& SimpleType::getDataType(
     const ServiceDefinitionSP& svc, bool ignored) const
@@ -205,15 +207,49 @@ const DataTypeConstSP& SimpleType::getDataType(
             primitiveType = m_outerDataType;
         }
 
+        std::string innerRefType = m_byRef ? "const " + innerType + "&" : innerType;
+
+#if false
+        std::cout << "SimpleType: name = " << m_name
+            << " outerType = " << outerType
+            << " innerType = " << innerType
+            << " innerRefType = " << innerRefType << std::endl;
+#endif
+
         m_dataType = DataType::Make(
-            m_name, m_ns, "", outerType, outerType, innerType, innerType,
-            m_publicType, "", false, m_noDoc,
-            convertInFormat, convertOutFormat, "", primitiveType, false, false, ignored);
+            m_name, // name
+            m_ns, // nsModule
+            "", // nsService
+            outerType, // cppName
+            outerType, // outerType
+            innerType, // innerType
+            innerRefType, // innerRefType
+            m_publicType, // publicType
+            "", // objectName
+            false, // isClosed - only for CLASS
+            m_noDoc, // noDoc
+            convertInFormat, // convertIn
+            convertOutFormat, // convertOut
+            "", // copyInner
+            primitiveType, // primitiveType
+            false, // isPrimitive
+            false, // objectAsValue
+            ignored); // ignored
+
         svc->addDataType(m_dataType);
 
         DataTypeConstSP publicDataType = DataType::Make(
-            m_name, m_ns, "", outerType, outerType,
-            "", "", m_publicType, "", false, m_noDoc);
+            m_name, // name
+            m_ns, // nsModule
+            "", // nsService
+            outerType, // cppName
+            outerType, // outerType
+            "", // innerType
+            "", // innerRefType
+            m_publicType, // publicType
+            "", // objectName
+            false, // isClosed - only for CLASS
+            m_noDoc); // noDoc
 
         if (!m_noDoc)
             publicDataType->setDoc(m_dataType->getDoc());
@@ -227,6 +263,14 @@ void SimpleType::VerifyAndComplete()
 {
     // should check that convertIn and convertOut have precisely
     // one copy of the string %s
+
+    m_innerTypeName = spi_util::StringStrip(m_innerTypeName);
+    m_byRef = spi_util::StringEndsWith(m_innerTypeName, "&");
+
+    if (m_byRef)
+    {
+        m_innerTypeName = spi_util::StringStrip(m_innerTypeName.substr(0, m_innerTypeName.length() - 1));
+    }
 
     SPI_PRE_CONDITION(!m_name.empty());
     SPI_PRE_CONDITION(m_outerDataType);
@@ -254,16 +298,19 @@ void SimpleType::declareTypeConversions(
 
     if (m_convertOut)
     {
-        bool innerIsPointer = spi::StringEndsWith(m_innerTypeName, "*");
         ostr << "\n";
         ostr << svc->getImport() << "\n";
         ostr << m_outerDataType->outerValueType() << " " << m_name
              << "_convert_out(";
-        if (!innerIsPointer)
-            ostr << "const ";
-        ostr << m_innerTypeName;
-        if (!innerIsPointer)
-            ostr << "&";
+
+        if (m_byRef)
+        {
+            ostr << "const " << m_innerTypeName << "&";
+        }
+        else
+        {
+            ostr << m_innerTypeName;
+        }
         ostr << " " << m_convertOutVarName << ");\n";
     }
 }
