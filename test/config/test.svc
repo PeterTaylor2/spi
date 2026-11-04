@@ -18,6 +18,7 @@
 %export "dateType.cfg";
 %export "data.cfg";
 %export "wrapper.cfg";
+%export "stringType.cfg";
 
 void startup(dirname)
 {
