@@ -3,7 +3,7 @@
 #include <spi/Service.hpp>
 #include <spi/IObjectMap.hpp>
 
-#include <dll/test_data_classes.hpp>
+#include <dll/testlib_data_classes.hpp>
 #include <dll/test_dll_service.hpp>
 
 #include <string>
@@ -15,12 +15,12 @@
 
 static void testSimpleObjectStream(void)
 {
-    spi::ServiceSP svc = test::test_exported_service();
+    spi::ServiceSP svc = testlib::test_exported_service();
 
     std::vector<int> intVector;
     intVector.push_back(1);
     intVector.push_back(2);
-    test::DataConstSP item = test::Data::Make(
+    testlib::DataConstSP item = testlib::Data::Make(
         true, 42, 3.1415926, spi::Date(2012,9,20), "Hello world",
         intVector);
 
@@ -33,7 +33,7 @@ static void testSimpleObjectStream(void)
     std::cout << str << std::endl;
 
     std::cout << "Reading object of type Data from string" << std::endl;
-    test::DataConstSP d2 = test::Data::from_string(str);
+    testlib::DataConstSP d2 = testlib::Data::from_string(str);
     std::ostringstream oss2;
     d2->to_stream(oss2);
     std::cout << oss2.str() << std::endl;

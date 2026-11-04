@@ -1,8 +1,8 @@
-#include "../date.hpp"
+#include "../iDate.hpp"
 
 #include <DateUtil.hpp> // from spi_util
 
-Date::Date()
+IDate::IDate()
     :
     m_date(),
     m_year(),
@@ -10,7 +10,7 @@ Date::Date()
     m_day()
 {}
 
-Date::Date(int date)
+IDate::IDate(int date)
     :
     m_date(date),
     m_year(),
@@ -20,7 +20,7 @@ Date::Date(int date)
     set_ymd();
 }
 
-Date::Date(int year, int month, int day)
+IDate::IDate(int year, int month, int day)
     :
     m_date(),
     m_year(year),
@@ -30,7 +30,7 @@ Date::Date(int year, int month, int day)
     m_date = spi_util::YMDToDate(m_year, m_month, m_day);
 }
 
-Date::Date(const std::string& str)
+IDate::IDate(const std::string& str)
     :
     m_date(),
     m_year(),
@@ -41,27 +41,27 @@ Date::Date(const std::string& str)
     set_ymd();
 }
 
-Date::operator int() const
+IDate::operator int() const
 {
     return m_date;
 }
 
-int Date::year() const
+int IDate::year() const
 {
     return 0;
 }
 
-int Date::month() const
+int IDate::month() const
 {
     return 0;
 }
 
-int Date::day() const
+int IDate::day() const
 {
     return 0;
 }
 
-void Date::set_ymd()
+void IDate::set_ymd()
 {
     spi_util::DateToYMD(m_date, &m_year, &m_month, &m_day);
 }

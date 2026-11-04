@@ -1,16 +1,16 @@
-#ifndef TEST_INNER_DATE_HPP
-#define TEST_INNER_DATE_HPP
+#ifndef TEST_INNER_INNER_DATE_HPP
+#define TEST_INNER_INNER_DATE_HPP
 
 #include <string>
 #include <vector>
 
-class Date
+class IDate
 {
 public:
-    Date();
-    Date(int date);
-    Date(int year, int month, int day);
-    Date(const std::string& str);
+    IDate();
+    IDate(int date);
+    IDate(int year, int month, int day);
+    IDate(const std::string& str);
 
     operator int() const;
     int year() const;

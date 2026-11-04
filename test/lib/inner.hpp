@@ -3,7 +3,7 @@
 
 #include <string>
 #include <vector>
-#include "date.hpp"
+#include "iDate.hpp"
 
 class Inner
 {
@@ -11,23 +11,14 @@ public:
     Inner(bool aBool,
         int anInt,
         double aDouble,
-        Date aDate,
+        IDate aDate,
         const std::string& aString,
-        const std::vector<int>& intVec)
-        :
-        aBool(aBool),
-        anInt(anInt),
-        aDouble(aDouble),
-        aDate(aDate),
-        aString(aString),
-        intVec(intVec)
-    {
-    }
+        const std::vector<int>& intVec);
 
     bool aBool;
     int anInt;
     double aDouble;
-    Date aDate;
+    IDate aDate;
     std::string aString;
     std::vector<int> intVec;
 };

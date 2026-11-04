@@ -1,7 +1,7 @@
 #include <spi/spi.hpp>
 #include <spi/ObjectHelper.hpp>
 
-#include <dll/test_data_classes.hpp>
+#include <dll/testlib_data_classes.hpp>
 #include <dll/test_dll_service.hpp>
 
 #include <string>
@@ -13,21 +13,21 @@
 
 static void testCompoundObjectStream(void)
 {
-    spi::ServiceSP svc = test::test_exported_service();
+    spi::ServiceSP svc = testlib::test_exported_service();
 
     std::vector<int> intVector;
     intVector.push_back(1);
     intVector.push_back(2);
-    test::DataConstSP item = test::Data::Make(
+    testlib::DataConstSP item = testlib::Data::Make(
         true, 42, 3.1415926, spi::Date(2012,9,20),
-        test::SubData::Make("Hello world"),
+        testlib::SubData::Make("Hello world"),
         intVector);
 
     // demonstrates the operator string() method on SubData class
     // this only works because we declared as_string in the SubData class
-    // what happens is that item->anInstance returns test::SubDataConstSP
-    // test::SubDataConstSP tries to implement the operator std::string()
-    // it can do it because test::SubData class defines the as_string() method
+    // what happens is that item->anInstance returns testlib::SubDataConstSP
+    // testlib::SubDataConstSP tries to implement the operator std::string()
+    // it can do it because testlib::SubData class defines the as_string() method
     std::string helloWorld = std::string(item->anInstance());
     SPI_POST_CONDITION(helloWorld == "Hello world");
 
@@ -58,7 +58,7 @@ static void testCompoundObjectStream(void)
     SPI_POST_CONDITION(null_comparisons==3);
 
     auto this_instance = item->anInstance();
-    test::SubDataConstSP null_instance;
+    testlib::SubDataConstSP null_instance;
 
     // the following lines of code should not be ambiguous
     // changing the ObjectSmartPtr to be a non-explicit std::operator will break
@@ -83,7 +83,7 @@ static void testCompoundObjectStream(void)
     std::cout << str << std::endl;
 
     std::cout << "Reading object of type Data from stream" << std::endl;
-    test::DataConstSP d2 = test::Data::from_string(str);
+    testlib::DataConstSP d2 = testlib::Data::from_string(str);
     std::ostringstream oss2;
 
     d2->to_stream(oss2);
