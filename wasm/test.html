@@ -1,0 +1,88 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>SPI browser tests</title>
+<pre id="results">Running…</pre>
+<script type="module">
+import createSPI from './build/spi.mjs';
+import createTests from './build/test.mjs';
+
+window.testResult = {done: false};
+const passed = [];
+function check(condition, message) {
+    if (!condition) throw new Error(message);
+}
+let spi;
+try {
+    spi = await createSPI();
+    const handles = [];
+    const own = value => { handles.push(value); return value; };
+    const throws = (fn, pattern) => {
+        try { fn(); } catch (error) {
+            // Release Emscripten's C++ exception after reading its message.
+            if (error instanceof Error) throw error;
+            let message;
+            try { message = spi.getExceptionMessage(error)[1]; }
+            finally { spi.decrementExceptionRefcount(error); }
+            check(pattern.test(message), `Unexpected error: ${message}`);
+            return;
+        }
+        throw new Error('Expected a C++ exception');
+    };
+    try {
+        const object = own(new spi.Object());
+        object.setString('name', 'Hello π 世界 🌍');
+        object.setInt('count', -2147483648);
+        object.setDouble('price', 3.141592653589793);
+        object.setBool('enabled', true);
+        const child = own(new spi.Object());
+        child.setString('name', 'child');
+        object.setObject('left', child);
+        object.setObject('right', child);
+
+        for (const format of ['TEXT', 'JSON']) {
+            const text = object.toString(format);
+            const copy = own(spi.Object.fromString(text));
+            check(copy.typeName() === object.typeName(), 'Object type changed');
+            check(copy.getString('name') === 'Hello π 世界 🌍', `${format}: Unicode`);
+            const count = format === 'JSON' ? copy.getDouble('count') : copy.getInt('count');
+            check(count === -2147483648, `${format}: int32 value`);
+            check(Math.abs(copy.getDouble('price') - Math.PI) < 1e-6, `${format}: double`);
+            check(copy.getBool('enabled') === true, `${format}: bool`);
+            const nested = own(copy.getObject('left'));
+            check(nested.getString('name') === 'child', `${format}: nested object`);
+            passed.push(`${format} round trip`);
+        }
+        throws(() => spi.Object.fromString('this is not SPI data'), /./);
+        throws(() => object.toString('UNSUPPORTED'), /./);
+        throws(() => object.getInt('name'), /./);
+        check(object.getString('name').startsWith('Hello'), 'Module unusable after exceptions');
+        passed.push('C++ exceptions and recovery');
+
+        const retained = own(object.getObject('left'));
+        child.setString('name', 'changed');
+        check(retained.getString('name') === 'child', 'Child snapshot changed');
+        for (let i = 0; i < 200; ++i) {
+            const temporary = spi.Object.fromString(object.toString('TEXT'));
+            temporary.delete();
+        }
+        passed.push('Ownership and repeated creation/deletion');
+    } finally {
+        for (const handle of handles.reverse()) handle.delete();
+    }
+    // This executable uses the same static archive, with C++ assertions for
+    // binary data, object identity, dates, arrays and virtual filesystem I/O.
+    const tests = await createTests();
+    const result = tests.runTests();
+    check(result === 'PASS', `C++ runtime tests failed: ${result}`);
+    passed.push('C++ runtime tests');
+    window.testResult = {done: true, passed};
+} catch (error) {
+    if (spi && !(error instanceof Error)) {
+        const message = spi.getExceptionMessage(error)[1];
+        spi.decrementExceptionRefcount(error);
+        error = new Error(message);
+    }
+    window.testResult = {done: true, passed, error: String(error.stack || error)};
+}
+document.querySelector('#results').textContent = JSON.stringify(window.testResult, null, 2);
+</script>
