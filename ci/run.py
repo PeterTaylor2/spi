@@ -115,8 +115,12 @@ def fetch_proxy():
     # CI so the test needs only its missing callback argument fixed upstream.
     class Handler(BaseHTTPRequestHandler):
         def do_GET(self):
-            payload = b'SPI curl fixture\n'
-            self.send_response(200)
+            if self.path.endswith("/missing"):
+                payload = b'SPI missing fixture\n'
+                self.send_response(404)
+            else:
+                payload = b'SPI curl fixture\n'
+                self.send_response(200)
             self.send_header('Content-Length', str(len(payload)))
             self.end_headers()
             self.wfile.write(payload)

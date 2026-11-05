@@ -98,6 +98,21 @@ struct Data
     std::stringstream oss;
     std::map<std::string, std::string> headers;
 
+    void response_handler(const std::string& url)
+    {
+        if (responseCode >= 200 && responseCode < 300)
+            return;
+
+        if (responseCode == 0)
+            // this might be valid but not for http or https
+            // but in that case we should have detected an error earlier
+            // if we want to be strict then check url
+            return;
+
+        throw RuntimeError("HTTP error: %ld for %s:\n%s",
+            responseCode, url.c_str(), contents().c_str());
+    }
+
     void add_data(char* ptr, size_t size)
     {
         oss.write(ptr, size);
@@ -245,6 +260,7 @@ void URLReadContentsData(
     errorHandler(curl_easy_perform(handle));
 
     errorHandler(curl_easy_getinfo(handle, CURLINFO_RESPONSE_CODE, &data.responseCode));
+    data.response_handler(url); // throws exception for bad response codes
 }
 
 END_ANONYMOUS_NAMESPACE

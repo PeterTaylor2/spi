@@ -67,9 +67,35 @@ static void testFetch(void)
     }
 }
 
+static void testFetchMissing(void)
+{
+    bool noProxy = false;
+    int timeout = 10;
+    std::string url("http://www.example.com/missing");
+    std::cout << "\n" << "Reading: " << url << " with noProxy=" << (noProxy ? "true" : "false")
+        << " and timeout=" << timeout << std::endl;
+    try
+    {
+        std::string contents = spi_util::URLReadContents(url, noProxy, timeout);
+        std::cout << "length(" << contents.length() << ")\n" << std::endl;
+
+        if (contents.length() < 50)
+        {
+            std::cout << "contents=" << contents << std::endl;
+        }
+    }
+    catch (std::exception& e)
+    {
+        std::cout << "expected exception:\n" << e.what() << std::endl;
+	return;
+    }
+    SPI_THROW_RUNTIME_ERROR("Unexpected success when reading " << url);
+}
+
 int main(int argc, char* argv[])
 {
     return spi_util::TestRunner(argc, argv,
         "Fetch", testFetch,
+        "FetchMissing", testFetchMissing,
         0);
 }
