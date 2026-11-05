@@ -58,6 +58,14 @@
  * 
  * The lexical analyzer described by this file is simply going to parse
  * out the individual elements.
+ *
+ * Some users tried to use something that looks more like repr(d) rather
+ * than json.dumps(d) and for this purpose we have chosen to allow the
+ * lexer to be more lenient. We will now accept strings enclosed in single
+ * quotes, and the values True and False (instead of true and false).
+ *
+ * Hence the changes to the string regex, and to the specific values which
+ * we now support.
  */
 
 %{
@@ -83,7 +91,7 @@ using namespace std; // to get cin and cout
 
 integer     -?[0-9]+
 double      -?((([0-9]+)|([0-9]*\.[0-9]+))([eE][-+]?[0-9]+)?)
-string      \"([^\"]|\\\")*[\"]
+string      \"([^\"\\]|\\(.|\n))*\"|'([^'\\]|\\(.|\n))*'
 
 %option yylineno
 
@@ -103,7 +111,7 @@ string      \"([^\"]|\\\")*[\"]
     return SPI_JSON_TOKEN_TYPE_DOUBLE;
 }
 
-null {
+null|None {
     dprintf ("NULL\n");
     return SPI_JSON_TOKEN_TYPE_NULL;
 }
@@ -114,8 +122,9 @@ null {
  * string.
  */
 {string} {
+    char quote_type = *yytext;
     tokenValue->aString = strdup(yytext+1); /* skip open quote */
-    if (tokenValue->aString[yyleng-2] == '"')
+    if (tokenValue->aString[yyleng-2] == quote_type)
     {
         /* skip close quote */
         tokenValue->aString[yyleng-2] = '\0';
@@ -140,8 +149,14 @@ null {
  /*
  * Boolean values can use true or false
  */
-true|false {
-    tokenValue->aBool = (yytext[0] == 't');
+true|True {
+    tokenValue->aBool = true;
+    dprintf ("BOOL: %d\n", tokenValue->aBool);
+    return SPI_JSON_TOKEN_TYPE_BOOL;
+}
+
+false|False {
+    tokenValue->aBool = false;
     dprintf ("BOOL: %d\n", tokenValue->aBool);
     return SPI_JSON_TOKEN_TYPE_BOOL;
 }
@@ -150,19 +165,19 @@ true|false {
  * these values are not in the official JSON syntax but are supported
  * by the Python JSON parser. Hence we will output these values.
  */
-NaN {
+NaN|nan {
     tokenValue->aDouble = std::numeric_limits<double>::quiet_NaN();
     dprintf ("DOUBLE: %f\n", tokenValue->aDouble);
     return SPI_JSON_TOKEN_TYPE_DOUBLE;
 }
 
-Infinity {
+Infinity|inf {
     tokenValue->aDouble = std::numeric_limits<double>::infinity();
     dprintf ("DOUBLE: %f\n", tokenValue->aDouble);
     return SPI_JSON_TOKEN_TYPE_DOUBLE;
 }
 
--Infinity {
+-Infinity|-inf {
     tokenValue->aDouble = -std::numeric_limits<double>::infinity();
     dprintf ("DOUBLE: %f\n", tokenValue->aDouble);
     return SPI_JSON_TOKEN_TYPE_DOUBLE;

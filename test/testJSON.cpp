@@ -1,4 +1,5 @@
 #include <spi_util/JSON.hpp>
+#include <spi_util/StringUtil.hpp>
 
 #include <string>
 #include <iostream>
@@ -13,19 +14,25 @@
 
 using namespace spi_util;
 
-static void testSimpleJSON(void)
+static std::string make_json_string()
 {
     JSONMapSP aMap(new JSONMap);
 
     aMap->Insert("aDouble", 3.141592654);
     aMap->Insert("anInt", (double)42);
     aMap->Insert("aBool", true);
+    aMap->Insert("anotherBool", false);
     aMap->Insert("aNull", JSONValue());
 
     JSONValue value (aMap);
 
     // convert to string
-    std::string str = JSONValueToString(value);
+    return JSONValueToString(value);
+}
+
+static void testSimpleJSON(void)
+{
+    std::string str = make_json_string();
 
     // parse from string
     JSONValue copy = JSONValueFromString(str);
@@ -39,10 +46,33 @@ static void testSimpleJSON(void)
     std::cout << str << std::endl;
 }
 
+static void testBadFormatJSON(void)
+{
+    std::string str = make_json_string();
+    std::string badFormat = spi_util::StringReplace(str, "\"", "'");
+    badFormat = spi_util::StringReplace(badFormat, ": true", ": True");
+    badFormat = spi_util::StringReplace(badFormat, ": false", ": False");
+    badFormat = spi_util::StringReplace(badFormat, ": null", ": None");
+
+    std::cout << "GoodFormat: " << str << std::endl;
+    std::cout << "BadFormat:  " << badFormat << std::endl;
+
+    // parse from badFormat string
+    JSONValue copy = JSONValueFromString(badFormat);
+
+    // convert parsed copy to string
+    std::string str2 = JSONValueToString(copy);
+
+    // they should be the same
+    SPI_UTIL_POST_CONDITION(str == str2);
+
+}
+
 int main(int argc, char* argv[])
 {
     return spi_util::TestRunner(
         argc, argv,
         "SimpleJSON", testSimpleJSON,
+        "BadFormatJSON", testBadFormatJSON,
         0);
 }

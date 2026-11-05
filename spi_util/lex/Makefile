@@ -6,6 +6,9 @@
 #
 # Finally we remove #line stuff since we move the code into the parent
 # directory (also unix2dos since this is run on a Windows machine).
+#
+# Now that all c++ files are stored in unix formula we have switched use
+# of unix2dos to dos2unix (although that might be unnecessary)
 ###########################################################################
 
 all: ../src/Lexer.cpp ../src/JSONLexer.cpp
@@ -13,13 +16,13 @@ all: ../src/Lexer.cpp ../src/JSONLexer.cpp
 ../src/Lexer.cpp: Lexer.lex Makefile extra.includes
 	flex -oLexer.cpp -+ Lexer.lex
 	cat extra.includes > ../src/Lexer.cpp
-	sed -e "/^#line/d" Lexer.cpp | unix2dos >> ../src/Lexer.cpp
+	sed -e "/^#line/d" Lexer.cpp | dos2unix >> ../src/Lexer.cpp
 	python ../../makefiles/python/rstrip.py ../src/Lexer.cpp
 
 ../src/JSONLexer.cpp: JSON.lex Makefile extra.includes
 	flex -Pzz -oJSONLexer.cpp -+ JSON.lex
 	cat extra.includes > ../src/JSONLexer.cpp
-	sed -e "/^#line/d" JSONLexer.cpp | unix2dos >> ../src/JSONLexer.cpp
+	sed -e "/^#line/d" JSONLexer.cpp | dos2unix >> ../src/JSONLexer.cpp
 	python ../../makefiles/python/rstrip.py ../src/JSONLexer.cpp
 
 clean:
