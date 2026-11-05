@@ -1,6 +1,7 @@
 target:
 
 U_MAKEFILES=..
+U_NO_GENDEP=1
 
 include $(U_MAKEFILES)/config/config.mk
 
