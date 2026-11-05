@@ -103,14 +103,18 @@ struct Data
         if (responseCode >= 200 && responseCode < 300)
             return;
 
+        if (responseCode == 304)
+            return;
+
         if (responseCode == 0)
             // this might be valid but not for http or https
             // but in that case we should have detected an error earlier
             // if we want to be strict then check url
             return;
 
-        throw RuntimeError("HTTP error: %ld for %s:\n%s",
-            responseCode, url.c_str(), contents().c_str());
+        throw RuntimeError("HTTP error: [%s] for %s\n%s",
+            URLInfo::ResponseMessage(responseCode).c_str(),
+            url.c_str(), contents().c_str());
     }
 
     void add_data(char* ptr, size_t size)
@@ -361,11 +365,11 @@ URLInfo::URLInfo(
 {
 }
 
-std::string URLInfo::responseMessage() const
+std::string URLInfo::ResponseMessage(long responseCode)
 {
-    switch (m_responseCode)
+    switch (responseCode)
     {
-    // start with the most common response codes first
+        // start with the most common response codes first
     case 200: return "200 OK";
     case 201: return "201 Created";
     case 400: return "400 Bad Request";
@@ -430,7 +434,12 @@ std::string URLInfo::responseMessage() const
     default: break;
     }
 
-    return StringFormat("%d Unknown (or deprecated) response", m_responseCode);
+    return StringFormat("%d Unknown (or deprecated) response", responseCode);
+}
+
+std::string URLInfo::responseMessage() const
+{
+    return ResponseMessage(m_responseCode);
 }
 
 bool URLInfo::failed() const

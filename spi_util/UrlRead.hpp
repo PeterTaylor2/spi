@@ -70,6 +70,8 @@ public:
     // you should really only use this if the response failed in order to form an exception
     std::string responseMessage() const;
 
+    static std::string ResponseMessage(long responseCode);
+
     bool failed() const;
 };
 
