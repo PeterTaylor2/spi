@@ -53,6 +53,9 @@ endif
 
 code-cs: $(I_CS_TARGET)
 
+code-cs-debug:
+	$(MAKE) code-cs LOCAL_BUILD=1 DEBUG=1 SPCS_OPTIONS="-w $(SPCS_OPTIONS)"
+
 $(I_CS_TARGET): $(I_CS_SOURCE) $(I_SPCS)
 	@mkdir -p $(I_CS_SRC)
 	$(I_SPCS) $(G_SPCS_OPTIONS) $(U_SPCS_OPTIONS) $(SPCS_OPTIONS) $(I_CS_SOURCE) $(I_CS_TARGET) $(I_CS_SRC) $(U_COMPANY_NAMESPACE) $(U_CS_DLL_NAME)

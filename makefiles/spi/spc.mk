@@ -53,6 +53,9 @@ endif
 
 code-c: $(I_C_TARGET)
 
+code-c-debug:
+	$(MAKE) code-c LOCAL_BUILD=1 DEBUG=1 SPC_OPTIONS="-w $(SPC_OPTIONS)"
+
 spc-info:
 	@echo I_SPC=$(I_SPC)
 	@echo G_PLATFORM=$(G_PLATFORM)

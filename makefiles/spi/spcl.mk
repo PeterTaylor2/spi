@@ -13,6 +13,9 @@
 ###########################################################################
 code: $(U_SERVICE).svo 
 
+code-debug:
+	$(MAKE) code LOCAL_BUILD=1 DEBUG=1 SPCL_OPTIONS="-w $(SPCL_OPTIONS)"
+
 ###########################################################################
 # If you have the copy of spcl corresponding to your current $(G_ABI) 
 # then use it - otherwise use the one in bin-$(G_PLATFORM) directory

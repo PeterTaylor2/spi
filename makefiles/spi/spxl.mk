@@ -51,6 +51,9 @@ endif
 
 code-excel: $(I_EXCEL_TARGET)
 
+code-excel-debug:
+	$(MAKE) code-excel LOCAL_BUILD=1 DEBUG=1 SPXL_OPTIONS="-w $(SPXL_OPTIONS)"
+
 I_VBA_SOURCE:=$(U_SPI_HOME)/excel/vba/utils.bas\
 $(U_SPI_HOME)/excel/vba/functions.bas\
 $(U_SPI_HOME)/excel/vba/ObjectViewer.frm\
