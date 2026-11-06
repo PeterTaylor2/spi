@@ -41,11 +41,12 @@ const char* copyright = "Copyright (C) 2012-2023 Sartorial Programming Ltd.";
 #include "texOptions.hpp"
 #include <spgtools/licenseTools.hpp>
 
-static void print_usage(std::ostream& ostr, const std::string& exe, const char* longOptions)
+static void print_usage(FILE* fp, const std::string& exe,
+    const std::vector<spi_util::CommandLineOption>& options)
 {
-    ostr << "USAGE: " << exe << " [-w] [-v] [-i <dnImports>] [-S <summary>] <infile> <outfile> <dirname> [<extras...>]\n\n";
-    ostr << "where longOptions can be as follows:\n\t--"
-        << spi_util::StringReplace(longOptions, " ", "\n\t--") << std::endl;
+    spi_util::CommandLine::PrintUsage(fp, exe.c_str(),
+        "infile outfile dirname [extras...]",
+        options);
 }
 
 static int run(
@@ -109,23 +110,22 @@ int main(int argc, char* argv[])
 
     Options getOptions;
     std::string exe("SPTEX");
-    const char* longOptions = "help import license writeIncludes backup";
+
+    std::vector<spi_util::CommandLineOption> clOptions = {
+        { "help", "h", "Print this help message and exit"},
+        { "import", "i", "You can define one or more imports. The import files will be used to define types\n"
+            "used by this service but created by one of the imported services (higher-level services).\n"},
+        { "writeIncludes", "", "Writes the location of the corresponding header file for any function or class."},
+        { "backup", "", "Creates a backup file (original name with .bak appended) whenever a file is changed." },
+        { "license", "", "Prints the license for SPTEX."},
+        { "", "S", "Writes a summary file.", true, "sfilename"},
+        { "", "w", "Waits at the start - the purpose is to allow a debugger to be attached"},
+        { "", "v", "Verbose - this appears to have no effect"},
+    };
 
     try
     {
-        std::vector<spi_util::CommandLineOption> clOptions = {
-            { "help", "h", "Print this help message and exit"},
-            { "import", "i", "You can define one or more imports. The import files will be used to define types\n"
-                "used by this service but created by one of the imported services (higher-level services).\n"},
-            { "writeIncludes", "", "Writes the location of the corresponding header file for any function or class."},
-            { "backup", "", "Creates a backup file (original name with .bak appended) whenever a file is changed." },
-            { "license", "", "Prints the license for SPTEX."},
-            { "", "S", "Writes a summary file.", true, "sfilename"},
-            { "", "w", "Waits at the start - the purpose is to allow a debugger to be attached"},
-            { "", "v", "Verbose - this appears to have no effect"},
-        };
-
-        spi_util::CommandLine commandLine(argc, argv, "hwvi=S=", longOptions);
+        spi_util::CommandLine commandLine(argc, argv, clOptions);
         exe = spi_util::path::basename(commandLine.exeName);
 
         std::string opt;
@@ -172,14 +172,14 @@ int main(int argc, char* argv[])
             else
             {
                 std::cerr << "Unrecognised option: " << opt << std::endl;
-                print_usage(std::cerr, exe, longOptions);
+                print_usage(stderr, exe, clOptions);
                 return -1;
             }
         }
 
         if (commandLine.args.size() < 3)
         {
-            print_usage(std::cerr, exe, longOptions);
+            print_usage(stderr, exe, clOptions);
             return -1;
         }
 
@@ -191,7 +191,7 @@ int main(int argc, char* argv[])
     }
     catch (std::exception& e)
     {
-        print_usage(std::cerr, exe, longOptions);
+        print_usage(stderr, exe, clOptions);
         std::cerr << "ERROR: " << e.what() << std::endl;
         return -1;
     }

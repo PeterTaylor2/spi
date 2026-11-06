@@ -40,12 +40,15 @@ const char* copyright = "Copyright (C) 2012-2023 Sartorial Programming Ltd.";
 #include "cWriter.hpp"
 #include <spgtools/licenseTools.hpp>
 
-static void print_usage(std::ostream& ostr, const std::string& exe, const char* longOptions)
+static void print_standard_usage(FILE* fp,
+    const std::string& exe,
+    std::vector<spi_util::CommandLineOption>& options)
 {
-    ostr << "USAGE: " << exe << " [-w] [-t] [-i <import>] [-s <satellite>] [longOptions] <infile> <outfile> <dirname>\n"
-        << "\n"
-        << "where longOptions can be as follows:\n\t--"
-        << spi_util::StringReplace(longOptions, " ", "\n\t--") << std::endl;
+    spi_util::CommandLine::PrintUsage(
+        fp,
+        exe.c_str(),
+        "infile outfile dirname",
+        options);
 }
 
 static void tidyup(
@@ -132,29 +135,28 @@ int main(int argc, char* argv[])
 
     Options options;
 
-    const char* longOptions = "help import satellite noGeneratedCodeNotice license licenseFile= backup usePragmaOnce";
+    std::vector<spi_util::CommandLineOption> clOptions = {
+        { "help", "h", "Print this help message and exit"},
+        { "import", "i", "You can define one or more imports. We will then include the c_dll_<import>.hpp file for\n"
+            "any higher level product (with distinct namespace) that this project relies upon.\n", true},
+        { "satellite", "s", "You can define one or more satellites. Satellites are products with the same\n"
+            "namespace, but you need to be able to define a common start-up routine and shutdown routine.\n", true},
+        { "noGeneratedCodeNotice", "", "Do not print the generated code notice at the top of each file in the generated code\n"
+            "In addition we also trigger noVerbatimLine option"},
+        { "license", "", "Prints the license for SPCL."},
+        { "licenseFile", "", "This is the name of a file which contains the license for your code.\n"
+            "The file will be read and the contents included near the top of the generated files.", true},
+        { "backup", "", "Creates a backup file (original name with .bak appended) whenever a file is changed."},
+        { "usePragmaOnce", "", "Do we use #pragma once for generated header files.\n"
+            "If undefined, then header files will have a traditional style #ifndef/#define/#endif\n"
+            "mechanism for preventing multiple inclusion."},
+        { "", "w", "Waits at the start - the purpose is to allow a debugger to be attached"},
+        { "", "v", "Verbose - shows some details of the parser"}
+    };
+
     try
     {
-        std::vector<spi_util::CommandLineOption> clOptions = {
-            { "help", "h", "Print this help message and exit"},
-            { "import", "i", "You can define one or more imports. We will then include the c_dll_<import>.hpp file for\n"
-                "any higher level product (with distinct namespace) that this project relies upon.\n", true},
-            { "satellite", "s", "You can define one or more satellites. Satellites are products with the same\n"
-                "namespace, but you need to be able to define a common start-up routine and shutdown routine.\n", true},
-            { "noGeneratedCodeNotice", "", "Do not print the generated code notice at the top of each file in the generated code\n"
-                "In addition we also trigger noVerbatimLine option"},
-            { "license", "", "Prints the license for SPCL."},
-            { "licenseFile", "", "This is the name of a file which contains the license for your code.\n"
-                "The file will be read and the contents included near the top of the generated files.", true},
-            { "backup", "", "Creates a backup file (original name with .bak appended) whenever a file is changed."},
-            { "usePragmaOnce", "", "Do we use #pragma once for generated header files.\n"
-                "If undefined, then header files will have a traditional style #ifndef/#define/#endif mechanism "
-                "for preventing multiple inclusion."},
-            { "", "w", "Waits at the start - the purpose is to allow a debugger to be attached"},
-            { "", "v", "Verbose - shows some details of the parser"}
-        };
-
-        spi_util::CommandLine commandLine(argc, argv, "hwvi=s=", longOptions);
+        spi_util::CommandLine commandLine(argc, argv, clOptions);
         exe = spi_util::path::basename(commandLine.exeName);
 
         std::string opt;
@@ -209,14 +211,14 @@ int main(int argc, char* argv[])
             else
             {
                 std::cerr << "Unrecognised option: " << opt << std::endl;
-                print_usage(std::cerr, exe, longOptions);
+                print_standard_usage(stdout, exe, clOptions);
                 return -1;
             }
         }
 
         if (commandLine.args.size() != 3)
         {
-            print_usage(std::cerr, exe, longOptions);
+            print_standard_usage(stdout, exe, clOptions);
             return -1;
         }
 
@@ -226,7 +228,7 @@ int main(int argc, char* argv[])
     }
     catch (std::exception& e)
     {
-        print_usage(std::cerr, exe, longOptions);
+        print_standard_usage(stdout, exe, clOptions);
         std::cerr << "ERROR: " << e.what() << std::endl;
         return -1;
     }

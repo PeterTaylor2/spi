@@ -40,12 +40,15 @@ const char* copyright = "Copyright (C) 2012-2023 Sartorial Programming Ltd.";
 #include "csWriter.hpp"
 #include <spgtools/licenseTools.hpp>
 
-static void print_usage(std::ostream& ostr, const std::string& exe, const char* longOptions)
+static void print_usage(
+    FILE* fp,
+    const std::string& exe,
+    const std::vector<spi_util::CommandLineOption>& options)
 {
-    ostr << "USAGE: " << exe << " [-w] [-x <exclusion>] [longOptions] <infile> <outfile> <dirname> <nsGlobal> <dllName>\n"
-        << "\n"
-        << "where longOptions can be as follows:\n\t--"
-        << spi_util::StringReplace(longOptions, " ", "\n\t--") << std::endl;
+    spi_util::CommandLine::PrintUsage(
+        fp, exe.c_str(),
+        "infile outfile dirname nsGlobal dllName",
+        options);
 }
 
 static void tidyup(
@@ -148,37 +151,35 @@ int main(int argc, char* argv[])
 
     Options options;
 
-    const char* longOptions = "help import satellite noGeneratedCodeNotice noTidyUp license licenseFile= backup csNamingStyle nullable";
+    std::vector<spi_util::CommandLineOption> clOptions = {
+        { "help", "h", "Print this help message and exit"},
+        { "import", "i", "You can define one or more imports. We will then ensure that this higher level\n"
+            "product is initialised by calling its version function!", true},
+        { "satellite", "s", "You can define one or more satellites. Satellites are products with the same\n"
+            "namespace, but you need to be able to define a common start-up routine and shutdown routine.\n", true},
+        { "", "x", "Defines extra keywords that you need to exclude. C# variables cannot be keywords in C#.\n"
+            "Since there are more keywords than we know about, the idea is that if some C# code\n"
+            "fails to compile since we are using a keyword badly, then on your next run you would\n"
+            "define that keyword with the -x flag. The field name is then changed by adding an\n"
+            "underscore to the end of the field name.", true, "exclusion" },
+        { "backup", "", "Creates a backup file (original name with .bak appended) whenever a file is changed."},
+        { "noTidyup", "", "By default after generating the code then any files in the generated code directory\n"
+            "which were not created by the generator will be removed. Setting noTidyup reverses this behaviour."},
+        { "csNamingStyle", "", "If defined, then C# field names use the standard C# naming style.\n"
+            "This involves capitalizing the first character in the string."},
+        { "nullable", "", "If defined, then we will generate code such that optional fields defined in the API\n"
+            "will be marked as nullable in the C# code."},
+        { "noGeneratedCodeNotice", "", "Do not print the generated code notice at the top of each file in the generated code\n"
+            "In addition we also trigger noVerbatimLine option"},
+        { "license", "", "Prints the license for SPCS."},
+        { "licenseFile", "", "This is the name of a file which contains the license for your code.\n"
+            "The file will be read and the contents included near the top of the generated files.", true},
+        { "", "w", "Waits at the start - the purpose is to allow a debugger to be attached"},
+        { "", "v", "Verbose - shows some details of the parser"},
+    };
     try
     {
-        std::vector<spi_util::CommandLineOption> clOptions = {
-            { "help", "h", "Print this help message and exit"},
-            { "import", "i", "You can define one or more imports. We will then ensure that this higher level\n"
-                "product is initialised by calling its version function!", true},
-            { "satellite", "s", "You can define one or more satellites. Satellites are products with the same\n"
-                "namespace, but you need to be able to define a common start-up routine and shutdown routine.\n", true},
-            { "", "x", "Defines extra keywords that you need to exclude. C# variables cannot be keywords in C#.\n"
-                "Since there are more keywords than we know about, the idea is that if some C# code\n"
-                "fails to compile since we are using a keyword badly, then on your next run you would\n"
-                "define that keyword with the -x flag. The field name is then changed by adding an\n"
-                "underscore to the end of the field name.", true, "exclusion" },
-            { "backup", "", "Creates a backup file (original name with .bak appended) whenever a file is changed."},
-            { "noTidyup", "", "By default after generating the code then any files in the generated code directory\n"
-                "which were not created by the generator will be removed. Setting noTidyup reverses this behaviour."},
-            { "csNamingStyle", "", "If defined, then C# field names use the standard C# naming style.\n"
-                "This involves capitalizing the first character in the string."},
-            { "nullable", "", "If defined, then we will generate code such that optional fields defined in the API\n"
-                "will be marked as nullable in the C# code."},
-            { "noGeneratedCodeNotice", "", "Do not print the generated code notice at the top of each file in the generated code\n"
-                "In addition we also trigger noVerbatimLine option"},
-            { "license", "", "Prints the license for SPCS."},
-            { "licenseFile", "", "This is the name of a file which contains the license for your code.\n"
-                "The file will be read and the contents included near the top of the generated files.", true},
-            { "", "w", "Waits at the start - the purpose is to allow a debugger to be attached"},
-            { "", "v", "Verbose - shows some details of the parser"},
-        };
-
-        spi_util::CommandLine commandLine(argc, argv, "hwvx=s=i=", longOptions);
+        spi_util::CommandLine commandLine(argc, argv, clOptions);
         exe = spi_util::path::basename(commandLine.exeName);
 
         std::string opt;
@@ -245,14 +246,14 @@ int main(int argc, char* argv[])
             else
             {
                 std::cerr << "Unrecognised option: " << opt << std::endl;
-                print_usage(std::cerr, exe, longOptions);
+                print_usage(stderr, exe, clOptions);
                 return -1;
             }
         }
 
         if (commandLine.args.size() != 5)
         {
-            print_usage(std::cerr, exe, longOptions);
+            print_usage(stderr, exe, clOptions);
             return -1;
         }
 
@@ -264,7 +265,7 @@ int main(int argc, char* argv[])
     }
     catch (std::exception& e)
     {
-        print_usage(std::cerr, exe, longOptions);
+        print_usage(stderr, exe, clOptions);
         std::cerr << "ERROR: " << e.what() << std::endl;
         return -1;
     }

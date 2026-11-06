@@ -40,11 +40,13 @@ const char* copyright = "Copyright (C) 2012-2023 Sartorial Programming Ltd.";
 #include "xlWriter.hpp"
 #include <spgtools/licenseTools.hpp>
 
-static void print_usage(std::ostream& ostr, const std::string& exe, const char* longOptions)
+static void print_usage(FILE* fp, const std::string& exe,
+    const std::vector<spi_util::CommandLineOption>& clOptions)
 {
-    ostr << "USAGE: " << exe << " [-w] [-v] [longOptions] <infile> <outfile> <dirname> <indirvba>\n\n";
-    ostr << "where longOptions can be as follows:\n\t--"
-        << spi_util::StringReplace(longOptions, " ", "\n\t--") << std::endl;
+    spi_util::CommandLine::PrintUsage(
+        fp, exe.c_str(),
+        "infile outfile dirname indirvba",
+        clOptions);
 }
 
 static void tidyup(
@@ -157,66 +159,62 @@ int main(int argc, char* argv[])
 
     Options options;
 
-    const char* longOptions = "help nameAtEnd noGeneratedCodeNotice upperCase funcNameSep= noObjectFuncs noPrefixObjectFuncs attributeFuncs parent= "
-        " optionsFile= license licenseFile= errIsNA backup xlTargetVersion= nsUpperCase"
-        " usePragmaOnce";
+    std::vector<spi_util::CommandLineOption> clOptions = {
+        { "help", "h", "Print this help message and exit"},
+        { "optionsFile", "", "Defines an options file written in JSON which defines various options.\n"
+            "If you want to change the names of the functions that are written on your behalf for manipulating\n"
+            "objects in a generic manner, then the optionsFile approach is the one that you should be using.\n"
+            ":\n"
+            "These options are available with the optionsFile: funcNameSep, noGeneratedCodeNotice, nameAtEnd,\n"
+            "upperCase, nsUpperCase, noObjectFuncs, attributeFuncs, errIsNA, xlVersion.\n"
+            "These options can also be specified independently on the command line.\n"
+            ":\n"
+            "These options can only be defined via the optionsFile - they define the names for particular functions\n"
+            "that are generated for all services:\n"
+            "helpFunc, hepFuncList, helpEnum, objectCoerce, startLogging, stopLogging, startTiming, stopTiming,\n"
+            "clearTimings, getTimings, setErrorPopups, objectToString, objectFromString, objectGet, objectPut,\n"
+            "objectToFile, objectFromFile, objectCount, objectFree, objectFreeAll, objectList, objectSHA, objectMake\n",
+            true},
+        { "nameAtEnd", "", "Functions which return objects in the Excel API are returned as strings to the\n"
+            "spreadsheet. You need to provide a name which will form part of this string - the so-called\n"
+            "baseName. By default, the name is required as the first parameter, but it is actually more\n"
+            "natural to have the baseName as the final parameter. Initially (i.e. when the SPI project was started)\n"
+            "defining the name at the end had the problem that if you added extra (hopefully optional) parameters\n"
+            "over time, then existing Excel spreadsheets would now be providing the base name of the object in the\n"
+            "position where we expected the new function input. Essentially this would break the Excel spreadsheet.\n"
+            "However we solved this problem - the key is that if the name is defined at the end, then we assume\n"
+            "that the last parameter entered is the baseName, and that any missing parameters are assumed to take\n"
+            "their default value. Hence we recommend turning on the nameAtEnd feature."},
+        { "noObjectFuncs", "", "If defined, then we do not define any of the object functions, e.g. objectToString\n"
+            "etc. See the optionsFile parameter for a list of the possible object functions.\n"
+            "You might set this flag if another of the Excel add-ins contains all the object functions.\n"},
+        { "noPrefixObjectFuncs", "", "If defined, then we do not use the namespace prefix for the object functions.\n"},
+        { "attributeFuncs", "", "If defined, then each readable attribute and property of a class gets an Excel\n"
+            "function of its own, Class.attribute(handle), giving what object_get gives for it - an attribute\n"
+            "with the name of one of the class's methods doesn't.\n"},
+        { "parent", "", "This option is deprecated and ignored", true },
+        { "errIsNA", "", "Use this option to set error results as #N/A as opposed to the default which is #NUM!\n" },
+        { "xlTargetVersion", "", "Defines which version of Excel we are targetting. By default 12.\n"
+            "Other possible values are 4 and 15, but 4 is now really old-fashioned and somewhat restrictive.\n", true},
+        { "nsUpperCase", "", "The namespace component of the name is converted to upper case."},
+        { "upperCase", "", "Convert all function names entirely to upper case."},
+        { "funcNameSep", "", "Defines the separator that is used join together parts of the function name.\n"
+            "The default value is '.' - one which we have seen quite often used is '_'", true},
+        { "backup", "", "Creates a backup file (original name with .bak appended) whenever a file is changed." },
+        { "noGeneratedCodeNotice", "", "Do not print the generated code notice at the top of each file in the generated code\n"
+            "In addition we also trigger noVerbatimLine option"},
+        { "license", "", "Prints the license for SPCS."},
+        { "licenseFile", "", "This is the name of a file which contains the license for your code."},
+        { "usePragmaOnce", "", "Do we use #pragma once for generated header files.\n"
+            "If undefined, then header files will have a traditional style #ifndef/#define/#endif\n"
+            "mechanism for preventing multiple inclusion."},
+        { "", "w", "Waits at the start - the purpose is to allow a debugger to be attached"},
+        { "", "v", "Verbose - this appears to have no effect"},
+    };
 
     try
     {
-        std::vector<spi_util::CommandLineOption> clOptions = {
-            { "help", "h", "Print this help message and exit"},
-            { "optionsFile", "", "Defines an options file written in JSON which defines various options.\n"
-                "If you want to change the names of the functions that are written on your behalf for manipulating\n"
-                "objects in a generic manner, then the optionsFile approach is the one that you should be using.\n"
-                ":\n"
-                "These options are available with the optionsFile: funcNameSep, noGeneratedCodeNotice, nameAtEnd,\n"
-                "upperCase, nsUpperCase, noObjectFuncs, attributeFuncs, errIsNA, xlVersion.\n"
-                "These options can also be specified independently on the command line.\n"
-                ":\n"
-                "These options can only be defined via the optionsFile - they define the names for particular functions\n"
-                "that are generated for all services:\n"
-                "helpFunc, hepFuncList, helpEnum, objectCoerce, startLogging, stopLogging, startTiming, stopTiming,\n"
-                "clearTimings, getTimings, setErrorPopups, objectToString, objectFromString, objectGet, objectPut,\n"
-                "objectToFile, objectFromFile, objectCount, objectFree, objectFreeAll, objectList, objectSHA, objectMake\n",
-                true},
-            { "nameAtEnd", "", "Functions which return objects in the Excel API are returned as strings to the\n"
-                "spreadsheet. You need to provide a name which will form part of this string - the so-called\n"
-                "baseName. By default, the name is required as the first parameter, but it is actually more\n"
-                "natural to have the baseName as the final parameter. Initially (i.e. when the SPI project was started)\n"
-                "defining the name at the end had the problem that if you added extra (hopefully optional) parameters\n"
-                "over time, then existing Excel spreadsheets would now be providing the base name of the object in the\n"
-                "position where we expected the new function input. Essentially this would break the Excel spreadsheet.\n"
-                "However we solved this problem - the key is that if the name is defined at the end, then we assume\n"
-                "that the last parameter entered is the baseName, and that any missing parameters are assumed to take\n"
-                "their default value. Hence we recommend turning on the nameAtEnd feature."},
-            { "noObjectFuncs", "", "If defined, then we do not define any of the object functions, e.g. objectToString\n"
-                "etc. See the optionsFile parameter for a list of the possible object functions.\n"
-                "You might set this flag if another of the Excel add-ins contains all the object functions.\n"},
-            { "noPrefixObjectFuncs", "", "If defined, then we do not use the namespace prefix for the object functions.\n"},
-            { "attributeFuncs", "", "If defined, then each readable attribute and property of a class gets an Excel\n"
-                "function of its own, Class.attribute(handle), giving what object_get gives for it - an attribute\n"
-                "with the name of one of the class's methods doesn't.\n"},
-            { "parent", "", "This option is deprecated and ignored", true },
-            { "errIsNA", "", "Use this option to set error results as #N/A as opposed to the default which is #NUM!\n" },
-            { "xlTargetVersion", "", "Defines which version of Excel we are targetting. By default 12.\n"
-                "Other possible values are 4 and 15, but 4 is now really old-fashioned and somewhat restrictive.\n", true},
-            { "nsUpperCase", "", "The namespace component of the name is converted to upper case."},
-            { "upperCase", "", "Convert all function names entirely to upper case."},
-            { "funcNameSep", "", "Defines the separator that is used join together parts of the function name.\n"
-                "The default value is '.' - one which we have seen quite often used is '_'", true},
-            { "backup", "", "Creates a backup file (original name with .bak appended) whenever a file is changed." },
-            { "noGeneratedCodeNotice", "", "Do not print the generated code notice at the top of each file in the generated code\n"
-                "In addition we also trigger noVerbatimLine option"},
-            { "license", "", "Prints the license for SPCS."},
-            { "licenseFile", "", "This is the name of a file which contains the license for your code."},
-            { "usePragmaOnce", "", "Do we use #pragma once for generated header files.\n"
-                "If undefined, then header files will have a traditional style #ifndef/#define/#endif mechanism "
-                "for preventing multiple inclusion."},
-            { "", "w", "Waits at the start - the purpose is to allow a debugger to be attached"},
-            { "", "v", "Verbose - this appears to have no effect"},
-        };
-
-        spi_util::CommandLine commandLine(argc, argv, "wv", longOptions);
+        spi_util::CommandLine commandLine(argc, argv, clOptions);
         exe = spi_util::path::basename(commandLine.exeName);
 
         std::string opt;
@@ -311,14 +309,14 @@ int main(int argc, char* argv[])
             else
             {
                 std::cerr << "Unrecognised option: " << opt << std::endl;
-                print_usage(std::cerr, exe, longOptions);
+                print_usage(stderr, exe, clOptions);
                 return -1;
             }
         }
 
         if (commandLine.args.size() != 4)
         {
-            print_usage(std::cerr, exe, longOptions);
+            print_usage(stderr, exe, clOptions);
             return -1;
         }
 
@@ -329,7 +327,7 @@ int main(int argc, char* argv[])
     }
     catch (std::exception& e)
     {
-        print_usage(std::cerr, "SPXL", longOptions);
+        print_usage(stderr, exe, clOptions);
         std::cerr << "ERROR: " << e.what() << std::endl;
         return -1;
     }
