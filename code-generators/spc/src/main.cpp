@@ -132,7 +132,7 @@ int main(int argc, char* argv[])
 
     Options options;
 
-    const char* longOptions = "help import satellite noGeneratedCodeNotice license licenseFile= backup";
+    const char* longOptions = "help import satellite noGeneratedCodeNotice license licenseFile= backup usePragmaOnce";
     try
     {
         std::vector<spi_util::CommandLineOption> clOptions = {
@@ -147,6 +147,9 @@ int main(int argc, char* argv[])
             { "licenseFile", "", "This is the name of a file which contains the license for your code.\n"
                 "The file will be read and the contents included near the top of the generated files.", true},
             { "backup", "", "Creates a backup file (original name with .bak appended) whenever a file is changed."},
+            { "usePragmaOnce", "", "Do we use #pragma once for generated header files.\n"
+                "If undefined, then header files will have a traditional style #ifndef/#define/#endif mechanism "
+                "for preventing multiple inclusion."},
             { "", "w", "Waits at the start - the purpose is to allow a debugger to be attached"},
             { "", "v", "Verbose - shows some details of the parser"}
         };
@@ -198,6 +201,10 @@ int main(int argc, char* argv[])
             else if (opt == "--backup")
             {
                 options.writeBackup = true;
+            }
+            else if (opt == "--usePragmaOnce")
+            {
+                options.usePragmaOnce = true;
             }
             else
             {

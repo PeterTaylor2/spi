@@ -1380,7 +1380,7 @@ void ServiceDefinition::writeServiceNamespace(
 {
     GeneratedOutput ostr(fn, cwd, options.writeBackup, options.textFormat);
     writeLicense(ostr, options.license);
-    startHeaderFile(ostr, fn);
+    startHeaderFile(ostr, fn, options.usePragmaOnce);
     if (!noGeneratedCodeNotice())
         writeGeneratedCodeNotice(ostr, fn);
 
@@ -1429,7 +1429,7 @@ void ServiceDefinition::writeServiceNamespace(
     ostr << " {\n"
          << "#define " << spi::StringUpper(m_namespace) << "_END_NAMESPACE }\n";
 
-    endHeaderFile(ostr, fn);
+    endHeaderFile(ostr, fn, options.usePragmaOnce);
 }
 
 void ServiceDefinition::writeStartNamespace(GeneratedOutput& ostr)
@@ -1449,7 +1449,7 @@ void ServiceDefinition::writeAllHeader(
     const Options& options)
 {
     GeneratedOutput ostr(fn, cwd, options.writeBackup, options.textFormat);
-    startHeaderFile(ostr, fn);
+    startHeaderFile(ostr, fn, options.usePragmaOnce);
 
     ostr << "\n"
         << "#include <spi/spi.hpp>\n"
@@ -1461,7 +1461,7 @@ void ServiceDefinition::writeAllHeader(
         ostr << "#include \"" << m_namespace << "_" << m_modules[i]->name() << ".hpp\"\n";
     }
 
-    endHeaderFile(ostr, fn);
+    endHeaderFile(ostr, fn, options.usePragmaOnce);
 }
 
 void ServiceDefinition::writeServiceHeaders(
@@ -1475,7 +1475,7 @@ void ServiceDefinition::writeServiceHeaders(
     // fn2 is in the source directory and contains all the internal functions
     GeneratedOutput ostr(fn1, cwd, options.writeBackup, options.textFormat);
     writeLicense(ostr, options.license);
-    startHeaderFile(ostr, fn1);
+    startHeaderFile(ostr, fn1, options.usePragmaOnce);
     if (!noGeneratedCodeNotice())
         writeGeneratedCodeNotice(ostr, fn1);
 
@@ -1539,11 +1539,11 @@ void ServiceDefinition::writeServiceHeaders(
     //    ostr << "_types";
     //ostr << "\n";
 
-    endHeaderFile(ostr, fn1);
+    endHeaderFile(ostr, fn1, options.usePragmaOnce);
 
     GeneratedOutput ostr2(fn2, cwd, options.writeBackup, options.textFormat);
     writeLicense(ostr2, options.license);
-    startHeaderFile(ostr2, fn2);
+    startHeaderFile(ostr2, fn2, options.usePragmaOnce);
     if (!noGeneratedCodeNotice())
         writeGeneratedCodeNotice(ostr2, fn2);
 
@@ -1606,7 +1606,7 @@ void ServiceDefinition::writeServiceHeaders(
     //    ostr2 << "_types";
     //ostr2 << "\n";
 
-    endHeaderFile(ostr2, fn2);
+    endHeaderFile(ostr2, fn2, options.usePragmaOnce);
 }
 
 void ServiceDefinition::writeTimeoutHeader(
@@ -1616,7 +1616,7 @@ void ServiceDefinition::writeTimeoutHeader(
 {
     GeneratedOutput ostr(fn, cwd, options.writeBackup, options.textFormat);
     writeLicense(ostr, options.license);
-    startHeaderFile(ostr, fn);
+    startHeaderFile(ostr, fn, options.usePragmaOnce);
     if (!noGeneratedCodeNotice())
         writeGeneratedCodeNotice(ostr, fn);
 
@@ -1633,7 +1633,7 @@ void ServiceDefinition::writeTimeoutHeader(
 
     writeEndNamespace(ostr);
 
-    endHeaderFile(ostr, fn);
+    endHeaderFile(ostr, fn, options.usePragmaOnce);
 }
 
 void ServiceDefinition::writeServiceSource(
@@ -2178,7 +2178,7 @@ void ServiceDefinition::writeTypeConvertersHeader(
 {
     GeneratedOutput ostr(fn, cwd, options.writeBackup, options.textFormat);
     writeLicense(ostr, options.license);
-    startHeaderFile(ostr, fn);
+    startHeaderFile(ostr, fn, options.usePragmaOnce);
 
     ostr << "\n"
          << "#include <spi/spi.hpp>\n"
@@ -2226,7 +2226,7 @@ void ServiceDefinition::writeTypeConvertersHeader(
     ostr << "\n"
          << spi::StringUpper(m_namespace) << "_END_NAMESPACE\n";
 
-    endHeaderFile(ostr, fn);
+    endHeaderFile(ostr, fn, options.usePragmaOnce);
 }
 
 void ServiceDefinition::writeUsingImportedTypes(

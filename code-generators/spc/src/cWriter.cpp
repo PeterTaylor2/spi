@@ -145,7 +145,7 @@ CService::writeDeclSpecHeaderFile(const std::string& dirname) const
 
     GeneratedOutput ostr(filename, spi_util::path::dirname(filename), writeBackup());
     writeLicense(ostr, license());
-    startHeaderFile(ostr, filename);
+    startHeaderFile(ostr, filename, usePragmaOnce());
 
     writeStartCommentBlock(ostr, false);
     ostr << "** " << basename << "\n"
@@ -168,7 +168,7 @@ CService::writeDeclSpecHeaderFile(const std::string& dirname) const
          << "#define " << m_service->declSpec << "_C_IMPORT\n"
          << "#endif\n";
 
-    endHeaderFile(ostr, filename);
+    endHeaderFile(ostr, filename, usePragmaOnce());
     ostr.close();
     return filename;
 }
@@ -182,7 +182,7 @@ std::string CService::writePublicHeaderFile(const std::string& dirname,
 
     GeneratedOutput ostr(filename, spi_util::path::dirname(filename), writeBackup());
     writeLicense(ostr, license());
-    startHeaderFile(ostr, filename);
+    startHeaderFile(ostr, filename, usePragmaOnce());
 
     writeStartCommentBlock(ostr, false);
     ostr << "** " << basename << "\n"
@@ -245,7 +245,7 @@ std::string CService::writePublicHeaderFile(const std::string& dirname,
         << "} /* end of extern \"C\" */\n"
         << "#endif\n";
 
-    endHeaderFile(ostr, filename);
+    endHeaderFile(ostr, filename, usePragmaOnce());
     ostr.close();
     return filename;
 }
@@ -259,7 +259,7 @@ std::string CService::writePrivateHeaderFile(const std::string& dirname,
 
     GeneratedOutput ostr(filename, spi_util::path::dirname(filename), writeBackup());
     writeLicense(ostr, license());
-    startHeaderFile(ostr, filename);
+    startHeaderFile(ostr, filename, usePragmaOnce());
 
     writeStartCommentBlock(ostr, false);
     ostr << "** " << basename << "\n"
@@ -287,7 +287,7 @@ std::string CService::writePrivateHeaderFile(const std::string& dirname,
         module->updatePrivateHeaderFile(ostr);
     }
 
-    endHeaderFile(ostr, filename);
+    endHeaderFile(ostr, filename, usePragmaOnce());
     ostr.close();
     return filename;
 }
@@ -489,6 +489,11 @@ bool CService::writeBackup() const
 bool CService::recording() const
 {
     return m_service->recording;
+}
+
+bool CService::usePragmaOnce() const
+{
+    return m_options.usePragmaOnce;
 }
 
 /*

@@ -230,11 +230,19 @@ void writeGeneratedCodeNotice(GeneratedOutput& ostr, const std::string& ofn)
 
 void startHeaderFile(
     GeneratedOutput& ostr,
-    const std::string& fn)
+    const std::string& fn,
+    bool usePragmaOnce)
 {
-    const std::string& headerGuard = headerGuardMacroName(fn);
-    ostr << "#ifndef " << headerGuard << "\n"
-         << "#define " << headerGuard << "\n";
+    if (usePragmaOnce)
+    {
+        ostr << "#pragma once\n";
+    }
+    else
+    {
+        const std::string& headerGuard = headerGuardMacroName(fn);
+        ostr << "#ifndef " << headerGuard << "\n"
+            << "#define " << headerGuard << "\n";
+    }
 
     writeStartCommentBlock(ostr, true);
     ostr << "* Header file: " << spi_util::path::basename(fn) << "\n";
@@ -243,10 +251,18 @@ void startHeaderFile(
 
 void endHeaderFile(
     GeneratedOutput& ostr,
-    const std::string& fn)
+    const std::string& fn,
+    bool usePragmaOnce)
 {
-    const std::string& headerGuard = headerGuardMacroName(fn);
-    ostr << "\n#endif /* " << headerGuard << "*/\n" << '\n';
+    if (usePragmaOnce)
+    {
+        ostr << "\n";
+    }
+    else
+    {
+        const std::string& headerGuard = headerGuardMacroName(fn);
+        ostr << "\n#endif /* " << headerGuard << "*/\n" << '\n';
+    }
 }
 
 void startSourceFile(

@@ -175,7 +175,7 @@ void ModuleDefinition::writeHeader(
 {
     GeneratedOutput ostr(fn, cwd, options.writeBackup, options.textFormat);
     writeLicense(ostr, options.license);
-    startHeaderFile(ostr, fn);
+    startHeaderFile(ostr, fn, options.usePragmaOnce);
 
     NamespaceManager nsman;
 
@@ -245,7 +245,7 @@ void ModuleDefinition::writeHeader(
     ostr << "\n";
     nsman.endAllNamespaces(ostr);
     svc->writeEndNamespace(ostr);
-    endHeaderFile(ostr, fn);
+    endHeaderFile(ostr, fn, options.usePragmaOnce);
 }
 
 void ModuleDefinition::writeClassesHeader(
@@ -257,7 +257,7 @@ void ModuleDefinition::writeClassesHeader(
 {
     GeneratedOutput ostr(fn, cwd, options.writeBackup, options.textFormat);
     writeLicense(ostr, options.license);
-    startHeaderFile(ostr, fn);
+    startHeaderFile(ostr, fn, options.usePragmaOnce);
 
     const std::string& sharedPtrInclude = svc->getSharedPtrInclude();
 
@@ -310,7 +310,7 @@ void ModuleDefinition::writeClassesHeader(
     ostr << "\n";
     nsman.endAllNamespaces(ostr);
     svc->writeEndNamespace(ostr);
-    endHeaderFile(ostr, fn);
+    endHeaderFile(ostr, fn, options.usePragmaOnce);
 }
 
 void ModuleDefinition::writeHelperHeader(
@@ -322,7 +322,7 @@ void ModuleDefinition::writeHelperHeader(
 {
     GeneratedOutput ostr(fn, cwd, options.writeBackup, options.textFormat);
     writeLicense(ostr, options.license);
-    startHeaderFile(ostr, fn);
+    startHeaderFile(ostr, fn, options.usePragmaOnce);
 
     if (options.noHeaderSplit)
     {
@@ -350,7 +350,7 @@ void ModuleDefinition::writeHelperHeader(
     ostr << "\n";
     nsman.endAllNamespaces(ostr);
     svc->writeEndNamespace(ostr);
-    endHeaderFile(ostr, fn);
+    endHeaderFile(ostr, fn, options.usePragmaOnce);
 }
 
 void ModuleDefinition::writeSource(

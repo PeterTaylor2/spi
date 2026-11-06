@@ -106,8 +106,8 @@ void writeComments(
     size_t indent=0,
     size_t hIndent=0);
 void writeGeneratedCodeNotice(GeneratedOutput& ostr, const std::string& ofn);
-void startHeaderFile(GeneratedOutput& ostr, const std::string& fn);
-void endHeaderFile(GeneratedOutput& ostr, const std::string& fn);
+void startHeaderFile(GeneratedOutput& ostr, const std::string& fn, bool usePragmaOnce);
+void endHeaderFile(GeneratedOutput& ostr, const std::string& fn, bool usePragmaOnce);
 void startSourceFile(GeneratedOutput& ostr, const std::string& fn,
     bool doxygenate=true);
 void endSourceFile(GeneratedOutput& ostr, const std::string& fn);

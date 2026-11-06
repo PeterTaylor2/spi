@@ -49,6 +49,7 @@ struct Options
         attributeFuncs(false),
         errIsNA(false),
         writeBackup(false),
+        usePragmaOnce(false),
         license(),
         helpFunc("help_func"),
         helpFuncList(""),
@@ -89,6 +90,7 @@ struct Options
     bool attributeFuncs;
     bool errIsNA;
     bool writeBackup;
+    bool usePragmaOnce;
     std::string license;
     std::string helpFunc;
     std::string helpFuncList;
@@ -157,6 +159,7 @@ public:
     const char* funcNameSep() const;
     const std::string& license() const;
     bool writeBackup() const;
+    bool usePragmaOnce() const;
 
     const Options& options() const;
     std::string regFunctionPrefix(const std::string& functionPrefix) const;

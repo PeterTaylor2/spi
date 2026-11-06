@@ -50,7 +50,8 @@ struct Options
         fastCall(false),
         license(),
         writeBackup(false),
-        textFormat(false)
+        textFormat(false),
+        usePragmaOnce(false)
     {}
 
     bool noGeneratedCodeNotice;
@@ -65,6 +66,7 @@ struct Options
     std::string license;
     bool writeBackup;
     bool textFormat;
+    bool usePragmaOnce;
 };
 
 /**

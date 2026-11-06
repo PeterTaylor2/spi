@@ -124,7 +124,7 @@ int main(int argc, char* argv[])
     std::string exe("SPPY");
     const char* longOptions = "help noImporter noGeneratedCodeNotice lowerCase lowerCaseMethod"
         " objectCoerce helpFuncList keywords fastCall license licenseFile= backup"
-        " textFormat";
+        " textFormat usePragmaOnce";
 
     Options options;
 
@@ -150,6 +150,9 @@ int main(int argc, char* argv[])
             { "license", "", "Prints the license for SPCS."},
             { "licenseFile", "", "This is the name of a file which contains the license for your code.\n"
                 "The file will be read and the contents included near the top of the generated files.", true},
+            { "usePragmaOnce", "", "Do we use #pragma once for generated header files.\n"
+                "If undefined, then header files will have a traditional style #ifndef/#define/#endif mechanism "
+                "for preventing multiple inclusion."},
             { "", "w", "Waits at the start - the purpose is to allow a debugger to be attached"},
             { "", "v", "Verbose - shows some details of the parser"},
         };
@@ -225,6 +228,10 @@ int main(int argc, char* argv[])
             else if (opt == "--textFormat")
             {
                 options.textFormat = true;
+            }
+            else if (opt == "--usePragmaOnce")
+            {
+                options.usePragmaOnce = true;
             }
             else
             {

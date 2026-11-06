@@ -50,7 +50,8 @@ struct Options
         imports(),
         license(),
         writeBackup(),
-        satellites()
+        satellites(),
+        usePragmaOnce()
     {}
 
     bool noGeneratedCodeNotice;
@@ -58,6 +59,7 @@ struct Options
     std::string license;
     bool writeBackup;
     std::vector<std::string> satellites;
+    bool usePragmaOnce;
 };
 
 /**
@@ -91,6 +93,7 @@ public:
     const std::string& license() const;
     bool writeBackup() const;
     bool recording() const;
+    bool usePragmaOnce() const;
 
 protected:
     CService(

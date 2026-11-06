@@ -76,7 +76,7 @@ ExcelService::writeDeclSpecHeaderFile(const std::string& dirname) const
 
     GeneratedOutput ostr(filename, spi_util::path::dirname(filename), writeBackup());
     writeLicense(ostr, license());
-    startHeaderFile(ostr, filename);
+    startHeaderFile(ostr, filename, usePragmaOnce());
 
     writeStartCommentBlock(ostr, false);
     ostr << "** " << basename << "\n"
@@ -97,7 +97,7 @@ ExcelService::writeDeclSpecHeaderFile(const std::string& dirname) const
          << "_IMPORT __declspec(dllimport)\n"
          << "#endif\n";
 
-    endHeaderFile(ostr, filename);
+    endHeaderFile(ostr, filename, usePragmaOnce());
     ostr.close();
     return filename;
 }
@@ -111,7 +111,7 @@ ExcelService::writeXllHeaderFile(const std::string& dirname) const
 
     GeneratedOutput ostr(filename, spi_util::path::dirname(filename), writeBackup());
     writeLicense(ostr, license());
-    startHeaderFile(ostr, filename);
+    startHeaderFile(ostr, filename, usePragmaOnce());
 
     writeStartCommentBlock(ostr, false);
     ostr << "** " << basename << "\n"
@@ -171,7 +171,7 @@ ExcelService::writeXllHeaderFile(const std::string& dirname) const
          << "\n"
          << "} /* end of extern \"C\" */\n";
 
-    endHeaderFile(ostr, filename);
+    endHeaderFile(ostr, filename, usePragmaOnce());
     ostr.close();
     return filename;
 }
@@ -903,6 +903,11 @@ bool ExcelService::writeBackup() const
     return m_options.writeBackup;
 }
 
+bool ExcelService::usePragmaOnce() const
+{
+    return m_options.usePragmaOnce;
+}
+
 const Options& ExcelService::options() const
 {
     return m_options;
@@ -945,7 +950,7 @@ std::string ExcelModule::writeHeaderFile(const std::string& dirname) const
 
     GeneratedOutput ostr(filename, spi_util::path::dirname(filename),service->writeBackup());
     writeLicense(ostr, service->license());
-    startHeaderFile(ostr, filename);
+    startHeaderFile(ostr, filename, service->usePragmaOnce());
 
     ostr << "\n"
          << "#include <xll_" << service->name() << "_decl_spec.h>\n"
@@ -1001,7 +1006,7 @@ std::string ExcelModule::writeHeaderFile(const std::string& dirname) const
     ostr << "\n"
          << "} /* end of extern \"C\" */\n";
 
-    endHeaderFile(ostr, filename);
+    endHeaderFile(ostr, filename, service->usePragmaOnce());
     ostr.close();
     return filename;
 }

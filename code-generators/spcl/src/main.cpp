@@ -134,7 +134,7 @@ int main(int argc, char* argv[])
     std::string exe("SPCL");
     const char* longOptions = "help allHeader noVerbatimLine noHeaderSplit noTidyup"
         " noGeneratedCodeNotice sortSummary version= optionalArgs license outputDir="
-        " sessionLogging licenseFile= backup checkNonNull textFormat";
+        " sessionLogging licenseFile= backup checkNonNull textFormat usePragmaOnce";
 
 
     try
@@ -171,6 +171,9 @@ int main(int argc, char* argv[])
                 "add this check to existing generated code.\n"},
             { "textFormat", "", "Do we write the generated files in text format (specific to the platform).\n"
                 "If undefined, then the files will be written with Unix line endings."},
+            { "usePragmaOnce", "", "Do we use #pragma once for generated header files.\n"
+                "If undefined, then header files will have a traditional style #ifndef/#define/#endif mechanism "
+                "for preventing multiple inclusion."},
             { "", "w", "Waits at the start - the purpose is to allow a debugger to be attached"},
             { "", "t", "Generate types only code. What this does is that it generates code only for the\n"
                 "class definitions. Functions and class methods are not included.\n"
@@ -287,6 +290,10 @@ int main(int argc, char* argv[])
             else if (opt == "--textFormat")
             {
                 options.textFormat = true;
+            }
+            else if (opt == "--usePragmaOnce")
+            {
+                options.usePragmaOnce = true;
             }
             else
             {

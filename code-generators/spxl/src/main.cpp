@@ -158,7 +158,8 @@ int main(int argc, char* argv[])
     Options options;
 
     const char* longOptions = "help nameAtEnd noGeneratedCodeNotice upperCase funcNameSep= noObjectFuncs noPrefixObjectFuncs attributeFuncs parent= "
-        " optionsFile= license licenseFile= errIsNA backup xlTargetVersion= nsUpperCase";
+        " optionsFile= license licenseFile= errIsNA backup xlTargetVersion= nsUpperCase"
+        " usePragmaOnce";
 
     try
     {
@@ -208,6 +209,9 @@ int main(int argc, char* argv[])
                 "In addition we also trigger noVerbatimLine option"},
             { "license", "", "Prints the license for SPCS."},
             { "licenseFile", "", "This is the name of a file which contains the license for your code."},
+            { "usePragmaOnce", "", "Do we use #pragma once for generated header files.\n"
+                "If undefined, then header files will have a traditional style #ifndef/#define/#endif mechanism "
+                "for preventing multiple inclusion."},
             { "", "w", "Waits at the start - the purpose is to allow a debugger to be attached"},
             { "", "v", "Verbose - this appears to have no effect"},
         };
@@ -295,6 +299,10 @@ int main(int argc, char* argv[])
             else if (opt == "--backup")
             {
                 options.writeBackup = true;
+            }
+            else if (opt == "--usePragmaOnce")
+            {
+                options.usePragmaOnce = true;
             }
             else if (opt == "--xlTargetVersion")
             {

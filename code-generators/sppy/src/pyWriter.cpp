@@ -69,7 +69,7 @@ PythonService::writeDeclSpecHeaderFile(const std::string& dirname) const
     GeneratedOutput ostr(filename, spi_util::path::dirname(filename), options.writeBackup,
         options.textFormat);
     writeLicense(ostr, options.license);
-    startHeaderFile(ostr, filename);
+    startHeaderFile(ostr, filename, options.usePragmaOnce);
 
     writeStartCommentBlock(ostr, false);
     ostr << "** " << basename << "\n"
@@ -92,7 +92,7 @@ PythonService::writeDeclSpecHeaderFile(const std::string& dirname) const
          << "_IMPORT SPI_UTIL_DECLSPEC_IMPORT\n"
          << "#endif\n";
 
-    endHeaderFile(ostr, filename);
+    endHeaderFile(ostr, filename, options.usePragmaOnce);
     ostr.close();
     return filename;
 }
@@ -106,7 +106,7 @@ std::string PythonService::writePydHeaderFile(const std::string& dirname) const
     GeneratedOutput ostr(filename, spi_util::path::dirname(filename), options.writeBackup,
         options.textFormat);
     writeLicense(ostr, options.license);
-    startHeaderFile(ostr, filename);
+    startHeaderFile(ostr, filename, options.usePragmaOnce);
 
     writeStartCommentBlock(ostr, false);
     ostr << "** " << basename << "\n"
@@ -149,7 +149,7 @@ std::string PythonService::writePydHeaderFile(const std::string& dirname) const
          << "\n"
          << "} /* end of extern \"C\" */\n";
 
-    endHeaderFile(ostr, filename);
+    endHeaderFile(ostr, filename, options.usePragmaOnce);
     ostr.close();
     return filename;
 }
@@ -570,7 +570,7 @@ std::string PythonModule::writeHeaderFile(const std::string& dirname) const
     GeneratedOutput ostr(filename, spi_util::path::dirname(filename), service->options.writeBackup,
         service->options.textFormat);
     writeLicense(ostr, service->options.license);
-    startHeaderFile(ostr, filename);
+    startHeaderFile(ostr, filename, service->options.usePragmaOnce);
 
     ostr << "\n"
          << "#include \"pyd_" << service->name() << "_decl_spec.h\"\n"
@@ -625,7 +625,7 @@ std::string PythonModule::writeHeaderFile(const std::string& dirname) const
     ostr << "\n"
          << "} /* end of extern \"C\" */\n";
 
-    endHeaderFile(ostr, filename);
+    endHeaderFile(ostr, filename, service->options.usePragmaOnce);
     ostr.close();
     return filename;
 }
