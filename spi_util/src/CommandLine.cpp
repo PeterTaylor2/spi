@@ -188,6 +188,60 @@ CommandLine::CommandLine(
     args(),
     iter(0)
 {
+    init(argc, argv, shortOptions, longOptions);
+}
+
+CommandLine::CommandLine(
+    int argc,
+    const char* const* argv,
+    const std::vector<CommandLineOption>& options)
+    :
+    exeName(),
+    optionCodes(),
+    optionValues(),
+    args(),
+    iter(0)
+{
+    std::ostringstream shortOptions;
+    std::ostringstream longOptions;
+
+    bool hasLongOptions = false;
+    for (auto opt = options.begin(); opt != options.end(); ++opt)
+    {
+        if (opt->m_hasLong)
+        {
+            if (hasLongOptions)
+            {
+                longOptions << " ";
+            }
+            else
+            {
+                hasLongOptions = true;
+            }
+            longOptions << opt->m_longName;
+            if (opt->m_hasValue)
+                longOptions << "=";
+        }
+        else if (opt->m_hasShort)
+        {
+            shortOptions << opt->m_shortName;
+            if (opt->m_hasValue)
+                shortOptions << "=";
+        }
+    }
+
+    std::string sOptions = shortOptions.str();
+    std::string lOptions = longOptions.str();
+
+    init(argc, argv, sOptions.c_str(), lOptions.c_str());
+}
+
+void CommandLine::init(
+    int argc,
+    const char* const* argv,
+    const char* shortOptions,
+    const char* longOptions)
+{
     SPI_UTIL_PRE_CONDITION(argc >= 1);
 
     exeName = argv[0];
@@ -204,7 +258,7 @@ CommandLine::CommandLine(
             break;
 
         n = processOption(*this, arg, n, argc, argv, shortOptions,
-                          longOptionVector);
+            longOptionVector);
     }
 
     // remaining parameters returned as args
@@ -329,43 +383,7 @@ CommandLineOption::CommandLineOption(
     }
 }
 
-CommandLine CommandLineOption::FromVector(
-    int argc,
-    char* argv[],
-    const std::vector<CommandLineOption>& options)
-{
-    std::ostringstream shortOptions;
-    std::ostringstream longOptions;
-
-    bool hasLongOptions = false;
-    for (auto opt = options.begin(); opt != options.end(); ++opt)
-    {
-        if (opt->m_hasLong)
-        {
-            if (!hasLongOptions)
-            {
-                longOptions << " ";
-                hasLongOptions = true;
-            }
-            longOptions << "--" << opt->m_longName;
-            if (opt->m_hasValue)
-                longOptions << "=";
-        }
-        else if (opt->m_hasShort)
-        {
-            shortOptions << opt->m_shortName;
-            if (opt->m_hasValue)
-                shortOptions << "=";
-        }
-    }
-
-    std::string sOptions = shortOptions.str();
-    std::string lOptions = longOptions.str();
-
-    return CommandLine(argc, argv, sOptions.c_str(), lOptions.c_str());
-}
-
-void CommandLineOption::PrintHelp(
+void CommandLine::PrintHelp(
     FILE* fp,
     const char* exeName,
     const char* args,
@@ -420,7 +438,7 @@ void CommandLineOption::PrintHelp(
     }
 }
 
-void CommandLineOption::PrintUsage(
+void CommandLine::PrintUsage(
     FILE* fp,
     const char* exeName,
     const char* args,

@@ -64,7 +64,7 @@ static void print_standard_usage(FILE* fp, const std::string& exe, const char* l
 static void print_help(FILE* fp, const char* exeName, const char* args,
     const std::vector<spi_util::CommandLineOption>& clOptions)
 {
-    spi_util::CommandLineOption::PrintHelp(fp, exeName, args, clOptions);
+    spi_util::CommandLine::PrintHelp(fp, exeName, args, clOptions);
 }
 
 static void print_doc_usage(FILE* fp, const std::string& exe)

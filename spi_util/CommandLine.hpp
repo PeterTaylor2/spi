@@ -55,6 +55,42 @@
 
 SPI_UTIL_NAMESPACE
 
+class SPI_UTIL_IMPORT CommandLineOption
+{
+private:
+    std::string m_longName;
+    std::string m_shortName;
+    std::string m_help;
+    bool m_hasValue;
+    std::string m_valueName;
+
+    bool m_hasShort;
+    bool m_hasLong;
+
+public:
+    friend struct CommandLine;
+
+    /// <summary>
+    /// Constructor for a command line option.
+    /// </summary>
+    /// <param name="optionCode">
+    /// Starts with - for short option and -- for long options
+    /// </param>
+    /// <param name="hasValue">
+    /// Indicates that the option is expected to have a value.
+    /// Options without values are booleans defined to be true if present.
+    /// </param>
+    /// <param name="help">
+    /// Help text which will appear when -h or --help is used as an option.
+    /// </param>
+    CommandLineOption(
+        const char* longName,
+        const char* shortName,
+        const char* help,
+        bool hasValue = false,
+        const char* valueName = nullptr);
+
+};
 
 struct SPI_UTIL_IMPORT CommandLine
 {
@@ -89,46 +125,19 @@ struct SPI_UTIL_IMPORT CommandLine
     CommandLine(int argc, const char* const* argv, const char* shortOptions,
         const char* longOptions="");
 
-private:
-    CommandLine();
-    size_t iter;
-};
-
-class SPI_UTIL_IMPORT CommandLineOption
-{
-private:
-    std::string m_longName;
-    std::string m_shortName;
-    std::string m_help;
-    bool m_hasValue;
-    std::string m_valueName;
-
-    bool m_hasShort;
-    bool m_hasLong;
-
-public:
-    /// <summary>
-    /// Constructor for a command line option.
-    /// </summary>
-    /// <param name="optionCode">
-    /// Starts with - for short option and -- for long options
-    /// </param>
-    /// <param name="hasValue">
-    /// Indicates that the option is expected to have a value.
-    /// Options without values are booleans defined to be true if present.
-    /// </param>
-    /// <param name="help">
-    /// Help text which will appear when -h or --help is used as an option.
-    /// </param>
-    CommandLineOption(
-        const char* longName,
-        const char* shortName,
-        const char* help,
-        bool hasValue = false,
-        const char* valueName = nullptr);
-
-    static CommandLine FromVector(
-        int argc, char* argv[], const std::vector<CommandLineOption>& options);
+    /**
+     * Parses the command line into options and arguments.
+     *
+     * @param argc
+     *   Number of arguments - standard for main functions for C/C++
+     * @param argv
+     *   Actual arguments - note that argv[0] is the name of the executable
+     * @param commandLineOptions
+     *   Each option can be defined as short or long and contains help text.
+     */
+    CommandLine(
+        int argc, const char* const* argv,
+        const std::vector<CommandLineOption>& options);
 
     static void PrintHelp(
         FILE* fp,
@@ -141,6 +150,17 @@ public:
         const char* exeName,
         const char* args,
         const std::vector<CommandLineOption>& options);
+
+private:
+    CommandLine();
+
+    void init(
+        int argc,
+        const char* const* argv,
+        const char* shortOptions,
+        const char* longOptions);
+
+    size_t iter;
 };
 
 SPI_UTIL_END_NAMESPACE

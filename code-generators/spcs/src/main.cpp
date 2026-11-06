@@ -187,7 +187,7 @@ int main(int argc, char* argv[])
         {
             if (opt == "-h" || opt == "--help")
             {
-                spi_util::CommandLineOption::PrintHelp(
+                spi_util::CommandLine::PrintHelp(
                     stdout,
                     exe.c_str(),
                     "infile outfile dirname",
