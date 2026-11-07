@@ -31,7 +31,8 @@ Options::Options()
     license(),
     writeBackup(false),
     checkNonNull(false),
-    textFormat(false)
+    textFormat(false),
+    usePragmaOnce(false)
 {
 }
 
