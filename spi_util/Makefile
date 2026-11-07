@@ -25,8 +25,6 @@ else
 U_EXCLUDE_OBJS=uuid4.$(G_OBJ)
 endif
 
-include extra_objects.mk
-
 ifeq ($(G_PLATFORM),win32)
 
 U_DEP_LIBS=\

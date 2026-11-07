@@ -4,7 +4,6 @@ U_SPI_HOME=.
 include $(U_SPI_HOME)/makefiles/config/config.mk
 
 CORE_RUNTIME_BUILD_DIRS=\
-spi_boost/lib\
 zlib\
 spi_curl\
 spi_util\

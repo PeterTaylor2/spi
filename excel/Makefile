@@ -34,8 +34,7 @@ U_CFLAGS+=-DSPI_XL_EXPORT
 
 U_DEP_LIBS=\
 ../bin/$(G_ABI)/$(G_LIB_PFX)$(SPI_DLL)$(G_LIB_EXT)\
-../bin/$(G_ABI)/$(G_LIB_PFX)$(SPI_UTIL_DLL)$(G_LIB_EXT)\
-../bin/$(G_ABI)/$(G_LIB_PFX)spi_boost$(G_LIB_EXT)
+../bin/$(G_ABI)/$(G_LIB_PFX)$(SPI_UTIL_DLL)$(G_LIB_EXT)
 
 U_LIBS=$(U_DEP_LIBS) $(U_SPI_HOME)/excel/win$(G_BITS)/xl$(G_XL_VERSION)/xlcall32.lib
 

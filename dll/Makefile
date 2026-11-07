@@ -16,19 +16,16 @@ U_VCPROJ=spi-dll
 ifeq ($(G_PLATFORM),win32)
 
 U_DEP_LIBS=\
-../bin/$(G_ABI)/$(G_LIB_PFX)$(SPI_UTIL_DLL)$(G_LIB_EXT)\
-../bin/$(G_ABI)/$(G_LIB_PFX)spi_boost$(G_LIB_EXT)
+../bin/$(G_ABI)/$(G_LIB_PFX)$(SPI_UTIL_DLL)$(G_LIB_EXT)
 
 U_LIBS=$(U_DEP_LIBS)
 
 else
 
 U_DEP_LIBS=\
-../bin/$(G_ABI)/$(G_LIB_PFX)$(SPI_UTIL_DLL)$(G_DLL_EXT)\
-../bin/$(G_ABI)/$(G_LIB_PFX)spi_boost$(G_LIB_EXT)
+../bin/$(G_ABI)/$(G_LIB_PFX)$(SPI_UTIL_DLL)$(G_DLL_EXT)
 
 U_LIBS=-L../bin/$(G_ABI) -l$(SPI_UTIL_DLL)\
-../bin/$(G_ABI)/$(G_LIB_PFX)spi_boost$(G_LIB_EXT)\
 $(G_CURL_LIBS)
 
 endif

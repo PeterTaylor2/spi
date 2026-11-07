@@ -44,22 +44,16 @@ ifeq ($(G_PLATFORM),win32)
 
 U_DEP_LIBS=\
 ../bin/$(G_ABI)/$(G_LIB_PFX)$(SPI_DLL)$(G_LIB_EXT)\
-../bin/$(G_ABI)/$(G_LIB_PFX)$(SPI_UTIL_DLL)$(G_LIB_EXT)\
-../bin/$(G_ABI)/$(G_LIB_PFX)spi_boost$(G_LIB_EXT)
+../bin/$(G_ABI)/$(G_LIB_PFX)$(SPI_UTIL_DLL)$(G_LIB_EXT)
 
 U_LIBS=$(U_DEP_LIBS) $(G_PYTHON_LIBS)
 
 else
 
-U_DEP_STATIC_LIBS=\
-../bin/$(G_ABI)/$(G_LIB_PFX)spi_boost$(G_LIB_EXT)
-
 U_DEP_LIBS=\
 ../bin/$(G_ABI)/$(G_LIB_PFX)$(SPI_DLL)$(G_DLL_EXT)\
-../bin/$(G_ABI)/$(G_LIB_PFX)$(SPI_UTIL_DLL)$(G_DLL_EXT)\
-$(U_DEP_STATIC_LIBS)
-
-U_LIBS=-L../bin/$(G_ABI) -l$(SPI_DLL) -l$(SPI_UTIL_DLL) $(U_DEP_STATIC_LIBS) $(G_PYTHON_LIBS)
+../bin/$(G_ABI)/$(G_LIB_PFX)$(SPI_UTIL_DLL)$(G_DLL_EXT)
+U_LIBS=-L../bin/$(G_ABI) -l$(SPI_DLL) -l$(SPI_UTIL_DLL) $(G_PYTHON_LIBS)
 
 endif
 

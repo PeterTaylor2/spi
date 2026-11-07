@@ -17,8 +17,7 @@ U_FORCE_REBUILD=Makefile $(U_SPI_HOME)/makefiles/version.mk
 ifeq ($(G_PLATFORM),win32)
 U_DEP_LIBS=\
 ../bin/$(G_ABI)/$(G_LIB_PFX)$(SPI_DLL)$(G_LIB_EXT)\
-../bin/$(G_ABI)/$(G_LIB_PFX)$(SPI_UTIL_DLL)$(G_LIB_EXT)\
-../bin/$(G_ABI)/$(G_LIB_PFX)spi_boost$(G_LIB_EXT)
+../bin/$(G_ABI)/$(G_LIB_PFX)$(SPI_UTIL_DLL)$(G_LIB_EXT)
 
 I_SYS_LIBS+=ole32.lib
 
@@ -26,14 +25,11 @@ U_LIBS=$(U_DEP_LIBS)
 
 else
 
-U_DEP_STATIC_LIBS=../bin/$(G_ABI)/$(G_LIB_PFX)spi_boost$(G_LIB_EXT)
-
 U_DEP_LIBS=\
 ../bin/$(G_ABI)/$(G_LIB_PFX)$(SPI_DLL)$(G_DLL_EXT)\
-../bin/$(G_ABI)/$(G_LIB_PFX)$(SPI_UTIL_DLL)$(G_DLL_EXT)\
-$(U_DEP_STATIC_LIBS)
+../bin/$(G_ABI)/$(G_LIB_PFX)$(SPI_UTIL_DLL)$(G_DLL_EXT)
 
-U_LIBS=-L../bin/$(G_ABI) -l$(SPI_DLL) -l$(SPI_UTIL_DLL) $(U_DEP_STATIC_LIBS)
+U_LIBS=-L../bin/$(G_ABI) -l$(SPI_DLL) -l$(SPI_UTIL_DLL)
 
 endif
 

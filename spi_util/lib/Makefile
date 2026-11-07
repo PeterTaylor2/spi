@@ -26,8 +26,6 @@ endif
 
 U_EXCLUDE_OBJS+=UrlRead.$(G_OBJ) UdpUpload.$(G_OBJ) CurlUtil.$(G_OBJ) CompressUtil.$(G_OBJ)
 
-include ../extra_objects.mk
-
 G_OVERRIDE_NEW_DEFAULT?=0
 ifneq ($(G_OVERRIDE_NEW_DEFAULT),0)
 vpath %.cpp $(U_SPI_HOME)/spi_new_delete/src

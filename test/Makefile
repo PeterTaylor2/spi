@@ -30,8 +30,7 @@ U_DEP_LIBS = \
  $(G_ABI)/$(G_LIB_PFX)test-dll$(G_DLL_LIB_EXT)\
  ../bin/$(G_ABI)/$(G_LIB_PFX)$(SPI_DLL)$(G_LIB_EXT)\
  ../bin/$(G_ABI)/$(G_LIB_PFX)$(SPI_UTIL_DLL)$(G_LIB_EXT)\
- ../bin/$(G_ABI)/$(G_LIB_PFX)$(SPI_CURL_DLL)$(G_LIB_EXT)\
- ../bin/$(G_ABI)/$(G_LIB_PFX)spi_boost$(G_LIB_EXT)
+ ../bin/$(G_ABI)/$(G_LIB_PFX)$(SPI_CURL_DLL)$(G_LIB_EXT)
 
 U_LIBS = $(U_DEP_LIBS)
 U_INCLUDES+=-I$(G_WIN32_CURL_HOME)
@@ -41,8 +40,7 @@ else
 U_DEP_LIBS = \
  $(G_BUILD_DIR)/$(G_LIB_PFX)test-dll$(G_DLL_LIB_EXT)\
  ../bin/$(G_ABI)/$(G_DLL_PFX)$(SPI_DLL)$(G_DLL_LIB_EXT)\
- ../bin/$(G_ABI)/$(G_DLL_PFX)$(SPI_UTIL_DLL)$(G_DLL_LIB_EXT)\
- ..//bin/$(G_ABI)/$(G_LIB_PFX)spi_boost$(G_LIB_EXT)
+ ../bin/$(G_ABI)/$(G_DLL_PFX)$(SPI_UTIL_DLL)$(G_DLL_LIB_EXT)
 
 U_LIBS=-L$(G_BUILD_DIR) -ltest-dll -L../bin/$(G_ABI) -l$(SPI_DLL) -l$(SPI_UTIL_DLL) $(G_CURL_LIBS)
 

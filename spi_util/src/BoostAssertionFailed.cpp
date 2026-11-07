@@ -21,17 +21,24 @@
 */
 
 #include <spi_boost/assert.hpp>
-#include <spi_util/RuntimeError.hpp>
-#include <spi_util/FileUtil.hpp>
+
+#include "../RuntimeError.hpp"
+#include "../FileUtil.hpp"
 
 namespace spi_boost
 {
+#if defined(__GNUC__) || defined(__clang__)
+__attribute__((visibility("default")))
+#endif
 void assertion_failed(
     char const* expr,
     char const* function,
     char const* file,
     long line)
 {
+#ifdef _MSC_VER
+#pragma comment(linker, "/EXPORT:" __FUNCDNAME__)
+#endif
     std::string baseName = spi_util::path::basename(file);
     std::string dirName = spi_util::path::basename(spi_util::path::dirname(file));
     throw spi_util::RuntimeError("Expression '%s' failed at '%s/%s:%ld'",
