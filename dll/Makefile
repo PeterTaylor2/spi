@@ -13,6 +13,11 @@ U_FORCE_REBUILD=Makefile $(U_SPI_HOME)/makefiles/version.mk
 U_TARGET=$(SPI_DLL)
 U_VCPROJ=spi-dll
 
+ifdef G_SPI_NO_CURL
+U_CFLAGS+=-DSPI_NO_CURL
+U_EXCLUDE_OBJS=ObjectURL.$(G_OBJ)
+endif
+
 ifeq ($(G_PLATFORM),win32)
 
 U_DEP_LIBS=\

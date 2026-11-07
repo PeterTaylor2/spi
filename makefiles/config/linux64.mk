@@ -54,7 +54,9 @@ endif
 # due to the way that python shared libraries resolve their symbols
 # at runtime it is actually harmful to define G_PYTHON_LIBS
 
+ifndef G_SPI_NO_CURL
 G_CURL_LIBS=-L/usr/lib/x86_64-linux-gnu -lcurl
+endif
 
 G_NO_PDFLATEX=1
 

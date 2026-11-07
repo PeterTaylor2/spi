@@ -34,17 +34,26 @@ include $(U_SPI_HOME)/makefiles/spi/runtime.mk
 #
 # we need both the main DLL and spi_util
 ###########################################################################
+ifdef G_SPI_NO_CURL
+U_CFLAGS+=-DSPI_NO_CURL
+endif
+
 ifeq ($(G_PLATFORM),win32)
 
 U_DEP_LIBS+=\
 $(I_SPI_RUNTIME_BIN_DIR)/$(G_LIB_PFX)$(SPI_DLL)$(G_LIB_EXT)\
-$(I_SPI_RUNTIME_BIN_DIR)/$(G_LIB_PFX)$(SPI_UTIL_DLL)$(G_LIB_EXT)\
-$(I_SPI_RUNTIME_BIN_DIR)/$(G_LIB_PFX)$(SPI_CURL_DLL)$(G_LIB_EXT)
+$(I_SPI_RUNTIME_BIN_DIR)/$(G_LIB_PFX)$(SPI_UTIL_DLL)$(G_LIB_EXT)
 
 U_LIBS+=\
 $(I_SPI_RUNTIME_BIN_DIR)/$(G_LIB_PFX)$(SPI_DLL)$(G_LIB_EXT)\
-$(I_SPI_RUNTIME_BIN_DIR)/$(G_LIB_PFX)$(SPI_UTIL_DLL)$(G_LIB_EXT)\
-$(I_SPI_RUNTIME_BIN_DIR)/$(G_LIB_PFX)$(SPI_CURL_DLL)$(G_LIB_EXT)
+$(I_SPI_RUNTIME_BIN_DIR)/$(G_LIB_PFX)$(SPI_UTIL_DLL)$(G_LIB_EXT)
+
+ifndef G_SPI_NO_CURL
+
+U_DEP_LIBS+=$(I_SPI_RUNTIME_BIN_DIR)/$(G_LIB_PFX)$(SPI_CURL_DLL)$(G_LIB_EXT)
+U_LIBS+=$(I_SPI_RUNTIME_BIN_DIR)/$(G_LIB_PFX)$(SPI_CURL_DLL)$(G_LIB_EXT)
+
+endif
 
 else
 

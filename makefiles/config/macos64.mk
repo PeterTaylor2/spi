@@ -3,7 +3,6 @@
 
 G_PLATFORM=macos64
 G_BITS=64
-G_CURL_LIBS=-lcurl
 
 ifdef G_MACOS64_PY_VERSIONS
 G_PY_VERSIONS=$(G_MACOS64_PY_VERSIONS)
@@ -64,7 +63,9 @@ site::
 # common build parameters for building 64-bit libraries and applications
 # on macos64
 
+ifndef G_SPI_NO_CURL
 G_CURL_LIBS=-L/usr/lib -lcurl
+endif
 
 G_NO_PDFLATEX=1
 

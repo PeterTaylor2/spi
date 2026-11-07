@@ -25,21 +25,35 @@ else
 U_EXCLUDE_OBJS=uuid4.$(G_OBJ)
 endif
 
+ifdef G_SPI_NO_CURL
+U_EXCLUDE_OBJS+=UrlRead.$(G_OBJ) CurlUtil.$(G_OBJ) 
+U_CFLAGS+=-DSPI_NO_CURL
+endif
+
 ifeq ($(G_PLATFORM),win32)
 
 U_DEP_LIBS=\
-$(U_SPI_HOME)/bin/$(G_ABI)/$(G_LIB_PFX)zlib$(G_LIB_EXT)\
-$(U_SPI_HOME)/bin/$(G_ABI)/$(G_DLL_PFX)$(SPI_CURL_DLL)$(G_DLL_LIB_EXT)
+$(U_SPI_HOME)/bin/$(G_ABI)/$(G_LIB_PFX)zlib$(G_LIB_EXT)
+
+ifndef G_SPI_NO_CURL
+
+U_DEP_LIBS+=$(U_SPI_HOME)/bin/$(G_ABI)/$(G_DLL_PFX)$(SPI_CURL_DLL)$(G_DLL_LIB_EXT)
+U_INCLUDES+=-I$(G_WIN32_CURL_HOME)
+
+endif
 
 U_LIBS=$(U_DEP_LIBS)
-U_INCLUDES+=-I$(G_WIN32_CURL_HOME)
 
 else
 
 U_DEP_LIBS=\
 $(U_SPI_HOME)/bin/$(G_ABI)/$(G_LIB_PFX)zlib$(G_LIB_EXT)
 
-U_LIBS=$(U_DEP_LIBS) $(G_CURL_LIBS)
+U_LIBS=$(U_DEP_LIBS)
+
+ifndef G_SPI_NO_CURL
+U_LIBS+=$(G_CURL_LIBS)
+endif
 
 endif
 

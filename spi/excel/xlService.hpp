@@ -179,12 +179,14 @@ public:
     XLOPER12* ObjectToFile(XLOPER12* handle, XLOPER12* fileName, XLOPER12* format,
         XLOPER12* options, XLOPER12* hMetaData, XLOPER12* mergeMetaData);
     XLOPER12* ObjectFromFile(XLOPER12* baseName, XLOPER12* fileName);
+#ifndef SPI_NO_CURL
     XLOPER12* ObjectFromURL(XLOPER12* baseName, XLOPER12* url, XLOPER12* timeout,
         XLOPER12* names, 
         XLOPER12* v1, XLOPER12* v2, XLOPER12* v3, XLOPER12* v4, XLOPER12* v5,
         XLOPER12* v6, XLOPER12* v7, XLOPER12* v8, XLOPER12* v9, XLOPER12* v10,
         XLOPER12* v11, XLOPER12* v12, XLOPER12* v13, XLOPER12* v14, XLOPER12* v15,
         XLOPER12* v16, XLOPER12* v17, XLOPER12* v18, XLOPER12* v19, XLOPER12* v20);
+#endif
 
     XLOPER12* ObjectGet(XLOPER12* handle, XLOPER12* name);
     // ObjectGet of the field name - for the functions spxl's attributeFuncs
@@ -225,11 +227,13 @@ public:
     XLOPER12* ObjectCoerce(XLOPER12* baseName, XLOPER12* className, XLOPER12* value);
     XLOPER12* ObjectSHA(XLOPER12* handle, XLOPER12* version);
 
+#ifndef SPI_NO_CURL
     XLOPER12* UrlCacheSize();
     XLOPER12* UrlCacheSave(XLOPER12* filename);
     XLOPER12* UrlCacheLoad(XLOPER12* filename);
     XLOPER12* UrlCacheInit();
     XLOPER12* UrlCacheClear();
+#endif
 
     FunctionCaller* getFunctionCaller(const char* name);
     InputContext* getInputContext();

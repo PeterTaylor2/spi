@@ -16,9 +16,11 @@ else
 
 U_VCPROJ=spi_curl
 
-ifeq ($(G_WIN32_NO_CURL),0)
+ifdef G_SPI_NO_CURL
 U_NO_BUILD=1
-else
+endif
+
+endif
 
 U_SRC_DIR=$(G_WIN32_CURL_HOME)/curl/src
 U_INC_DIR=$(G_WIN32_CURL_HOME)/curl
@@ -77,6 +79,4 @@ ifeq ($(G_PLATFORM),win32)
 	@if [ -f $(basename $<).pdb ]; then cp -f $(basename $<).pdb $(U_SPI_HOME)/bin/$(G_ABI); fi
 endif
 
-endif
-endif
 

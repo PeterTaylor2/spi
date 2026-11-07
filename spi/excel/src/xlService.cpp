@@ -1482,6 +1482,7 @@ XLOPER12* ExcelService::ObjectFromFile(
     return xloper12Output(xlo);
 }
 
+#ifndef SPI_NO_CURL
 XLOPER12* ExcelService::ObjectFromURL(
     XLOPER12* baseName, XLOPER12* url, XLOPER12* timeout, XLOPER12* names, 
     XLOPER12* v1, XLOPER12* v2, XLOPER12* v3, XLOPER12* v4, XLOPER12* v5,
@@ -1532,6 +1533,7 @@ XLOPER12* ExcelService::ObjectFromURL(
     }
     return xloper12Output(xlo);
 }
+#endif
 
 XLOPER12* ExcelService::ObjectGet(XLOPER12* xl_handle, XLOPER12* xl_name)
 {
@@ -1915,6 +1917,7 @@ XLOPER12 * ExcelService::ObjectSHA(XLOPER12 * handle, XLOPER12 * version)
     return xloper12Output(xlo);
 }
 
+#ifdef G_SPI_NO_CURL
 XLOPER12* ExcelService::UrlCacheSize()
 {
     XLOPER12* xlo = NULL;
@@ -2022,6 +2025,7 @@ XLOPER12* ExcelService::UrlCacheClear()
     }
     return xloper12Output(xlo);
 }
+#endif
 
 spdoc::ServiceConstSP ExcelService::getDoc()
 {

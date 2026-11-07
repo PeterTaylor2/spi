@@ -11,12 +11,14 @@
 
 #include <spi_boost/shared_ptr.hpp>
 
+#ifndef SPI_NO_CURL
 #include <curl/curl.h>
-
 #include <spi_util/UrlRead.hpp>
+#endif
 
 #include <spi_util/TestRunner.hpp>
 
+#ifndef SPI_NO_CURL
 static void info(const char* name, const char* value)
 {
     std::cout << name << ": " << (!value ? "NULL" : value) << std::endl;
@@ -99,3 +101,14 @@ int main(int argc, char* argv[])
         "FetchMissing", testFetchMissing,
         0);
 }
+
+#else
+
+int main(int argc, char* argv[])
+{
+    std::cout << argv[0] << ": LIBCURL not supported" << std::endl;
+}
+
+#endif
+
+

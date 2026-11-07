@@ -34,7 +34,7 @@
 #include "Session.hpp"
 #include "ObjectPut.hpp"
 
-#ifndef SPI_STATIC
+#ifndef SPI_NO_CURL
 #include "ObjectURL.hpp"
 #endif
 
@@ -411,7 +411,7 @@ ObjectConstSP Service::object_from_string(
 
 ObjectConstSP Service::object_from_file(const std::string& filename, bool parserNoThrow) const
 {
-#ifndef SPI_STATIC
+#ifndef SPI_NO_CURL
     if (spi_util::StringStartsWith(filename, "http://") ||
         spi_util::StringStartsWith(filename, "file://"))
     {
@@ -484,7 +484,7 @@ ObjectConstSP Service::object_from_url(
     int cacheAge,
     bool parserNoThrow) const
 {
-#ifndef SPI_STATIC
+#ifndef SPI_NO_CURL
     try
     {
         spi_util::Clock clock;
@@ -507,7 +507,7 @@ ObjectConstSP Service::object_from_url(
         throw;
     }
 #else
-    SPI_THROW_RUNTIME_ERROR("object_from_url not supported in static build mode");
+    SPI_THROW_RUNTIME_ERROR("object_from_url not supported since LIBCURL not available");
 #endif
 }
 
