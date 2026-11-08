@@ -68,27 +68,27 @@ spi/python/*.hpp
 spi/python/*.h
 spi_util/*.hpp
 spi_util/*.h
-zlib/*.h
-spi_curl/*.h
 
 # run-time source files and makefiles
 
 spi_new_delete/src/*.cpp
 spi_new_delete/Makefile
 spi_new_delete/README.txt
-spi_boost/lib/*.cpp
 spi_util/src/*.cpp
 spi_util/src/*.c
 spi_util/src/*.hpp
 spi_util/src/*.h
-zlib/src/*.h
-zlib/src/*.c
-spi_curl/src/*.h
-spi_curl/src/*.c
-spi_curl/src/vauth/*.c
-spi_curl/src/vauth/*.h
-spi_curl/src/vtls/*.c
-spi_curl/src/vtls/*.h
+3rdParty/zlib-1.3.2/src/*.[ch]
+3rdParty/zlib-1.3.2/zlib/*.h
+3rdParty/zlib-1.3.2/README
+3rdParty/zlib-1.3.2/LICENSE
+3rdParty/curl-8.21.0/curl/*.h
+3rdParty/curl-8.21.0/curl/src/*.[ch]
+3rdParty/curl-8.21.0/curl/src/*/*.[ch]
+3rdParty/curl-8.21.0/COPYING
+3rdParty/curl-8.21.0/README
+3rdParty/curl-8.21.0/README.md
+3rdParty/curl-8.21.0/LICENSES/*
 spi/src/*.cpp
 spi/src/*.hpp
 spi/src/*.c
@@ -119,9 +119,7 @@ svo/spdoc/src/*.h
 svo/spdoc/src/*.hpp
 svo/spdoc/src/*.py
 svo/spdoc/Makefile
-spi_boost/lib/Makefile
 spi_util/Makefile
-spi_util/extra_objects.mk
 xlcall32/*.h
 xlcall32/Makefile
 xlcall32/xlcall32.def
@@ -131,8 +129,6 @@ xltest/src/*.cpp
 xltest/Makefile
 zlib/Makefile
 spi_curl/Makefile
-svo/*.py
-svo/lib/*.py
 replay/config/*.svc
 replay/config/*.cfg
 replay/config/Makefile

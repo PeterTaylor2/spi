@@ -63,11 +63,11 @@ dll/spi-dll.guid
 c/spi-c-dll.guid
 excel/spxl-dll.guid
 python/sppy-dll.guid
-svo/spdoc/spdoc.guid
+svo/spdoc/spdoc-spdoc.guid
+svo/spdoc/spdoc-spdoc-install.guid
 svo/svo.pyproj
 spi_new_delete/spi-new-delete.guid
 spi_util/spi-util.guid
-spi_boost/lib/spi-boost-lib.guid
 spi_curl/spi_curl.guid
 xlcall32/xlcall32.guid
 xltest/xltest.guid
