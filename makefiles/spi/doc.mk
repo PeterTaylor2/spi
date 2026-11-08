@@ -32,43 +32,16 @@ ifeq "$(I_SPTEX)" ""
 I_SPTEX:=$(U_SPI_HOME)/code-generators/bin-$(G_PLATFORM)/$(U_SPTEX)$(G_EXE)
 endif
 
-I_SVO2TEX_SCRIPTS=$(U_SPI_HOME)/svo/svo2tex.py $(wildcard $(U_SPI_HOME)/svo/lib/*.py)
-U_SPDOC_BIN=$(U_SPI_HOME)/svo/spdoc/bin/$(G_ABI)-py$(G_PY_VERSION)
-PYTHONPATH=$(U_SPDOC_BIN)
-export PYTHONPATH
-
-ifeq ($(G_PLATFORM),linux64)
-LD_LIBRARY_PATH:=$(U_SPDOC_BIN):$(LD_LIBRARY_PATH)
-export LD_LIBRARY_PATH
-endif
-
-ifeq ($(G_PLATFORM),macos64)
-DYLD_LIBRARY_PATH:=$(U_SPDOC_BIN):$(DYLD_LIBRARY_PATH)
-export DYLD_LIBRARY_PATH
-endif
-
 U_VCPROJ?=$(U_SERVICE)-$(notdir $(CURDIR))
 U_CONFIG_DIR?=../config
 U_OUTPUT_DIR?=..
 
 tex: $(U_SERVICE).svo
 
-ifdef NO_SVO2TEX
-
 $(U_SERVICE).svo: $(U_CONFIG_DIR)/$(U_SERVICE).svo $(I_SPTEX) $(U_EXTRA_SERVICES)
 	@mkdir -p tex
 	@mkdir -p tex_imports
 	$(I_SPTEX) $(G_SPTEX_OPTIONS) $(U_SPTEX_OPTIONS) $(SPTEX_OPTIONS) $(U_CONFIG_DIR)/$(U_SERVICE).svo $(U_SERVICE).svo . $(U_EXTRA_SERVICES)
-
-else
-
-$(U_SERVICE).svo: $(U_CONFIG_DIR)/$(U_SERVICE).svo $(I_SVO2TEX_SCRIPTS) $(U_EXTRA_SERVICES)
-	@mkdir -p tex
-	@mkdir -p tex_imports
-	@echo PYTHONPATH=$(PYTHONPATH)
-	$(G_PYTHON) $(U_SPI_HOME)/svo/svo2tex.py $(G_SPTEX_OPTIONS) $(U_SPTEX_OPTIONS) $(SPTEX_OPTIONS) $(U_CONFIG_DIR)/$(U_SERVICE).svo $(U_SERVICE).svo . $(U_EXTRA_SERVICES)
-
-endif
 
 ###########################################################################
 # commands for creating the PDF file from the generated .tex files and the
