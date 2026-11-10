@@ -2338,9 +2338,12 @@ void ServiceDefinition::writeUsingImportedConverters(
             }
             if (dataType->needsTranslation())
             {
-                ostr << "using " << importedNamespace << "::" << dataType->name()
+                // name() separates a module namespace with '.'
+                const std::string cppName = spi::StringReplace(
+                    dataType->name(), ".", "::");
+                ostr << "using " << importedNamespace << "::" << cppName
                     << "_convert_in;\n";
-                ostr << "using " << importedNamespace << "::" << dataType->name()
+                ostr << "using " << importedNamespace << "::" << cppName
                     << "_convert_out;\n";
             }
         }

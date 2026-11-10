@@ -307,7 +307,7 @@ void Struct::declare(
     }
 
     for (size_t i = 0; i < m_coerceFromVector.size(); ++i)
-        m_coerceFromVector[i]->declare(ostr, m_name, svc);
+        m_coerceFromVector[i]->declare(ostr, m_name, m_ns, svc);
 
     for (size_t i = 0; i < m_coerceToVector.size(); ++i)
         m_coerceToVector[i]->declare(ostr, m_name);
@@ -666,7 +666,7 @@ void Struct::implement(
     }
 
     for (size_t i = 0; i < m_coerceFromVector.size(); ++i)
-        m_coerceFromVector[i]->implement(ostr, m_name, svc);
+        m_coerceFromVector[i]->implement(ostr, m_name, m_ns, svc);
 
     for (size_t i = 0; i < m_coerceToVector.size(); ++i)
         m_coerceToVector[i]->implement(ostr, m_name);
@@ -731,7 +731,7 @@ void Struct::implementHelper(
 
     bool recording = svc->recording();
 
-    CoerceFrom::implement(ostr, m_name, svc, m_coerceFromVector);
+    CoerceFrom::implement(ostr, m_name, m_ns, svc, m_coerceFromVector);
     CoerceTo::implement(ostr, m_name, m_coerceToVector);
 
     std::string coerce_from_value;

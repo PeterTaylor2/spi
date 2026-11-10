@@ -67,15 +67,18 @@ public:
 
     void declare(GeneratedOutput& ostr,
         const std::string& className,
+        const std::string& ns,
         const ServiceDefinitionConstSP& svc) const;
 
     void implement(GeneratedOutput& ostr,
         const std::string& className,
+        const std::string& ns,
         const ServiceDefinitionConstSP& svc) const;
 
     static bool implement(
         GeneratedOutput& ostr,
         const std::string& className,
+        const std::string& ns,
         const ServiceDefinitionConstSP& svc,
         const std::vector<CoerceFromConstSP>& coerceFrom);
 

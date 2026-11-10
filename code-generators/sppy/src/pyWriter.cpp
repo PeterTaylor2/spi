@@ -1279,7 +1279,8 @@ void PythonModule::implementClass(
          << "(PyObject* self, PyObject* args)\n"
          << "{\n"
          << "    PyObject* pyo = get_python_service()->ObjectCoerce(\""
-         << cls->ObjectName() << "\", args);\n"
+         << makeNamespaceSep(module->ns, ".") << cls->ObjectName()
+         << "\", args);\n"
          << "    return pyo;\n"
          << "}\n";
 

@@ -529,11 +529,11 @@ std::string DataType::toMapCode(
         oss << objMap;
         if (arrayDim == 1)
         {
-            oss << "->SetEnumVector<" << m_name << ">";
+            oss << "->SetEnumVector<" << cppName() << ">";
         }
         else if (arrayDim == 2)
         {
-            oss << "->SetEnumMatrix<" << m_name << ">";
+            oss << "->SetEnumMatrix<" << cppName() << ">";
         }
         else
         {
@@ -729,11 +729,11 @@ std::string DataType::fromMapCode(
         oss << objMap;
         if (arrayDim == 1)
         {
-            oss << "->GetEnumVector<" << m_name << ">";
+            oss << "->GetEnumVector<" << cppName() << ">";
         }
         else if (arrayDim == 2)
         {
-            oss << "->GetEnumMatrix<" << m_name << ">";
+            oss << "->GetEnumMatrix<" << cppName() << ">";
         }
         else if (m_publicType == spdoc::PublicType::ENUM)
         {

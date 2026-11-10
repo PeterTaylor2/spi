@@ -82,6 +82,7 @@ const VerbatimConstSP& CoerceFrom::getCode() const
 void CoerceFrom::declare(
         GeneratedOutput& ostr,
         const std::string& className,
+        const std::string& ns,
         const ServiceDefinitionConstSP& svc) const
 {
     writeStartCommentBlock(ostr, true, 4);
@@ -100,7 +101,7 @@ void CoerceFrom::declare(
 
     writeEndCommentBlock(ostr, 4);
 
-    const DataTypeConstSP& classType = svc->getDataType(className);
+    const DataTypeConstSP& classType = svc->getDataType(className, ns);
 
     ostr << "    static " << classType->outerValueType()
          << " Coerce(";
@@ -110,9 +111,10 @@ void CoerceFrom::declare(
 
 void CoerceFrom::implement(GeneratedOutput& ostr,
     const std::string& className,
+    const std::string& ns,
     const ServiceDefinitionConstSP& svc) const
 {
-    const DataTypeConstSP& classType = svc->getDataType(className);
+    const DataTypeConstSP& classType = svc->getDataType(className, ns);
 
     if (!m_convert)
     {
@@ -162,6 +164,7 @@ void CoerceFrom::implement(GeneratedOutput& ostr,
 bool CoerceFrom::implement(
     GeneratedOutput& ostr,
     const std::string& className,
+    const std::string& ns,
     const ServiceDefinitionConstSP& svc,
     const std::vector<CoerceFromConstSP>& coerceFrom)
 {
@@ -266,7 +269,7 @@ bool CoerceFrom::implement(
          << "    const spi::InputContext* context)\n"
          << "{\n";
 
-    DataTypeConstSP classType = svc->getDataType(className);
+    DataTypeConstSP classType = svc->getDataType(className, ns);
 
     for (size_t i = 0; i < coerceFromValue.size(); ++i)
     {
