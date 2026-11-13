@@ -51,13 +51,14 @@ void StartRecording(
     int intervalMinutes,
     const std::string& serverName,
     int serverPort,
-    const std::string& dnLocal);
+    const std::string& dnLocal,
+    const char* version = nullptr);
 
 /// <summary>
 /// Call this function at shut-down to write the remaining log entries.
 /// </summary>
 SPI_IMPORT
-void StopRecording();
+void StopRecording(const char* version = nullptr);
 
 /// <summary>
 /// Adds a log entry of the given type and name.

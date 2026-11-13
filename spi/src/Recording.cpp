@@ -82,52 +82,30 @@ namespace
 
     std::unordered_map<std::string, size_t> g_records;
 
-    void WriteRecords(const std::unordered_map<std::string, size_t>& records)
+    struct RecordHeader
     {
-        // note we need to be careful not to throw any exceptions since it is likely called from an atexit handler
-        // this is for individual data requests - we put an overarching try...catch around the whole function to avoid any exceptions escaping from this function
+        std::string serverIP;
+        std::string serverName;
+        int serverPort;
+        std::string dnLocal;
+        std::string context;
+        std::string userName;
+        std::string computerName;
+        std::string osName;
+        size_t processId;
 
-        try
+        RecordHeader()
+            :
+            serverIP(g_serverIP),
+            serverName(g_serverName),
+            serverPort(g_serverPort),
+            dnLocal(g_dnLocal),
+            context(),
+            userName(),
+            computerName(),
+            osName(),
+            processId(0)
         {
-
-            if (g_serverName.empty() && g_dnLocal.empty())
-                return;
-
-            if (records.empty())
-                return;
-
-#ifdef DEBUG_LOGGING
-            std::cout << "Writing " << records.size() << " records to "
-                << g_serverName << "(" << g_serverIP << ")" << ":" << g_serverPort << std::endl;
-#endif
-
-#ifdef RECORD_PID
-            size_t processId = 0;
-#ifdef _MSC_VER
-            try
-            {
-                processId = spi_util::IntegerCast<size_t>(::GetCurrentProcessId());
-            }
-            catch (...) {}
-#else
-            try
-            {
-                processId = spi_util::IntegerCast<size_t>(::getpid());
-            }
-            catch (...) {}
-#endif
-#endif
-
-#ifdef _MSC_VER
-            std::string osName = "windows";
-#else
-            std::string osName = "linux";
-#endif
-
-            std::string context;
-            std::string userName;
-            std::string computerName;
-
             try
             {
                 context = spi_util::StringJoin("|", CommonRuntime::GetContextNames());
@@ -146,6 +124,59 @@ namespace
             }
             catch (...) {}
 
+#if defined(_WIN32)
+            osName = "windows";
+#elif defined(__APPLE__)
+            osName = "macos";
+#elif defined(__linux__)
+            osName = "linux";
+#else
+            osName = "unknown";
+#endif
+
+#ifdef RECORD_PID
+
+#ifdef _MSC_VER
+            try
+            {
+                processId = spi_util::IntegerCast<size_t>(::GetCurrentProcessId());
+            }
+            catch (...) {}
+#else
+            try
+            {
+                processId = spi_util::IntegerCast<size_t>(::getpid());
+            }
+            catch (...) {}
+#endif
+
+#endif
+        }
+    };
+
+    void WriteRecords(
+        const RecordHeader& header,
+        const std::unordered_map<std::string, size_t>& records)
+    {
+        // note we need to be careful not to throw any exceptions since it is likely called from an atexit handler
+        // this is for individual data requests - we put an overarching try...catch around the whole function to avoid any exceptions escaping from this function
+
+        // we don't use any global variables in this function
+        // they have been copied into RecordHeader header structure
+
+        try
+        {
+            if (header.serverName.empty() && header.dnLocal.empty())
+                return;
+
+            if (records.empty())
+                return;
+
+#ifdef DEBUG_LOGGING
+            std::cout << "Writing " << records.size() << " records to "
+                << header.serverName << "(" << header.serverIP << ")" << ":" << header.serverPort << std::endl;
+#endif
+
             // each row starts with userName, computerName, osName, context
             // then we add the type, name and the count for that record
 
@@ -159,38 +190,33 @@ namespace
 
                 spi_util::JSONMapSP jm(new spi_util::JSONMap());
 
-                jm->Insert("user", userName);
-                jm->Insert("computer", computerName);
-                jm->Insert("os", osName);
+                jm->Insert("user", header.userName);
+                jm->Insert("computer", header.computerName);
+                jm->Insert("os", header.osName);
 #ifdef RECORD_PID
-                jm->Insert("pid", (double)processId);
+                jm->Insert("pid", (double)header.processId);
 #endif
-                jm->Insert("context", context);
+                jm->Insert("context", header.context);
                 jm->Insert("function", key);
                 jm->Insert("count", (double)count);
 
                 jsonValues.push_back(spi_util::JSONValue(jm));
             }
 
-            // copy globals to locals early to avoid races with a detached writer thread
-            std::string serverIP = g_serverIP;
-            int serverPort = g_serverPort;
-            std::string dnLocal = g_dnLocal;
-
             // there was a case in testing where there was a crash seemingly due to the multi-threading
             SPI_UTIL_LOCAL_LOCK;
 
 #ifndef SPI_STATIC
-            if (!serverIP.empty())
+            if (!header.serverIP.empty())
             {
-                spi_util::UDPUploadJSON(g_serverIP, g_serverPort, jsonValues);
+                spi_util::UDPUploadJSON(header.serverIP, header.serverPort, jsonValues);
             }
 #endif
 
-            if (!dnLocal.empty())
+            if (!header.dnLocal.empty())
             {
                 std::string fn = "spi-recording-" + spi::Date::Today().ToString() + ".json";
-                std::string ffn = spi_util::path::join(dnLocal.c_str(), fn.c_str(), 0);
+                std::string ffn = spi_util::path::join(header.dnLocal.c_str(), fn.c_str(), 0);
 
                 std::ofstream os(ffn, std::ios::app);
 
@@ -214,9 +240,21 @@ namespace
         }
     }
 
+    void WriteAndClearRecords()
+    {
+        RecordHeader header;
+        WriteRecords(header, g_records);
+        g_records.clear();
+    }
+
 } // end of anonymous namespace
 
-void StartRecording(int intervalMinutes, const std::string& serverName, int serverPort, const std::string& dnLocal)
+void StartRecording(
+    int intervalMinutes,
+    const std::string& serverName,
+    int serverPort,
+    const std::string& dnLocal,
+    const char* version)
 {
     g_recording = true;
     g_intervalMinutes = intervalMinutes;
@@ -238,13 +276,30 @@ void StartRecording(int intervalMinutes, const std::string& serverName, int serv
     g_serverIP = g_serverName;
 #endif
 
+    std::ostringstream oss;
+    oss << "RECORDING:START";
+    if (version && *version)
+    {
+        oss << ":" << version;
+    }
+    AddRecord(oss.str());
+    WriteAndClearRecords();
 }
 
-void StopRecording()
+void StopRecording(const char* version)
 {
-    g_recording = false;
-    WriteRecords(g_records);
-    g_records.clear();
+    if (g_recording)
+    {
+        std::ostringstream oss;
+        oss << "RECORDING:STOP";
+        if (version && *version)
+        {
+            oss << ":" << version;
+        }
+        AddRecord(oss.str());
+        g_recording = false;
+    }
+    WriteAndClearRecords();
 }
 
 void AddRecord(const std::string& name)
@@ -261,7 +316,7 @@ void AddRecord(const std::string& name)
             g_records.insert({ name,1 });
         }
 
-        if (g_intervalMinutes >= 0)
+        if (g_intervalMinutes > 0)
         {
             DateTime now = DateTime::Now(true);
             if (now.Before(g_nextRecordTime))
@@ -269,11 +324,16 @@ void AddRecord(const std::string& name)
 
             g_nextRecordTime = now.Add(TimeDelta(0, 60 * g_intervalMinutes));
 
+            std::unordered_map<std::string, size_t> records;
+            records.swap(g_records);
+
+            RecordHeader header;
+
 #ifdef RECORD_IN_NEW_THREAD
-            std::thread t(WriteRecords, std::move(g_records));
+            std::thread t(WriteRecords, header, std::move(records));
             t.detach();
 #else
-            WriteRecords(std::move(g_records));
+            WriteRecords(header, records);
 #endif
         }
     }

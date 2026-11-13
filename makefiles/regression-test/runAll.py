@@ -75,6 +75,8 @@ def main(drivers, inputs, output, startup=None, service=None,
     if timing:
         TestLib.printTimings(svc.get_timings())
 
+    time.sleep(1)
+
 if __name__ == "__main__":
 
     import getopt
