@@ -74,18 +74,23 @@ void writeTexInputList(
 }
 
 /**
- * Adds escapes to plain text to enable it to be shown in tex.
- *
- * Any genuine escapes would end up being doubled up - so only use this
- * for plain text without prior escapes.
- *
- * Sometimes the latter problem is difficult to avoid - in that case put
- * '!' at the beginning of the text and this function strips of the '!'
- * and assumes that the rest of the text is in acceptable format already.
- */
+  * Adds escapes to plain text to enable it to be shown in tex.
+  *
+  * Any genuine escapes would end up being doubled up - so only use this
+  * for plain text without prior escapes.
+  *
+  * Sometimes the latter problem is difficult to avoid - in that case put
+  * '!' at the beginning of the text and this function strips of the '!'
+  * and assumes that the rest of the text is in acceptable format already.
+  *
+  * Changes: '^' no longer uses \verb, since \verb is not allowed inside the
+  * argument of a macro such as \optrow; '~' and '|' are now escaped as well
+  * (an unescaped ~ is a non-breaking space in tex and | does not print
+  * properly in the default font encoding).
+  */
 std::string texEscape(const std::string& plainText, bool keepQuotes)
 {
-    if (plainText[0] == '!')
+    if (!plainText.empty() && plainText[0] == '!')
         return plainText.substr(1);
 
     std::ostringstream oss;
@@ -112,8 +117,12 @@ std::string texEscape(const std::string& plainText, bool keepQuotes)
             oss << "\\" << c;
             break;
         case '^':
-            oss << "\\verb|" << c << "|";
+            oss << "\\textasciicircum{}";
             break;
+        case '~':
+            oss << "\\textasciitilde{}";
+            break;
+        case '|':
         case '>':
         case '<':
             oss << '$' << c << '$';
@@ -193,6 +202,9 @@ void writeTexDescription (
 
 /**
  * Write the beginning of a general table in Tex format.
+ *
+ * Arguments after nbColumns are pairs of (int width in points,
+ * const char* heading), one pair per column.
  */
 void writeTexBeginTable(
     GeneratedOutput& ostr,
@@ -206,68 +218,29 @@ void writeTexBeginTable(
         throw spi::RuntimeError("%s: No columns defined", __FUNCTION__);
 
     va_list args;
-
     va_start(args, nbColumns);
-
-    try
+    for (int i = 0; i < nbColumns; ++i)
     {
-        for (int i = 0; i < nbColumns; ++i)
-        {
-            int width = va_arg(args, int);
-            const char* heading = va_arg(args, const char*);
+        int width = va_arg(args, int);
+        const char* heading = va_arg(args, const char*);
 
-            widths.push_back(width);
-            headings.push_back(std::string(heading));
-        }
-    }
-    catch (...)
-    {
-        va_end(args);
-        throw;
+        widths.push_back(width);
+        headings.push_back(std::string(heading));
     }
     va_end(args);
 
-    ostr << "\n\n"
-         << "\\small\n"
-         << "\n"
-         << "\\begin{longtable}{";
-
+    ostr << "\n\n\\begin{spitable}{" << nbColumns << "}{";
     for (int i = 0; i < nbColumns; ++i)
-    {
         ostr << "|p{" << widths[i] << "pt}";
-    }
-
-    ostr << "|l}\n"
-         << "\n"
-         << "\\cline{1-" << nbColumns << "} ";
-
+    ostr << "|}{";
     for (int i = 0; i < nbColumns; ++i)
     {
-        ostr << "\\textbf{" << headings[i] << "} & ";
+        if (i > 0)
+            ostr << " & ";
+        ostr << "\\textbf{" << headings[i] << "}";
     }
-
-    ostr << "\n"
-         << "\\endfirsthead\n"
-         << "\n"
-         << "\\cline{1-" << nbColumns << "} ";
-
-    for (int i = 0; i < nbColumns; ++i)
-    {
-        ostr << "\\textbf{" << headings[i] << "} & ";
-    }
-
-    ostr << "\\\\\n"
-         << "\\cline{1-" << nbColumns << "} "
-         << "\\endhead\n"
-         << "\n"
-         << "\\cline{1-" << nbColumns << "} \\multicolumn{" << nbColumns
-         << "}{r}{{Continued on next page}}\n"
-         << "\\endfoot\n"
-         << "\n"
-         << "\\cline{1-" << nbColumns << "}\n"
-         << "\\endlastfoot\n";
+    ostr << "}\n";
 }
-
 
 void writeTexTableRow(
     GeneratedOutput& ostr,
@@ -280,70 +253,41 @@ void writeTexTableRow(
         throw spi::RuntimeError("%s: No columns defined", __FUNCTION__);
 
     va_list args;
-
     va_start(args, nbColumns);
-
-    try
+    for (int i = 0; i < nbColumns; ++i)
     {
-        for (int i = 0; i < nbColumns; ++i)
-        {
-            const char* columnEntry = va_arg(args, const char*);
-            columnEntries.push_back(std::string(columnEntry));
-        }
-    }
-    catch (...)
-    {
-        va_end(args);
-        throw;
+        const char* columnEntry = va_arg(args, const char*);
+        columnEntries.push_back(std::string(columnEntry));
     }
     va_end(args);
 
-    ostr << "\n"
-         << "\\cline{1-" << nbColumns << "} ";
-
+    ostr << "\\spirow{";
     for (int i = 0; i < nbColumns; ++i)
     {
         if (i > 0)
             ostr << " & ";
-
         ostr << texEscape(columnEntries[i]);
     }
-
-    ostr << " \\\\ \n";
+    ostr << "}\n";
 }
+
 
 /**
  * Writes the end of a table in Tex format.
+ * (nbColumns is no longer needed but is kept so callers do not change.)
  */
-void writeTexEndTable(GeneratedOutput& ostr, int nbColumns)
+void writeTexEndTable(GeneratedOutput& ostr, int /*nbColumns*/)
 {
-    ostr << "\\cline{1-" << nbColumns << "}\n\n"
-         << "\\end{longtable}\n"
-         << "\\normalsize\n";
+    ostr << "\\end{spitable}\n\n";
 }
 
-/**
- * Writes the beginning of a specific options table in Tex format.
- */
+ /**
+  * Writes the beginning of a specific options table in Tex format.
+  */
 void writeTexBeginOptionsTable(
     GeneratedOutput& ostr)
 {
-    ostr << "\n\n"
-         << "\\small\n"
-         << "\n"
-         << "\\begin{longtable}{|p{80pt}|p{150pt}|p{140pt}|l}\n"
-         << "\n"
-         << "\\cline{1-3} \\textbf{Name} & \\textbf{Default} & \\textbf{Range} & \n"
-         << "\\endfirsthead\n"
-         << "\n"
-         << "\\cline{1-3} \\textbf{Name} & \\textbf{Default} & \\textbf{Range} & \n"
-         << "\\endhead\n"
-         << "\n"
-         << "\\cline{1-3} \\multicolumn{3}{r}{{Continued on next page}}\n"
-         << "\\endfoot\n"
-         << "\n"
-         << "\\cline{1-3}\n"
-         << "\\endlastfoot\n";
+    ostr << "\n\n\\begin{optionstable}\n";
 }
 
 /**
@@ -355,43 +299,33 @@ void writeTexOptionsTableRow(
     const std::string& defaultValue,
     const std::string& range)
 {
-    ostr << "\n"
-         << "\\cline{1-3} \\texttt{" << texEscape(name) << "} & "
-         << texEscape(defaultValue) << " & "
-         << texEscape(range) << " \\\\ \n";
+    ostr << "\\optrow{" << texEscape(name) << "}{"
+        << texEscape(defaultValue) << "}{"
+        << texEscape(range) << "}\n";
 }
 
 /**
- * Writes the end of a table in Tex format.
+ * Writes the end of an options table in Tex format.
  */
 void writeTexEndOptionsTable(GeneratedOutput& ostr)
 {
-    ostr << "\\cline{1-3}\n\n"
-         << "\\end{longtable}\n"
-         << "\\normalsize\n";
+    ostr << "\\end{optionstable}\n\n";
 }
 
 /**
  * Writes the beginning of a block of syntax description.
  *
  * Syntax is pretty much shown verbatim but with control sequences supported.
- * It uses the fancyvrb package.
+ * The syntax environment (see spidoc.tex) uses the fancyvrb package and sets
+ * the command characters, so no escaping of \ { } is needed here.
  */
 void writeTexBeginSyntax(GeneratedOutput& ostr, bool usesDescription)
 {
-    ostr << "\n"
-         << "\\textbf{SYNTAX:}\n"
-         << "\\nopagebreak\n"
-         << "\\begin{Verbatim}[commandchars=\\\\\\{\\}]\n";
-
-    // the choice of command chars means that \{} are treated as command
-    // characters within the Verbatim block - there is double escaping
-    // which is where there are so many \'s
+    ostr << "\n\\syntaxhead\n"
+        << "\\begin{syntax}\n";
 
     if (usesDescription)
-    {
-        ostr << "    \\emph{/** description */}\n";
-    }
+        ostr << "    \\syntaxdesc\n";
 }
 
 /**
@@ -399,5 +333,5 @@ void writeTexBeginSyntax(GeneratedOutput& ostr, bool usesDescription)
  */
 void writeTexEndSyntax(GeneratedOutput& ostr)
 {
-    ostr << "\\end{Verbatim}\n";
+    ostr << "\\end{syntax}\n";
 }

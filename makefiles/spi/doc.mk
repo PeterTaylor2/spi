@@ -38,6 +38,10 @@ U_OUTPUT_DIR?=..
 
 tex: $(U_SERVICE).svo
 
+tex/spidoc.tex: $(U_SPI_HOME)/doc/spidoc.tex
+	@mkdir -p tex
+	cp -f $< $@
+
 $(U_SERVICE).svo: $(U_CONFIG_DIR)/$(U_SERVICE).svo $(I_SPTEX) $(U_EXTRA_SERVICES)
 	@mkdir -p tex
 	@mkdir -p tex_imports
@@ -59,7 +63,7 @@ pdf: $(U_OUTPUT_DIR)/$(G_ABI)/$(U_SERVICE_DOC).pdf
 
 ifeq ($(G_PLATFORM),win32)
 
-$(U_SERVICE_DOC).pdf: $(U_SERVICE).svo $(U_SERVICE_DOC).tex
+$(U_SERVICE_DOC).pdf: $(U_SERVICE).svo $(U_SERVICE_DOC).tex tex/spidoc.tex
 	@rm -f *.aux *.bbl *.blg *.log *.out *.toc
 	@echo "`which pdflatex` $(U_SERVICE_DOC).tex"
 	@pdflatex --quiet $(U_SERVICE_DOC).tex
@@ -69,7 +73,7 @@ $(U_SERVICE_DOC).pdf: $(U_SERVICE).svo $(U_SERVICE_DOC).tex
 
 else
 
-$(U_SERVICE_DOC).pdf: $(U_SERVICE).svo $(U_SERVICE_DOC).tex
+$(U_SERVICE_DOC).pdf: $(U_SERVICE).svo $(U_SERVICE_DOC).tex tex/spidoc.tex
 	@rm -f *.aux *.bbl *.blg *.log *.out *.toc
 	@echo "`which pdflatex` $(U_SERVICE_DOC).tex"
 	@pdflatex $(U_SERVICE_DOC).tex > /dev/null

@@ -99,8 +99,10 @@ bool writeTexServiceDescription(
     std::set<std::string>&       fns)
 {
     GeneratedOutput ostr(texFileName(dirname, "service.tex"), writeBackup());
+    ostr << "\\input{tex/spidoc}\n";
     writeTexDescription(ostr, service->description);
     fns.insert("service.tex");
+    fns.insert("spidoc.tex"); // we don't write it but we don't want to delete it
     return ostr.close();
 }
 

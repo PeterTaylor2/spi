@@ -384,7 +384,8 @@ std::string writeTexEnum(
             << "\\verb|#include <" << moduleClassesHeader(service, module) << ">|\n";
     }
 
-    ostr << "\\textbf{Possible Values:}\n"
+    ostr << "\n"
+         << "\\textbf{Possible Values:}\n"
          << "\\nopagebreak\n";
 
     writeTexBeginTable(ostr, 3, 100, "Code", 100, "Strings", 250, "Description");
@@ -413,7 +414,7 @@ std::string writeTexEnum(
         ostr << " &\n";
         ostr << "\\raggedright ";
         writeTexDescription(ostr, enumerand->description);
-        ostr << "& \\\\\n";
+        ostr << "\\tabularnewline\n";
     }
 
     writeTexEndTable(ostr, 2);
