@@ -1489,7 +1489,12 @@ void writeFunctionCaller(
 
     if (recording)
     {
-        ostr << "    spi::AddRecord(\"" << recordName << "\");\n";
+        // by declaring a static const std::string we avoid the overhead
+        // of a copy whenever we call AddRecord
+        //
+        // by enclosing in {...} we avoid clashes with other variables
+        ostr << "    { static const std::string NAME(\""
+            << recordName << "\"); spi::AddRecord(NAME); }\n";
     }
 
     //if (isConstructor || noFunctor)
@@ -2060,4 +2065,70 @@ void writeFunctionCatchBlock(
          << "  catch (...)\n"
          << "  { throw " << serviceName << "_catch_all("
          << "\"" << fullName << "\"" << isLogging << "); }\n";
+}
+
+void writeAbstractClassImplementation(
+    GeneratedOutput& ostr,
+    const std::string& m_name,
+    const std::string& m_ns,
+    const std::string& m_objectName,
+    const std::string& serviceName,
+    bool m_canPut,
+    const std::string& coerce_from_value)
+{
+
+    ostr << "\n"
+        << "void " << m_name << "::to_map(\n"
+        << "    spi::IObjectMap* obj_map, bool public_only) const\n"
+        << "{\n"
+        << "    if (has_constructor())\n"
+        << "    {\n"
+        << "        constructor_to_map(obj_map);\n"
+        << "        return;\n"
+        << "    }\n"
+        << "    throw spi::RuntimeError(\n"
+        << "        \"Cannot convert abstract class with unknown "
+        << "constructor to map\");\n"
+        << "}\n";
+
+    ostr << "\n"
+        << "spi::ObjectConstSP " << m_name << "::object_from_map(\n"
+        << "    spi::IObjectMap* obj_map,\n"
+        << "    spi::ValueToObject& value_to_object)\n"
+        << "{\n"
+        << "    spi::ObjectConstSP obj = spi::Object::constructor_from_map(\n"
+        << "        obj_map, value_to_object);\n"
+        << "    if (obj)\n"
+        << "        return obj;\n"
+        << "    throw spi::RuntimeError(\n"
+        << "        \"Cannot create abstract class without constructor\");\n"
+        << "}\n";
+
+    ostr << "\n"
+        << "SPI_IMPLEMENT_OBJECT_TYPE(" << m_name << ", \""
+        << makeNamespaceSep(m_ns, ".")
+        << (m_objectName.empty() ? m_name : m_objectName) << "\", "
+        << serviceName << "_service, "
+        << (m_canPut ? "true" : "false") << ", "
+        << coerce_from_value << ");\n";
+}
+
+void writeObjectConstructorRecording(
+    GeneratedOutput& ostr,
+    bool recording,
+    const DataTypeConstSP& dataType,
+    size_t indent)
+{
+    if (recording)
+    {
+        SPI_PRE_CONDITION(dataType->publicType() == spdoc::PublicType::CLASS);
+        // by declaring a static const std::string we avoid the overhead
+        // of a copy whenever we call AddRecord
+        //
+        // by enclosing in {...} we avoid clashes with other variables
+        ostr << std::string(indent, ' ');
+        ostr << "{ static const std::string NAME(\"CLASS:"
+            << dataType->nsService() << "." << dataType->name() << "\");"
+            << " spi::AddRecord(NAME); }\n";
+    }
 }

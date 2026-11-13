@@ -648,19 +648,25 @@ void Struct::implement(
         writeArgsInitialisers(ostr, m_noId, m_attributes, 4, m_useAccessors ? "m_" : "");
         ostr << "\n";
 
-        if (m_validation)
+        bool recording = svc->recording();
+
+        if (!recording && !m_validation)
         {
-            ostr << "{\n";
-            ostr << "try\n"
-                 << "  {";
-            writeVerbatim(ostr, m_validation, 0);
-            writeConstructorCatchBlock(ostr, m_name);
-            ostr << "}\n";
+            ostr << "{}\n";
         }
         else
         {
-            ostr << "{";
+            ostr << "{\n";
+            writeObjectConstructorRecording(
+                ostr, recording, m_dataType, m_validation ? 2 : 4);
 
+            if (m_validation)
+            {
+                ostr << "try\n"
+                    << "  {";
+                writeVerbatim(ostr, m_validation, 0);
+                writeConstructorCatchBlock(ostr, m_name);
+            }
             ostr << "}\n";
         }
     }
@@ -747,6 +753,17 @@ void Struct::implementHelper(
     if (isAbstract())
     {
         // this code is replicated in WrapperClass - FIXME
+        writeAbstractClassImplementation(
+            ostr,
+            m_name,
+            m_ns,
+            m_objectName,
+            svc->getName(),
+            m_canPut,
+            coerce_from_value);
+
+#if false
+
         ostr << "\n"
              << "void " << m_name << "::to_map(\n"
              << "    spi::IObjectMap* obj_map, bool public_only) const\n"
@@ -781,6 +798,8 @@ void Struct::implementHelper(
              << svc->getName() << "_service, "
              << (m_canPut ? "true" : "false") << ", "
              << coerce_from_value << ");\n";
+#endif
+
     }
     else
     {
@@ -799,6 +818,9 @@ void Struct::implementHelper(
              << "    spi::IObjectMap* obj_map,\n"
              << "    spi::ValueToObject& value_to_object)\n"
              << "{\n";
+
+//        writeObjectConstructorRecording(ostr, recording, m_dataType, "from_map");
+
         std::string constructor = spi::StringFormat("new %s", m_name.c_str());
         writeFromMap(ostr, m_classAttributes, constructor, "obj_map", "value_to_object", 4);
 

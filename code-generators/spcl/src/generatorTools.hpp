@@ -297,4 +297,19 @@ void writeFunctionCatchBlock(
     const std::string& name,
     const std::string& className = std::string());
 
+void writeAbstractClassImplementation(
+    GeneratedOutput& ostr,
+    const std::string& m_name,
+    const std::string& m_ns,
+    const std::string& m_objectName,
+    const std::string& serviceName,
+    bool m_canPut,
+    const std::string& coerce_from_value);
+
+void writeObjectConstructorRecording(
+    GeneratedOutput& ostr,
+    bool recording,
+    const DataTypeConstSP& dataType,
+    size_t indent = 4);
+
 #endif

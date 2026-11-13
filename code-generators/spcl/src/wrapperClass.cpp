@@ -745,8 +745,9 @@ void WrapperClass::implement(
             writeArgsInitialisers(ostr, m_noId, attributes, 4, "m_");
             ostr << "\n";
         }
-        ostr << "{\n"
-             << "  try\n"
+        ostr << "{\n";
+        writeObjectConstructorRecording(ostr, svc->recording(), m_dataType, 2);
+        ostr << "  try\n"
              << "  {\n"
              << "    inner_type self = make_inner";
         writeArgsCall(ostr, true, attributes, 32, 8);
@@ -1046,14 +1047,17 @@ void WrapperClass::implement(
             << "{\n"
             << "    return " << m_name << "ConstSP(\n"
             << "        new " << m_name << "(inner, func));\n"
-             << "}\n";
+            << "}\n";
 
         ostr << "\n"
             << m_name << "::" << m_name << "(\n"
             << "    const inner_type& inner,\n"
             << "    const spi::FunctionConstSP& func)\n"
-            << "{\n"
-            << "    set_inner(" << m_innerClass->ToSharedPointer("inner") << ");\n"
+            << "{\n";
+
+        writeObjectConstructorRecording(ostr, svc->recording(), m_dataType);
+
+        ostr << "    set_inner(" << m_innerClass->ToSharedPointer("inner") << ");\n"
             << "    set_constructor(func);\n"
             << "}\n";
 
@@ -1091,8 +1095,10 @@ void WrapperClass::implement(
         if (m_noId)
             ostr << "    : spi::Object(true)\n";
 
-        ostr << "{\n"
-            << "    set_inner(" << m_innerClass->ToSharedPointer("inner") << ");\n"
+        ostr << "{\n";
+        writeObjectConstructorRecording(ostr, svc->recording(), m_dataType);
+
+        ostr << "    set_inner(" << m_innerClass->ToSharedPointer("inner") << ");\n"
             << "}\n";
     }
 
@@ -1260,6 +1266,15 @@ void WrapperClass::implementHelper(
 
     if (isAbstract())
     {
+        writeAbstractClassImplementation(
+            ostr,
+            m_name,
+            m_ns,
+            m_objectName,
+            svc->getName(),
+            m_canPut,
+            coerce_from_value);
+#if false
         ostr << "\n"
              << "void " << m_name << "::to_map(\n"
              << "    spi::IObjectMap* obj_map, bool public_only) const\n"
@@ -1294,6 +1309,7 @@ void WrapperClass::implementHelper(
              << svc->getName() << "_service, "
              << (m_canPut ? "true" : "false") << ", "
              << coerce_from_value << ");\n";
+#endif
 
         ostr << "\n"
              << "std::vector<" << m_name << "::sub_class_wrapper*> "
