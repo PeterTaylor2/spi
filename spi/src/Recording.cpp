@@ -178,7 +178,7 @@ namespace
 #endif
 
             // each row starts with userName, computerName, osName, context
-            // then we add the type, name and the count for that record
+            // then we add the name and the count for that record
 
             std::vector<spi_util::JSONValue> jsonValues;
             jsonValues.reserve(records.size());
@@ -290,6 +290,11 @@ void StopRecording(const char* version)
 {
     if (g_recording)
     {
+        RecordHeader header;
+        WriteRecords(header, g_records);
+        g_records.clear();
+
+        // thus RECORDING:STOP is always the final message
         std::ostringstream oss;
         oss << "RECORDING:STOP";
         if (version && *version)
@@ -297,9 +302,12 @@ void StopRecording(const char* version)
             oss << ":" << version;
         }
         AddRecord(oss.str());
+
+        // there should be no need to recompute the header
+        WriteRecords(header, g_records);
+        g_records.clear();
         g_recording = false;
     }
-    WriteAndClearRecords();
 }
 
 void AddRecord(const std::string& name)
