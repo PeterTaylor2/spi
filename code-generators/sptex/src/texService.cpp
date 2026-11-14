@@ -572,9 +572,21 @@ void writeTexService(
 
     ServiceIndex serviceIndex;
 
+    // Index every service's modules before writing any of them, so that a
+    // class lists its constructors (and derived classes) from all the
+    // services - not just its own and those indexed before it.
     for (size_t i = 0; i < service->modules.size(); ++i)
     {
         addModuleToServiceIndex(service->modules[i], serviceIndex);
+    }
+
+    for (size_t j = 0; j < numExtraServices; ++j)
+    {
+        const spdoc::ServiceConstSP& extraService = extraServices[j];
+        for (size_t i = 0; i < extraService->modules.size(); ++i)
+        {
+            addModuleToServiceIndex(extraService->modules[i], serviceIndex);
+        }
     }
 
     for (size_t i = 0; i < service->modules.size(); ++i)
@@ -589,11 +601,6 @@ void writeTexService(
     for (size_t j = 0; j < numExtraServices; ++j)
     {
         const spdoc::ServiceConstSP& extraService = extraServices[j];
-        for (size_t i = 0; i < extraService->modules.size(); ++i)
-        {
-            addModuleToServiceIndex(extraService->modules[i], serviceIndex);
-        }
-
         for (size_t i = 0; i < extraService->modules.size(); ++i)
         {
             const spdoc::ModuleConstSP& module = extraService->modules[i];
