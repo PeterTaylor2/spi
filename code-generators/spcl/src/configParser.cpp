@@ -184,6 +184,18 @@ DataTypeConstSP parseDataType(
 
     if (!dataType)
     {
+        // if we have a compound data type then we might have a using statement
+        // that allows us to use the short name of the data type
+        std::string fullName;
+        module->getUsingType(typeName, &fullName);
+        if (!fullName.empty())
+        {
+            dataType = service->getDataType(fullName, module->moduleNamespace(), isPublic);
+        }
+    }
+
+    if (!dataType)
+    {
         if (isPublic)
         {
             dataType = service->getDataType(typeName, module->moduleNamespace());
@@ -1279,6 +1291,40 @@ void writeFunctionDoc(
          << "\n";
 
 
+}
+
+void usingKeywordHandler(
+    ConfigLexer& lexer,
+    ModuleDefinitionSP& module,
+    ServiceDefinitionSP& service,
+    bool verbose)
+{
+    // the using keyword is used to define a short cut for a type with
+    // a namespace
+    // e.g. using <ns>.<type>;
+    // means that we can use <type> instead of <ns>.<type> in the rest of the
+    // config file - i.e. in the module definition
+
+    std::string usingTypeName = parseMultiPartName(lexer);
+    getTokenOfType(lexer, ';');
+
+    DataTypeConstSP usingType = service->getDataType(usingTypeName);
+    if (!usingType)
+    {
+        lexer.error_handler("Using type %s is not defined\n", usingTypeName.c_str());
+        return;
+    }
+
+    std::vector<std::string> nameParts = spi_util::StringSplit(usingType->name(), '.');
+    if (nameParts.size() > 1)
+    {
+        std::string shortName = nameParts.back();
+        module->addUsingType(shortName, usingType->name());
+    }
+    else
+    {
+        SPI_THROW_RUNTIME_ERROR("Using type must have a namespace");
+    }
 }
 
 
@@ -4417,6 +4463,16 @@ void mainLoop(const std::string& fn,
             {
                 templateKeywordHandler(
                     lexer, desc.take(), module, service, verbose);
+            }
+            else if (keyword == "using")
+            {
+                auto description = desc.take();
+                if (description.size() > 0)
+                {
+                    throw spi::RuntimeError("Description not allowed for using keyword");
+                }
+                usingKeywordHandler(
+                    lexer, module, service, verbose);
             }
             else
             {

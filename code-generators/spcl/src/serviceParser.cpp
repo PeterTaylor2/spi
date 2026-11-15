@@ -25,6 +25,7 @@
 #include "configParser.hpp"
 #include "configLexer.hpp"
 #include "parserTools.hpp"
+#include "dataType.hpp"
 #include <spgtools/texUtils.hpp>
 #include "types_types_helper.hpp"
 
@@ -49,6 +50,7 @@ ServiceDefinitionSP serviceKeywordHandler(
     std::string serviceName (token.value.aName);
 
     defaultOptions["namespace"] = StringConstant::Make(serviceName);
+    defaultOptions["moduleNamespace"] = StringConstant::Make("");
     defaultOptions["longName"] = StringConstant::Make(serviceName);
     defaultOptions["dllName"] = StringConstant::Make(serviceName);
     defaultOptions["version"] = commandLineVersion.empty() ?
@@ -103,7 +105,8 @@ ServiceDefinitionSP serviceKeywordHandler(
         options["recording"]->getBool(),
         options["functionMaker"]->getString(),
         options["functionSolver"]->getString(),
-        options["functionCaller"]->getString());
+        options["functionCaller"]->getString(),
+        options["moduleNamespace"]->getString());
 
     if (baseService)
     {
@@ -343,6 +346,39 @@ void writeImportKeywordDoc(
          << "\n";
 }
 
+void usingKeywordHandler(
+    ConfigLexer& lexer,
+    ServiceDefinitionSP& service,
+    bool verbose)
+{
+    // the using keyword is used to define a short cut for a type with
+    // a namespace
+    // e.g. using <ns>.<type>;
+    // means that we can use <type> instead of <ns>.<type> in the rest of the
+    // config file - i.e. in the module definition
+
+    std::string usingTypeName = parseMultiPartName(lexer);
+    getTokenOfType(lexer, ';');
+
+    DataTypeConstSP usingType = service->getDataType(usingTypeName);
+    if (!usingType)
+    {
+        lexer.error_handler("Using type %s is not defined\n", usingTypeName.c_str());
+        return;
+    }
+
+    std::vector<std::string> nameParts = spi_util::StringSplit(usingType->name(), '.');
+    if (nameParts.size() > 1)
+    {
+        std::string shortName = nameParts.back();
+        service->addUsingType(shortName, usingType->name());
+    }
+    else
+    {
+        SPI_THROW_RUNTIME_ERROR("Using type must have a namespace");
+    }
+}
+
 void voidKeywordHandler(
     ConfigLexer& lexer,
     ServiceDefinitionSP& service,
@@ -506,6 +542,16 @@ ServiceDefinitionSP serviceParser(
                 }
                 desc.clear(); // description ignored here
                 voidKeywordHandler(lexer, service, verbose);
+            }
+            else if (keyword == "using")
+            {
+                if (!service)
+                {
+                    throw spi::RuntimeError("%%service must be defined before "
+                                            "using");
+                }
+                desc.clear(); // description ignored here
+                usingKeywordHandler(lexer, service, verbose);
             }
             else
             {

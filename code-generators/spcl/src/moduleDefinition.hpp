@@ -71,9 +71,11 @@ public:
     void addVerbatim(const VerbatimConstSP& verbatim);
     void addInnerClass(const InnerClassConstSP& innerClass);
     void addInnerClassTemplate(const InnerClassTemplateConstSP& innerClassTemplate);
+    void addUsingType(const std::string& shortName, const std::string& fullName);
     const std::vector<std::string>& includes() const;
     const std::string& name() const;
     const std::string& moduleNamespace() const;
+    void setModuleNamespace(const std::string& ns);
     //std::string getFullNamespace(const ServiceDefinitionSP& svc,
     //    bool types) const;
 
@@ -116,6 +118,8 @@ public:
         GeneratedOutput& ostr,
         NamespaceManager& nsm);
 
+    void getUsingType(const std::string& shortName, std::string* fullName) const;
+
     spdoc::ModuleConstSP getDoc() const;
 
 protected:
@@ -134,6 +138,7 @@ private:
     std::vector<VerbatimConstSP> m_headerVerbatim;
     std::vector<InnerClassConstSP> m_innerClasses;
     std::vector<InnerClassTemplateConstSP> m_innerClassTemplates;
+    std::map<std::string, std::string> m_usingTypes;
 };
 
 #endif

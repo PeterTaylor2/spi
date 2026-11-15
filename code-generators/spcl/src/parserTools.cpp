@@ -510,3 +510,22 @@ std::string getConstantValue(
     lexer.returnToken(nextToken);
     return oss.str();
 }
+
+std::string parseMultiPartName(ConfigLexer& lexer)
+{
+    auto token = getTokenOfType(lexer, SPI_CONFIG_TOKEN_TYPE_NAME);
+
+    std::vector<std::string> nameParts = { token.value.aName };
+
+    auto nextToken = lexer.getToken();
+    while (nextToken.type == '.')
+    {
+        token = getTokenOfType(lexer, SPI_CONFIG_TOKEN_TYPE_NAME);
+        nameParts.push_back(token.value.aName);
+        nextToken = lexer.getToken();
+    }
+
+    lexer.returnToken(nextToken);
+
+    return spi::StringJoin(".", nameParts);
+}

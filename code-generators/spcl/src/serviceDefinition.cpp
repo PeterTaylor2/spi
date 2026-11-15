@@ -294,13 +294,14 @@ ServiceDefinitionSP ServiceDefinition::Make(
     bool recording,
     const std::string& functionMaker,
     const std::string& functionSolver,
-    const std::string& functionCaller)
+    const std::string& functionCaller,
+    const std::string& nsModule)
 {
     return ServiceDefinitionSP(new ServiceDefinition(
         name, dllName, longName, ns, version, declSpec, sharedPtr,
         sharedPtrInclude, noLogging, useVersionedNamespace, description,
         helpFunc, svoFileName, noClassMake, recording,
-        functionMaker, functionSolver, functionCaller));
+        functionMaker, functionSolver, functionCaller, nsModule));
 }
 
 ServiceDefinition::ServiceDefinition(
@@ -321,7 +322,8 @@ ServiceDefinition::ServiceDefinition(
     bool recording,
     const std::string& functionMaker,
     const std::string& functionSolver,
-    const std::string& functionCaller)
+    const std::string& functionCaller,
+    const std::string& nsModule)
     :
     m_name(name),
     m_dllName(dllName),
@@ -341,6 +343,7 @@ ServiceDefinition::ServiceDefinition(
     m_functionMaker(functionMaker),
     m_functionSolver(functionSolver),
     m_functionCaller(functionCaller),
+    m_nsModule(nsModule),
     m_dataTypes(),
     m_publicDataTypes(),
     m_classes(),
@@ -468,7 +471,13 @@ void ServiceDefinition::importTypesLibrary(const TypesLibraryConstSP& tl_in, boo
 
 void ServiceDefinition::addModule(ModuleDefinitionSP& module)
 {
-    const std::string& moduleNamespace = module->moduleNamespace();
+    std::string moduleNamespace = module->moduleNamespace();
+    if (moduleNamespace.empty() && !m_nsModule.empty())
+    {
+        moduleNamespace = m_nsModule;
+        module->setModuleNamespace(m_nsModule);
+    }
+
     if (moduleNamespace != m_lastModuleNamespace)
     {
         if (!m_lastModuleNamespace.empty())
@@ -486,7 +495,23 @@ void ServiceDefinition::addModule(ModuleDefinitionSP& module)
         }
     }
     addModuleToIndex(module);
+
+    // the module inherits the service level using types
+    for (auto iter = m_usingTypes.begin(); iter != m_usingTypes.end(); ++iter)
+    {
+        const std::string& shortName = iter->first;
+        const std::string& fullName = iter->second;
+        module->addUsingType(shortName, fullName);
+    }
+
     m_modules.push_back(module); // only after we tested for duplicates
+}
+
+void ServiceDefinition::addUsingType(
+    const std::string& shortName,
+    const std::string& fullName)
+{
+    m_usingTypes[shortName] = fullName;
 }
 
 void ServiceDefinition::addServiceLevelModule()

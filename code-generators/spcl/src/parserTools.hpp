@@ -116,4 +116,10 @@ void splitCppTypeName(
 std::string getConstantValue(
     ConfigLexer& lexer);
 
+/*
+ * Parses a multi-part name with "." as the separator.
+ */
+std::string parseMultiPartName(
+    ConfigLexer& lexer);
+
 #endif

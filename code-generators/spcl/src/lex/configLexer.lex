@@ -208,6 +208,7 @@ delegate    | /* indicates wrapper class can be delegate for inner class */
 const       | /* const - can apply to methods or classes */
 property    | /* indicates that the field is a property only */
 private     | /* indicates a private field */
+using       | /* indicates a using directive to locally rename a type with a namespace */
 public      | /* indicates a public field */
 operator    | /* used for CoerceTo specification */
 private\:   | /* indicates a private (verbatim) section of a class */

@@ -145,7 +145,8 @@ public:
         bool recording,
         const std::string& functionMaker,
         const std::string& functionSolver,
-        const std::string& functionCaller);
+        const std::string& functionCaller,
+        const std::string& nsModule);
 
     // add methods do not allow duplicates
     // get methods return empty rather than throw exception if missing
@@ -180,6 +181,7 @@ public:
     void addPermission(const VerbatimConstSP& verbatim);
     void addServiceInit(const VerbatimConstSP& verbatim);
     void addInclude(const std::string& include);
+    void addUsingType(const std::string& shortName, const std::string& fullName);
 
     const std::string& getName() const;
     const std::string& getLongName() const;
@@ -275,7 +277,8 @@ protected:
         bool recording,
         const std::string& functionMaker,
         const std::string& functionSolver,
-        const std::string& functionCaller);
+        const std::string& functionCaller,
+        const std::string& nsModule);
 
 private:
     std::string m_name;
@@ -296,6 +299,7 @@ private:
     std::string m_functionMaker;
     std::string m_functionSolver;
     std::string m_functionCaller;
+    std::string m_nsModule;
 
     std::vector<DataTypeConstSP>    m_dataTypes;
     std::vector<DataTypeConstSP>    m_publicDataTypes;
@@ -334,6 +338,8 @@ private:
 
     std::set<std::string> m_moduleNamespaces;
     std::string m_lastModuleNamespace;
+
+    std::map<std::string, std::string> m_usingTypes;
 };
 
 #endif

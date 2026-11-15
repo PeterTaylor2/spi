@@ -84,6 +84,11 @@ const std::string& ModuleDefinition::moduleNamespace() const
     return m_moduleNamespace;
 }
 
+void ModuleDefinition::setModuleNamespace(const std::string& ns)
+{
+    m_moduleNamespace = ns;
+}
+
 //std::string ModuleDefinition::getFullNamespace(const ServiceDefinitionSP& svc,
 //                                               bool types) const
 //{
@@ -151,6 +156,11 @@ void ModuleDefinition::addInnerClass(const InnerClassConstSP& innerClass)
 void ModuleDefinition::addInnerClassTemplate(const InnerClassTemplateConstSP& innerClassTemplate)
 {
     m_innerClassTemplates.push_back(innerClassTemplate);
+}
+
+void ModuleDefinition::addUsingType(const std::string& shortName, const std::string& fullName)
+{
+    m_usingTypes[shortName] = fullName;
 }
 
 spdoc::ModuleConstSP ModuleDefinition::getDoc() const
@@ -464,4 +474,19 @@ void ModuleDefinition::writeInnerPreDeclarations(
 {
     for (size_t i = 0; i < m_constructs.size(); ++i)
         m_constructs[i]->writeInnerPreDeclaration(ostr, nsm);
+}
+
+void ModuleDefinition::getUsingType(
+    const std::string& shortName,
+    std::string* fullName) const
+{
+    auto iter = m_usingTypes.find(shortName);
+    if (iter != m_usingTypes.end())
+    {
+        *fullName = iter->second;
+    }
+    else
+    {
+        *fullName = "";
+    }
 }
