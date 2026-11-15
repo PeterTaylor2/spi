@@ -27,6 +27,7 @@
 #include <spi/StringUtil.hpp>
 
 #include <algorithm>
+#include <cctype>
 #include <cstdarg>
 
 std::string texFileName(
@@ -153,6 +154,35 @@ std::string texEscape(const std::string& plainText, bool keepQuotes)
     }
 
     return oss.str();
+}
+
+std::string texName(const std::string& name, bool keepQuotes)
+{
+    std::ostringstream oss;
+
+    char prev = '\0';
+    for (size_t i = 0; i < name.length(); ++i)
+    {
+        const char c = name[i];
+        if (((prev == '.' || prev == '_') && isalnum((unsigned char)c))
+            || ((islower((unsigned char)prev) || isdigit((unsigned char)prev)) && isupper((unsigned char)c)))
+        {
+            oss << "\\allowbreak{}";
+        }
+        // texEscape takes a leading '!' to mean text already in tex
+        if (c == '!')
+            oss << c;
+        else
+            oss << texEscape(std::string(1, c), keepQuotes);
+        prev = c;
+    }
+
+    return oss.str();
+}
+
+std::string texHeading(const std::string& name)
+{
+    return "[" + texEscape(name) + "]{" + texName(name) + "}";
 }
 
 std::string texValue(const std::string& varName)

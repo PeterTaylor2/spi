@@ -119,8 +119,8 @@ static void writeArgsTable(
         const spdoc::PublicType::Enum publicType = dataType->publicType;
 
         ostr << "\\cline{1-2}\n";
-        ostr << "\\raggedright " << texEscape(translateTypename(dataType->name)) << " "
-             << texEscape(arg->name);
+        ostr << "\\raggedright " << texName(translateTypename(dataType->name)) << " "
+             << texName(arg->name);
         switch(arg->arrayDim)
         {
         case 2:
@@ -157,21 +157,21 @@ static void writeArgsTable(
         // attribute - perhaps we haven't wrapped it properly
         if (!dataType->noDoc)
         {
-            ostr << "\nSee " << texEscape(dataType->name)
+            ostr << "\nSee " << texName(dataType->name)
                  << " (page \\pageref{type_" << dataType->name << "}).\n";
 
             typesUsed.insert(dataType->name);
         }
 
-#if 0
+#if false
         switch(publicType)
         {
         case spdoc::PublicType::ENUM:
-            ostr << "\nSee " << texEscape(dataType->name)
+            ostr << "\nSee " << texName(dataType->name)
                  << " (page \\pageref{type_" << dataType->name << "}).\n";
             break;
         case spdoc::PublicType::CLASS:
-            ostr << "\nSee " << texEscape(dataType->name)
+            ostr << "\nSee " << texName(dataType->name)
                  << " (page \\pageref{type_" << dataType->name << "}).\n";
             break;
         default:
@@ -206,8 +206,8 @@ static void writeAttributesTable(
         const spdoc::PublicType::Enum publicType = dataType->publicType;
 
         ostr << "\\cline{1-2}\n";
-        ostr << "\\raggedright " << texEscape(translateTypename(dataType->name))
-             << " " << texEscape(attr->name);
+        ostr << "\\raggedright " << texName(translateTypename(dataType->name))
+             << " " << texName(attr->name);
         switch(attr->arrayDim)
         {
         case 2:
@@ -240,7 +240,7 @@ static void writeAttributesTable(
 
         if (!dataType->noDoc && !noCrossRef)
         {
-            ostr << "\nSee " << texEscape(dataType->name)
+            ostr << "\nSee " << texName(dataType->name)
                  << " (page \\pageref{type_" << dataType->name << "}).\n";
 
             typesUsed.insert(dataType->name);
@@ -283,7 +283,7 @@ void writeTexFunctionArgs(
 
     if (func->returnType)
     {
-        ostr << texEscape(func->returnType->name);
+        ostr << texName(func->returnType->name);
         switch(func->returnArrayDim)
         {
         case 2:
@@ -338,12 +338,12 @@ std::string writeTexSimpleType(
     sprintf(filename, "simpleType_%s.tex", constructName.c_str());
 
     GeneratedOutput ostr(texFileName(dirname, filename, forImport), writeBackup());
-    ostr << "\\subsection{" << constructName << "} "
+    ostr << "\\subsection" << texHeading(constructName) << " "
          << "\\label{type_" << constructName << "}\n";
 
     ostr << "\n"
-         << constructName << " is represented by "
-         << systemTypename << " in the public interface.\n";
+         << texName(constructName) << " is represented by "
+         << texName(systemTypename) << " in the public interface.\n";
 
     ostr << "\n";
     if (construct->description.size() == 0)
@@ -369,7 +369,7 @@ std::string writeTexEnum(
     sprintf(filename, "enum_%s.tex", constructName.c_str());
 
     GeneratedOutput ostr(texFileName(dirname, filename, forImport), writeBackup());
-    ostr << "\\subsection{" << constructName << "} "
+    ostr << "\\subsection" << texHeading(constructName) << " "
          << "\\label{type_" << constructName << "}\n";
 
     ostr << "\n";
@@ -394,7 +394,8 @@ std::string writeTexEnum(
     {
         const spdoc::EnumerandConstSP enumerand = construct->enumerands[i];
         ostr << "\\cline{1-3}\n";
-        ostr << "\\raggedright \\verb|" << enumerand->code << "| &\n";
+        // \texttt rather than \verb, which can't break across lines
+        ostr << "\\raggedright \\texttt{" << texName(enumerand->code) << "} &\n";
         ostr << "\\raggedright ";
         for (size_t j = 0; j < enumerand->strings.size(); ++j)
         {
@@ -402,11 +403,11 @@ std::string writeTexEnum(
                 ostr << ", ";
             if (enumerand->strings[j].length() > 0)
             {
-                ostr << "\\verb|" << enumerand->strings[j] << "|";
+                ostr << "\\texttt{" << texName(enumerand->strings[j], true) << "}";
             }
             else
             {
-                ostr << "\\verb|\"\"|";
+                ostr << "\\texttt{\"\"}";
             }
 
             //ostr << "``" << texEscape(enumerand->strings[j]) << "''";
@@ -441,8 +442,7 @@ std::string writeTexClassMethod(
 
     GeneratedOutput ostr(texFileName(dirname, filename), writeBackup());
 
-    ostr << "\\subsection{" << texEscape(cls->dataType->name) << "."
-         << texEscape(method->function->name) << "} "
+    ostr << "\\subsection" << texHeading(cls->dataType->name + "." + method->function->name) << " "
          << "\\label{function_" << cls->dataType->name << "."
          << method->function->name << "}\n";
 
@@ -474,7 +474,7 @@ std::string writeTexClass(
     sprintf(filename, "class_%s.tex", className.c_str());
 
     GeneratedOutput ostr(texFileName(dirname, filename, forImport), writeBackup());
-    ostr << "\\subsection{" << texEscape(className) << "} "
+    ostr << "\\subsection" << texHeading(className) << " "
          << "\\label{type_" << className << "}\n";
 
     ostr << "\n";
@@ -508,7 +508,7 @@ std::string writeTexClass(
         for (std::set<std::string>::const_iterator iter = derivedClasses.begin();
              iter != derivedClasses.end(); ++iter)
         {
-            ostr << "  \\item " << texEscape(*iter)
+            ostr << "  \\item " << texName(*iter)
                  << " (see page \\pageref{type_" << *iter << "})\n";
         }
         ostr << "\\end{itemize}\n";
@@ -559,7 +559,7 @@ std::string writeTexClass(
             for (size_t j = 0; j < method->function->inputs.size(); ++j)
             {
                 const spdoc::AttributeConstSP& attr = method->function->inputs[j];
-                std::string name = translateTypename(attr->dataType->name);
+                std::string name = texName(translateTypename(attr->dataType->name));
                 if (attr->isArray())
                     name += "\\texttt{[]}";
                 argTypes.push_back(name);
@@ -577,7 +577,7 @@ std::string writeTexClass(
 
             if (returnType)
             {
-                ostr << texEscape(translateTypename(returnType->name));
+                ostr << texName(translateTypename(returnType->name));
                 switch (method->function->returnArrayDim)
                 {
                 case 2:
@@ -597,7 +597,7 @@ std::string writeTexClass(
                 ostr << "void";
             }
 
-            ostr << " " << texEscape(method->function->name) << "(";
+            ostr << " " << texName(method->function->name) << "(";
             ostr << spi::StringJoin(", ", argTypes);
             ostr << ") &\n";
             ostr << "\\raggedright ";
@@ -619,9 +619,9 @@ std::string writeTexClass(
 
             ostr << "\\cline{1-2}\n";
             ostr << "\\raggedright ";
-            ostr << "operator " << texEscape(coerceTo->className) << "() &\n";
+            ostr << "operator " << texName(coerceTo->className) << "() &\n";
             ostr << "\\raggedright ";
-            ostr << "Converts to " << texEscape(coerceTo->className) << ".\n";
+            ostr << "Converts to " << texName(coerceTo->className) << ".\n";
             writeTexDescription(ostr, coerceTo->description);
 #if 0
             ostr << "\nSee page \\pageref{function_" << className
@@ -629,7 +629,7 @@ std::string writeTexClass(
                  << "} for further details.";
 #endif
             ostr << " & \\\\\n";
-#if 0
+#if false
             {
                 char filename[256];
                 sprintf(filename, "classMethod_%s_operator_%s.tex", className.c_str(),
@@ -637,8 +637,7 @@ std::string writeTexClass(
 
                 GeneratedOutput out(texFileName(dirname, filename));
 
-                out << "\\subsection{" << texEscape(className) << ".operator."
-                    << texEscape(coerceTo->className) << "} "
+                out << "\\subsection" << texHeading(className + ".operator." + coerceTo->className) << " "
                     << "\\label{function_" << className << ".operator."
                     << coerceTo->className << "}\n";
 
@@ -675,7 +674,7 @@ std::string writeTexClass(
         for (std::set<std::string>::const_iterator iter = constructors.begin();
              iter != constructors.end(); ++iter)
         {
-            ostr << "  \\item " << texEscape(*iter)
+            ostr << "  \\item " << texName(*iter)
                  << " (see page \\pageref{function_" << *iter << "})\n";
         }
         ostr << "\\end{itemize}\n";
@@ -699,8 +698,8 @@ std::string writeTexClass(
             const spdoc::PublicType::Enum publicType = dataType->publicType;
 
             ostr << "\\cline{1-2}\n";
-            ostr << "\\raggedright " << texEscape(translateTypename(dataType->name)) << " "
-                 << texEscape(attr->name);
+            ostr << "\\raggedright " << texName(translateTypename(dataType->name)) << " "
+                 << texName(attr->name);
 
             switch(attr->arrayDim)
             {
@@ -719,11 +718,11 @@ std::string writeTexClass(
             {
             case spdoc::PublicType::ENUM:
             case spdoc::PublicType::ENUM_BITMASK:
-                ostr << "\nSee " << texEscape(dataType->name)
+                ostr << "\nSee " << texName(dataType->name)
                      << " (page \\pageref{type_" << dataType->name << "}).\n";
                 break;
             case spdoc::PublicType::CLASS:
-                ostr << "\nSee " << texEscape(dataType->name)
+                ostr << "\nSee " << texName(dataType->name)
                      << " (page \\pageref{type_" << dataType->name << "}).\n";
                 break;
             default:
@@ -763,11 +762,11 @@ std::string writeTexFunction(
 
     GeneratedOutput ostr(texFileName(dirname, filename), writeBackup());
     if (hasClassMethods)
-        ostr << "\\subsection{";
+        ostr << "\\subsection";
     else
-        ostr << "\\section{";
+        ostr << "\\section";
 
-    ostr << texEscape(moduleNamespaceSep) << texEscape(func->name) << "} "
+    ostr << texHeading(moduleNamespaceSep + func->name) << " "
          << "\\label{function_" << moduleNamespaceSep << func->name << "}\n";
 
     ostr << "\n";
@@ -904,7 +903,7 @@ void addModuleToServiceIndex(
                     addFunctionToServiceIndex(module, cls->name, method->function.get(), serviceIndex);
                 serviceIndex.IncrementNumClassMethods();
             }
-#if 0
+#if false
             for (size_t i = 0; i < cls->coerceTo.size(); ++i)
             {
                 const spdoc::CoerceToConstSP& coerceTo = cls->coerceTo[i];

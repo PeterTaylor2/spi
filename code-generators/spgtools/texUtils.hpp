@@ -52,6 +52,24 @@ void writeTexInputList(
 std::string texEscape(const std::string& plainText, bool keepQuotes=false);
 
 /**
+ * Escapes a name similar to texEscape, but with the added feature of
+ * letting it break across lines.
+ *
+ * The line break can occur after '.' or '_' but also before the name in
+ * a camel case name where new words start with an upper case leter.
+ *
+ * Otherwise the text can overflow when we have narrow table columns.
+ */
+std::string texName(const std::string& name, bool keepQuotes=false);
+
+/**
+ * The arguments of a sectioning command headed by name: the name made
+ * breakable by texName, with the plain escaped name as the optional
+ * argument for the table of contents, running heads and PDF bookmarks.
+ */
+std::string texHeading(const std::string& name);
+
+/**
  * Returns the value of a variable according to the typographic conventions.
  */
 std::string texValue(const std::string& varName);
