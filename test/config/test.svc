@@ -27,16 +27,23 @@
 
 void startup(dirname)
 {
-    std::string cwd = spi_util::path::getcwd();
-    std::string dn1 = spi_util::path::abspath(
-        spi_util::path::join(cwd.c_str(), "..", "..", "..", "test-results", 0));
-    std::string dn2 = cwd;
+    std::string cwd = spi_util::path::abspath(spi_util::path::getcwd());
+    std::string root = cwd;
+    std::string dn1;
+    // the cwd happens to be different for Windows and other OS'es
+    // this is a consequence of the build system
+    for (size_t i = 0; i < 5; ++i)
+    {
+        dn1 = spi_util::path::join(root.c_str(), "test-results", 0);
+        if (spi_util::path::isdir(dn1))
+            break;
+        root = spi_util::path::dirname(root);
+    }
 
-    std::string record_dir = spi_util::path::isdir(dn1) ? dn1 : dn2;
+    std::string record_dir = spi_util::path::isdir(dn1) ? dn1 : cwd;
 
     std::cout << "cwd:" << cwd << std::endl;
     std::cout << "dn1:" << dn1 << std::endl;
-    std::cout << "dn2:" << dn2 << std::endl;
     std::cout << "record_dir:" << record_dir << std::endl;
 
     spi::StartRecording(0, "", 0, record_dir, test_version());
