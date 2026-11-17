@@ -13,11 +13,23 @@ import os
 
 cwd = os.getcwd()
 try:
-    os.chdir(os.path.dirname(os.path.abspath(__file__)))
-    import sys
-    sys.path.insert(0, os.getcwd()) # needed by python3
+    fn = os.path.basename(__file__)
+    dn = os.path.dirname(os.path.abspath(__file__))
     try:
+       os.chdir(dn)
+    except:
+        # in case we are in library.zip (for example) go up to a directory
+        while dn and not os.path.isdir(dn):
+            dn = os.path.dirname(dn)
+        if os.path.isdir(dn): os.chdir(dn)
+    if fn.startswith("__init__"):
+        from .py_spdoc import *
+    else:
         from py_spdoc import *
-    finally: sys.path.pop(0)
-finally: os.chdir(cwd)
+finally:
+    os.chdir(cwd)
+    del(cwd)
+    del(dn)
+    del(fn)
+    del(os)
 
