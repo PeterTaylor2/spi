@@ -24,7 +24,6 @@ Option Base 0
 
 Private Const SERVICE_NAME As String = "$(serviceName)"
 Private Const FUNCTION_PREFIX As String = "$(ns)"
-Private Const XLL As String = "$(xll)"
 Private Const HAS_LOGGING As Boolean = $(hasLogging)
 Private Const START_LOGGING As String = "$(startLoggingFunction)"
 Private Const STOP_LOGGING As String = "$(stopLoggingFunction)"
@@ -32,37 +31,6 @@ Private Const SET_ERROR_POPUPS As String = "$(setErrorPopups)"
 Private Const START_TIMING As String = "$(startTimingFunction)"
 Private Const STOP_TIMING As String = "$(stopTimingFunction)"
 Private Const CLEAR_TIMINGS As String = "$(clearTimingsFunction)"
-
-Public Sub $(name)LoadXLL
-    Dim myPath As String
-    Dim curPath As String
-
-    '
-    ' Add the directory which contains this workbook as the DLL directory
-    ' Then we can safely open the XLL and find all of its DLLs
-    '
-    myPath = $(name)Utils.Dirname(ThisWorkbook.FullName)
-    $(name)Utils.AddDLLPath (myPath)
-    
-'
-' Register the XLL
-'
-    Application.StatusBar = "Loading " & SERVICE_NAME & " addins..."
-    If Not (Application.RegisterXLL(XLL)) Then
-        MsgBox("Failed to load " + XLL)
-    End If
-    
-    $(name)Utils.RemoveDLLPath
-    $(name)Utils.FixMicrosoftSolverBug
-    Application.StatusBar = False
-
-End Sub
-
-Public Sub $(name)UnloadXLL
-
-    Application.ExecuteExcel4Macro("RETURN(UNREGISTER(""" + XLL + """))")
-
-End Sub
 
 Public Sub $(name)AddMenu
 

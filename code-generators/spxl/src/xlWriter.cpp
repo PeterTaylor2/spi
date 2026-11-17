@@ -739,9 +739,6 @@ std::vector<std::string> ExcelService::translateVbaFiles(
         values["ns"] = m_options.nsUpperCase ? StringUpper(ns()) : ns();
         values["name"] = name();
         values["serviceName"] = longName();
-        // I fear that the name of the XLL is not a guarantee
-        values["xll"] = spi_util::StringFormat(
-            "xl_%s.xll", name().c_str());
 
         bool upperCase = m_options.upperCase;
         bool nsUpperCase = m_options.nsUpperCase;
@@ -772,6 +769,26 @@ std::vector<std::string> ExcelService::translateVbaFiles(
         }
 
         values["pdf"] = name();
+
+        std::ifstream istr(ifn.c_str());
+        if (!istr)
+            throw spi::RuntimeError("Could not open '%s'", ifn.c_str());
+        generateFromTemplate(istr, ifn, values, ofn, outdir, writeBackup(), true);
+        fns.push_back(ofn);
+    }
+
+    // translate the loadXLL.bas file
+    {
+        std::string fn = spi_util::StringFormat("%sLoadXLL.bas", name().c_str());
+        std::string ifn = spi_util::path::join(indir.c_str(), "loadXLL.bas", (char*)0);
+        std::string ofn = spi_util::path::join(outdir.c_str(), fn.c_str(), (char*)0);
+
+        std::map<std::string, std::string> values;
+        values["ns"] = m_options.nsUpperCase ? StringUpper(ns()) : ns();
+        values["name"] = name();
+        values["serviceName"] = longName();
+        // I fear that the name of the XLL is not a guarantee
+        values["xll"] = spi_util::StringFormat("xl_%s.xll", name().c_str());
 
         std::ifstream istr(ifn.c_str());
         if (!istr)
