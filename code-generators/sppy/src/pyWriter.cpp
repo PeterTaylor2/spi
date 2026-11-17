@@ -494,26 +494,49 @@ std::string PythonService::writePyImporter(const std::string& dirname) const
     ostr << "\"\"\"\n"
          << "\n";
 
-    // this might be futile for non-windows platforms
-    //
-    // we change to the directory containing the shared library before trying
-    // to import it
-    //
-    // we also found that for Python3 we need to put the current directory in the
-    // path since otherwise it won't find the shared library - this is an annoying
-    // difference but doesn't seem to be a major problem for Python2
-
     ostr << "import os\n"
         << "\n"
         << "cwd = os.getcwd()\n"
         << "try:\n"
-        << "    os.chdir(os.path.dirname(os.path.abspath(__file__)))\n"
-        << "    import sys\n"
-        << "    sys.path.insert(0, os.getcwd()) # needed by python3\n"
+        << "    fn = os.path.basename(__file__)\n"
+        << "    dn = os.path.dirname(os.path.abspath(__file__))\n"
         << "    try:\n"
-        << "        from py_" << m_service->name << " import *\n"
-        << "    finally: sys.path.pop(0)\n"
-        << "finally: os.chdir(cwd)\n"
+        << "       os.chdir(dn)\n"
+        << "    except:\n"
+        << "        # in case we are in library.zip (for example) go up to a directory\n"
+        << "        while dn and not os.path.isdir(dn):\n"
+        << "            dn = os.path.dirname(dn)\n"
+        << "        if os.path.isdir(dn): os.chdir(dn)\n"
+
+        // for __init__.py it seems we need to import .py_<name>
+        << "    if fn.startswith(\"__init__\"):\n"
+        << "        from .py_" << m_service->name << " import *\n";
+
+    // allow for multiple python services sharing a namespace
+    // but just print warnings if the import fails
+    // the main import must succeed
+    for (const std::string& satellite : options.satellites)
+    {
+        ostr << "        try: from .py_" << satellite << " import *\n"
+            << "        except Exception as e: sys.stderr.write('WARNING: %s' % str(e))\n";
+    }
+
+    // whereas in <name>.py we can import py_<name>
+    ostr << "    else:\n"
+        << "        from py_" << m_service->name << " import *\n";
+
+    for (const std::string& satellite : options.satellites)
+    {
+        ostr << "        try: from py_" << satellite << " import *\n"
+            << "        except Exception as e: sys.stderr.write('WARNING: %s' % str(e))\n";
+    }
+
+    ostr << "finally:\n"
+        << "    os.chdir(cwd)\n"
+        << "    del(cwd)\n"
+        << "    del(dn)\n"
+        << "    del(fn)\n"
+        << "    del(os)\n"
         << "\n";
 
     ostr.close();

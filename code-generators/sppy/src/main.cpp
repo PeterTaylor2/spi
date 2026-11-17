@@ -129,6 +129,8 @@ int main(int argc, char* argv[])
         { "help", "h", "Print this help message and exit"},
         { "noImporter", "", "Do not generate (and hence don't overwrite) the importer script with the name <ns>.py\n"
             "where <ns> is the namespace of the library\n"},
+        { "satellite", "s", "You can define one or more satellites. Satellites are products with the same\n"
+            "namespace, but you need to be able to define a common start-up routine.\n", true},
         { "keywords", "", "Support keyword arguments to functions"},
         { "lowerCase", "", "Convert all function names to lower-case"},
         { "lowerCaseMethod", "", "Convert all member function names to lower-case"},
@@ -183,6 +185,10 @@ int main(int argc, char* argv[])
             else if (opt == "--noImporter")
             {
                 options.noImporter = true;
+            }
+            else if (opt == "-s" || opt == "--satellite")
+            {
+                options.satellites.push_back(val);
             }
             else if (opt == "--noGeneratedCodeNotice")
             {

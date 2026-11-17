@@ -222,7 +222,7 @@ CommandLine::CommandLine(
             if (opt->m_hasValue)
                 longOptions << "=";
         }
-        else if (opt->m_hasShort)
+        if (opt->m_hasShort)
         {
             shortOptions << opt->m_shortName;
             if (opt->m_hasValue)

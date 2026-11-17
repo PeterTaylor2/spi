@@ -284,6 +284,13 @@ install:
 
 else
 
+ifdef U_NO_INSTALL
+
+install:
+	@echo "Installation turned off for $(U_TARGET)"
+
+else
+
 ifdef U_INSTALL_PACKAGE
 I_INSTALL_OPTS:=-p $(U_INSTALL_PACKAGE)
 else
@@ -297,10 +304,6 @@ $(G_INSTALL_DLL_PFX)$(U_SERVICE_DLL)$(G_INSTALL_DLL_EXT)\
 $(U_TARGET)$(G_INSTALL_PYD_EXT)\
 $(notdir $(U_DLLS))
 
-ifeq ($(U_NO_IMPORTER),0)
-I_INSTALL_FILES+=$(U_SERVICE_NAMESPACE).py
-endif
-
 install:
 	$(G_PYTHON) $(U_SPI_HOME)/makefiles/python/installPython.py $(U_INSTALL_OPTS) $(I_INSTALL_OPTS) $(U_SERVICE_NAMESPACE) $(U_OUTPUT_DIR)/$(G_PY_ABI) $(I_INSTALL_FILES) $(U_INSTALL_FILES)
 
@@ -311,6 +314,7 @@ install-info:
 	@echo FILES=$(I_INSTALL_FILES) $(U_INSTALL_FILES)
 
 endif 
+endif
 
 ###########################################################################
 # commands for running python using the newly built library

@@ -51,7 +51,8 @@ struct Options
         license(),
         writeBackup(false),
         textFormat(false),
-        usePragmaOnce(false)
+        usePragmaOnce(false),
+        satellites()
     {}
 
     bool noGeneratedCodeNotice;
@@ -67,6 +68,7 @@ struct Options
     bool writeBackup;
     bool textFormat;
     bool usePragmaOnce;
+    std::vector<std::string> satellites;
 };
 
 /**
