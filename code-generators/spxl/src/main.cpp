@@ -204,7 +204,7 @@ int main(int argc, char* argv[])
         { "noGeneratedCodeNotice", "", "Do not print the generated code notice at the top of each file in the generated code\n"
             "In addition we also trigger noVerbatimLine option"},
         { "license", "", "Prints the license for SPCS."},
-        { "licenseFile", "", "This is the name of a file which contains the license for your code."},
+        { "licenseFile", "", "This is the name of a file which contains the license for your code.", true},
         { "usePragmaOnce", "", "Do we use #pragma once for generated header files.\n"
             "If undefined, then header files will have a traditional style #ifndef/#define/#endif\n"
             "mechanism for preventing multiple inclusion."},
@@ -240,6 +240,7 @@ int main(int argc, char* argv[])
             }
             else if (opt == "--parent")
             {
+                (void)val; // to stop check-options.py from complaining
                 std::cerr << "ignoring deprecated parameter --parent" << std::endl;
             }
             else if (opt == "--nameAtEnd")
@@ -285,10 +286,6 @@ int main(int argc, char* argv[])
             else if (opt == "--noPrefixObjectFuncs")
             {
                 options.noPrefixObjectFuncs = true;
-            }
-            else if (opt == "--attributeFuncs")
-            {
-                options.attributeFuncs = true;
             }
             else if (opt == "--attributeFuncs")
             {

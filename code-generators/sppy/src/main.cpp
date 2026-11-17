@@ -138,7 +138,7 @@ int main(int argc, char* argv[])
             "a Coerce method so the service level object_coerce function is not really needed."},
         { "helpFuncList", "", "Provides a service level help_func_list function. Not really necessary in the Python\n"
             "context since there are so many standard Python methods of gathering this information"},
-        { "fastcall", "", "An attempt to use a faster method of calling functions - didn't seem to make any difference.\n"
+        { "fastCall", "", "An attempt to use a faster method of calling functions - didn't seem to make any difference.\n"
             "hence we don't particularly recommend using this option since we haven't tested it fully."},
         { "textFormat", "", "Not sure what this means"},
         { "backup", "", "Creates a backup file (original name with .bak appended) whenever a file is changed."},

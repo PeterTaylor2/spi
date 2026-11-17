@@ -37,7 +37,7 @@ spxl
 EXTRA_VCPROJ_DIRS=spcl/types spdoc
 
 U_VCPROJ=all-code-generators
-U_VCPROJ_OPTIONS=-j4 -tall --cleanTarget=clean-all --silent
+U_VCPROJ_OPTIONS=-j4 -tall --cleanTarget=clean-all --silent -s'*.py'
 U_SRC_DIR=.
 U_INC_DIR=.
 
@@ -50,6 +50,7 @@ info::
 	@echo G_ABI=$(G_ABI)
 
 build::
+	@$(G_PYTHON) check-options.py */src/main.cpp
 	@failed=""; \
 	for lib in $(BUILD_DIRS); do \
 		echo Building $$lib; \

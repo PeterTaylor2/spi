@@ -396,7 +396,10 @@ void CommandLine::PrintHelp(
     for (auto opt = options.begin(); opt != options.end(); ++opt)
     {
         if (!opt->m_hasLong && !opt->m_hasShort)
-            continue;
+            continue; // this really shouldn't be allowed
+
+        if (opt->m_help.empty())
+            continue; // no help - secret option so do not show in the help
 
         fprintf(fp, "\t");
         if (opt->m_hasShort)
