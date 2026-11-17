@@ -477,6 +477,12 @@ std::string writeTexClass(
     ostr << "\\subsection" << texHeading(className) << " "
          << "\\label{type_" << className << "}\n";
 
+    if (cls->isAbstract)
+    {
+        ostr << "\n"
+            << "Note that " << className << " is an abstract base class and cannot be constructed directly.\n";
+    }
+
     ostr << "\n";
     if (cls->description.size() == 0)
         ostr << "No description.\n";
@@ -678,6 +684,12 @@ std::string writeTexClass(
                  << " (see page \\pageref{function_" << *iter << "})\n";
         }
         ostr << "\\end{itemize}\n";
+    }
+
+    if (cls->noMake && !cls->isAbstract)
+    {
+        ostr << "\n"
+            << "Note that you cannot create instance of " << className << " by direct construction.\n";
     }
 
     if (cls->coerceFrom.size() > 0)
