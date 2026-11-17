@@ -85,7 +85,7 @@ static int run(
     const std::string& dllName,
     const std::vector<std::string>& exclusions,
     const Options& options,
-    bool noTidyUp,
+    bool noTidyup,
     bool verbose)
 {
     spi::ServiceSP docService = spdoc::spdoc_start_service();
@@ -126,7 +126,7 @@ static int run(
     fns.insert(service->writeServiceFile(dirname));
     fns.insert(service->writeEnumExtensionsFile(dirname));
 
-    if (!noTidyUp)
+    if (!noTidyup)
         tidyup(serviceDoc, dirname, fns);
 
     serviceDoc->to_file(outfilename.c_str());
@@ -138,7 +138,7 @@ int main(int argc, char* argv[])
 {
     bool waitAtStart = false;
     bool verbose = false;
-    bool noTidyUp = false;
+    bool noTidyup = false;
 
     std::vector<std::string> exclusions;
     std::string infilename;
@@ -207,9 +207,9 @@ int main(int argc, char* argv[])
             {
                 options.noGeneratedCodeNotice = true;
             }
-            else if (opt == "--noTidyUp")
+            else if (opt == "--noTidyup")
             {
-                noTidyUp = true;
+                noTidyup = true;
             }
             else if (opt == "--license")
             {
@@ -284,7 +284,7 @@ int main(int argc, char* argv[])
     try
     {
         int status = run(infilename, outfilename, dirname, nsGlobal, dllName,
-            exclusions, options, noTidyUp, verbose);
+            exclusions, options, noTidyup, verbose);
         return status;
     }
     catch (std::exception &e)

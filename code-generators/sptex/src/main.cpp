@@ -114,7 +114,7 @@ int main(int argc, char* argv[])
     std::vector<spi_util::CommandLineOption> clOptions = {
         { "help", "h", "Print this help message and exit"},
         { "import", "i", "You can define one or more imports. The import files will be used to define types\n"
-            "used by this service but created by one of the imported services (higher-level services).\n"},
+            "used by this service but created by one of the imported services (higher-level services).\n", true},
         { "writeIncludes", "", "Writes the location of the corresponding header file for any function or class."},
         { "backup", "", "Creates a backup file (original name with .bak appended) whenever a file is changed." },
         { "license", "", "Prints the license for SPTEX."},

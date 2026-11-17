@@ -1917,7 +1917,7 @@ XLOPER12 * ExcelService::ObjectSHA(XLOPER12 * handle, XLOPER12 * version)
     return xloper12Output(xlo);
 }
 
-#ifdef G_SPI_NO_CURL
+#ifndef SPI_NO_CURL
 XLOPER12* ExcelService::UrlCacheSize()
 {
     XLOPER12* xlo = NULL;
