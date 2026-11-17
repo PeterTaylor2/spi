@@ -332,8 +332,9 @@ bool writeFileIfChanged(
             if (writeFile && writeBackup)
             {
                 std::cout << backup << std::endl;
-                std::ofstream bstr(backup.c_str(),
-                    textFormat ? std::ios_base::out : std::ios_base::binary);
+
+                // oldContents is binary format - so write as binary regardless
+                std::ofstream bstr(backup.c_str(), std::ios_base::binary);
                 if (bstr.good())
                 {
                     bstr.write(oldContents.c_str(), oldContents.length());
