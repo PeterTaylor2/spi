@@ -35,19 +35,7 @@
 #include <spi_util/Utils.hpp>
 #include "DeclSpec.h"
 #include "Error.h"
-
-#ifdef _MSC_VER
-
-// for the reason for this mysterious macro see
-// https://stackoverflow.com/questions/78598141/first-stdmutexlock-crashes-in-application-built-with-latest-visual-studio
-
-#if _MSC_VER < 1942
-#define _DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR
-#endif
-
-#endif
-
-#include <mutex>
+#include <spi_util/MutexLock.hpp>
 
 #ifndef SPI_C_MULTI_THREAD
 

@@ -27,11 +27,20 @@
 
 #ifdef _MSC_VER
 
-// for the reason for this mysterious macro see
+// for the reason for requiring _DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR see
 // https://stackoverflow.com/questions/78598141/first-stdmutexlock-crashes-in-application-built-with-latest-visual-studio
+//
+// since VS2022 17.10 (_MSC_VER 1940) std::mutex has a constexpr constructor
+// which crashes on the first lock if the process has already loaded an older
+// mscvp140.dll (e.g. one bundled with another python package) - so we simply
+// disable it
+//
+// the macro must be defined on the command line since from VS18 it needs to be
+// defined before xthreads.h is include, and xthreads.h is included by many
+// standard headers (e.g. <sstream>, <atomic>)
 
-#if _MSC_VER < 1942
-#define _DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR
+#ifndef _DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR
+#error "_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR must be defined on the command line"
 #endif
 
 #endif
