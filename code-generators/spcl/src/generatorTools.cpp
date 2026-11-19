@@ -2122,13 +2122,14 @@ void writeObjectConstructorRecording(
     if (recording)
     {
         SPI_PRE_CONDITION(dataType->publicType() == spdoc::PublicType::CLASS);
-        // by declaring a static const std::string we avoid the overhead
-        // of a copy whenever we call AddRecord
+        // we only record the first construction - some classes are
+        // constructed billions of times so recording every construction
+        // is a significant overhead
         //
         // by enclosing in {...} we avoid clashes with other variables
         ostr << std::string(indent, ' ');
-        ostr << "{ static const std::string NAME(\"CLASS:"
-            << dataType->nsService() << "." << dataType->name() << "\");"
-            << " spi::AddRecord(NAME); }\n";
+        ostr << "{ static bool recorded = false; if (!recorded) {"
+            << " recorded = true; spi::AddRecord(\"CLASS:"
+            << dataType->nsService() << "." << dataType->name() << "\"); } }\n";
     }
 }
