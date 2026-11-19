@@ -480,7 +480,7 @@ std::string writeTexClass(
     if (cls->isAbstract)
     {
         ostr << "\n"
-            << "Note that " << className << " is an abstract base class and cannot be constructed directly.\n";
+            << "Note that " << texName(className) << " is an abstract base class and cannot be constructed directly.\n";
     }
 
     ostr << "\n";
@@ -689,7 +689,7 @@ std::string writeTexClass(
     if (cls->noMake && !cls->isAbstract)
     {
         ostr << "\n"
-            << "Note that you cannot create instance of " << className << " by direct construction.\n";
+            << "Note that you cannot create instance of " << texName(className) << " by direct construction.\n";
     }
 
     if (cls->coerceFrom.size() > 0)
