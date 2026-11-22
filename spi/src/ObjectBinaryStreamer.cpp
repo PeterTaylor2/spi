@@ -692,7 +692,7 @@ Value Read<Value>(BinaryReader*) = delete;
 template<typename T>
 std::vector<T> ReadVector(BinaryReader* reader, uint32_t size)
 {
-    size_t needed = size * sizeof(T);
+    size_t needed = spi_util::IntegerCast<size_t>(uint64_t(size) * sizeof(T));
     reader->check_needed(needed);
 
     const T* data = (const T*)(reader->work());
@@ -764,7 +764,11 @@ uint32_t BinaryReader::DimensionsSize(const std::vector<size_t>& dims)
 
     size_t size = 1;
     for (auto dim : dims)
+    {
+        if (dim != 0 && size > UINT32_MAX / dim)
+            SPI_THROW_RUNTIME_ERROR("Array dimensions exceed uint32_t size");
         size *= dim;
+    }
 
     return spi_util::IntegerCast<uint32_t>(size);
 }
@@ -1095,7 +1099,7 @@ ObjectBinaryStreamer::ObjectBinaryStreamer(
     SPI_PRE_CONDITION(sizeof(int) == sizeof(int32_t));
     SPI_PRE_CONDITION(sizeof(Date) == sizeof(int32_t));
     SPI_PRE_CONDITION(sizeof(DateTime) == 2 * sizeof(int32_t));
-    SPI_PRE_CONDITION(sizeof(size_t) == sizeof(uint64_t));
+    SPI_PRE_CONDITION(sizeof(size_t) >= sizeof(uint32_t));
 
 }
 

@@ -63,6 +63,8 @@ To check that your makefiles set-up is correct you can use the simple builds in 
 
 For more information see the README.md file in the makefiles directory.
 
+An optional [Emscripten build](wasm/README.md) provides the core runtime and a small JavaScript interface for web browsers.
+
 ## Versions of interface languages supported
 
 We support Excel versions 4, 12 and 15, although the Excel4 code has not been tested for a while.
