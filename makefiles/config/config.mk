@@ -51,6 +51,7 @@ G_CONFIG:=$(G_BASE_CONFIG)_$(I_MODE)
 
 include $(U_MAKEFILES)/config/$(G_CONFIG).mk
 -include $(U_MAKEFILES)/config/python.mk
+include $(U_MAKEFILES)/build/build_dirs.mk
 
 U_GENDEP_FILTERS+=-f$(U_SPI_HOME)/spi_boost
 

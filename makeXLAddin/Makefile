@@ -9,6 +9,8 @@ ifdef G_NO_MAKE_XLADDIN
 
 U_NO_BUILD=1
 
+clean:
+
 else
 
 ifeq ($(DEBUG),0)
@@ -46,16 +48,17 @@ $(U_SPI_HOME)/makefiles/win32/makeXLAddin.exe: Release/makeXLAddin.exe
 	@mkdir -p $(U_SPI_HOME)/makefiles/win32
 	cp $< $@
 
-
-v17.vcxproj:
-
-v18.vcxproj:
-
 endif
 
 else
 
 U_NO_BUILD=1
 
+clean:
+
 endif
+
+v17.vcxproj:
+
+v18.vcxproj:
 

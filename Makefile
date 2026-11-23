@@ -44,20 +44,10 @@ rstrip::
 	done
 
 core-runtime::
-	@failed=""; \
-	for lib in $(CORE_RUNTIME_BUILD_DIRS); do \
-		echo Building $$lib; \
-		$(MAKE) -C $$lib all || failed="$$failed $$lib"; \
-	done; \
-	if [ -n "$$failed" ]; then echo "FAILED:$$failed"; exit 1; fi
+	+@$(call build_dirs,$(CORE_RUNTIME_BUILD_DIRS),all)
 
 runtime::
-	@failed=""; \
-	for lib in $(RUNTIME_BUILD_DIRS); do \
-		echo Building $$lib; \
-		$(MAKE) -C $$lib all || failed="$$failed $$lib"; \
-	done; \
-	if [ -n "$$failed" ]; then echo "FAILED:$$failed"; exit 1; fi
+	+@$(call build_dirs,$(RUNTIME_BUILD_DIRS),all)
 
 # if somebody wants to generate code before building the runtime
 # then they will likely use the code-generators target
@@ -69,20 +59,13 @@ code-generators::
 	@$(MAKE) --no-print-directory -C code-generators all
 
 testing::
-	@for lib in $(TEST_BUILD_DIRS); do \
-		echo Building $$lib; \
-		$(MAKE) -C $$lib; \
-	done
+	+@$(call build_dirs,$(TEST_BUILD_DIRS))
 
 clean-runtime::
-	@for lib in $(RUNTIME_BUILD_DIRS); do \
-		$(MAKE) -C $$lib clean; \
-	done
+	+@$(call build_dirs,$(RUNTIME_BUILD_DIRS),clean,Cleaning)
 
 clean-all-runtime::
-	@for lib in $(RUNTIME_BUILD_DIRS); do \
-		$(MAKE) -C $$lib clean-all; \
-	done
+	+@$(call build_dirs,$(RUNTIME_BUILD_DIRS),clean-all,Cleaning)
 
 clean-code-generators::
 	$(MAKE) -C code-generators clean-all
@@ -147,19 +130,12 @@ vc-all:
 	$(MAKE) -s v17.vcxproj U_VCPROJ=all U_VCPROJ_OPTIONS="-j4 -tbuild"
 	$(MAKE) -s v18.vcxproj U_VCPROJ=all U_VCPROJ_OPTIONS="-j4 -tbuild"
 	$(MAKE) -C code-generators vc-all
-	@for lib in $(BUILD_DIRS) $(EXTRA_VCPROJ_DIRS); do \
-		echo Creating vcproject for $$lib; \
-		$(MAKE) -s -C $$lib v17.vcxproj; \
-		$(MAKE) -s -C $$lib v18.vcxproj; \
-	done
+	+@$(call build_dirs,$(BUILD_DIRS) $(EXTRA_VCPROJ_DIRS),v17.vcxproj,Creating v17.vcxproj for,-j1)
+	+@$(call build_dirs,$(BUILD_DIRS) $(EXTRA_VCPROJ_DIRS),v18.vcxproj,Creating v18.vcxproj for,-j1)
 
 vc-all-runtime:
-	@for lib in $(RUNTIME_BUILD_DIRS); do \
-		echo Creating vcproject for $$lib; \
-		$(MAKE) -s -C $$lib v17.vcxproj; \
-		$(MAKE) -s -C $$lib v18.vcxproj; \
-	done
-
+	+@$(call build_dirs,$(RUNTIME_BUILD_DIRS),v17.vcxproj,Creating v17.vcxproj for,-j1)
+	+@$(call build_dirs,$(RUNTIME_BUILD_DIRS),v18.vcxproj,Creating v18.vcxproj for,-j1)
 
 WIN32_COMPILERS=msvc17 msvc18
 

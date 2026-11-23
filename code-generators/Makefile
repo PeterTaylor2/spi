@@ -51,17 +51,10 @@ info::
 
 build::
 	@$(G_PYTHON) check-options.py */src/main.cpp
-	@failed=""; \
-	for lib in $(BUILD_DIRS); do \
-		echo Building $$lib; \
-		$(MAKE) -C $$lib || failed="$$failed $$lib"; \
-	done; \
-	if [ -n "$$failed" ]; then echo "FAILED:$$failed"; exit 1; fi
+	+@$(call build_dirs,$(BUILD_DIRS))
 
 clean::
-	@for lib in $(BUILD_DIRS); do \
-		$(MAKE) -C $$lib clean; \
-	done
+	+@$(call build_dirs,$(BUILD_DIRS),clean,Cleaning)
 
 # note that after copying to the bin-$(G_PLATFORM) directory we keep the bin/$(G_ABI)
 # directory since to use that in code generator makefiles you need to define LOCAL_BUILD
@@ -89,8 +82,5 @@ vc-all:
 	@echo Creating vcproject for all-code-generators
 	@$(MAKE) -s v17.vcxproj
 	@$(MAKE) -s v18.vcxproj
-	@for lib in $(BUILD_DIRS) $(EXTRA_VCPROJ_DIRS); do \
-		echo Creating vcproject for $$lib; \
-		$(MAKE) -s -C $$lib v17.vcxproj; \
-		$(MAKE) -s -C $$lib v18.vcxproj; \
-	done
+	+@$(call build_dirs,$(BUILD_DIRS) $(EXTRA_VCPROJ_DIRS),v17.vcxproj,Creating v17.vcxproj for)
+	+@$(call build_dirs,$(BUILD_DIRS) $(EXTRA_VCPROJ_DIRS),v18.vcxproj,Creating v18.vcxproj for)
