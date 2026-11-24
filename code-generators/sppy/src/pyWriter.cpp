@@ -495,6 +495,7 @@ std::string PythonService::writePyImporter(const std::string& dirname) const
          << "\n";
 
     ostr << "import os\n"
+        << "import sys\n"
         << "\n"
         << "cwd = os.getcwd()\n"
         << "try:\n"
@@ -536,6 +537,7 @@ std::string PythonService::writePyImporter(const std::string& dirname) const
         << "    del(cwd)\n"
         << "    del(dn)\n"
         << "    del(fn)\n"
+        << "    del(sys)\n"
         << "    del(os)\n"
         << "\n";
 

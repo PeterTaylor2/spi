@@ -10,6 +10,7 @@ data is translated into the inner library.
 """
 
 import os
+import sys
 
 cwd = os.getcwd()
 try:
@@ -31,5 +32,6 @@ finally:
     del(cwd)
     del(dn)
     del(fn)
+    del(sys)
     del(os)
 
