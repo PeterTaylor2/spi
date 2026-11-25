@@ -28,6 +28,9 @@
 #include <spi_util/JSON.hpp>
 
 #include <unordered_map>
+#include <chrono>
+#include <ratio>
+#include <stdexcept>
 
 #undef DEBUG_LOGGING
 #ifdef DEBUG_LOGGING
@@ -49,8 +52,7 @@
 #ifdef RECORD_PID
 // for process id
 #ifdef _MSC_VER
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#include <process.h>        // _getpid
 #else
 #include <unistd.h>
 #include <sys/types.h>
@@ -73,14 +75,66 @@ SPI_BEGIN_NAMESPACE
 namespace
 {
     bool g_recording = false;
-    int g_intervalMinutes = 0;
     std::string g_serverIP;
     std::string g_serverName;
     int g_serverPort = 0;
     std::string g_dnLocal;
-    DateTime g_nextRecordTime;
+
+    using Clock = std::chrono::steady_clock;
+    const Clock::time_point NEVER = Clock::time_point::max();
+
+    std::vector<double> g_intervalMinutes;   // validated schedule
+    size_t g_scheduleIndex = 0;              // next gap to use
+    Clock::time_point g_scheduled = NEVER;   // next point on the original grid
 
     std::unordered_map<std::string, size_t> g_records;
+
+    void ValidateSchedule(const std::vector<double>& minutes)
+    {
+        if (minutes.empty())
+            throw std::invalid_argument("StartRecording: interval schedule must not be empty");
+
+        for (size_t i = 0; i < minutes.size(); ++i)
+        {
+            double m = minutes[i];
+            bool last = (i + 1 == minutes.size());
+
+            if (!(m >= 0.0))   // also catches NaN
+                throw std::invalid_argument("StartRecording: intervals must not be negative");
+            if (m == 0.0 && !last)
+                throw std::invalid_argument("StartRecording: a zero interval is only allowed as the last element");
+            if (m > 0.0 && std::chrono::duration_cast<Clock::duration>(
+                std::chrono::duration<double, std::ratio<60>>(m)).count() <= 0)
+                throw std::invalid_argument("StartRecording: interval is too small");
+        }
+    }
+
+    // Gap that follows the n-th report (0-based).
+    // The last element repeats forever, unless it is the terminating zero.
+    // Returns false when there are no more interim reports.
+    bool NextGap(size_t n, Clock::duration& gap)
+    {
+        const size_t last = g_intervalMinutes.size() - 1;
+        double m = g_intervalMinutes[n < last ? n : last];
+        if (m == 0.0)
+            return false;
+        gap = std::chrono::duration_cast<Clock::duration>(
+            std::chrono::duration<double, std::ratio<60>>(m));
+        return true;
+    }
+
+    // Move along the original grid (not from 'now') until the next grid point is in the future.
+    void AdvanceSchedule(Clock::time_point now)
+    {
+        while (g_scheduled != NEVER && g_scheduled <= now)
+        {
+            Clock::duration gap;
+            if (NextGap(g_scheduleIndex++, gap))
+                g_scheduled += gap;
+            else
+                g_scheduled = NEVER;
+        }
+    }
 
     struct RecordHeader
     {
@@ -139,7 +193,7 @@ namespace
 #ifdef _MSC_VER
             try
             {
-                processId = spi_util::IntegerCast<size_t>(::GetCurrentProcessId());
+                processId = spi_util::IntegerCast<size_t>(::_getpid());
             }
             catch (...) {}
 #else
@@ -250,20 +304,24 @@ namespace
 } // end of anonymous namespace
 
 void StartRecording(
-    int intervalMinutes,
+    const std::vector<double>& intervalMinutes,
     const std::string& serverName,
     int serverPort,
     const std::string& dnLocal,
     const char* version)
 {
+    ValidateSchedule(intervalMinutes);      // before touching any state
+
     g_recording = true;
     g_intervalMinutes = intervalMinutes;
     g_serverName = serverName;
     g_serverPort = serverPort;
     g_dnLocal = dnLocal;
-    g_nextRecordTime = DateTime::Now(true);
-    if (intervalMinutes > 0)
-        g_nextRecordTime = g_nextRecordTime.Add(TimeDelta(0, 60 * intervalMinutes));
+
+    Clock::time_point start = Clock::now();
+    g_scheduleIndex = 0;
+    g_scheduled = start;
+    AdvanceSchedule(start);                 // first grid point = start + first gap, or NEVER for {0}
 
     g_records.clear();
 
@@ -324,26 +382,26 @@ void AddRecord(const std::string& name)
             g_records.insert({ name,1 });
         }
 
-        if (g_intervalMinutes > 0)
-        {
-            DateTime now = DateTime::Now(true);
-            if (now.Before(g_nextRecordTime))
-                return;
+        if (g_scheduled == NEVER)
+            return;                         // shutdown-only reporting
 
-            g_nextRecordTime = now.Add(TimeDelta(0, 60 * g_intervalMinutes));
+        Clock::time_point now = Clock::now();
+        if (now < g_scheduled)
+            return;
 
-            std::unordered_map<std::string, size_t> records;
-            records.swap(g_records);
+        AdvanceSchedule(now);               // skips grid points that passed while idle
 
-            RecordHeader header;
+        std::unordered_map<std::string, size_t> records;
+        records.swap(g_records);
+
+        RecordHeader header;
 
 #ifdef RECORD_IN_NEW_THREAD
-            std::thread t(WriteRecords, header, std::move(records));
-            t.detach();
+        std::thread t(WriteRecords, header, std::move(records));
+        t.detach();
 #else
-            WriteRecords(header, records);
+        WriteRecords(header, records);
 #endif
-        }
     }
 }
 
