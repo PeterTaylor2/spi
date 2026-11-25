@@ -60,11 +60,18 @@ private:
 
 spi_boost::shared_ptr<GlobalInit> GlobalInitialisation;
 
+// shared by InitializeCURL() and ShutdownCURL() since both change GlobalInitialization
+std::mutex& CurlMutex()
+{
+    static std::mutex theMutex;
+    return theMutex;
+}
+
 END_ANONYMOUS_NAMESPACE
 
 void InitializeCURL()
 {
-    SPI_UTIL_LOCAL_LOCK;
+    std::lock_guard<std::mutex> lock(CurlMutex());
 
     if (!GlobalInitialisation)
         GlobalInitialisation.reset(new GlobalInit());
@@ -82,7 +89,7 @@ void errorHandler(CURLcode status)
 
 void ShutdownCURL()
 {
-    SPI_UTIL_LOCAL_LOCK;
+    std::lock_guard<std::mutex> lock(CurlMutex());
 
     if (GlobalInitialisation)
         GlobalInitialisation.reset();

@@ -48,7 +48,7 @@
 #include <mutex>
 
 #define SPI_UTIL_GLOBAL_LOCK std::lock_guard<std::recursive_mutex> _lock_guard(spi_util::g_lock_guard)
-#define SPI_UTIL_LOCAL_LOCK static std::recursive_mutex _lock; std::lock_guard<std::recursive_mutex> _lock_guard(_lock)
+#define SPI_UTIL_LOCAL_LOCK static std::mutex _lock; std::lock_guard<std::mutex> _lock_guard(_lock)
 
 SPI_UTIL_NAMESPACE
 
