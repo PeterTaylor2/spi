@@ -51,10 +51,10 @@ info::
 
 build::
 	@$(G_PYTHON) check-options.py */src/main.cpp
-	+@$(call build_dirs,$(BUILD_DIRS))
+	+@$(call G_MAKE_BUILD_DIRS,$(BUILD_DIRS))
 
 clean::
-	+@$(call build_dirs,$(BUILD_DIRS),clean,Cleaning)
+	+@$(call G_MAKE_BUILD_DIRS,$(BUILD_DIRS),clean,Cleaning)
 
 # note that after copying to the bin-$(G_PLATFORM) directory we keep the bin/$(G_ABI)
 # directory since to use that in code generator makefiles you need to define LOCAL_BUILD
@@ -82,5 +82,5 @@ vc-all:
 	@echo Creating vcproject for all-code-generators
 	@$(MAKE) -s v17.vcxproj
 	@$(MAKE) -s v18.vcxproj
-	+@$(call build_dirs,$(BUILD_DIRS) $(EXTRA_VCPROJ_DIRS),v17.vcxproj,Creating v17.vcxproj for)
-	+@$(call build_dirs,$(BUILD_DIRS) $(EXTRA_VCPROJ_DIRS),v18.vcxproj,Creating v18.vcxproj for)
+	+@$(call G_MAKE_BUILD_DIRS,$(BUILD_DIRS) $(EXTRA_VCPROJ_DIRS),v17.vcxproj,Creating v17.vcxproj for)
+	+@$(call G_MAKE_BUILD_DIRS,$(BUILD_DIRS) $(EXTRA_VCPROJ_DIRS),v18.vcxproj,Creating v18.vcxproj for)

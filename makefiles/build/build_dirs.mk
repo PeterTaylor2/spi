@@ -1,5 +1,5 @@
-##########################################################################
-# defines the build_dirs command to build a list of directories $(1)
+#############################################################################
+# defines the G_MAKE_BUILD_DIRS command to build a list of directories $(1)
 # using an optional target $(2)
 #
 # then we check the return type
@@ -10,10 +10,10 @@
 # regular failures from make (which usually return rc = 2) will just be
 # recorded as a failed build and we go onto the next build
 #
-# to invoke the build_dirs command this fragment (build_dirs.mk) must be
-# included at some point and you should use the following command
+# to invoke the G_MAKE_BUILD_DIRS command this fragment (build_dirs.mk) must
+# be included at some point and you should use the following command
 #
-# +@$(call build_dirs,$(BUILD_DIRS),<target>,<building>,<flags>)
+# +@$(call G_MAKE_BUILD_DIRS,$(BUILD_DIRS),<target>,<building>,<flags>)
 #
 # where <target>, <building>, <flags> are optional. If <building> is not
 # given then for each directory being built you get the message 
@@ -22,16 +22,16 @@
 #
 # Thus if you are running make clean, then you could do the following:
 #
-# +@$(call build_dirs,$(BUILD_DIRS),clean,Cleaning)
+# +@$(call G_MAKE_BUILD_DIRS,$(BUILD_DIRS),clean,Cleaning)
 #
 # If you particular wanted to run the clean command with -j1 then you
 # could do the following:
 #
-# +@$(call build_dirs,$(BUILD_DIRS),clean,Cleaning,-j1)
-##########################################################################
+# +@$(call G_MAKE_BUILD_DIRS,$(BUILD_DIRS),clean,Cleaning,-j1)
+#############################################################################
 
 
-define build_dirs
+define G_MAKE_BUILD_DIRS
 failed=""; \
 for dir in $(1); do \
     echo $(if $(3),$(3),Building) $$dir; \

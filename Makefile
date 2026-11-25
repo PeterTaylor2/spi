@@ -44,10 +44,10 @@ rstrip::
 	done
 
 core-runtime::
-	+@$(call build_dirs,$(CORE_RUNTIME_BUILD_DIRS),all)
+	+@$(call G_MAKE_BUILD_DIRS,$(CORE_RUNTIME_BUILD_DIRS),all)
 
 runtime::
-	+@$(call build_dirs,$(RUNTIME_BUILD_DIRS),all)
+	+@$(call G_MAKE_BUILD_DIRS,$(RUNTIME_BUILD_DIRS),all)
 
 # if somebody wants to generate code before building the runtime
 # then they will likely use the code-generators target
@@ -59,13 +59,13 @@ code-generators::
 	@$(MAKE) --no-print-directory -C code-generators all
 
 testing::
-	+@$(call build_dirs,$(TEST_BUILD_DIRS))
+	+@$(call G_MAKE_BUILD_DIRS,$(TEST_BUILD_DIRS))
 
 clean-runtime::
-	+@$(call build_dirs,$(RUNTIME_BUILD_DIRS),clean,Cleaning)
+	+@$(call G_MAKE_BUILD_DIRS,$(RUNTIME_BUILD_DIRS),clean,Cleaning)
 
 clean-all-runtime::
-	+@$(call build_dirs,$(RUNTIME_BUILD_DIRS),clean-all,Cleaning)
+	+@$(call G_MAKE_BUILD_DIRS,$(RUNTIME_BUILD_DIRS),clean-all,Cleaning)
 
 clean-code-generators::
 	$(MAKE) -C code-generators clean-all
@@ -130,12 +130,12 @@ vc-all:
 	$(MAKE) -s v17.vcxproj U_VCPROJ=all U_VCPROJ_OPTIONS="-j4 -tbuild"
 	$(MAKE) -s v18.vcxproj U_VCPROJ=all U_VCPROJ_OPTIONS="-j4 -tbuild"
 	$(MAKE) -C code-generators vc-all
-	+@$(call build_dirs,$(BUILD_DIRS) $(EXTRA_VCPROJ_DIRS),v17.vcxproj,Creating v17.vcxproj for,-j1)
-	+@$(call build_dirs,$(BUILD_DIRS) $(EXTRA_VCPROJ_DIRS),v18.vcxproj,Creating v18.vcxproj for,-j1)
+	+@$(call G_MAKE_BUILD_DIRS,$(BUILD_DIRS) $(EXTRA_VCPROJ_DIRS),v17.vcxproj,Creating v17.vcxproj for,-j1)
+	+@$(call G_MAKE_BUILD_DIRS,$(BUILD_DIRS) $(EXTRA_VCPROJ_DIRS),v18.vcxproj,Creating v18.vcxproj for,-j1)
 
 vc-all-runtime:
-	+@$(call build_dirs,$(RUNTIME_BUILD_DIRS),v17.vcxproj,Creating v17.vcxproj for,-j1)
-	+@$(call build_dirs,$(RUNTIME_BUILD_DIRS),v18.vcxproj,Creating v18.vcxproj for,-j1)
+	+@$(call G_MAKE_BUILD_DIRS,$(RUNTIME_BUILD_DIRS),v17.vcxproj,Creating v17.vcxproj for,-j1)
+	+@$(call G_MAKE_BUILD_DIRS,$(RUNTIME_BUILD_DIRS),v18.vcxproj,Creating v18.vcxproj for,-j1)
 
 WIN32_COMPILERS=msvc17 msvc18
 
