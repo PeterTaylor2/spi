@@ -57,10 +57,6 @@
 
 SPI_UTIL_NAMESPACE
 
-#ifndef SPI_NO_CURL
-extern void ShutdownCURL();
-#endif
-
 BEGIN_ANONYMOUS_NAMESPACE
 
 #ifdef _MSC_VER
@@ -83,10 +79,6 @@ void UDPUploadCSV(
 {
     if (serverName.empty() || serverPort == 0 || !data || data->numRows() == 0)
         return;
-
-#ifndef SPI_NO_CURL
-    ShutdownCURL(); // we cannot use LIBCURL for UDP but CURL may block using the socket libraries
-#endif
 
 #ifdef _MSC_VER
     {
@@ -182,10 +174,6 @@ void UDPUploadJSON(
 {
     if (serverName.empty() || serverPort == 0 || jsonValues.size() == 0)
         return;
-
-#ifndef SPI_NO_CURL
-    ShutdownCURL(); // we cannot use LIBCURL for UDP but CURL may block using the socket libraries
-#endif
 
 #ifdef _MSC_VER
     {
