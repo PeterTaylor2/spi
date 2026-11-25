@@ -51,12 +51,6 @@ SPI_BEGIN_NAMESPACE
 /// Reports are only sent when AddRecord is called, so a report due during a period of
 /// inactivity is sent on the next call and the following report stays on the original schedule.
 ///
-/// burstSeconds: if positive, then when a record arrives after at least this long with no
-/// records, the next report is brought forward to this many seconds later, so that a burst of
-/// activity is reported and not just the call that started it. The original schedule is
-/// unaffected. Zero (the default) switches burst detection off. Burst reports are never sent
-/// once the schedule has ended (final zero).
-///
 /// The log is always written at the end of the process.
 ///
 /// If this function is never called then all log entries are ignored.
@@ -65,19 +59,16 @@ SPI_BEGIN_NAMESPACE
 /// <param name="serverName"></param>
 /// <param name="serverPort"></param>
 /// <param name="dnLocal"></param>
-/// <param name="version"></param>
-/// <param name="burstSeconds">zero (default) = no burst detection</param>
 SPI_IMPORT
 void StartRecording(
     const std::vector<double>& intervalMinutes,
     const std::string& serverName,
     int serverPort,
     const std::string& dnLocal,
-    const char* version = nullptr,
-    double burstSeconds = 0.0);
+    const char* version = nullptr);
 
 /// <summary>
-/// Single-interval form: equivalent to a one-element schedule, with burst detection off.
+/// Single-interval form: equivalent to a one-element schedule.
 /// Zero (or negative) means shutdown-only reporting, as before.
 /// </summary>
 inline void StartRecording(
@@ -89,7 +80,7 @@ inline void StartRecording(
 {
     StartRecording(
         std::vector<double>(1, static_cast<double>(intervalMinutes > 0 ? intervalMinutes : 0)),
-        serverName, serverPort, dnLocal, version, 0.0);
+        serverName, serverPort, dnLocal, version);
 }
 
 /// <summary>
