@@ -87,6 +87,14 @@ namespace
     size_t g_scheduleIndex = 0;              // next gap to use
     Clock::time_point g_scheduled = NEVER;   // next point on the original grid
 
+    // burst detection: when a record arrives after at least g_burst of inactivity,
+    // the next report is pulled forward to g_burst later so that we see the size
+    // of the burst and not just the call that started it
+    // zero means burst detection is switched off
+    Clock::duration g_burst = Clock::duration::zero();
+    Clock::time_point g_next = NEVER;        // deadline actually in force (may be pulled forward by a burst)
+    Clock::time_point g_lastRecord;          // time of the previous record
+
     std::unordered_map<std::string, size_t> g_records;
 
     void ValidateSchedule(const std::vector<double>& minutes)
@@ -107,6 +115,21 @@ namespace
                 std::chrono::duration<double, std::ratio<60>>(m)).count() <= 0)
                 throw std::invalid_argument("StartRecording: interval is too small");
         }
+    }
+
+    // returns the burst duration (zero if burstSeconds is zero, i.e. burst detection is off)
+    Clock::duration ValidateBurst(double burstSeconds)
+    {
+        if (!(burstSeconds >= 0.0))   // also catches NaN
+            throw std::invalid_argument("StartRecording: burstSeconds must not be negative");
+
+        Clock::duration burst = std::chrono::duration_cast<Clock::duration>(
+            std::chrono::duration<double>(burstSeconds));
+
+        if (burstSeconds > 0.0 && burst.count() <= 0)
+            throw std::invalid_argument("StartRecording: burstSeconds is too small");
+
+        return burst;
     }
 
     // Gap that follows the n-th report (0-based).
@@ -308,20 +331,26 @@ void StartRecording(
     const std::string& serverName,
     int serverPort,
     const std::string& dnLocal,
-    const char* version)
+    const char* version,
+    double burstSeconds)
 {
-    ValidateSchedule(intervalMinutes);      // before touching any state
+    // validate everything before touching any state
+    ValidateSchedule(intervalMinutes);
+    Clock::duration burst = ValidateBurst(burstSeconds);
 
     g_recording = true;
     g_intervalMinutes = intervalMinutes;
     g_serverName = serverName;
     g_serverPort = serverPort;
     g_dnLocal = dnLocal;
+    g_burst = burst;
 
     Clock::time_point start = Clock::now();
     g_scheduleIndex = 0;
     g_scheduled = start;
     AdvanceSchedule(start);                 // first grid point = start + first gap, or NEVER for {0}
+    g_next = g_scheduled;
+    g_lastRecord = start - g_burst;         // the first real record counts as the start of a burst
 
     g_records.clear();
 
@@ -342,6 +371,10 @@ void StartRecording(
     }
     AddRecord(oss.str());
     WriteAndClearRecords();
+
+    // the START record must not count as a burst or move the deadline
+    g_next = g_scheduled;
+    g_lastRecord = start - g_burst;
 }
 
 void StopRecording(const char* version)
@@ -383,13 +416,23 @@ void AddRecord(const std::string& name)
         }
 
         if (g_scheduled == NEVER)
-            return;                         // shutdown-only reporting
+            return;                         // shutdown-only reporting (also disables burst detection)
 
         Clock::time_point now = Clock::now();
-        if (now < g_scheduled)
+
+        // g_burst of zero means burst detection is off, so newBurst is never true
+        bool newBurst = g_burst > Clock::duration::zero() && (now - g_lastRecord) >= g_burst;
+        g_lastRecord = now;
+
+        // a burst start pulls the deadline forward, never pushes it back
+        if (newBurst && now + g_burst < g_next)
+            g_next = now + g_burst;
+
+        if (now < g_next)
             return;
 
         AdvanceSchedule(now);               // skips grid points that passed while idle
+        g_next = g_scheduled;               // drops any temporary early deadline
 
         std::unordered_map<std::string, size_t> records;
         records.swap(g_records);
