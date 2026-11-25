@@ -845,14 +845,14 @@ std::string ExcelService::writeVbaFile(const std::string& dirname) const
         << "\n"
         << "Public Sub Auto_Open()\n"
         << "\n"
-        << "    " << m_service->name << "Functions." << m_service->name << "LoadXLL\n"
+        << "    " << m_service->name << "LoadXLL." << m_service->name << "LoadXLL\n"
         << "    " << m_service->name << "Utils.SetManualCalculation\n"
         << "    " << m_service->name << "Functions." << m_service->name << "AddMenu\n"
         << "End Sub\n"
         << "\n"
         << "Public Sub Auto_Close()\n"
         << "    " << m_service->name << "Functions." << m_service->name << "RemoveMenu\n"
-        << "    " << m_service->name << "Functions." << m_service->name << "UnloadXLL\n"
+        << "    " << m_service->name << "LoadXLL." << m_service->name << "UnloadXLL\n"
         << "End Sub\n"
         << "\n";
 
