@@ -326,7 +326,7 @@ void StartRecording(
     g_records.clear();
 
 #ifndef SPI_STATIC
-    if (isdigit(g_serverName[0]))
+    if (spi_util::IsIPv4Address(g_serverName))
         g_serverIP = g_serverName;
     else
         g_serverIP = spi_util::UDPGetHostByName(g_serverName);
@@ -372,6 +372,35 @@ void AddRecord(const std::string& name)
 {
     if (g_recording)
     {
+        // if we have passed a scheduled recording time then we
+        // record everything we have so far
+        //
+        // the new record will be included in the next batch
+        if (g_scheduled != NEVER)
+        {
+            Clock::time_point now = Clock::now();
+            if (now >= g_scheduled)
+            {
+                // skip any grid points that we passed while idle
+                AdvanceSchedule(now);
+
+                if (!g_records.empty())
+                {
+                    std::unordered_map<std::string, size_t> records;
+                    records.swap(g_records);
+
+                    RecordHeader header;
+
+#ifdef RECORD_IN_NEW_THREAD
+                    std::thread t(WriteRecords, header, std::move(records));
+                    t.detach();
+#else
+                    WriteRecords(header, records);
+#endif
+                }
+            }
+        }
+
         auto iter = g_records.find(name);
         if (iter != g_records.end())
         {
@@ -381,27 +410,6 @@ void AddRecord(const std::string& name)
         {
             g_records.insert({ name,1 });
         }
-
-        if (g_scheduled == NEVER)
-            return;                         // shutdown-only reporting
-
-        Clock::time_point now = Clock::now();
-        if (now < g_scheduled)
-            return;
-
-        AdvanceSchedule(now);               // skips grid points that passed while idle
-
-        std::unordered_map<std::string, size_t> records;
-        records.swap(g_records);
-
-        RecordHeader header;
-
-#ifdef RECORD_IN_NEW_THREAD
-        std::thread t(WriteRecords, header, std::move(records));
-        t.detach();
-#else
-        WriteRecords(header, records);
-#endif
     }
 }
 

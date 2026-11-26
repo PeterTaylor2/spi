@@ -72,6 +72,37 @@ void errorHandler(const char* errmsg)
 
 END_ANONYMOUS_NAMESPACE
 
+// true if s is exactly n1.n2.n3.n4, each n being 0..255 with no leading zeros
+bool IsIPv4Address(const std::string& s)
+{
+    int parts = 0;
+    size_t i = 0;
+    while (i < s.size())
+    {
+        const char first = s[i];
+        size_t digits = 0;
+        int value = 0;
+        while (i < s.size() && s[i] >= '0' && s[i] <= '9')
+        {
+            value = value * 10 + (s[i] - '0');
+            if (++digits > 3 || value > 255)
+                return false;
+            ++i;
+        }
+        if (digits == 0 || (digits > 1 && first == '0'))
+            return false;
+        ++parts;
+
+        if (i == s.size())
+            break;
+        if (s[i] != '.')
+            return false;
+        if (++i == s.size())
+            return false;               // trailing dot
+    }
+    return parts == 4;
+}
+
 void UDPUploadCSV(
     const std::string& serverName,
     int serverPort,
@@ -274,6 +305,9 @@ std::string UDPGetHostByName(const std::string& name)
 {
     if (name.empty())
         return std::string();
+
+    if (IsIPv4Address(name))
+        return name;
 
 #ifdef _MSC_VER
     WSADATA wsaData;

@@ -37,6 +37,9 @@ namespace csv
 SPI_UTIL_DECLARE_RC_CLASS(JSONValue);
 
 SPI_UTIL_IMPORT
+bool IsIPv4Address(const std::string& s);
+
+SPI_UTIL_IMPORT
 void UDPUploadCSV(
     const std::string& serverName,
     int serverPort,
