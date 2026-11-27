@@ -57,21 +57,6 @@
 
 SPI_UTIL_NAMESPACE
 
-BEGIN_ANONYMOUS_NAMESPACE
-
-#ifdef _MSC_VER
-
-void errorHandler(const char* errmsg)
-{
-    int errorCode = WSAGetLastError();
-    WSACleanup();
-    SPI_UTIL_THROW_RUNTIME_ERROR(errmsg << " with error " << errorCode);
-}
-
-#endif
-
-END_ANONYMOUS_NAMESPACE
-
 // true if s is exactly n1.n2.n3.n4, each n being 0..255 with no leading zeros
 bool IsIPv4Address(const std::string& s)
 {
@@ -103,202 +88,157 @@ bool IsIPv4Address(const std::string& s)
     return parts == 4;
 }
 
+/*
+*****************************************************************************
+* Implementation of UDPSender and its implementation class UDPSender::Impl
+*****************************************************************************
+*/
+struct UDPSender::Impl
+{
+#ifdef _MSC_VER
+    bool wsaStarted;
+    SOCKET sock;
+#else
+    int sock;
+#endif
+    sockaddr_in addr;
+    std::ostringstream os;      // reused for every JSON value
+
+    Impl()
+        :
+#ifdef _MSC_VER
+        wsaStarted(false),
+        sock(INVALID_SOCKET),
+#else
+        sock(-1),
+#endif
+        addr(),
+        os()
+    {
+        memset(&addr, 0, sizeof(addr));
+    }
+
+    // undoes whatever the constructor managed to do, exactly once, on every exit path
+    // (destructors must not throw, so return codes are ignored)
+    ~Impl()
+    {
+#ifdef _MSC_VER
+        if (sock != INVALID_SOCKET)
+            closesocket(sock);
+        if (wsaStarted)
+            WSACleanup();
+#else
+        if (sock >= 0)
+            close(sock);
+#endif
+    }
+};
+
+UDPSender::UDPSender(const std::string& ipAddress, int port)
+    :
+    m_impl(new Impl())
+{
+    if (!IsIPv4Address(ipAddress))
+        SPI_UTIL_THROW_RUNTIME_ERROR("UDPSender: '" << ipAddress << "' is not a dotted IPv4 address");
+    if (port <= 0 || port > 65535)
+        SPI_UTIL_THROW_RUNTIME_ERROR("UDPSender: invalid port " << port);
+
+    Impl& d = *m_impl;
+
+    d.addr.sin_family = AF_INET;
+    d.addr.sin_port = htons((unsigned short)port);
+    d.addr.sin_addr.s_addr = inet_addr(ipAddress.c_str());
+
+#ifdef _MSC_VER
+    // Initialize Winsock version 2.2
+    WSADATA wsaData;
+    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
+        SPI_UTIL_THROW_RUNTIME_ERROR("WSAStartup failed");
+    d.wsaStarted = true;
+
+    d.sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    if (d.sock == INVALID_SOCKET)
+        SPI_UTIL_THROW_RUNTIME_ERROR("Could not create socket with error " << WSAGetLastError());
+#else
+    d.sock = socket(AF_INET, SOCK_DGRAM, 0);
+    if (d.sock < 0)
+        SPI_UTIL_THROW_RUNTIME_ERROR("socket creation failed");
+#endif
+}
+
+UDPSender::~UDPSender()
+{
+    // Impl's destructor does the work
+}
+
+bool UDPSender::SendLine(const std::string& line)
+{
+    Impl& d = *m_impl;
+
+#ifdef _MSC_VER
+    int sent = sendto(d.sock, line.c_str(), (int)line.size(), 0,
+        (const SOCKADDR*)&d.addr, sizeof(d.addr));
+    return sent == (int)line.size();
+#else
+    ssize_t sent = sendto(d.sock, line.c_str(), line.size(), 0,
+        (const struct sockaddr*)&d.addr, sizeof(d.addr));
+    return sent == (ssize_t)line.size();
+#endif
+}
+
+bool UDPSender::SendJSON(const JSONValue& value)
+{
+    Impl& d = *m_impl;
+
+    d.os.str(std::string());
+    d.os.clear();
+    JSONValueToStream(d.os, value, true, 0);
+
+    return SendLine(d.os.str());
+}
+
+bool UDPSender::SendCSVRow(const std::vector<std::string>& row)
+{
+    Impl& d = *m_impl;
+
+    d.os.str(std::string());
+    d.os.clear();
+    csv::WriteLine(d.os, row);
+
+    return SendLine(d.os.str());
+}
+
 void UDPUploadCSV(
-    const std::string& serverName,
+    const std::string& ipAddress,
     int serverPort,
     const csv::Data* data)
 {
-    if (serverName.empty() || serverPort == 0 || !data || data->numRows() == 0)
+    if (ipAddress.empty() || serverPort == 0 || !data || data->numRows() == 0)
         return;
 
-#ifdef _MSC_VER
-    {
-        WSADATA wsaData;
-        SOCKET sendingSocket;
-        SOCKADDR_IN recvAddress;
+    UDPSender sender(ipAddress, serverPort);
 
-        // Initialize Winsock version 2.2
+    // send one line at a time
+    // rows() returns a reference, whereas row(i) would copy every row
+    const std::vector<std::vector<std::string>>& rows = data->rows();
 
-        if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
-        {
-            errorHandler("WSAStartup failed");
-        }
-
-        // Create a new socket to receive datagrams on.
-
-        sendingSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-
-        if (sendingSocket == INVALID_SOCKET)
-        {
-            errorHandler("Could not create socket");
-        }
-
-        recvAddress.sin_family = AF_INET;
-        recvAddress.sin_port = htons(serverPort);
-        recvAddress.sin_addr.s_addr = inet_addr(serverName.c_str());
-
-        // send one line at a time
-        size_t NR = data->numRows();
-
-        for (size_t i = 0; i < NR; ++i)
-        {
-            std::ostringstream os;
-            csv::WriteLine(os, data->row(i));
-            std::string line = os.str();
-
-            int sent = sendto(sendingSocket, line.c_str(), (int)line.size(), 0, (SOCKADDR*)&recvAddress, sizeof(recvAddress));
-        }
-
-        if (closesocket(sendingSocket) != 0)
-        {
-            errorHandler("closesocket failed");
-        }
-
-        if (WSACleanup() != 0)
-        {
-            errorHandler("WSACleanup failed");
-        }
-    }
-#else
-    {
-        struct sockaddr_in recvAddress;
-
-        // Create UDP socket
-        int sendingSocket = socket(AF_INET, SOCK_DGRAM, 0);
-        if (sendingSocket < 0)
-        {
-            SPI_UTIL_THROW_RUNTIME_ERROR("socket creation failed");
-        }
-
-        memset(&recvAddress, 0, sizeof(recvAddress));
-
-        // Fill server address info
-        recvAddress.sin_family = AF_INET;
-        recvAddress.sin_port = htons(serverPort);
-        recvAddress.sin_addr.s_addr = inet_addr(serverName.c_str());
-
-        // send one line at a time
-        size_t NR = data->numRows();
-
-        for (size_t i = 0; i < NR; ++i)
-        {
-            std::ostringstream os;
-            csv::WriteLine(os, data->row(i));
-            std::string line = os.str();
-
-            int sent = sendto(sendingSocket, line.c_str(), line.size(), 0,
-                (const struct sockaddr*)&recvAddress, sizeof(recvAddress));
-        }
-
-        // Close socket
-        close(sendingSocket);
-    }
-
-#endif
-
+    for (size_t i = 0; i < rows.size(); ++i)
+        sender.SendCSVRow(rows[i]);
 }
 
 void UDPUploadJSON(
-    const std::string& serverName,
+    const std::string& ipAddress,
     int serverPort,
     const std::vector<JSONValue>& jsonValues)
 {
-    if (serverName.empty() || serverPort == 0 || jsonValues.size() == 0)
+    if (ipAddress.empty() || serverPort == 0 || jsonValues.size() == 0)
         return;
 
-#ifdef _MSC_VER
-    {
-        WSADATA wsaData;
-        SOCKET sendingSocket;
-        SOCKADDR_IN recvAddress;
+    UDPSender sender(ipAddress, serverPort);
 
-        // Initialize Winsock version 2.2
-
-        if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
-        {
-            errorHandler("WSAStartup failed");
-        }
-
-        // Create a new socket to receive datagrams on.
-
-        sendingSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-
-        if (sendingSocket == INVALID_SOCKET)
-        {
-            errorHandler("Could not create socket");
-        }
-
-        recvAddress.sin_family = AF_INET;
-        recvAddress.sin_port = htons(serverPort);
-        recvAddress.sin_addr.s_addr = inet_addr(serverName.c_str());
-
-        // send one line at a time - assume that each line is fairly short as it is a single JSON value
-        size_t NR = jsonValues.size();
-
-        for (size_t i = 0; i < NR; ++i)
-        {
-            std::ostringstream os;
-            JSONValueToStream(os, jsonValues[i], true, 0);
-            std::string line = os.str();
-
-#ifdef DEBUG_LOGGING
-            std::cout << line << std::endl;
-#endif
-
-            int sent = sendto(sendingSocket, line.c_str(), (int)line.size(), 0, (SOCKADDR*)&recvAddress, sizeof(recvAddress));
-        }
-
-        if (closesocket(sendingSocket) != 0)
-        {
-            errorHandler("closesocket failed");
-        }
-
-        if (WSACleanup() != 0)
-        {
-            errorHandler("WSACleanup failed");
-        }
-    }
-#else
-    {
-        struct sockaddr_in recvAddress;
-
-        // Create UDP socket
-        int sendingSocket = socket(AF_INET, SOCK_DGRAM, 0);
-        if (sendingSocket < 0)
-        {
-            SPI_UTIL_THROW_RUNTIME_ERROR("socket creation failed");
-        }
-
-        memset(&recvAddress, 0, sizeof(recvAddress));
-
-        // Fill server address info
-        recvAddress.sin_family = AF_INET;
-        recvAddress.sin_port = htons(serverPort);
-        recvAddress.sin_addr.s_addr = inet_addr(serverName.c_str());
-
-        // send one line at a time - assume that each line is fairly short as it is a single JSON value
-        size_t NR = jsonValues.size();
-
-        for (size_t i = 0; i < NR; ++i)
-        {
-            std::ostringstream os;
-            JSONValueToStream(os, jsonValues[i], true, 0);
-            std::string line = os.str();
-
-#ifdef DEBUG_LOGGING
-            std::cout << "Sending " << line << std::endl;
-#endif
-
-            int sent = sendto(sendingSocket, line.c_str(), line.size(), 0,
-                (const struct sockaddr*)&recvAddress, sizeof(recvAddress));
-        }
-
-        // Close socket
-        close(sendingSocket);
-    }
-
-#endif
-
+    // send one line at a time - assume that each line is fairly short as it is a single JSON value
+    for (size_t i = 0; i < jsonValues.size(); ++i)
+        sender.SendJSON(jsonValues[i]);
 }
 
 std::string UDPGetHostByName(const std::string& name)
