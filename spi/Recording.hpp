@@ -48,8 +48,11 @@ SPI_BEGIN_NAMESPACE
 /// written at shutdown. Without a final zero, the last gap repeats indefinitely.
 /// A single 0 gives shutdown-only reporting.
 ///
-/// Reports are only sent when AddRecord is called, so a report due during a period of
-/// inactivity is sent on the next call and the following report stays on the original schedule.
+/// Scheduled reports are only sent when AddRecord is called. The new record defined by
+/// AddRecord will not be included in the scheduled report since it was sent after the
+/// scheduled time - as a result it will only sent out on or after the next scheduled
+/// time. Hence if there has been a period of inactivity you will not get just one
+/// record from the next burst of activity.
 ///
 /// The log is always written at the end of the process.
 ///
