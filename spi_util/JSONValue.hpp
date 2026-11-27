@@ -114,6 +114,9 @@ public:
     JSONValue(const JSONMapConstSP&);
     JSONValue(bool);
 
+    // deleted so that a string literal cannot silently convert to bool (use std::string(...))
+    JSONValue(const char*) = delete;
+
     Type GetType() const;
 
     double           GetNumber(bool optional=false, double defaultValue=0.0) const;
