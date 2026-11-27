@@ -234,50 +234,62 @@ namespace
             // each row starts with userName, computerName, osName, context
             // then we add the name and the count for that record
 
-            std::vector<spi_util::JSONValue> jsonValues;
-            jsonValues.reserve(records.size());
+            // the five items which are the same in every row are set once
+            // Insert replaces the value of an existing key without changing its
+            // position, so the key order is the same as before
+            spi_util::JSONMapSP jm(new spi_util::JSONMap());
 
-            for (auto iter = records.begin(); iter != records.end(); ++iter)
-            {
-                const auto& key = iter->first;
-                size_t count = iter->second;
-
-                spi_util::JSONMapSP jm(new spi_util::JSONMap());
-
-                jm->Insert("user", header.userName);
-                jm->Insert("computer", header.computerName);
-                jm->Insert("os", header.osName);
+            jm->Insert("user", header.userName);
+            jm->Insert("computer", header.computerName);
+            jm->Insert("os", header.osName);
 #ifdef RECORD_PID
-                jm->Insert("pid", (double)header.processId);
+            jm->Insert("pid", (double)header.processId);
 #endif
-                jm->Insert("context", header.context);
-                jm->Insert("function", key);
-                jm->Insert("count", (double)count);
-
-                jsonValues.push_back(spi_util::JSONValue(jm));
-            }
+            jm->Insert("context", header.context);
 
             // there was a case in testing where there was a crash seemingly due to the multi-threading
             SPI_UTIL_LOCAL_LOCK;
 
+            std::unique_ptr<spi_util::UDPSender> sender;
             if (!header.serverIP.empty())
             {
-                spi_util::UDPUploadJSON(header.serverIP, header.serverPort, jsonValues);
+                try
+                {
+                    sender.reset(new spi_util::UDPSender(header.serverIP, header.serverPort));
+                }
+                catch (std::exception& e)
+                {
+                    std::cerr << "WriteRecords: cannot send to " << header.serverIP << ": " << e.what() << std::endl;
+                }
             }
 
+            std::ofstream os;
             if (!header.dnLocal.empty())
             {
                 std::string fn = "spi-recording-" + spi::Date::Today().ToString() + ".json";
                 std::string ffn = spi_util::path::join(header.dnLocal.c_str(), fn.c_str(), 0);
+                os.open(ffn, std::ios::app);
+                if (!os.is_open())
+                    std::cerr << "WriteRecords: cannot open " << ffn << std::endl;
+            }
 
-                std::ofstream os(ffn, std::ios::app);
+            // the value shares the map (it holds a reference, not a copy), so it always
+            // reflects the latest Insert calls - this relies on JSONValue not copying the map
+            spi_util::JSONValue jsonValue(jm);
 
-                for (const auto& jsonValue : jsonValues)
+            for (auto iter = records.begin(); iter != records.end(); ++iter)
+            {
+                jm->Insert("function", iter->first);
+                jm->Insert("count", (double)iter->second);
+
+                if (sender)
+                    sender->SendJSON(jsonValue);
+
+                if (os.is_open())
                 {
                     spi_util::JSONValueToStream(os, jsonValue, true, 0);
-                    os << std::endl;
+                    os << '\n';
                 }
-                os.close();
             }
         }
         catch (std::exception& e)
