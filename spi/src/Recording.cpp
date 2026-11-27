@@ -260,12 +260,10 @@ namespace
             // there was a case in testing where there was a crash seemingly due to the multi-threading
             SPI_UTIL_LOCAL_LOCK;
 
-#ifndef SPI_STATIC
             if (!header.serverIP.empty())
             {
                 spi_util::UDPUploadJSON(header.serverIP, header.serverPort, jsonValues);
             }
-#endif
 
             if (!header.dnLocal.empty())
             {
@@ -325,14 +323,10 @@ void StartRecording(
 
     g_records.clear();
 
-#ifndef SPI_STATIC
     if (spi_util::IsIPv4Address(g_serverName))
         g_serverIP = g_serverName;
     else
         g_serverIP = spi_util::UDPGetHostByName(g_serverName);
-#else
-    g_serverIP = g_serverName;
-#endif
 
     std::ostringstream oss;
     oss << "RECORDING:START";

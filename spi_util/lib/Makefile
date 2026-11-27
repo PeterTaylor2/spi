@@ -24,7 +24,8 @@ else
 U_EXCLUDE_OBJS=uuid4.$(G_OBJ)
 endif
 
-U_EXCLUDE_OBJS+=UrlRead.$(G_OBJ) UdpUpload.$(G_OBJ) CurlUtil.$(G_OBJ) CompressUtil.$(G_OBJ)
+# we exclude objects which require us to link with zlib or libcurl
+U_EXCLUDE_OBJS+=UrlRead.$(G_OBJ) CurlUtil.$(G_OBJ) CompressUtil.$(G_OBJ)
 
 G_OVERRIDE_NEW_DEFAULT?=0
 ifneq ($(G_OVERRIDE_NEW_DEFAULT),0)
